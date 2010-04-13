@@ -78,6 +78,11 @@ This addon is distributed under the same conditions as Mantis itself.
 Gerrit Beine, August 2004
 
 Changelog:
+Aug 2009 v2
+	- bug_report_mail.sql has been removed to avoid confusions about needing to use it
+	- Decrypting the mailbox password did not occur before editing. Fixed (Note ~22655)
+	- A new variable is added which resets the plugin schema and fixes the Mail Reporter user when it has the email address "nomail" (Automatically done during the first initialization of the plugin)
+	- Removed functions which performed the exclusion of emails to Mail Reporter with "nomail" mail address
 Aug 2009
 	- The script now also recognizes a possible name in the from part of emails. It uses this as the username during the creation of the user
 	- Cleaned up some more useless files that were not used

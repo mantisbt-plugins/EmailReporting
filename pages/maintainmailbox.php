@@ -63,10 +63,10 @@ foreach( $t_config_array AS $t_config )
 ?>
 <tr <?php echo helper_alternate_class( )?>>
 	<td class="category" width="60%">
-		<?php echo plugin_lang_get( $t_config['name'] )?>
+		<?php echo plugin_lang_get( $t_config[ 'name' ] )?>
 	</td>
 	<td class="center" width="40%">
-		<label><input type="text" size="40" maxlength="50" name="<?php echo $t_config['name'] ?>" value="<?php echo ( ( $f_mailbox_action !== 'add' ) ? $t_mailboxes[ $f_select_mailbox ][ $t_config['name'] ] : '' ) ?>"/></label>
+		<label><input type="text" size="40" maxlength="50" name="<?php echo $t_config[ 'name' ] ?>" value="<?php echo ( ( $f_mailbox_action !== 'add' ) ? $t_mailboxes[ $f_select_mailbox ][ $t_config[ 'name' ] ] : '' ) ?>"/></label>
 	</td>
 </tr>
 <?php
@@ -76,10 +76,10 @@ foreach( $t_config_array AS $t_config )
 ?>
 <tr <?php echo helper_alternate_class( )?>>
 	<td class="category" width="60%">
-		<?php echo plugin_lang_get( $t_config['name'] )?>
+		<?php echo plugin_lang_get( $t_config[ 'name' ] )?>
 	</td>
 	<td class="center" width="40%">
-		<label><input type="password" size="40" maxlength="50" name="<?php echo $t_config['name'] ?>" value="<?php echo ( ( $f_mailbox_action !== 'add' ) ? $t_mailboxes[ $f_select_mailbox ][ $t_config['name'] ] : '' ) ?>"/></label>
+		<label><input type="password" size="40" maxlength="50" name="<?php echo $t_config[ 'name' ] ?>" value="<?php echo ( ( $f_mailbox_action !== 'add' ) ? base64_decode( $t_mailboxes[ $f_select_mailbox ][ $t_config[ 'name' ] ] ) : '' ) ?>"/></label>
 	</td>
 </tr>
 <?php
@@ -89,10 +89,10 @@ foreach( $t_config_array AS $t_config )
 ?>
 <tr <?php echo helper_alternate_class( )?>>
 	<td class="category" width="60%">
-		<?php echo plugin_lang_get( $t_config['name'] )?>
+		<?php echo plugin_lang_get( $t_config[ 'name' ] )?>
 	</td>
 	<td class="center" width="40%">
-		<label><select name="<?php echo $t_config['name'] ?>"> <?php print_project_option_list( ( ( $f_mailbox_action !== 'add' ) ? $t_mailboxes[ $f_select_mailbox ][ $t_config['name'] ] : '' ), false, null, true ) ?></select></label>
+		<label><select name="<?php echo $t_config[ 'name' ] ?>"> <?php print_project_option_list( ( ( $f_mailbox_action !== 'add' ) ? $t_mailboxes[ $f_select_mailbox ][ $t_config[ 'name' ] ] : '' ), false, null, true ) ?></select></label>
 	</td>
 </tr>
 <?php
@@ -102,10 +102,10 @@ foreach( $t_config_array AS $t_config )
 ?>
 <tr <?php echo helper_alternate_class( )?>>
 	<td class="category" width="60%">
-		<?php echo plugin_lang_get( $t_config['name'] )?>
+		<?php echo plugin_lang_get( $t_config[ 'name' ] )?>
 	</td>
 	<td class="center" width="40%">
-		<label><select name="<?php echo $t_config['name'] ?>"> <?php print_category_option_list( ( ( $f_mailbox_action !== 'add' ) ? $t_mailboxes[ $f_select_mailbox ][ $t_config['name'] ] : '' ), ALL_PROJECTS ) ?></select></label>
+		<label><select name="<?php echo $t_config[ 'name' ] ?>"> <?php print_category_option_list( ( ( $f_mailbox_action !== 'add' ) ? $t_mailboxes[ $f_select_mailbox ][ $t_config[ 'name' ] ] : '' ), ALL_PROJECTS ) ?></select></label>
 	</td>
 </tr>
 <?php

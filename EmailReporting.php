@@ -10,7 +10,7 @@ class EmailReportingPlugin extends MantisPlugin {
 		$this->description = plugin_lang_get( 'description' );
 		$this->page = 'config';
 
-		$this->version = '0.6';
+		$this->version = '0.6.1';
 		$this->requires = array(
 			'MantisCore' => '1.2',
 		);
@@ -25,7 +25,8 @@ class EmailReportingPlugin extends MantisPlugin {
 	 */
 	function config() {
 		return array(
-			'schema' => 0,
+			'reset_schema' => 0,
+			'schema' => -1,
 
 			# --- mail reporting settings -----
 			# Empty default mailboxes array. This array will be used for all the mailbox
@@ -129,7 +130,8 @@ class EmailReportingPlugin extends MantisPlugin {
 	 * EmailReporting installation function.
 	 */
 	function install(){
-		if ( plugin_config_get( 'random_user_number', 'NOT FOUND' ) === 'NOT FOUND' )
+		$t_random_user_number = plugin_config_get( 'random_user_number', 'NOT FOUND' );
+		if ( $t_random_user_number === 'NOT FOUND' )
 		{
 			# We need to allow blank emails for a sec
 			$t_allow_blank_email = config_get( 'allow_blank_email' );
@@ -154,6 +156,7 @@ class EmailReportingPlugin extends MantisPlugin {
 			{
 				plugin_config_set( 'random_user_number', $t_rand );
 				plugin_config_set( 'mail_reporter', $t_username );
+				plugin_config_set( 'reset_schema', 1 );
 			}
 
 			# return the setting back to its usual value
@@ -184,24 +187,14 @@ class EmailReportingPlugin extends MantisPlugin {
 	} 
 
 	/**
-	 * EmailReporting plugin schema.
-	 */
-	function schema(){
-		# In previous installations it would use this. That was removed since
-		# it was no longer necessary
-		# Keep in mind that the number 0 will be default in the schema variable
-		# for old and new installations instead of -1
-		return( TRUE );
-	}
-
-	/**
 	 * EmailReporting plugin hooks.
 	 */
 	function hooks( ) {
 		$hooks = array(
 			'EVENT_MENU_MANAGE'			=> 'EmailReporting_maintain_mailbox_menu',
-			'EVENT_NOTIFY_USER_EXCLUDE'	=> 'EmailReporting_exclude_users_from_email',
+			'EVENT_CORE_READY'			=> 'EmailReporting_core_ready',
 		);
+
 		return $hooks;
 	}
 
@@ -212,18 +205,31 @@ class EmailReportingPlugin extends MantisPlugin {
 		return array( '<a href="' . plugin_page( 'maintainmailbox' ) . '">' . plugin_lang_get( 'mailbox_settings' ) . '</a>', );
 	}
 
-	/**
-	 * EmailReporting plugin hooks - exclude mail reporter from emails as long as its still using its default email address.
+	/* 
+	 * Since schema is not used anymore some corrections need to be applied
+	 * Schema will be completely reset by this just once
 	 */
-	# Made some modifications which could make this function obsolete in future
-	# versions if an update is done to the mail users email address ( 'nomail'
-	# needs to be removed so that the mail reporter has an empty email address)
-	#@todo@
-	function EmailReporting_exclude_users_from_email( $event_type, $p_bug_id, $p_notify_type, $p_user_id ) {
-		$t_mail_reporter = plugin_config_get( 'mail_reporter' );
-		$t_mail_reporter_id = (int) user_get_id_by_name( $t_mail_reporter );
-		$t_reporter_email = user_get_field( $t_mail_reporter_id, 'email' );
+	function EmailReporting_core_ready( )
+	{
+		$t_reset_schema = plugin_config_get( 'reset_schema', 0 );
 
-		return ( ( $t_mail_reporter_id === $p_user_id && ( $t_reporter_email === 'nomail' ) ) ? true : false );
+		if ( $t_reset_schema === 0 )
+		{
+			$t_username = plugin_config_get( 'mail_reporter' );
+			$t_user_id = user_get_id_by_name( $t_username );
+	
+			if ( $t_user_id !== false )
+			{
+				$t_user_email = user_get_field( $t_user_id, 'email' );
+			
+				if ( $t_user_email === 'nomail' )
+				{
+					user_set_field( $t_user_id, 'email', '' );
+				}
+			}
+	
+			plugin_config_set( 'schema', -1 );
+			plugin_config_set( 'reset_schema', 1 );
+		}
 	}
 }
