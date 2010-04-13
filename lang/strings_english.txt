@@ -49,6 +49,7 @@ $s_plugin_EmailReporting_select_mailbox = 'Select mailbox';
 $s_plugin_EmailReporting_mailbox_description = 'Mailbox description';
 $s_plugin_EmailReporting_mailbox_type = 'Mail server type';
 $s_plugin_EmailReporting_mailbox_hostname = 'Mail server hostname(:port)';
+$s_plugin_EmailReporting_mailbox_encryption = 'Mailbox connection encryption';
 $s_plugin_EmailReporting_mailbox_username = 'Mailbox username';
 $s_plugin_EmailReporting_mailbox_password = 'Mailbox password';
 $s_plugin_EmailReporting_mailbox_auth_method = 'Authentication method';

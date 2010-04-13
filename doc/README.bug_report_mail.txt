@@ -98,8 +98,8 @@ could for instance be "INBOX/to_mantis" (meaning the mail folder
 
 If you enable "Create project subfolder structure" for a mailbox, folders
 for projects are created under the IMAP base folder if they don't exist
-yet. Emails in those subfolder will be imported to their corresponding
-projects. If you disable the setting, only emails in the basefolder will
+yet. Emails in those subfolders will be imported to their corresponding
+projects. If you disable this setting, only emails in the basefolder will
 be imported to the project which is defined for the mailbox
 
 Inbox can most likely not be your basefolder, but that might differ between
@@ -119,6 +119,14 @@ their project name counterparts (but we haven't had problems in practice).
 Gerrit Beine, August 2004
 
 Changelog:
+Dec 2009 v2
+	- If a charset has already been found in the email it will stop searching for other charsets
+	- If a attachment has a size of 0 bytes it will now be added to the rejected-files.txt else it will block proper processing of emails
+	- The max attachment size will now be calculated the same way Mantis does
+	- Added SSL support for IMAP and POP3 connections partially based on work from obstbaum80
+	- mailbox_auth_method will save the selected value properly now (obstbaum80)
+	- The possible values for mailbox_auth_method are now retrieved from the pear packages Net_IMAP and Net_POP3
+	- various small code optimizations
 Dec 2009
 	- Added a fix for the adding of bugnotes when the issue is readonly (~21199)
 	- Sometimes the charset names in emails were lowercase while mb_list_encodings returned names using a mix of upper and lower case names. This caused problems for detecting valid encodings used in emails
@@ -127,7 +135,7 @@ Dec 2009
 	- Added sanity check to the bug priority array config. If this fails the old value will be retained
 	- mail_auth_method (now called mailbox_auth_method) has been moved from the configuration menu to the mailbox settings. This way you can modify this per mailbox
 	- Script is now declared compatible with 1.2.0rc2
-	- Restored lost functionality to mail_fetch_max. This functionality was lost from version mantis-1.0.3.patch.gz and onwards. You might want to increase the mail_fetch_max value since it wil only retrieve one email per mailbox everytime bug_report_mail.php is executed by default
+	- Restored lost functionality to mail_fetch_max. This functionality was lost from version mantis-1.0.3.patch.gz and onwards. You might want to increase the mail_fetch_max value since by default it wil only retrieve one email per mailbox everytime bug_report_mail.php is executed
 	- Deleting mailboxes works again. Seems to have been broken since the 0.5.0 release
 Okt 2009
 	- mb_convert_encoding converted strings even if they were using the same charsets. This caused the necessary problems since somehow certain chars seemed to be replaced with empty spaces.

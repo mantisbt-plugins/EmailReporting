@@ -7,7 +7,7 @@
 	# See the README and LICENSE files for details
 
 	# --------------------------------------------------------
-	# $Id: mail_api.php,v 1.14 2009/12/01 19:17:02 SL-Server\SC Kruiper Exp $
+	# $Id: mail_api.php,v 1.19 2009/12/05 22:39:36 SL-Server\SC Kruiper Exp $
 	# --------------------------------------------------------
 
 	require_once( 'bug_api.php' );
@@ -35,7 +35,7 @@
 
 	# --------------------
 	# return all mails for an mailbox
-	#  return an empty array if there are no new mails
+	#  return an boolean for whether the mailbox was succesfully processed
 	function mail_process_all_mails( &$p_mailbox, $p_test_only = false )
 	{
 		$t_mailbox_type = ( ( isset( $p_mailbox[ 'mailbox_type' ] ) ) ? $p_mailbox[ 'mailbox_type' ] : NULL );
@@ -54,17 +54,20 @@
 
 	# --------------------
 	# return all mails for an pop3 mailbox
-	#  return an empty array if there are no new mails
+	#  return an boolean for whether the mailbox was succesfully processed
 	function mail_process_all_mails_pop3( &$p_mailbox, $p_test_only = false )
 	{
 		$t_mail_fetch_max	= plugin_config_get( 'mail_fetch_max' );
 
+		$t_mailbox_hostname = mail_prepare_mailbox_hostname( $p_mailbox, 110, 995 );
+
 		$t_mailbox_connection = &new Net_POP3();
-		$t_mailbox_hostname = explode( ':', $p_mailbox[ 'mailbox_hostname' ], 2 );
+
 		$t_mailbox_username = $p_mailbox[ 'mailbox_username' ];
-		$t_mailbox_password = base64_decode( $p_mailbox[ 'mailbox_password' ] );
-		$t_mailbox_auth_method = ( ( !empty( $p_mailbox[ 'mailbox_auth_method' ] ) ) ? $p_mailbox[ 'mailbox_auth_method' ] : 'USER' );
-		$t_mailbox_connection->connect( $t_mailbox_hostname[ 0 ], ( ( empty( $t_mailbox_hostname[ 1 ] ) || (int) $t_mailbox_hostname[ 1 ] === 0 ) ? 110 : (int) $t_mailbox_hostname[ 1 ] ) );
+		$t_mailbox_password = mail_prepare_mailbox_password( $p_mailbox[ 'mailbox_password' ] );
+		$t_mailbox_auth_method = mail_prepare_mailbox_auth_method( $p_mailbox );
+
+		$t_mailbox_connection->connect( $t_mailbox_hostname[ 'hostname' ], $t_mailbox_hostname[ 'port' ] );
 		$t_result = $t_mailbox_connection->login( $t_mailbox_username, $t_mailbox_password, $t_mailbox_auth_method );
 
 		if ( $p_test_only === false )
@@ -96,16 +99,19 @@
 
 	# --------------------
 	# return all mails for an imap mailbox
-	#  return an empty array if there are no new mails
+	#  return an boolean for whether the mailbox was succesfully processed
 	function mail_process_all_mails_imap( &$p_mailbox, $p_test_only = false )
 	{
 		$t_mail_fetch_max	= plugin_config_get( 'mail_fetch_max' );
 
-		$t_mailbox_hostname = explode( ':', $p_mailbox[ 'mailbox_hostname' ], 2 );
-		$t_mailbox_connection = &new Net_IMAP( $t_mailbox_hostname[ 0 ], ( ( empty( $t_mailbox_hostname[ 1 ] ) || (int) $t_mailbox_hostname[ 1 ] === 0 ) ? 143 : (int) $t_mailbox_hostname[ 1 ] ) );
+		$t_mailbox_hostname = mail_prepare_mailbox_hostname( $p_mailbox, 143, 993 );
+
+		$t_mailbox_connection = &new Net_IMAP( $t_mailbox_hostname[ 'hostname' ], $t_mailbox_hostname[ 'port' ] );
+
 		$t_mailbox_username = $p_mailbox[ 'mailbox_username' ];
-		$t_mailbox_password = base64_decode( $p_mailbox[ 'mailbox_password' ] );
-		$t_mailbox_auth_method = ( ( !empty( $p_mailbox[ 'mailbox_auth_method' ] ) ) ? $p_mailbox[ 'mailbox_auth_method' ] : 'USER' );
+		$t_mailbox_password = mail_prepare_mailbox_password( $p_mailbox[ 'mailbox_password' ] );
+		$t_mailbox_auth_method = mail_prepare_mailbox_auth_method( $p_mailbox );
+
 		$t_result = $t_mailbox_connection->login( $t_mailbox_username, $t_mailbox_password, $t_mailbox_auth_method );
 
 		if ( $p_test_only === false && PEAR::isError( $t_result ) )
@@ -234,6 +240,44 @@
 		$t_project_name = trim( $t_project_name, "-. " );
 
 		return( $t_project_name );
+	}
+
+	# --------------------
+	# return the hostname parsed into a hostname + port
+	function mail_prepare_mailbox_hostname( &$p_mailbox, $p_def_port, $p_def_ssl_port )
+	{
+		$t_mailbox_hostname = explode( ':', $p_mailbox[ 'mailbox_hostname' ], 2 );
+
+		$t_mailbox_def_port = $p_def_port;
+		if ( !empty( $p_mailbox[ 'mailbox_encryption' ] ) && $p_mailbox[ 'mailbox_encryption' ] !== 'None' )
+		{
+			$t_mailbox_hostname[ 0 ] = strtolower( $p_mailbox[ 'mailbox_encryption' ] ) . '://' . $t_mailbox_hostname[ 0 ];
+			if ( strtolower( substr( $p_mailbox[ 'mailbox_encryption' ], 0, 3 ) ) === 'ssl' )
+			{
+				$t_mailbox_def_port = $p_def_ssl_port;
+			}
+		}
+
+		$t_result = array(
+			'hostname'	=> $t_mailbox_hostname[ 0 ],
+			'port'		=> ( ( !empty( $t_mailbox_hostname[ 1 ] ) && (int) $t_mailbox_hostname[ 1 ] > 0 ) ? (int) $t_mailbox_hostname[ 1 ] : (int) $t_mailbox_def_port ),
+		);
+
+		return( $t_result );
+	}
+
+	# --------------------
+	# return the hostname parsed into a hostname + port
+	function mail_prepare_mailbox_password( &$p_mailbox_password )
+	{
+		return( base64_decode( $p_mailbox_password ) );
+	}
+
+	# --------------------
+	# return the hostname parsed into a hostname + port
+	function mail_prepare_mailbox_auth_method( &$p_mailbox )
+	{
+		return( ( !empty( $p_mailbox[ 'mailbox_auth_method' ] ) ) ? $p_mailbox[ 'mailbox_auth_method' ] : 'USER' );
 	}
 
 	# --------------------
@@ -425,7 +469,7 @@
 		static $t_max_file_size = 'empty';
 
 		if ( $t_max_file_size === 'empty' ){
-			$t_max_file_size = config_get( 'max_file_size', 2 );
+			$t_max_file_size = (int) min( ini_get_number( 'upload_max_filesize' ), ini_get_number( 'post_max_size' ), config_get( 'max_file_size' ) );
 		}
 
 		$t_part_name = ( ( isset( $p_part[ 'name' ] ) ) ? trim( $p_part[ 'name' ] ) : null );
@@ -438,6 +482,9 @@
 		elseif( !file_type_check( $t_part_name ) )
 		{
 			return( $t_part_name . ' = filetype not allowed' . "\r\n" );
+		}
+		elseif( 0 == $t_strlen_body ) {
+			return( $t_part_name . ' = attachment size is zero (' . $t_strlen_body . ' / ' . $t_max_file_size . ')' . "\r\n" );
 		}
 		elseif( $t_strlen_body > $t_max_file_size )
 		{

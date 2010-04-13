@@ -125,8 +125,11 @@ class Mail_Parser
 	}
 
 	function setCharset( $charset ) {
-		$arraysearch_result = array_search( strtolower( $charset ), $this->_mb_list_encodings, true );
-		$this->_charset = ( ( $arraysearch_result !== false ) ? $arraysearch_result : 'auto' );
+		if ( $this->_charset === 'auto' )
+		{
+			$arraysearch_result = array_search( strtolower( $charset ), $this->_mb_list_encodings, true );
+			$this->_charset = ( ( $arraysearch_result !== false ) ? $arraysearch_result : 'auto' );
+		}
 	}
 
 	function setPriority( $priority ) {

@@ -13,9 +13,10 @@ if ( $f_mailbox_action === 'add' || ( ( $f_mailbox_action === 'edit' || $f_mailb
 		'mailbox_description'			=> gpc_get_string( 'mailbox_description' ),
 		'mailbox_type'					=> gpc_get_string( 'mailbox_type', 'POP3' ),
 		'mailbox_hostname'				=> gpc_get_string( 'mailbox_hostname' ),
+		'mailbox_encryption'			=> gpc_get_string( 'mailbox_encryption', 'None' ),
 		'mailbox_username'				=> gpc_get_string( 'mailbox_username' ),
 		'mailbox_password'				=> base64_encode( gpc_get_string( 'mailbox_password' ) ),
-		'mailbox_auth_method'			=> gpc_get_string( 'mail_auth_method', 'USER' ),
+		'mailbox_auth_method'			=> gpc_get_string( 'mailbox_auth_method', 'USER' ),
 		'mailbox_basefolder'			=> trim( str_replace( '\\', '/', gpc_get_string( 'mailbox_basefolder', '' ) ), '/ ' ),
 		'mailbox_createfolderstructure'	=> gpc_get_bool( 'mailbox_createfolderstructure', OFF ),
 		'mailbox_project'				=> gpc_get_int( 'mailbox_project' ),
@@ -57,6 +58,8 @@ elseif ( $f_mailbox_action === 'test' && $f_select_mailbox >= 0 )
 		<?php echo plugin_lang_get( 'mailbox_type' ) . ': ' . $t_mailbox[ 'mailbox_type' ]; ?>
 	<br>
 		<?php echo plugin_lang_get( 'mailbox_hostname' ) . ': ' . $t_mailbox[ 'mailbox_hostname' ]; ?>
+	<br>
+		<?php echo plugin_lang_get( 'mailbox_encryption' ) . ': ' . $t_mailbox[ 'mailbox_encryption' ]; ?>
 	<br>
 		<?php echo plugin_lang_get( 'mailbox_username' ) . ': ' . $t_mailbox[ 'mailbox_username' ]; ?>
 	<br>
