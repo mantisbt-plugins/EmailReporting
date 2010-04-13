@@ -81,6 +81,9 @@ This addon is distributed under the same conditions as Mantis itself.
 Gerrit Beine, August 2004
 
 Changelog:
+Okt 2009
+	- mb_convert_encoding converted strings even if they were using the same charsets. This caused the necessary problems since somehow certain chars seemed to be replaced with empty spaces.
+	- EmailReporting will now try to retrieve the charset from the email content type if it is present, as this works better then the auto detect of mbstring functions for conversion. As a fallback it will still try the auto detect if the charset is missing.
 Sep 2009
 	- Incase the email address is not encapsulated with the proper chars EmailReporting will consider the whole string the email address (Note ~22839)
 	- Problems with locating pear.php have been corrected and pear5.php is now also present in the package

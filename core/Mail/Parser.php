@@ -14,6 +14,7 @@ class Mail_Parser
 
 	var $_from;
 	var $_subject;
+	var $_charset = 'auto';
 	var $_priority;
 	var $_transferencoding;
 	var $_body;
@@ -35,6 +36,14 @@ class Mail_Parser
 		$this->_content = file_get_contents( $this->_file );
 	}
 
+	function process_encoding( $encode ) {
+		if ( $this->_mail_encoding !== $this->_charset )
+		{
+			$encode = mb_convert_encoding( $encode, $this->_mail_encoding, $this->_charset );
+		}
+		return( $encode );
+	}
+
 	function parse() {
 		$decoder = new Mail_mimeDecode( $this->_content );
 		$params['include_bodies'] = true;
@@ -45,9 +54,9 @@ class Mail_Parser
 		unset( $this->_content );
 		if ( extension_loaded( 'mbstring' ) )
 		{
-			$this->_from = mb_convert_encoding( $this->_from, $this->_mail_encoding, mb_detect_encoding( $this->_from ) );
-			$this->_subject = mb_convert_encoding( $this->_subject, $this->_mail_encoding, mb_detect_encoding( $this->_subject ) );
-			$this->_body = mb_convert_encoding( $this->_body, $this->_mail_encoding, mb_detect_encoding( $this->_body ) );
+			$this->_from = $this->process_encoding( $this->_from );
+			$this->_subject = $this->process_encoding( $this->_subject );
+			$this->_body = $this->process_encoding( $this->_body );
 		}
 	}
 
@@ -75,7 +84,10 @@ class Mail_Parser
 		$this->setFrom( $structure->headers['from'] );
 		$this->setSubject( $structure->headers['subject'] );
 		$this->setContentType( $structure->ctype_primary, $structure->ctype_secondary );
-		if ( isset( $structure->headers['x-priority'] ) ) {
+		if ( isset( $structure->ctype_parameters[ 'charset' ] ) ) {
+			$this->setCharset( $structure->ctype_parameters[ 'charset' ] );
+		}
+ 		if ( isset( $structure->headers['x-priority'] ) ) {
 			$this->setPriority( $structure->headers['x-priority'] );
 		}
 		if ( isset( $structure->headers['content-transfer-encoding'] ) ) {
@@ -95,6 +107,11 @@ class Mail_Parser
 
 	function setSubject( $subject ) {
 		$this->_subject = quoted_printable_decode( $subject );
+	}
+
+	function setCharset( $charset ) {
+		$charset_list = mb_list_encodings();
+		$this->_charset = ( ( in_array( $charset, $charset_list ) ) ? $charset : 'auto' );
 	}
 
 	function setPriority( $priority ) {
@@ -164,6 +181,10 @@ class Mail_Parser
 			}
 			$this->setContentType( $parts[$i]->ctype_primary, $parts[ $i ]->ctype_secondary );
 			$this->setTransferEncoding( $parts[ $i ]->headers[ 'content-transfer-encoding' ] );
+			if ( isset( $parts[$i]->ctype_parameters[ 'charset' ] ) ) {
+				$this->setCharset( $parts[$i]->ctype_parameters[ 'charset' ] );
+			}
+
 			if ( $attachment === true )
 			{
 				$this->addPart( $parts[ $i ], $p_attached_email_subject );
@@ -230,7 +251,10 @@ class Mail_Parser
 
 		if ( extension_loaded( 'mbstring' ) && !empty( $p[ 'name' ] ) )
 		{
-			$p[ 'name' ] = mb_convert_encoding( $p[ 'name' ], $this->_mail_encoding, mb_detect_encoding( $p[ 'name' ] ) );
+			if ( isset( $part->ctype_parameters[ 'charset' ] ) ) {
+				$this->setCharset( $part->ctype_parameters[ 'charset' ] );
+			}
+			$p[ 'name' ] = $this->process_encoding( $p[ 'name' ] );
 		}
 
 		$this->_parts[] = $p;
