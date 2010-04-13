@@ -17,7 +17,7 @@
 // +----------------------------------------------------------------------+
 
 
-require_once 'Net/IMAPProtocol_1.0.3.php';
+require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/Net/IMAPProtocol_1.0.3.php' );
 
 
 /**

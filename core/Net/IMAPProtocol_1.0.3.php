@@ -682,7 +682,7 @@ class Net_IMAPProtocol {
      * @access public
      * @since  1.0
      * 
-     * Custom change for EmailReporting so that logout will work again
+     * Custom change for EmailReporting on line 704 so that logout will work again
      */
     function cmdLogout()
     {

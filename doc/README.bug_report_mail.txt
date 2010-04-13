@@ -1,18 +1,35 @@
 Installation:
 Extract the complete package to the /mantis/plugins/ directory.
-After that you should be able to see it on the "Manage plugins" page
+After that you should be able to see it on the "Manage Plugins" page
+
+Upgrade:
+If you are performing an upgrade of your existing installation of
+EmailReporting, all you need todo (as long you have not been editing
+files yourself) is
+1. Delete EmailReporting folder fromthe plugins directory
+2. Extract the complete package to the /mantis/plugins/ directory.
 
 
-The current version of bug_report_mail support plain text and MIME
-encoded e-mails via POP3 Mailaccounts with PEAR's Net_POP3 package.
+Support:
+The current version of bug_report_mail support plain text, html and
+MIME encoded e-mails via POP3 and IMAP Mailaccounts with PEAR's
+Net_POP3 and Net_IMAP package. Support for Outlook RTF formatted
+(winmail.dat, ATT0000?.dat , application/ms-tnef, tnef) emails is
+not fully supported
 
+
+Bugnotes:
 bug_report_mail is able to recognize if mail is a reply to an already
 opened bug and adds the content as a bugnote.
 
-After installing this plugin, you can add a POP3 server's hostname
-and authentication data for each of your projects with the Mailbox settings
-form.
 
+Mailboxes:
+After installing this plugin, you can add a POP3 server's hostname
+and authentication data for each of your projects with the Mailbox
+settings form.
+
+
+Mail Reporters:
 There are two ways to receive mail with bug_report_mail:
 The secure (and default) way is to use a standard reporting user (see 
 plugin config page in mantis)
@@ -26,12 +43,22 @@ The new user's name will be the mail address.
 
 This could be used for attacks, but there is no other way at this moment.
 
+
+MIME encoded mails:
 If you like to parse MIME encoded mails, you have to install the PEAR
-Mail_Mime package and enable the setting (see plugin config page in mantis)
+Mail_mimeDecode package and enable the setting (see plugin config page
+in mantis)
 
+As can be seen in the "Sep 2009" changelog, this plugin now has a maximum
+size for attachments received by email. This however still requires 
+significant time for processing because of the mime decoding
+
+
+HTML mails:
 For parsing HTML mails enable the setting (see plugin config page in mantis)
-The mail tmp directory has to be writable
 
+
+Debug mode:
 For debugging controls there is a switch to add the complete email to the 
 bug as an attachment (see plugin config page in mantis)
 
@@ -41,28 +68,38 @@ mode (see plugin config page in mantis)
 If debug mail directory is a valid directory and also writeable,
 the complete mails will be saved to this directory.
 
+
+Fetching of emails:
 Its advisable to keep the mail fetch max at 1 since the parsing of mime 
 content can use up a significant amount of memory. But this means that only
 one email will be retrieved per mailbox every time bug_report_mail.php is
 executed
 
-If you'd like to use the Mail Reporter but don't save the whole message for
-making the sender's address available, disable the sender of the email in 
-the issue report
 
-If you don't want bug_report_mail.php to delete the mails from your POP3
-server disable the setting (see plugin config page in mantis)
+Deleting emails:
+If you don't want bug_report_mail.php to delete the mails from your POP3/IMAP
+server disable the setting (see plugin config page in mantis). POP3 only
+processes unread emails. IMAP on the other hand processes read and unread
+emails. Because of this IMAP will allways mark the emails as deleted after
+they have been processed but it will neglect to perform the expunge command
+which would delete them permanently.
 
-With the auth method you may set the AUTH method for your POP3 server.
+
+Authenthication methods:
+With the auth method you may set the AUTH method for your POP3/IMAP server.
 Default is 'USER', but 'DIGEST-MD5','CRAM-MD5','LOGIN','PLAIN','APOP' 
 are also possible
 
+
+Priority of emails:
 For using the priority of the mails for the bug priority, enable the 
 setting (see plugin config page in mantis)
 
-After this, bug_report_mail can be used via cron / scheduled job like this:
 
-Linux or similar OS:
+Scheduling a job for bug_report_mail:
+After this, bug_report_mail can be used via scheduled job like this:
+
+Linux or similar OS using Cron jobs:
 Via webserver (see settings because this is disabled by default, see plugin
 config page in mantis)
 */5 *   *   *   * lynx --dump http://mantis.homepage.com/plugins/EmailReporting/scripts/bug_report_mail.php
@@ -75,27 +112,24 @@ Windows or similar OS:
 Via webserver (see settings because this is disabled by default, see plugin
 config page in mantis)
 No known method for scheduling this via webserver
-or via command line interface (the space between the .php file and the
-parameters is important)
+or via command line interface
 c:\php\php.exe c:\path\to\mantis\plugins\EmailReporting\scripts\bug_report_mail.php
 
-As can be seen in the "Sep 2009" changelog, this plugin now has a maximum
-size for attachments received by email. This however still requires 
-significant time for processing because of the mime decoding
-
-Scheduling bug_report_mail.php as a cron / scheduled job is no longer a
+Scheduling bug_report_mail.php as a scheduled job is no longer a
 requirement, but is recommended for performance purposes and because a page
-visit is required to trigger this. By default this plugin assumes you will
-be creating a cron / scheduled job. You can change the setting in the
-configuration page
+visit is required to trigger the alternative method. By default this plugin
+assumes you will be creating a scheduled job. You can change the setting in
+the configuration page if needed
 
-This addon is distributed under the same conditions as Mantis itself.
 
+IMAP:
 IMAP addition based on work from Rolf Kleef
 IMAP support has been added. Its still a bit experimental but should work
 fine.
 Here are some explanation about specific IMAP settings
 
+
+IMAP basefolders:
 The IMAP base folder is the folder under which Mantis expects to find
 subfolders for each project or a single folder for specific project. This
 could for instance be "INBOX/to_mantis" (meaning the mail folder
@@ -107,10 +141,16 @@ yet. Emails in those subfolders will be imported to their corresponding
 projects. If you disable this setting, only emails in the basefolder will
 be imported to the project which is defined for the mailbox
 
-Inbox can most likely not be your basefolder, but that might differ between
-different imap servers. (Applies only to mailboxes where you enable
-"Create project subfolder structure")
+Inbox can possibly not be your basefolder if you enable "Create project
+subfolder structure", but that might differ between different imap
+servers.
 
+If you are having problems selecting the Inbox folder as your basefolder,
+try leaving the mailbox setting for basefolder empty. It should select the
+Inbox folder by default.
+
+
+IMAP folder names
 The very free format of project names needed to be mapped to a bit more 
 restricted format for IMAP folder names. We took these steps, and it might
 lead to name collisions or folder names that are a tiny bit different from
@@ -121,6 +161,8 @@ their project name counterparts (but we haven't had problems in practice).
 	- replace multiple dots by a single one
 	- strip spaces, dots and dashes at the beginning and end
 
+
+Email address validation:
 All from email addresses will be validated. The validation is done by the
 email_is_valid function which checks for several things based on certain
 core mantis configuration options, namely:
@@ -130,5 +172,34 @@ allow_blank_email
 limit_email_domain
 check_mx_record
 
+
+Included PEAR packages within this distribution are:
+Mail_mimeDecode
+Net_POP3
+Net_IMAP
+Net_Socket
+core pear files (pear.php and pear5.php)
+
+All of these packages (except for Net_IMAP, see below) are the latest
+available versions at the moment of release of this plugin. If you don't
+need these PEAR packages you can delete the whole core_pear directory.
+
+Net_IMAP 1.0.3 is forced since 1.1.0 does not work with this plugin
+because of a bug. Therefore it is not present in the core_pear directory.
+
+PHP Simple HTML DOM Parser - http://sourceforge.net/projects/simplehtmldom/
+This package is not a PEAR package but is included to convert html content to
+text content.
+
+
+PHP extensions:
+The following PHP extensions will be used when they are available but are
+not required for this plugin to work.
+OpenSSL - provides connection encryption functionality
+mbstring - Enables EmailReporting to convert charsets in emails
+
+
+Copyright:
+This addon is distributed under the same conditions as Mantis itself.
 
 Gerrit Beine, August 2004

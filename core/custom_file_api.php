@@ -5,9 +5,9 @@
  * @param integer $p_bug_id the bug id
  * @param array $p_file the uploaded file info, as retrieved from gpc_get_file()
  * 
- * Basically the same as its counterpart in the file_api.php from version 1.2.0rc1, but with small fixes to the disk upload part
+ * almost the same as its counterpart in the file_api.php from MantisBT version 1.2.0, but with small adjustments to the disk upload part
  */
-function emailreporting_custom_file_add( $p_bug_id, $p_file, $p_table = 'bug', $p_title = '', $p_desc = '', $p_user_id = null ) {
+function ERP_custom_file_add( $p_bug_id, $p_file, $p_table = 'bug', $p_title = '', $p_desc = '', $p_user_id = null ) {
 
 	file_ensure_uploaded( $p_file );
 	$t_file_name = $p_file['name'];
@@ -82,9 +82,9 @@ function emailreporting_custom_file_add( $p_bug_id, $p_file, $p_table = 'bug', $
 					file_ftp_disconnect( $conn_id );
 				}
 
-				// SL-Gundam - move_uploaded_file replaced with rename function. Needed since files added through the EmailReporting methode are not seen as such
+				// move_uploaded_file replaced with rename function. Needed since files added through the EmailReporting method are not seen as such
 				if( !rename( $t_tmp_file, $t_disk_file_name ) ) {
-					// SL-Gundam - Corrected trigger error message name, FILE_MOVE_FAILED should have been ERROR_FILE_MOVE_FAILED
+					// Corrected trigger error message name, FILE_MOVE_FAILED should have been ERROR_FILE_MOVE_FAILED
 					trigger_error( ERROR_FILE_MOVE_FAILED, ERROR );
 				}
 

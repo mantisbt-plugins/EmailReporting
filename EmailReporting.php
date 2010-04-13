@@ -5,27 +5,29 @@ class EmailReportingPlugin extends MantisPlugin {
 	/**
 	 *  A method that populates the plugin information and minimum requirements.
 	 */ 
-	function register() {
+	function register()
+	{
 		$this->name = plugin_lang_get( 'title' );
 		$this->description = plugin_lang_get( 'description' );
-		$this->page = 'config';
+		$this->page = 'manage_config';
 
-		$this->version = '0.7.9';
+		$this->version = '0.8.0-DEV';
 		$this->requires = array(
 			'MantisCore' => '1.2',
 		);
 
 		$this->author = plugin_lang_get( 'author' );
 		$this->contact = '';
-		$this->url = 'http://www.mantisbt.org/bugs/view.php?id=4286';
+		$this->url = 'http://git.mantisforge.org/w/EmailReporting.git';
 	}
 
 	/**
 	 * EmailReporting plugin configuration.
 	 */
-	function config() {
+	function config()
+	{
 		return array(
-			'reset_schema' => 0,
+			'config_version' => 0,
 			'schema' => -1,
 
 			# --- mail reporting settings -----
@@ -44,7 +46,8 @@ class EmailReportingPlugin extends MantisPlugin {
 		
 			# The account's name for mail reporting
 			# Also used for fallback if a user is not found in database
-			'mail_reporter'				=> 'Mail',
+			# Mail is just the default name which will be converted to a user id during installation
+			'mail_reporter_id'			=> 'Mail',
 		
 			# Signup new users automatically (possible security risk!)
 			# Default is OFF, if mail_use_reporter is OFF and this is OFF then it will
@@ -81,7 +84,7 @@ class EmailReportingPlugin extends MantisPlugin {
 			'mail_debug'				=> OFF,
 		
 			# Save mail contents to this directory if debug mode is ON
-			'mail_directory'			=> '/tmp/mantis',
+			'mail_debug_directory'		=> '/tmp/mantis',
 		
 			# Looks for priority header field
 			'mail_use_bug_priority' 	=> ON,
@@ -96,26 +99,26 @@ class EmailReportingPlugin extends MantisPlugin {
 			'mail_nodescription' 		=> 'No description found', 
 
 			# Use the following text when a mantis email has been removed
-			'mail_removed_reply_text'	=> '[EmailReporting -> Mantis reply removed]',
+			'mail_removed_reply_text'	=> '[EmailReporting -> Mantis notification email removed]',
 		
 			# Classify bug priorities
 			'mail_bug_priority' 		=> array(
-				'5 (lowest)'	=> 10,
-				'4 (low)'		=> 20,
-				'3 (normal)'	=> 30,
-				'2 (high)'		=> 40,
-				'1 (highest)'	=> 50,
-				'5'		=> 20,
-				'4'		=> 20,
-				'3'		=> 30,
-				'2'		=> 40,
-				'1'		=> 50,
-				'0'		=> 10,
-				'low'			=> 20,
-				'normal' 		=> 30,
-				'high' 			=> 40,
-				'' 				=> 30,
-				'?' 			=> 30
+				'5 (lowest)'    => 10,
+				'4 (low)'       => 20,
+				'3 (normal)'    => 30,
+				'2 (high)'      => 40,
+				'1 (highest)'   => 50,
+				'5'      => 20,
+				'4'      => 20,
+				'3'      => 30,
+				'2'      => 40,
+				'1'      => 50,
+				'0'      => 10,
+				'low'           => 20,
+				'normal'        => 30,
+				'high'          => 40,
+				''       => 30,
+				'?'      => 30
 			),
 		
 			# Need to set the character encoding to which the email will be converted
@@ -123,10 +126,10 @@ class EmailReportingPlugin extends MantisPlugin {
 			# values should be acceptable to the following function: http://www.php.net/mb_convert_encoding
 			'mail_encoding' 			=> 'UTF-8', 
 
-			# This decides whether this script will run as a cron / scheduled job or not
+			# This decides whether this script will run as a scheduled job or not
 			'mail_cronjob_present' 		=> ON, 
 
-			# This decides how long between checking the mailboxes for new emails when no cron / scheduled job is present
+			# This decides how long between checking the mailboxes for new emails when no scheduled job is present
 			'mail_check_timer' 			=> 300,
 		);
 	} 
@@ -134,16 +137,22 @@ class EmailReportingPlugin extends MantisPlugin {
 	/**
 	 * EmailReporting installation function.
 	 */
-	function install(){
-		$t_random_user_number = plugin_config_get( 'random_user_number', 'NOT FOUND' );
-		if ( $t_random_user_number === 'NOT FOUND' )
+	function install()
+	{
+		// We need to load a default value since the function config() which sets
+		// the defaults has not been run yet. On the other hand, configuration options
+		// already present in the database will be available.
+		$t_mail_reporter_id = plugin_config_get( 'mail_reporter_id', 'Mail' );
+
+		if ( $t_mail_reporter_id === 'Mail' )
 		{
 			# We need to allow blank emails for a sec
-			config_set_cache( 'allow_blank_email', ON, CONFIG_TYPE_STRING);
+			config_set_cache( 'allow_blank_email', ON, CONFIG_TYPE_STRING );
+			config_set_global( 'allow_blank_email', ON );
 
-			$t_rand = MT_RAND( 4, 5 );
+			$t_rand = MT_RAND( 1000, 50000 );
 
-			$t_username = plugin_config_get( 'mail_reporter', 'Mail' ) . $t_rand;
+			$t_username = $t_mail_reporter_id . $t_rand;
 
 			$t_email = '';
 
@@ -153,14 +162,15 @@ class EmailReportingPlugin extends MantisPlugin {
 			$t_password = auth_generate_random_password( $t_seed );
 
 			# create the user
-			$t_result_user_create = user_create( $t_username, $t_password, $t_email, REPORTER, false, true, 'Mail Reporter' );
+			$t_result_user_create = user_create( $t_username, $t_password, $t_email, REPORTER, FALSE, TRUE, 'Mail Reporter' );
 
 			# Save these after the user has been created succesfully
 			if ( $t_result_user_create )
 			{
-				plugin_config_set( 'random_user_number', $t_rand );
-				plugin_config_set( 'mail_reporter', $t_username );
-				plugin_config_set( 'reset_schema', 1 );
+				$t_user_id = user_get_id_by_name( $t_username );
+
+				plugin_config_set( 'mail_reporter_id', $t_user_id );
+				plugin_config_set( 'config_version', 2 );
 			}
 
 			return( $t_result_user_create );
@@ -172,7 +182,8 @@ class EmailReportingPlugin extends MantisPlugin {
 	/**
 	 * EmailReporting uninstallation function.
 	 */
-	function uninstall(){
+	function uninstall()
+	{
 		# User removal from the install function will not be done
 		# The reason being thats its possibly connected to issues in the system
 		return( TRUE );
@@ -181,19 +192,24 @@ class EmailReportingPlugin extends MantisPlugin {
 	/**
 	 * EmailReporting initialation function.
 	 */
-	function init() {
-		$t_path = config_get_global('plugin_path' ). plugin_get_current() . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR;
+	function init()
+	{
+		$t_path = config_get_global( 'plugin_path' ) . plugin_get_current() . '/core_pear/';
 
-		set_include_path(get_include_path() . PATH_SEPARATOR . $t_path);
+		if ( is_dir( $t_path ) )
+		{
+			set_include_path( get_include_path() . PATH_SEPARATOR . $t_path );
+		}
 	} 
 
 	/**
 	 * EmailReporting plugin hooks.
 	 */
-	function hooks( ) {
+	function hooks( )
+	{
 		$hooks = array(
-			'EVENT_MENU_MANAGE'			=> 'EmailReporting_maintain_mailbox_menu',
-			'EVENT_CORE_READY'			=> 'EmailReporting_core_ready',
+			'EVENT_MENU_MANAGE'			=> 'ERP_manage_emailreporting_menu',
+			'EVENT_CORE_READY'			=> 'ERP_core_ready',
 		);
 
 		return $hooks;
@@ -202,47 +218,90 @@ class EmailReportingPlugin extends MantisPlugin {
 	/**
 	 * EmailReporting plugin hooks - add mailbox settings menu item.
 	 */
-	function EmailReporting_maintain_mailbox_menu( ) {
-		return array( '<a href="' . plugin_page( 'maintainmailbox' ) . '">' . plugin_lang_get( 'mailbox_settings' ) . '</a>', );
+	function ERP_manage_emailreporting_menu( )
+	{
+		return array( '<a href="' . plugin_page( 'manage_mailbox' ) . '">' . plugin_lang_get( 'manage' ) . ' ' . plugin_lang_get( 'title' ) . '</a>', );
 	}
 
 	/* 
 	 * This function will run when the mantis core is ready
 	 */
-	function EmailReporting_core_ready( )
+	function ERP_core_ready( )
 	{
-		$this->EmailReporting_reset_schema_check( );
+		$this->ERP_update_check( );
 
-		$this->EmailReporting_check_mantisbt_path( );
+		$this->ERP_check_mantisbt_url( );
 
-		$this->EmailReporting_email_check_all( );
+		$this->ERP_check_mantisbt_erp_path( );
+
+		$this->ERP_email_check_all( );
 	}
 
 	/* 
 	 * Since schema is not used anymore some corrections need to be applied
 	 * Schema will be completely reset by this just once
+	 * 
+	 * The second part updates various configuration options and performs some cleaning
 	 */
-	function EmailReporting_reset_schema_check( )
+	function ERP_update_check( )
 	{
-		$t_reset_schema = plugin_config_get( 'reset_schema', 0 );
+		$t_config_version = plugin_config_get( 'config_version' );
 
-		if ( $t_reset_schema === 0 )
+		if ( $t_config_version === 0 )
 		{
-			$t_username = plugin_config_get( 'mail_reporter' );
-			$t_user_id = user_get_id_by_name( $t_username );
-	
-			if ( $t_user_id !== false )
+			$t_reset_schema = plugin_config_get( 'reset_schema', 0 );
+
+			if ( $t_reset_schema === 1 )
 			{
-				$t_user_email = user_get_field( $t_user_id, 'email' );
-			
-				if ( $t_user_email === 'nomail' )
-				{
-					user_set_field( $t_user_id, 'email', '' );
-				}
+				plugin_config_delete( 'reset_schema' );
 			}
+			else
+			{
+				$t_username = plugin_config_get( 'mail_reporter' );
+
+				$t_user_id = user_get_id_by_name( $t_username );
 	
-			plugin_config_set( 'schema', -1 );
-			plugin_config_set( 'reset_schema', 1 );
+				if ( $t_user_id !== FALSE )
+				{
+					$t_user_email = user_get_email( $t_user_id );
+			
+					if ( $t_user_email === 'nomail' )
+					{
+						# We need to allow blank emails for a sec
+						config_set_cache( 'allow_blank_email', ON, CONFIG_TYPE_STRING );
+						config_set_global( 'allow_blank_email', ON );
+
+						user_set_email( $t_user_id, '' );
+					}
+				}
+
+				plugin_config_set( 'schema', -1 );
+			}
+
+			plugin_config_set( 'config_version', 1 );
+		}
+
+		if ( $t_config_version <= 1 )
+		{
+			$t_mail_debug_directory = plugin_config_get( 'mail_debug_directory' );
+			$t_mail_directory       = plugin_config_get( 'mail_directory', $t_mail_debug_directory );
+
+			$t_mail_reporter        = plugin_config_get( 'mail_reporter' );
+
+			if ( $t_mail_directory !== $t_mail_debug_directory )
+			{
+				plugin_config_set( 'mail_debug_directory', $t_mail_directory );
+			}
+
+			$t_mail_reporter_id = user_get_id_by_name( $t_mail_reporter );
+			plugin_config_set( 'mail_reporter_id', $t_mail_reporter_id );
+
+			plugin_config_delete( 'mail_directory' );
+			plugin_config_delete( 'mail_reporter' );
+			plugin_config_delete( 'mail_additional' );
+			plugin_config_delete( 'random_user_number' );
+
+			plugin_config_set( 'config_version', 2 );
 		}
 	}
 
@@ -251,40 +310,57 @@ class EmailReportingPlugin extends MantisPlugin {
 	 * This variable fixes the problem where when EmailReporting sends emails
 	 * that the url in the emails is incorrect
 	 */
-	function EmailReporting_check_mantisbt_path( )
+	function ERP_check_mantisbt_url( )
 	{
-		$t_mail_mantisbt_url_fix = plugin_config_get( 'mail_mantisbt_url_fix', '' );
-		$t_path = config_get( 'path' );
-
-		if ( php_sapi_name() != 'cli' && $t_path !== $t_mail_mantisbt_url_fix )
+		if ( php_sapi_name() !== 'cli' )
 		{
-			plugin_config_set( 'mail_mantisbt_url_fix', $t_path );
+			$t_path                  = config_get_global( 'path' );
+			$t_mail_mantisbt_url_fix = plugin_config_get( 'mail_mantisbt_url_fix', '' );
+
+			if ( $t_path !== $t_mail_mantisbt_url_fix )
+			{
+				plugin_config_set( 'mail_mantisbt_url_fix', $t_path );
+			}
 		}
 	}
 
 	/* 
-	 * Check all mailboxes for new email if bug_report_mail can not or does not run in a cron / scheduled job
+	 * Prepare mantisbt variable for use with including files
+	 * This variable contains the full folder location of this plugin
 	 */
-	function EmailReporting_email_check_all( )
+	function ERP_check_mantisbt_erp_path( )
+	{
+		$t_basename = plugin_get_current();
+		$t_path = config_get_global( 'plugin_path' ) . $t_basename . '/';
+
+		// a plugin_config_set for globals does not exist. So we create it ourselves
+		$t_full_option = 'plugin_' . $t_basename . '_path_erp';
+		config_set_global( $t_full_option, $t_path );
+	}
+
+	/* 
+	 * Check all mailboxes for new email if bug_report_mail can not or does not run in as a scheduled job
+	 */
+	function ERP_email_check_all( )
 	{
 		$t_mail_cronjob_present = plugin_config_get( 'mail_cronjob_present' );
-		$t_mail_nocron = gpc_get_bool( 'mail_nocron', 0 );
+		$t_mail_nocron          = gpc_get_bool( 'mail_nocron', 0 );
 
-		if ( $t_mail_cronjob_present == false && $t_mail_nocron == false )
+		if ( php_sapi_name() !== 'cli' && $t_mail_cronjob_present == FALSE && $t_mail_nocron == FALSE )
 		{
 			$t_mail_check_timer = plugin_config_get( 'mail_check_timer' );
-			$t_mail_last_check = plugin_config_get( 'mail_last_check', 0 );
+			$t_mail_last_check  = plugin_config_get( 'mail_last_check', 0 );
 
 			$t_time_now = explode( ' ', microtime() );
 
 			if ( $t_mail_last_check < ( $t_time_now[ 1 ] - $t_mail_check_timer ) )
 			{
 				plugin_config_set( 'mail_last_check', $t_time_now[ 1 ] );
-				$t_mail_debug = plugin_config_get( 'mail_debug' );
 
+				$t_mail_debug          = plugin_config_get( 'mail_debug' );
 				$t_mail_secured_script = plugin_config_get( 'mail_secured_script' );
 
-				if ( $t_mail_secured_script == true )
+				if ( $t_mail_secured_script == TRUE )
 				{
 					plugin_config_set( 'mail_secured_script', OFF );
 				}
@@ -297,6 +373,11 @@ class EmailReportingPlugin extends MantisPlugin {
 				# Apparently there is a problem when the hostname is not an ip in the setup above. Will not use the code because virtual host support will be broken using this method
 //				$t_address = str_replace( $t_address_parsed[ 'scheme' ] . '://' . $t_address_parsed[ 'host' ], $t_address_parsed[ 'scheme' ] . '://' . gethostbyname( $t_address_parsed[ 'host' ] ), $t_address );
 //				$t_dummy = file_get_contents( $t_address ); 
+
+				if ( empty( $t_address_parsed[ 'port' ] ) )
+				{
+					$t_address_parsed[ 'port' ] = ( ( $t_address_parsed[ 'scheme' ] === 'https' ) ? 443 : 80 );
+				}
 
 				$t_socket = fsockopen( gethostbyname( $t_address_parsed[ 'host' ] ), $t_address_parsed[ 'port' ], $errno, $errstr, 30);
 				if ( !$t_socket )
@@ -327,10 +408,16 @@ class EmailReportingPlugin extends MantisPlugin {
 				    fclose( $t_socket );
 				}
 
-				if ( $t_mail_secured_script == true )
+				if ( $t_mail_secured_script == TRUE )
 				{
 					plugin_config_set( 'mail_secured_script', ON );
 				}
+
+		        if ( $t_mail_debug )
+		        {
+		        	echo 'DEBUG mode: Are there any errors above?';
+		        	exit;
+		        }
 			}
 		}
 	}
