@@ -17,7 +17,6 @@ $f_mail_tmp_directory = gpc_get_string( 'mail_tmp_directory', '/tmp' );
 $f_mail_delete = gpc_get_bool( 'mail_delete', ON );
 $f_mail_debug = gpc_get_bool( 'mail_debug', OFF );
 $f_mail_directory = gpc_get_string( 'mail_directory', '/tmp/mantis' );
-$f_mail_auth_method = gpc_get_string( 'mail_auth_method', 'USER' );
 $f_mail_nosubject = gpc_get_string( 'mail_nosubject', 'No subject found' );
 $f_mail_nodescription = gpc_get_string( 'mail_nodescription', 'No description found' );
 $f_mail_use_bug_priority = gpc_get_bool( 'mail_use_bug_priority', ON );
@@ -103,10 +102,6 @@ if( plugin_config_get( 'mail_directory' ) != $f_mail_directory ) {
 	plugin_config_set( 'mail_directory', $f_mail_directory );
 }
 
-if( plugin_config_get( 'mail_auth_method' ) != $f_mail_auth_method ) {
-	plugin_config_set( 'mail_auth_method', $f_mail_auth_method );
-}
-
 if( plugin_config_get( 'mail_nosubject' ) != $f_mail_nosubject ) {
 	plugin_config_set( 'mail_nosubject', $f_mail_nosubject );
 }
@@ -123,13 +118,28 @@ if( plugin_config_get( 'mail_bug_priority_default' ) != $f_mail_bug_priority_def
 	plugin_config_set( 'mail_bug_priority_default', $f_mail_bug_priority_default );
 }
 
-$t_mail_bug_priority = eval( 'return ' . $f_mail_bug_priority . ';' );
-if( plugin_config_get( 'mail_bug_priority' ) != $t_mail_bug_priority ) {
+$t_mail_bug_priority = @eval( 'return ' . $f_mail_bug_priority . ';' );
+if( plugin_config_get( 'mail_bug_priority' ) != $t_mail_bug_priority && is_array( $t_mail_bug_priority ) ) {
 	plugin_config_set( 'mail_bug_priority', $t_mail_bug_priority );
+}
+elseif ( !is_array( $t_mail_bug_priority ) ) {
+	html_page_top1();
+	html_page_top2();
+
+	echo '<br /><div class="center">';
+	echo plugin_lang_get( 'mail_bug_priority_array_failure' ) . ' ';
+	print_bracket_link( plugin_page( 'config', TRUE ), lang_get( 'proceed' ) );
+	echo '</div>';
+	$t_notsuccesfull = true;
+
+	html_page_bottom1(); 
 }
 
 if( plugin_config_get( 'mail_encoding' ) != $f_mail_encoding ) {
 	plugin_config_set( 'mail_encoding', $f_mail_encoding );
 }
 
-print_successful_redirect( plugin_page( 'config', true ) );
+if ( !isset( $t_notsuccesfull ) )
+{
+	print_successful_redirect( plugin_page( 'config', true ) );
+}

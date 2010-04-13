@@ -22,7 +22,7 @@ $s_plugin_EmailReporting_mail_secured_script = 'Block this script from running v
 $s_plugin_EmailReporting_mail_use_reporter = 'Use one account for issues created by email';
 $s_plugin_EmailReporting_mail_reporter = 'The account name for issues created by email';
 $s_plugin_EmailReporting_mail_auto_signup = 'Signup new users automatically (possible security risk!, see documentation)';
-$s_plugin_EmailReporting_mail_fetch_max = 'How many mails should be fetched at the same time (see documentation)';
+$s_plugin_EmailReporting_mail_fetch_max = 'How many emails per mailbox should be fetched every time this script is executed (see documentation)';
 $s_plugin_EmailReporting_mail_add_complete_email = 'Add the complete email into the attachments';
 $s_plugin_EmailReporting_mail_save_from = 'Write the sender of the message into the issue report';
 $s_plugin_EmailReporting_mail_parse_mime = 'Parse MIME mails';
@@ -32,7 +32,6 @@ $s_plugin_EmailReporting_mail_tmp_directory = 'Directory for saving temporary ma
 $s_plugin_EmailReporting_mail_delete = 'Delete processed mail from the mailbox';
 $s_plugin_EmailReporting_mail_debug = 'Debug mode';
 $s_plugin_EmailReporting_mail_directory = 'Save mail contents to this directory if debug mode is ON';
-$s_plugin_EmailReporting_mail_auth_method = 'The authentication method used for the mailbox';
 $s_plugin_EmailReporting_mail_use_bug_priority = 'Look for priority header field';
 $s_plugin_EmailReporting_mail_bug_priority_default = 'Default priority for issues created by email';
 $s_plugin_EmailReporting_mail_nosubject = 'Use this text if no subject is found in the email';
@@ -48,10 +47,14 @@ $s_plugin_EmailReporting_test_mailbox = 'Test mailbox';
 $s_plugin_EmailReporting_select_mailbox = 'Select mailbox';
 
 $s_plugin_EmailReporting_mailbox_description = 'Mailbox description';
-$s_plugin_EmailReporting_mailbox_hostname = 'Mail server hostname:port';
+$s_plugin_EmailReporting_mailbox_type = 'Mail server type';
+$s_plugin_EmailReporting_mailbox_hostname = 'Mail server hostname(:port)';
 $s_plugin_EmailReporting_mailbox_username = 'Mailbox username';
 $s_plugin_EmailReporting_mailbox_password = 'Mailbox password';
-$s_plugin_EmailReporting_mailbox_project = 'Select a project';
+$s_plugin_EmailReporting_mailbox_auth_method = 'Authentication method';
+$s_plugin_EmailReporting_mailbox_basefolder = 'Mailbox basefolder (IMAP)';
+$s_plugin_EmailReporting_mailbox_createfolderstructure = 'Create project subfolder structure (IMAP)';
+$s_plugin_EmailReporting_mailbox_project = 'Select a project (N/A if above is turned "On")';
 $s_plugin_EmailReporting_mailbox_global_category = 'Select a global category';
 
 $s_plugin_EmailReporting_unknown_setting = 'Unknown setting encountered. Setting ignored';
@@ -59,5 +62,6 @@ $s_plugin_EmailReporting_missing_reporter = 'Please select a user account';
 $s_plugin_EmailReporting_mbstring_unavailable = 'PHP mbstring functionality unavailable';
 $s_plugin_EmailReporting_zero_mailboxes = 'No mailboxes have been found';
 $s_plugin_EmailReporting_test_failure = 'Operation NOT successful';
+$s_plugin_EmailReporting_mail_bug_priority_array_failure = 'The given format is not an acceptable array.';
 
 ?>

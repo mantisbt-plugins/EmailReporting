@@ -16,7 +16,7 @@ print_manage_menu( );
 	<td class="form-title" width="60%">
 		<?php echo plugin_lang_get( 'title' ) . ': ' . plugin_lang_get( 'mailbox_settings' )?>
 	</td>
-	<td class="right" width="40%">
+	<td class="right" width="40%" colspan="2">
 		<a href="<?php echo plugin_page( 'config' ) ?>"><?php echo plugin_lang_get( 'config' ) ?></a>
 	</td>
 </tr>
@@ -34,6 +34,10 @@ $t_config_array = array(
 		'type'  => 'string',
 	),
 	array(
+		'name'  => 'mailbox_type',
+		'type'  => 'dropdown_mailbox_type',
+	),
+	array(
 		'name'  => 'mailbox_hostname',
 		'type'  => 'string',
 	),
@@ -44,6 +48,18 @@ $t_config_array = array(
 	array(
 		'name'  => 'mailbox_password',
 		'type'  => 'string_password',
+	),
+	array(
+		'name' => 'mailbox_auth_method',
+		'type' => 'custom_auth_string',
+	),
+	array(
+		'name'  => 'mailbox_basefolder',
+		'type'  => 'string',
+	),
+	array(
+		'name'  => 'mailbox_createfolderstructure',
+		'type'  => 'boolean',
 	),
 	array(
 		'name'  => 'mailbox_project',
@@ -59,14 +75,32 @@ foreach( $t_config_array AS $t_config )
 {
 	switch( $t_config['type'] )
 	{
+		case 'boolean':
+?>
+<tr <?php echo helper_alternate_class( )?>>
+	<td class="category" width="60%">
+		<?php echo plugin_lang_get( $t_config['name'] )?>
+	</td>
+	<td class="center" width="20%">
+		<label><input type="radio" name="<?php echo $t_config['name'] ?>" value="1" <?php echo( $f_mailbox_action !== 'add' && isset( $t_mailboxes[ $f_select_mailbox ][ $t_config[ 'name' ] ] ) && ON == $t_mailboxes[ $f_select_mailbox ][ $t_config[ 'name' ] ] ) ? 'checked="checked" ' : ''?>/>
+			<?php echo plugin_lang_get( 'enabled' )?></label>
+	</td>
+	<td class="center" width="20%">
+		<label><input type="radio" name="<?php echo $t_config['name'] ?>" value="0" <?php echo( $f_mailbox_action !== 'add' && isset( $t_mailboxes[ $f_select_mailbox ][ $t_config[ 'name' ] ] ) && OFF == $t_mailboxes[ $f_select_mailbox ][ $t_config[ 'name' ] ] ) ? 'checked="checked" ' : ''?>/>
+			<?php echo plugin_lang_get( 'disabled' )?></label>
+	</td>
+</tr>
+<?php
+			break;
+
 		case 'string':
 ?>
 <tr <?php echo helper_alternate_class( )?>>
 	<td class="category" width="60%">
 		<?php echo plugin_lang_get( $t_config[ 'name' ] )?>
 	</td>
-	<td class="center" width="40%">
-		<label><input type="text" size="40" maxlength="50" name="<?php echo $t_config[ 'name' ] ?>" value="<?php echo ( ( $f_mailbox_action !== 'add' ) ? $t_mailboxes[ $f_select_mailbox ][ $t_config[ 'name' ] ] : '' ) ?>"/></label>
+	<td class="center" width="40%" colspan="2">
+		<label><input type="text" size="40" maxlength="50" name="<?php echo $t_config[ 'name' ] ?>" value="<?php echo ( ( $f_mailbox_action !== 'add' && isset( $t_mailboxes[ $f_select_mailbox ][ $t_config[ 'name' ] ] ) ) ? $t_mailboxes[ $f_select_mailbox ][ $t_config[ 'name' ] ] : '' ) ?>"/></label>
 	</td>
 </tr>
 <?php
@@ -78,7 +112,7 @@ foreach( $t_config_array AS $t_config )
 	<td class="category" width="60%">
 		<?php echo plugin_lang_get( $t_config[ 'name' ] )?>
 	</td>
-	<td class="center" width="40%">
+	<td class="center" width="40%" colspan="2">
 		<label><input type="password" size="40" maxlength="50" name="<?php echo $t_config[ 'name' ] ?>" value="<?php echo ( ( $f_mailbox_action !== 'add' ) ? base64_decode( $t_mailboxes[ $f_select_mailbox ][ $t_config[ 'name' ] ] ) : '' ) ?>"/></label>
 	</td>
 </tr>
@@ -91,7 +125,7 @@ foreach( $t_config_array AS $t_config )
 	<td class="category" width="60%">
 		<?php echo plugin_lang_get( $t_config[ 'name' ] )?>
 	</td>
-	<td class="center" width="40%">
+	<td class="center" width="40%" colspan="2">
 		<label><select name="<?php echo $t_config[ 'name' ] ?>"> <?php print_project_option_list( ( ( $f_mailbox_action !== 'add' ) ? $t_mailboxes[ $f_select_mailbox ][ $t_config[ 'name' ] ] : '' ), false, null, true ) ?></select></label>
 	</td>
 </tr>
@@ -104,12 +138,49 @@ foreach( $t_config_array AS $t_config )
 	<td class="category" width="60%">
 		<?php echo plugin_lang_get( $t_config[ 'name' ] )?>
 	</td>
-	<td class="center" width="40%">
+	<td class="center" width="40%" colspan="2">
 		<label><select name="<?php echo $t_config[ 'name' ] ?>"> <?php print_category_option_list( ( ( $f_mailbox_action !== 'add' ) ? $t_mailboxes[ $f_select_mailbox ][ $t_config[ 'name' ] ] : '' ), ALL_PROJECTS ) ?></select></label>
 	</td>
 </tr>
 <?php
 			break;
+
+		case 'dropdown_mailbox_type':
+?>
+<tr <?php echo helper_alternate_class( )?>>
+	<td class="category" width="60%">
+		<?php echo plugin_lang_get( $t_config[ 'name' ] )?>
+	</td>
+	<td class="center" width="40%" colspan="2">
+		<label><select name="<?php echo $t_config[ 'name' ] ?>">
+			<option<?php echo ( ( $f_mailbox_action !== 'add' && !empty( $t_mailboxes[ $f_select_mailbox ][ $t_config[ 'name' ] ] ) && $t_mailboxes[ $f_select_mailbox ][ $t_config[ 'name' ] ] === 'IMAP' ) ? ' selected' : '' ) ?>>IMAP</option>
+			<option<?php echo ( ( $f_mailbox_action === 'add' || empty( $t_mailboxes[ $f_select_mailbox ][ $t_config[ 'name' ] ] ) || $t_mailboxes[ $f_select_mailbox ][ $t_config[ 'name' ] ] === 'POP3' ) ? ' selected' : '' ) ?>>POP3</option>
+		</select></label>
+	</td>
+</tr>
+<?php
+			break;
+
+		case 'custom_auth_string':
+			$t_mailbox_auth_method = ( ( $f_mailbox_action !== 'add' && isset( $t_mailboxes[ $f_select_mailbox ][ $t_config[ 'name' ] ] ) ) ? $t_mailboxes[ $f_select_mailbox ][ $t_config[ 'name' ] ] : 'USER' );
+?>
+<tr <?php echo helper_alternate_class( )?>>
+	<td class="category">
+		<?php echo plugin_lang_get( $t_config['name'] )?>
+	</td>
+	<td class="center" colspan="2">
+		<label><select name="<?php echo $t_config['name'] ?>">
+			<option<?php echo ( ( 'APOP' == $t_mailbox_auth_method ) ? ' selected' : '' ) ?>>APOP</option>
+			<option<?php echo ( ( 'CRAM-MD5' == $t_mailbox_auth_method ) ? ' selected' : '' ) ?>>CRAM-MD5</option>
+			<option<?php echo ( ( 'DIGEST-MD5' == $t_mailbox_auth_method ) ? ' selected' : '' ) ?>>DIGEST-MD5</option>
+			<option<?php echo ( ( 'LOGIN' == $t_mailbox_auth_method ) ? ' selected' : '' ) ?>>LOGIN</option>
+			<option<?php echo ( ( 'PLAIN' == $t_mailbox_auth_method ) ? ' selected' : '' ) ?>>PLAIN</option>
+			<option<?php echo ( ( 'USER' == $t_mailbox_auth_method ) ? ' selected' : '' ) ?>>USER</option>
+		</select></label>
+	</td>
+</tr>
+<?php
+			break;		
 
 		default: echo '<tr><td colspan="3">' . plugin_lang_get( 'unknown_setting' ) . '</td></tr>';
 	}
@@ -120,7 +191,7 @@ foreach( $t_config_array AS $t_config )
 	<td width="60%">
 		<label><input type="hidden" size="40" maxlength="50" name="mailbox_action" value="<?php echo $f_mailbox_action ?>"/></label>
 	</td>
-	<td width="40%">
+	<td width="40%" colspan="2">
 		<label><input type="hidden" size="40" maxlength="50" name="select_mailbox" value="<?php echo $f_select_mailbox ?>"/></label>
 	</td>
 </tr>

@@ -10,12 +10,16 @@ $t_mailboxes = plugin_config_get( 'mailboxes' );
 if ( $f_mailbox_action === 'add' || ( ( $f_mailbox_action === 'edit' || $f_mailbox_action === 'test' ) && $f_select_mailbox >= 0 ) )
 {
 	$t_mailbox = array(
-		'mailbox_description'		=> gpc_get_string( 'mailbox_description' ),
-		'mailbox_hostname'			=> gpc_get_string( 'mailbox_hostname' ),
-		'mailbox_username'			=> gpc_get_string( 'mailbox_username' ),
-		'mailbox_password'			=> base64_encode( gpc_get_string( 'mailbox_password' ) ),
-		'mailbox_project'			=> gpc_get_int( 'mailbox_project' ),
-		'mailbox_global_category'	=> gpc_get_int( 'mailbox_global_category' ),
+		'mailbox_description'			=> gpc_get_string( 'mailbox_description' ),
+		'mailbox_type'					=> gpc_get_string( 'mailbox_type', 'POP3' ),
+		'mailbox_hostname'				=> gpc_get_string( 'mailbox_hostname' ),
+		'mailbox_username'				=> gpc_get_string( 'mailbox_username' ),
+		'mailbox_password'				=> base64_encode( gpc_get_string( 'mailbox_password' ) ),
+		'mailbox_auth_method'			=> gpc_get_string( 'mail_auth_method', 'USER' ),
+		'mailbox_basefolder'			=> trim( str_replace( '\\', '/', gpc_get_string( 'mailbox_basefolder', '' ) ), '/ ' ),
+		'mailbox_createfolderstructure'	=> gpc_get_bool( 'mailbox_createfolderstructure', OFF ),
+		'mailbox_project'				=> gpc_get_int( 'mailbox_project' ),
+		'mailbox_global_category'		=> gpc_get_int( 'mailbox_global_category' ),
 	);
 }
 
@@ -38,7 +42,7 @@ elseif ( $f_mailbox_action === 'test' && $f_select_mailbox >= 0 )
 
 	$t_result = mail_process_all_mails( $t_mailbox, true );
 
-	if ( PEAR::isError( $t_result ) )
+	if ( ( is_array( $t_result ) && $t_result[ 'ERROR_TYPE' ] === 'IMAP_BASEFOLDER_NOTFOUND' ) || PEAR::isError( $t_result ) )
 	{
 		$t_no_redirect = true;
 
@@ -50,13 +54,19 @@ elseif ( $f_mailbox_action === 'test' && $f_select_mailbox >= 0 )
 	<br><br>
 		<?php echo plugin_lang_get( 'mailbox_description' ) . ': ' . $t_mailbox[ 'mailbox_description' ]; ?>
 	<br>
+		<?php echo plugin_lang_get( 'mailbox_type' ) . ': ' . $t_mailbox[ 'mailbox_type' ]; ?>
+	<br>
 		<?php echo plugin_lang_get( 'mailbox_hostname' ) . ': ' . $t_mailbox[ 'mailbox_hostname' ]; ?>
 	<br>
 		<?php echo plugin_lang_get( 'mailbox_username' ) . ': ' . $t_mailbox[ 'mailbox_username' ]; ?>
 	<br>
 		<?php echo plugin_lang_get( 'mailbox_password' ) . ': ******'; ?>
+	<br>
+		<?php echo plugin_lang_get( 'mailbox_auth_method' ) . ': ' . $t_mailbox[ 'mailbox_auth_method' ]; ?>
+	<br>
+		<?php echo plugin_lang_get( 'mailbox_basefolder' ) . ': ' . $t_mailbox[ 'mailbox_basefolder' ]; ?>
 	<br><br>
-		<?php echo $t_result->toString(); ?>
+		<?php echo ( ( is_array( $t_result ) && $t_result[ 'ERROR_TYPE' ] === 'IMAP_BASEFOLDER_NOTFOUND' ) ? $t_result[ 'ERROR_MESSAGE' ] : $t_result->toString() ); ?>
 	<br><br>
 		<?php print_bracket_link( plugin_page( 'maintainmailbox', TRUE ), lang_get( 'proceed' ) ); ?>
 </div>
@@ -65,7 +75,8 @@ elseif ( $f_mailbox_action === 'test' && $f_select_mailbox >= 0 )
 	}
 }
 
-if( plugin_config_get( 'mailboxes' ) != $t_mailboxes && ( $f_mailbox_action === 'add' || ( $f_mailbox_action === 'edit' && $f_select_mailbox >= 0 ) ) ) {
+if( plugin_config_get( 'mailboxes' ) != $t_mailboxes && ( $f_mailbox_action === 'add' || ( ( $f_mailbox_action === 'edit' || $f_mailbox_action === 'delete' ) && $f_select_mailbox >= 0 ) ) )
+{
 	plugin_config_set( 'mailboxes', $t_mailboxes );
 }
 

@@ -97,10 +97,6 @@ $t_config_array = array(
 		'type' => 'directory_string',
 	),
 	array(
-		'name' => 'mail_auth_method',
-		'type' => 'custom_auth_string',
-	),
-	array(
 		'name' => 'mail_nosubject',
 		'type' => 'string',
 	),
@@ -225,27 +221,6 @@ foreach( $t_config_array AS $t_config )
 	</td>
 	<td class="center" colspan=2>
 		<label><textarea cols="35" rows="5" name="<?php echo $t_config['name'] ?>"><?php var_export( plugin_config_get( $t_config['name'] ) ) ?></textarea></label>
-	</td>
-</tr>
-<?php
-			break;		
-
-		case 'custom_auth_string':
-			$t_mail_auth_method = plugin_config_get( $t_config['name'] );
-?>
-<tr <?php echo helper_alternate_class( )?>>
-	<td class="category">
-		<?php echo plugin_lang_get( $t_config['name'] )?>
-	</td>
-	<td class="center" colspan="2">
-		<label><select name="<?php echo $t_config['name'] ?>">
-			<option<?php echo ( ( 'APOP' == $t_mail_auth_method ) ? ' selected' : '' ) ?>>APOP</option>
-			<option<?php echo ( ( 'CRAM-MD5' == $t_mail_auth_method ) ? ' selected' : '' ) ?>>CRAM-MD5</option>
-			<option<?php echo ( ( 'DIGEST-MD5' == $t_mail_auth_method ) ? ' selected' : '' ) ?>>DIGEST-MD5</option>
-			<option<?php echo ( ( 'LOGIN' == $t_mail_auth_method ) ? ' selected' : '' ) ?>>LOGIN</option>
-			<option<?php echo ( ( 'PLAIN' == $t_mail_auth_method ) ? ' selected' : '' ) ?>>PLAIN</option>
-			<option<?php echo ( ( 'USER' == $t_mail_auth_method ) ? ' selected' : '' ) ?>>USER</option>
-		</select></label>
 	</td>
 </tr>
 <?php

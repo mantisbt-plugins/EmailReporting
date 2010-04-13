@@ -1,4 +1,10 @@
 <?php
+/*
+TODO
+
+encoding still not 100% ok
+the list in the configuration should not contain certain values
+*/
 require_once( config_get( 'class_path' ) . 'MantisPlugin.class.php' );
 
 class EmailReportingPlugin extends MantisPlugin {
@@ -10,7 +16,7 @@ class EmailReportingPlugin extends MantisPlugin {
 		$this->description = plugin_lang_get( 'description' );
 		$this->page = 'config';
 
-		$this->version = '0.6.3';
+		$this->version = '0.7.0';
 		$this->requires = array(
 			'MantisCore' => '1.2',
 		);
@@ -82,10 +88,6 @@ class EmailReportingPlugin extends MantisPlugin {
 		
 			# Save mail contents to this directory if debug mode is ON
 			'mail_directory'			=> '/tmp/mantis',
-		
-			# The auth method used for POP3
-			# Valid methods are: 'DIGEST-MD5','CRAM-MD5','LOGIN','PLAIN','APOP','USER'
-			'mail_auth_method'			=> 'USER',
 		
 			# Looks for priority header field
 			'mail_use_bug_priority' 	=> ON,

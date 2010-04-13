@@ -2,11 +2,12 @@
 	# Mantis - a php based bugtracking system
 	# Copyright (C) 2002 - 2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
 	# Copyright (C) 2004  Gerrit Beine - gerrit.beine@pitcom.de
+	# Copyright (C) 2007  Rolf Kleef - rolf@drostan.org (IMAP)
 	# This program is distributed under the terms and conditions of the GPL
 	# See the README and LICENSE files for details
 
 	# --------------------------------------------------------
-	# $Id: mail_api.php,v 1.12 2009/09/22 16:35:52 SC Kruiper Exp $
+	# $Id: mail_api.php,v 1.14 2009/12/01 19:17:02 SL-Server\SC Kruiper Exp $
 	# --------------------------------------------------------
 
 	require_once( 'bug_api.php' );
@@ -19,72 +20,220 @@
 	# This page receives an E-Mail via POP3 and generates an Report
 
 	require_once( 'Net/POP3.php' );
+	require_once( 'Net/IMAP_1.0.3.php' );
 	require_once( 'Mail/Parser.php' );
 
 	# --------------------
-	# return all mailaccounts
+	# return all mailboxes
 	#  return an empty array if there are none
-	function mail_get_accounts() {
-		$t_accounts = plugin_config_get( 'mailboxes', array() );
+	function mail_get_mailboxes()
+	{
+		$t_mailboxes = plugin_config_get( 'mailboxes', array() );
 
-		return $t_accounts;
+		return $t_mailboxes;
 	}
 
 	# --------------------
-	# return all mails for an account
+	# return all mails for an mailbox
 	#  return an empty array if there are no new mails
-	function mail_process_all_mails( &$p_account, $p_test_only = false ) {
+	function mail_process_all_mails( &$p_mailbox, $p_test_only = false )
+	{
+		$t_mailbox_type = ( ( isset( $p_mailbox[ 'mailbox_type' ] ) ) ? $p_mailbox[ 'mailbox_type' ] : NULL );
+
+		if ( $t_mailbox_type === 'IMAP' )
+		{
+			$t_result = mail_process_all_mails_imap( $p_mailbox, $p_test_only );
+		}
+		else // this defaults to the pop3 mailbox type
+		{
+			$t_result = mail_process_all_mails_pop3( $p_mailbox, $p_test_only );
+		}
+
+		return( $t_result );
+	}
+
+	# --------------------
+	# return all mails for an pop3 mailbox
+	#  return an empty array if there are no new mails
+	function mail_process_all_mails_pop3( &$p_mailbox, $p_test_only = false )
+	{
 		$t_mail_fetch_max	= plugin_config_get( 'mail_fetch_max' );
-		$t_mail_delete		= plugin_config_get( 'mail_delete' );
-		$t_mail_auth_method	= plugin_config_get( 'mail_auth_method' );
-		$t_mail_debug		= plugin_config_get( 'mail_debug' );
 
-
-		$t_mailbox = &new Net_POP3();
-		$t_mailbox_hostname = explode( ':', $p_account[ 'mailbox_hostname' ], 2 );
-		$t_mailbox_username = $p_account[ 'mailbox_username' ];
-		$t_mailbox_password = base64_decode( $p_account[ 'mailbox_password' ] );
-		$t_mailbox->connect( $t_mailbox_hostname[ 0 ], ( ( empty( $t_mailbox_hostname[ 1 ] ) || (int) $t_mailbox_hostname[ 1 ] === 0 ) ? 110 : (int) $t_mailbox_hostname[ 1 ] ) );
-		$t_result = $t_mailbox->login( $t_mailbox_username, $t_mailbox_password, $t_mail_auth_method );
+		$t_mailbox_connection = &new Net_POP3();
+		$t_mailbox_hostname = explode( ':', $p_mailbox[ 'mailbox_hostname' ], 2 );
+		$t_mailbox_username = $p_mailbox[ 'mailbox_username' ];
+		$t_mailbox_password = base64_decode( $p_mailbox[ 'mailbox_password' ] );
+		$t_mailbox_auth_method = ( ( !empty( $p_mailbox[ 'mailbox_auth_method' ] ) ) ? $p_mailbox[ 'mailbox_auth_method' ] : 'USER' );
+		$t_mailbox_connection->connect( $t_mailbox_hostname[ 0 ], ( ( empty( $t_mailbox_hostname[ 1 ] ) || (int) $t_mailbox_hostname[ 1 ] === 0 ) ? 110 : (int) $t_mailbox_hostname[ 1 ] ) );
+		$t_result = $t_mailbox_connection->login( $t_mailbox_username, $t_mailbox_password, $t_mailbox_auth_method );
 
 		if ( $p_test_only === false )
 		{
-			if ( PEAR::isError( $t_result ) ) {
-				echo "\n\nerror:" . $p_account[ 'mailbox_description' ] . "\n";
-				echo $t_result->toString();
-			}
-
-			if ( 0 == $t_mailbox->numMsg() ) {
-				return;
-			}
-
-			for ( $j = 1; $j <= $t_mailbox->numMsg(); $j++ )
+			if ( PEAR::isError( $t_result ) )
 			{
-				for ( $i = $j; $i < $j+$t_mail_fetch_max; $i++ ) {
-					$t_msg = $t_mailbox->getMsg( $i );
+				echo "\n\nerror: " . $p_mailbox[ 'mailbox_description' ] . "\n";
+				echo $t_result->toString();
+				return( $t_result );
+			}
 
-					$t_mail = mail_parse_content( $t_msg );
-
-					if ( $t_mail_debug ) {
-						var_dump( $t_mail );
-						mail_save_message_to_file( $t_msg );
-					}
-
-					mail_add_bug( $t_mail, $p_account );
-
-					if ( $t_mail_delete ) {
-						$t_mailbox->deleteMsg( $i );
-					}
+			for ( $i = 1; $i <= $t_mailbox_connection->numMsg(); $i++ )
+			{
+				if ( $i > $t_mail_fetch_max )
+				{
+					break;
+				}
+				else
+				{
+					mail_process_single_email( $i, $p_mailbox, $t_mailbox_connection );
 				}
 			}
 		}
 
-		$t_mailbox->disconnect();
+		$t_mailbox_connection->disconnect();
 
-		if ( $p_test_only === true )
+		return( $t_result );
+	}
+
+	# --------------------
+	# return all mails for an imap mailbox
+	#  return an empty array if there are no new mails
+	function mail_process_all_mails_imap( &$p_mailbox, $p_test_only = false )
+	{
+		$t_mail_fetch_max	= plugin_config_get( 'mail_fetch_max' );
+
+		$t_mailbox_hostname = explode( ':', $p_mailbox[ 'mailbox_hostname' ], 2 );
+		$t_mailbox_connection = &new Net_IMAP( $t_mailbox_hostname[ 0 ], ( ( empty( $t_mailbox_hostname[ 1 ] ) || (int) $t_mailbox_hostname[ 1 ] === 0 ) ? 143 : (int) $t_mailbox_hostname[ 1 ] ) );
+		$t_mailbox_username = $p_mailbox[ 'mailbox_username' ];
+		$t_mailbox_password = base64_decode( $p_mailbox[ 'mailbox_password' ] );
+		$t_mailbox_auth_method = ( ( !empty( $p_mailbox[ 'mailbox_auth_method' ] ) ) ? $p_mailbox[ 'mailbox_auth_method' ] : 'USER' );
+		$t_result = $t_mailbox_connection->login( $t_mailbox_username, $t_mailbox_password, $t_mailbox_auth_method );
+
+		if ( $p_test_only === false && PEAR::isError( $t_result ) )
 		{
+			echo "\n\nerror: " . $p_mailbox[ 'mailbox_description' ] . "\n";
+			echo $t_result->toString();
 			return( $t_result );
 		}
+
+		$t_mailbox_basefolder = $p_mailbox[ 'mailbox_basefolder' ];
+
+		if ( $t_mailbox_connection->mailboxExist( $t_mailbox_basefolder ) )
+		{
+			if ( $p_test_only === false )
+			{
+				$t_mailbox_createfolderstructure = $p_mailbox[ 'mailbox_createfolderstructure' ];
+				$t_mailbox_project_id = $p_mailbox[ 'mailbox_project' ];
+
+				// There does not seem to be a viable api function which removes this plugins dependability on table column names
+				// So if a column name is changed it might cause problems is the code below depends on it.
+				// Luckily we only depend on id, name and enabled
+				$t_projects = ( ( $t_mailbox_createfolderstructure === true ) ? project_get_all_rows() : array( 0 => project_get_row( $t_mailbox_project_id ) ) );
+
+				foreach ( $t_projects AS $t_project )
+				{
+					if ( $t_project[ 'enabled' ] == 1 )
+					{
+						$t_project_name = mail_imap_cleanup_project_names( $t_project[ 'name' ] );
+
+						$t_foldername = $t_mailbox_basefolder . ( ( $t_mailbox_createfolderstructure === true ) ? $t_mailbox_connection->getHierarchyDelimiter() . $t_project_name : NULL );
+
+						if ( $t_mailbox_connection->mailboxExist( $t_foldername ) )
+						{
+							$t_mailbox_connection->selectMailbox( $t_foldername );
+
+							for ( $i = 1; $i <= $t_mailbox_connection->numMsg(); $i++ )
+							{
+								if ( $i > $t_mail_fetch_max )
+								{
+									break 2;
+								}
+								else
+								{
+									if ( !$t_mailbox_connection->isDeleted( $i ) )
+									{
+										mail_process_single_email( $i, $p_mailbox, $t_mailbox_connection, $t_project[ 'id' ] );
+									}
+								}
+							}
+						}
+						else
+						{
+							if ( $t_mailbox_createfolderstructure === true )
+							{
+								// create this mailbox
+								$t_mailbox_connection->createMailbox( $t_foldername );
+							}
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			if ( $p_test_only === false )
+			{
+				echo "\n\nerror: " . $p_mailbox[ 'mailbox_description' ] . "\n";
+				echo 'IMAP basefolder not found.';
+				return( $t_result );
+			}
+			else
+			{
+				$t_result = array(
+					'ERROR_TYPE'	=> 'IMAP_BASEFOLDER_NOTFOUND',
+					'ERROR_MESSAGE'	=> "error: " . $p_mailbox[ 'mailbox_description' ] . "\n" . ' -> IMAP basefolder not found.'
+				);
+				return( $t_result );
+			}
+		}
+
+		// Rolf Kleef: explicit expunge to remove deleted messages, disconnect() gives an error...
+		// EmailReporting 0.7.0: Corrected IMAPProtocol_1.0.3.php on line 704. disconnect() works again
+		//$t_mailbox->expunge();
+		$t_mailbox_connection->disconnect(true);
+		
+		return( $t_result );
+	}
+
+	function mail_process_single_email( &$p_i, &$p_mailbox, &$p_mailbox_connection , $p_project_id = NULL )
+	{
+		$t_mail_delete		= plugin_config_get( 'mail_delete' );
+		$t_mail_debug		= plugin_config_get( 'mail_debug' );
+
+		$t_msg = $p_mailbox_connection->getMsg( $p_i );
+
+		$t_mail = mail_parse_content( $t_msg );
+
+		if ( $t_mail_debug )
+		{
+			var_dump( $t_mail );
+			mail_save_message_to_file( $t_msg );
+		}
+
+		mail_add_bug( $t_mail, $p_mailbox, $p_project_id );
+
+		if ( $t_mail_delete )
+		{
+			$p_mailbox_connection->deleteMsg( $p_i );
+		}
+	}
+
+	# --------------------
+	# Translate the project name into an IMAP folder name:
+	# - translate all accented characters to plain ASCII equivalents
+	# - replace all but alphanum chars and space and colon to dashes
+	# - replace multiple dots by a single one
+	# - strip spaces, dots and dashes at the beginning and end
+	# (It should be possible to use UTF-7, but this is working)
+	function mail_imap_cleanup_project_names( $p_project_name )
+	{
+		$t_project_name = $p_project_name;
+		$t_project_name = htmlentities( $t_project_name, ENT_QUOTES, 'UTF-8' );
+		$t_project_name = preg_replace( "/&(.)(acute|cedil|circ|ring|tilde|uml);/", "$1", $t_project_name );
+		$t_project_name = preg_replace( "/([^A-Za-z0-9 ]+)/", "-", html_entity_decode( $t_project_name ) );
+		$t_project_name = preg_replace( "/(\.+)/", ".", $t_project_name );
+		$t_project_name = trim( $t_project_name, "-. " );
+
+		return( $t_project_name );
 	}
 
 	# --------------------
@@ -186,7 +335,7 @@
 	function mail_is_a_bugnote ( $p_mail_subject ) {
 		if ( preg_match( "/\[([A-Za-z0-9-_\. ]*\s[0-9]{1,7})\]/", $p_mail_subject ) ){
 			$t_bug_id = mail_get_bug_id_from_subject( $p_mail_subject );
-			if ( bug_exists( $t_bug_id ) ){
+			if ( bug_exists( $t_bug_id ) && !bug_is_readonly( $t_bug_id ) ){
 				return true;
 			}
 		}
@@ -373,7 +522,7 @@
 	# --------------------
 	# Adds a bug which is reported via email
 	# Taken from bug_report.php in MantisBT 1.2.0rc1
-	function mail_add_bug ( &$p_mail, &$p_account ) {
+	function mail_add_bug ( &$p_mail, &$p_mailbox, $p_imap_project_id = NULL ) {
 		$t_mail_save_from	= plugin_config_get( 'mail_save_from' );
 		$t_mail_add_complete_email	= plugin_config_get( 'mail_add_complete_email' );
 
@@ -387,7 +536,7 @@
 		$t_bug_data->handler_id			= gpc_get_int( 'handler_id', 0 );
 		$t_bug_data->view_state			= gpc_get_int( 'view_state', config_get( 'default_bug_view_status' ) );
 
-		$t_bug_data->category_id			= gpc_get_int( 'category_id', $p_account[ 'mailbox_global_category' ] );
+		$t_bug_data->category_id			= gpc_get_int( 'category_id', $p_mailbox[ 'mailbox_global_category' ] );
 		$t_bug_data->reproducibility		= config_get( 'default_bug_reproducibility', 10 );
 		$t_bug_data->severity			= config_get( 'default_bug_severity', 50 );
 		$t_bug_data->priority			= $p_mail[ 'Priority' ];
@@ -413,7 +562,7 @@
 			$t_bug_data->due_date = $t_bug_data->due_date;
 		}
 
-		$t_bug_data->project_id			= $p_account[ 'mailbox_project' ];
+		$t_bug_data->project_id			= ( ( is_null( $p_imap_project_id ) ) ? $p_mailbox[ 'mailbox_project' ] : $p_imap_project_id );
 
 		$t_bug_data->reporter_id		= mail_get_user( $p_mail[ 'From' ] );
 
@@ -422,20 +571,16 @@
 		if ( mail_is_a_bugnote( $p_mail[ 'Subject' ] ) ) {
 			# Add a bug note
 			$t_bug_id = mail_get_bug_id_from_subject( $p_mail[ 'Subject' ] );
-			if ( ! bug_is_readonly( $t_bug_id ) ) {
-				$t_description = mail_identify_reply_part( $t_bug_data->description );
 
-				bugnote_add ( $t_bug_id, $t_description );
+			$t_description = mail_identify_reply_part( $t_bug_data->description );
 
-				email_bugnote_add ( $t_bug_id );
+			bugnote_add ( $t_bug_id, $t_description );
 
-				if ( bug_get_field( $t_bug_id, 'status' ) > config_get( 'bug_reopen_status' ) )
-				{
-					bug_reopen( $t_bug_id );
-				}
-			}
-			else{
-				return;
+			email_bugnote_add ( $t_bug_id );
+
+			if ( bug_get_field( $t_bug_id, 'status' ) > config_get( 'bug_reopen_status' ) )
+			{
+				bug_reopen( $t_bug_id );
 			}
 		} else	{
 			# Create the bug

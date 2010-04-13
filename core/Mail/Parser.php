@@ -21,12 +21,27 @@ class Mail_Parser
 	var $_parts = array ( );
 	var $_ctype = array ( );
 
+	var $_mb_list_encodings = array();
+
 	function Mail_Parser( $options = array() ) {
 		$this->_parse_mime = $options['parse_mime'];
 		$this->_parse_html = $options['parse_html'];
 		$this->_mail_encoding = $options['mail_encoding'];
+
+		$this->prepare_mb_list_encodings();
 	}
 	
+	function prepare_mb_list_encodings () {
+		$t_charset_list = mb_list_encodings();
+
+		foreach ( $t_charset_list AS $value )
+		{
+			$r_charset_list[ $value ] = strtolower( $value );
+		}
+
+		$this->_mb_list_encodings = $r_charset_list;
+	}
+
 	function setInputString ( $content ) {
 		$this->_content = $content;
 	}
@@ -110,8 +125,8 @@ class Mail_Parser
 	}
 
 	function setCharset( $charset ) {
-		$charset_list = mb_list_encodings();
-		$this->_charset = ( ( in_array( $charset, $charset_list ) ) ? $charset : 'auto' );
+		$arraysearch_result = array_search( strtolower( $charset ), $this->_mb_list_encodings, true );
+		$this->_charset = ( ( $arraysearch_result !== false ) ? $arraysearch_result : 'auto' );
 	}
 
 	function setPriority( $priority ) {

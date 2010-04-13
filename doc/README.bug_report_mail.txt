@@ -6,11 +6,12 @@ After that you should be able to see it on the "Manage plugins" page
 The current version of bug_report_mail support plain text and MIME
 encoded e-mails via POP3 Mailaccounts with PEAR's Net_POP3 package.
 
-bug_report_mail is able to recognize if mail is a reply to an already opened
-bug and adds the content as a bugnote.
+bug_report_mail is able to recognize if mail is a reply to an already
+opened bug and adds the content as a bugnote.
 
 After installing this plugin, you can add a POP3 server's hostname
-and authentication data for each of your projects with the Mailbox settings form.
+and authentication data for each of your projects with the Mailbox settings
+form.
 
 There are two ways to receive mail with bug_report_mail:
 The secure (and default) way is to use a standard reporting user (see 
@@ -41,7 +42,9 @@ If debug mail directory is a valid directory and also writeable,
 the complete mails will be saved to this directory.
 
 Its advisable to keep the mail fetch max at 1 since the parsing of mime 
-content can use up a significant amount of memory
+content can use up a significant amount of memory. But this means that only
+one email will be retrieved per mailbox every time bug_report_mail.php is
+executed
 
 If you'd like to use the Mail Reporter but don't save the whole message for
 making the sender's address available, disable the sender of the email in 
@@ -60,7 +63,8 @@ setting (see plugin config page in mantis)
 After this, bug_report_mail can be used via cron / scheduled job like this:
 
 Linux or similar OS:
-Via webserver (see settings because this is disabled by default, see plugin config page in mantis)
+Via webserver (see settings because this is disabled by default, see plugin
+config page in mantis)
 */5 *   *   *   * lynx --dump http://mantis.homepage.com/plugins/EmailReporting/scripts/bug_report_mail.php
 or via command line interface
 */5 *   *   *   * /usr/local/bin/php /path/to/mantis/plugins/EmailReporting/scripts/bug_report_mail.php
@@ -68,19 +72,63 @@ or via command line interface
 This line fetch bug reports from via POP3 every 5 minutes. 
 
 Windows or similar OS:
-Via webserver (see settings because this is disabled by default, see plugin config page in mantis)
-No known method for scheduling this
-or via command line interface (the space between the .php file and the parameters is important)
+Via webserver (see settings because this is disabled by default, see plugin
+config page in mantis)
+No known method for scheduling this via webserver
+or via command line interface (the space between the .php file and the
+parameters is important)
 c:\php\php.exe c:\path\to\mantis\plugins\EmailReporting\scripts\bug_report_mail.php
 
-As can be seen in the "Sep 2009" changelog, this plugin now has a maximum size for attachments received by
-email. This however still requires significant time for processing because of the mime decoding
+As can be seen in the "Sep 2009" changelog, this plugin now has a maximum
+size for attachments received by
+email. This however still requires significant time for processing because
+of the mime decoding
 
 This addon is distributed under the same conditions as Mantis itself.
+
+IMAP addition based on work from Rolf Kleef
+IMAP support has been added. Its still a bit experimental but should work
+fine.
+Here are some explanation about specific IMAP settings
+
+The IMAP base folder is the folder under which Mantis expects to find
+subfolders for each project or a single folder for specific project. This
+could for instance be "INBOX/to_mantis" (meaning the mail folder
+"to_mantis" under the INBOX folder of the account).
+
+If you enable "Create project subfolder structure" for a mailbox, folders
+for projects are created under the IMAP base folder if they don't exist
+yet. Emails in those subfolder will be imported to their corresponding
+projects. If you disable the setting, only emails in the basefolder will
+be imported to the project which is defined for the mailbox
+
+Inbox can most likely not be your basefolder, but that might differ between
+different imap servers. (Applies only to mailboxes where you enable
+"Create project subfolder structure")
+
+The very free format of project names needed to be mapped to a bit more 
+restricted format for IMAP folder names. We took these steps, and it might
+lead to name collisions or folder names that are a tiny bit different from
+their project name counterparts (but we haven't had problems in practice).
+
+	- translate all accented characters to plain ASCII equivalents
+	- replace all but alphanum chars and space and colon to dashes
+	- replace multiple dots by a single one
+	- strip spaces, dots and dashes at the beginning and end
 
 Gerrit Beine, August 2004
 
 Changelog:
+Dec 2009
+	- Added a fix for the adding of bugnotes when the issue is readonly (~21199)
+	- Sometimes the charset names in emails were lowercase while mb_list_encodings returned names using a mix of upper and lower case names. This caused problems for detecting valid encodings used in emails
+	- Support for IMAP has been added based on Rolf Kleef's work
+	- Added Net_IMAP 1.0.3 to this package. 1.1.0 seems to be broken in some situations so EmailReporting will force the use of 1.0.3
+	- Added sanity check to the bug priority array config. If this fails the old value will be retained
+	- mail_auth_method (now called mailbox_auth_method) has been moved from the configuration menu to the mailbox settings. This way you can modify this per mailbox
+	- Script is now declared compatible with 1.2.0rc2
+	- Restored lost functionality to mail_fetch_max. This functionality was lost from version mantis-1.0.3.patch.gz and onwards. You might want to increase the mail_fetch_max value since it wil only retrieve one email per mailbox everytime bug_report_mail.php is executed by default
+	- Deleting mailboxes works again. Seems to have been broken since the 0.5.0 release
 Okt 2009
 	- mb_convert_encoding converted strings even if they were using the same charsets. This caused the necessary problems since somehow certain chars seemed to be replaced with empty spaces.
 	- EmailReporting will now try to retrieve the charset from the email content type if it is present, as this works better then the auto detect of mbstring functions for conversion. As a fallback it will still try the auto detect if the charset is missing.
