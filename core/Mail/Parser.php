@@ -139,9 +139,9 @@ class Mail_Parser
 
 	function setParts( &$parts, $attachment = false, $p_attached_email_subject = null ) {
 		$i = 0;
-		if ( $attachment === true && $p_attached_email_subject === null && !empty( $parts[ $i ]->headers['subject'] ) )
+		if ( $attachment === true && $p_attached_email_subject === null && !empty( $parts[ $i ]->headers[ 'subject' ] ) )
 		{
-			$p_attached_email_subject = $parts[ $i ]->headers['subject'];
+			$p_attached_email_subject = $parts[ $i ]->headers[ 'subject' ];
 		}
 		if (
 			'text' == $parts[ $i ]->ctype_primary &&
@@ -163,7 +163,7 @@ class Mail_Parser
 				$t_stop_part = true;
 			}
 			$this->setContentType( $parts[$i]->ctype_primary, $parts[ $i ]->ctype_secondary );
-			$this->setTransferEncoding( $parts[ $i ]->headers['content-transfer-encoding'] );
+			$this->setTransferEncoding( $parts[ $i ]->headers[ 'content-transfer-encoding' ] );
 			if ( $attachment === true )
 			{
 				$this->addPart( $parts[ $i ], $p_attached_email_subject );
@@ -232,6 +232,7 @@ class Mail_Parser
 		{
 			$p[ 'name' ] = mb_convert_encoding( $p[ 'name' ], $this->_mail_encoding, mb_detect_encoding( $p[ 'name' ] ) );
 		}
+
 		$this->_parts[] = $p;
 	}
 }

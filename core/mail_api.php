@@ -6,7 +6,7 @@
 	# See the README and LICENSE files for details
 
 	# --------------------------------------------------------
-	# $Id: mail_api.php,v 1.8 2009/07/28 18:52:43 SC Kruiper Exp $
+	# $Id: mail_api.php,v 1.10 2009/07/29 00:26:53 SC Kruiper Exp $
 	# --------------------------------------------------------
 
 	require_once( 'bug_api.php' );
@@ -149,17 +149,27 @@
 	# --------------------
 	# return the mailadress from the mail's 'From'
 	function mail_parse_address ( $p_mailaddress ) {
-		if ( preg_match( "/<(.*?)>/", $p_mailaddress, $matches ) ) {
-			$v_mailaddress = $matches[ 1 ];
+		if ( preg_match( "/(.*?)<(.*?)>/", $p_mailaddress, $matches ) ) {
+			$v_mailaddress = array(
+				'username' => trim( $matches[ 1 ], '"\' ' ),
+				'email' => trim( $matches[ 2 ] ),
+			);
 		}
-
 		return $v_mailaddress;
 	}
 
 	# --------------------
 	# return the a valid username from an email address
-	function mail_user_name_from_address ( $p_mailaddress ) {
-		return strtolower( preg_replace( "/[@\.-]/", '_', $p_mailaddress ) );
+	function mail_prepare_username ( $p_mailusername ) {
+		# I would have liked to validate the username and remove any non-allowed characters
+		# using the config user_login_valid_regex but that seems not possible and since
+		# it's a config any mantis installation could have a different one
+		if ( user_is_name_valid( $p_mailusername[ 'username' ] ) )
+		{
+			return( $p_mailusername[ 'username' ] );
+		}
+
+		return( strtolower( str_replace( array( '@', '.', '-' ), '_', $p_mailusername[ 'email' ] ) ) );
 	}
 
 	# --------------------
@@ -192,31 +202,56 @@
 		
 		$v_mailaddress = mail_parse_address( $p_mailaddress );
 
-		if ( $t_mail_use_reporter ) {
+		if ( $t_mail_use_reporter )
+		{
 			// Always report as mail_reporter
 			$t_reporter_id = user_get_id_by_name( $t_mail_reporter );
 			$t_reporter = $t_mail_reporter;
-		} else {
+		}
+		else
+		{
 			// Try to get the reporting users id
-			$t_reporter_id = user_get_id_by_email ( $v_mailaddress );
-			echo 'Reporter: ' . $t_reporter_id . '<br />' . $v_mailaddress . '<br />';
-			if ( ! $t_reporter_id && $t_mail_auto_signup ) {
-				// So, we've to sign up a new user...
-				$t_reporter = mail_user_name_from_address ( $v_mailaddress );
-				# notify the selected group a new user has signed-up
-				if( user_signup( $t_reporter, $v_mailaddress ) ) {
-					email_notify_new_account( $t_reporter, $v_mailaddress );
+			$t_reporter_id = user_get_id_by_email ( $v_mailaddress[ 'email' ] );
+
+			if ( ! $t_reporter_id )
+			{
+				if ( $t_mail_auto_signup )
+				{
+					// So, we have to sign up a new user...
+					$t_reporter = mail_prepare_username ( $v_mailaddress );
+
+					if ( user_is_name_valid( $t_reporter ) &&
+						user_is_name_unique( $t_reporter ) &&
+						email_is_valid( $v_mailaddress[ 'email' ] ) )
+					{
+						# notify the selected group a new user has signed-up
+						if( user_signup( $t_reporter, $v_mailaddress[ 'email' ] ) )
+						{
+							email_notify_new_account( $t_reporter, $v_mailaddress[ 'email' ] );
+							$t_reporter_id = user_get_id_by_name ( $t_reporter );
+						}
+					}
+
+					if ( ! $t_reporter_id )
+					{
+						echo 'Failed to create user based on: ' . $p_mailaddress . '<br />Falling back to the mail_reporter<br />';
+					}
 				}
-				$t_reporter_id = user_get_id_by_name ( $t_reporter );
-			} elseif ( ! $t_reporter_id ) {
-				// Fall back to the default mail_reporter
-				$t_reporter_id = user_get_id_by_name( $t_mail_reporter );
-				$t_reporter = $t_mail_reporter;
-			} else {
+
+				if ( ! $t_reporter_id )
+				{
+					// Fall back to the default mail_reporter
+					$t_reporter_id = user_get_id_by_name( $t_mail_reporter );
+					$t_reporter = $t_mail_reporter;
+				}
+			}
+			else
+			{
 				$t_reporter = user_get_field( $t_reporter_id, 'username' );
 			}
 		}
 
+		echo 'Reporter: ' . $t_reporter_id . '<br />' . $v_mailaddress[ 'email' ] . '<br />';
 		auth_attempt_script_login( $t_reporter );
 
 		return $t_reporter_id;
@@ -298,7 +333,8 @@
 		$t_mail_identify_reply = plugin_config_get( 'mail_identify_reply' );
 		$t_email_separator1 = config_get( 'email_separator1' );
 
-		# The pear email parser seems to be remoing the last for various reasons.
+		# The pear mimeDecode.php seems to be removing the last "=" in some versions of the pear package.
+		# the version delivered with this package seems to be working OK though
 		$t_email_separator1 = substr( $t_email_separator1, 0, -1);
 
 		if ( $t_mail_identify_reply )

@@ -5,30 +5,33 @@ class EmailReportingPlugin extends MantisPlugin {
 	/**
 	 *  A method that populates the plugin information and minimum requirements.
 	 */ 
-    function register() {
-        $this->name = plugin_lang_get( 'title' );
-        $this->description = plugin_lang_get( 'description' );
-        $this->page = 'config';
+	function register() {
+		$this->name = plugin_lang_get( 'title' );
+		$this->description = plugin_lang_get( 'description' );
+		$this->page = 'config';
 
-        $this->version = '0.5';
-        $this->requires = array(
-            'MantisCore' => '1.2',
-            );
+		$this->version = '0.6';
+		$this->requires = array(
+			'MantisCore' => '1.2',
+		);
 
-        $this->author = plugin_lang_get( 'author' );
-        $this->contact = '';
-        $this->url = 'http://www.mantisbt.org/bugs/view.php?id=4286';
-    }
+		$this->author = plugin_lang_get( 'author' );
+		$this->contact = '';
+		$this->url = 'http://www.mantisbt.org/bugs/view.php?id=4286';
+	}
 
 	/**
 	 * EmailReporting plugin configuration.
 	 */
 	function config() {
 		return array(
-			'schema' => -1,
+			'schema' => 0,
+
+			# --- mail reporting settings -----
+			# Empty default mailboxes array. This array will be used for all the mailbox
+			# accounts
 			'mailboxes' => array(),
 			
-			# --- mail reporting settings -----
 			# Do you want to secure the EmailReporting script so that it cannot be run
 			# via a webserver?
 			'mail_secured_script'			=> ON,
@@ -126,6 +129,39 @@ class EmailReportingPlugin extends MantisPlugin {
 	 * EmailReporting installation function.
 	 */
 	function install(){
+		if ( plugin_config_get( 'random_user_number', 'NOT FOUND' ) === 'NOT FOUND' )
+		{
+			# We need to allow blank emails for a sec
+			$t_allow_blank_email = config_get( 'allow_blank_email' );
+			config_set( 'allow_blank_email', ON );
+
+			$t_rand = RAND();
+
+			$t_username = plugin_config_get( 'mail_reporter', 'Mail' ) . $t_rand;
+
+			$t_email = '';
+
+			$t_seed = $t_email . $t_username;
+
+			# Create random password
+			$t_password = auth_generate_random_password( $t_seed );
+
+			# create the user
+			$t_result_user_create = user_create( $t_username, $t_password, $t_email, REPORTER, false, true, 'Mail Reporter' );
+
+			# Save these after the user has been created succesfully
+			if ( $t_result_user_create )
+			{
+				plugin_config_set( 'random_user_number', $t_rand );
+				plugin_config_set( 'mail_reporter', $t_username );
+			}
+
+			# return the setting back to its usual value
+			config_set( 'allow_blank_email', $t_allow_blank_email );
+
+			return( $t_result_user_create );
+		}
+
 		return( TRUE );
 	}
 
@@ -133,6 +169,8 @@ class EmailReportingPlugin extends MantisPlugin {
 	 * EmailReporting uninstallation function.
 	 */
 	function uninstall(){
+		# User removal from the install function will not be done
+		# The reason being thats its possibly connected to issues in the system
 		return( TRUE );
 	}
 
@@ -148,23 +186,12 @@ class EmailReportingPlugin extends MantisPlugin {
 	/**
 	 * EmailReporting plugin schema.
 	 */
-	function schema() {
-		$mtime = explode( ' ', microtime() );
-		if ( plugin_config_get( 'random_user_number', 'NOT FOUND' ) === 'NOT FOUND' )
-		{
-			plugin_config_set( 'random_user_number', RAND() );
-			plugin_config_set( 'mail_reporter', plugin_config_get( 'mail_reporter', 'Mail' ) . plugin_config_get( 'random_user_number' ) );
-		}
-
-		return array(
-			array(
-				'InsertData',
-				array(
-					db_get_table( 'mantis_user_table' ),
-					' (username, realname, email, password, date_created, last_visit, enabled, protected, access_level, login_count, lost_password_request_count, failed_login_count, cookie_string) VALUES (\'' . plugin_config_get( 'mail_reporter', 'Mail' ) . '\', \'Mail Reporter\', \'nomail\', \'' . MD5( MD5( RAND() ) . MD5( microtime() ) ) . '\', \'' . $mtime[1] . '\', \'' . $mtime[1] . '\', 1, 0, ' . REPORTER . ', 0, 0, 0, \'' . MD5( RAND() ) . MD5( microtime() ) . '\')',
-				)
-			),
-		);
+	function schema(){
+		# In previous installations it would use this. That was removed since
+		# it was no longer necessary
+		# Keep in mind that the number 0 will be default in the schema variable
+		# for old and new installations instead of -1
+		return( TRUE );
 	}
 
 	/**
@@ -188,11 +215,15 @@ class EmailReportingPlugin extends MantisPlugin {
 	/**
 	 * EmailReporting plugin hooks - exclude mail reporter from emails as long as its still using its default email address.
 	 */
+	# Made some modifications which could make this function obsolete in future
+	# versions if an update is done to the mail users email address ( 'nomail'
+	# needs to be removed so that the mail reporter has an empty email address)
+	#@todo@
 	function EmailReporting_exclude_users_from_email( $event_type, $p_bug_id, $p_notify_type, $p_user_id ) {
 		$t_mail_reporter = plugin_config_get( 'mail_reporter' );
 		$t_mail_reporter_id = (int) user_get_id_by_name( $t_mail_reporter );
 		$t_reporter_email = user_get_field( $t_mail_reporter_id, 'email' );
 
-		return ( ( $t_mail_reporter_id === $p_user_id && $t_reporter_email === 'nomail' ) ? true : false );
+		return ( ( $t_mail_reporter_id === $p_user_id && ( $t_reporter_email === 'nomail' ) ) ? true : false );
 	}
 }

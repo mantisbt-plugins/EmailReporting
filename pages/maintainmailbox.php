@@ -32,32 +32,26 @@ $t_config_array = array(
 	array(
 		'name'  => 'mailbox_description',
 		'type'  => 'string',
-		'value' => ( ( $f_mailbox_action !== 'add' ) ? $t_mailboxes[ $f_select_mailbox ][ 'mailbox_description' ] : '' ),
 	),
 	array(
 		'name'  => 'mailbox_hostname',
 		'type'  => 'string',
-		'value' => ( ( $f_mailbox_action !== 'add' ) ? $t_mailboxes[ $f_select_mailbox ][ 'mailbox_hostname' ] : '' ),
 	),
 	array(
 		'name'  => 'mailbox_username',
 		'type'  => 'string',
-		'value' => ( ( $f_mailbox_action !== 'add' ) ? $t_mailboxes[ $f_select_mailbox ][ 'mailbox_username' ] : '' ),
 	),
 	array(
 		'name'  => 'mailbox_password',
 		'type'  => 'string_password',
-		'value' => ( ( $f_mailbox_action !== 'add' ) ? base64_decode( $t_mailboxes[ $f_select_mailbox ][ 'mailbox_password' ] ) : '' ),
 	),
 	array(
 		'name'  => 'mailbox_project',
 		'type'  => 'dropdown_projects',
-		'value' => ( ( $f_mailbox_action !== 'add' ) ? $t_mailboxes[ $f_select_mailbox ][ 'mailbox_project' ] : '' ),
 	),
 	array(
 		'name'  => 'mailbox_global_category',
 		'type'  => 'dropdown_global_categories',
-		'value' => ( ( $f_mailbox_action !== 'add' ) ? $t_mailboxes[ $f_select_mailbox ][ 'mailbox_global_category' ] : 1 ),
 	),
 );
 
@@ -72,7 +66,7 @@ foreach( $t_config_array AS $t_config )
 		<?php echo plugin_lang_get( $t_config['name'] )?>
 	</td>
 	<td class="center" width="40%">
-		<label><input type="text" size="40" maxlength="50" name="<?php echo $t_config['name'] ?>" value="<?php echo $t_config['value'] ?>"/></label>
+		<label><input type="text" size="40" maxlength="50" name="<?php echo $t_config['name'] ?>" value="<?php echo ( ( $f_mailbox_action !== 'add' ) ? $t_mailboxes[ $f_select_mailbox ][ $t_config['name'] ] : '' ) ?>"/></label>
 	</td>
 </tr>
 <?php
@@ -85,7 +79,7 @@ foreach( $t_config_array AS $t_config )
 		<?php echo plugin_lang_get( $t_config['name'] )?>
 	</td>
 	<td class="center" width="40%">
-		<label><input type="password" size="40" maxlength="50" name="<?php echo $t_config['name'] ?>" value="<?php echo $t_config['value'] ?>"/></label>
+		<label><input type="password" size="40" maxlength="50" name="<?php echo $t_config['name'] ?>" value="<?php echo ( ( $f_mailbox_action !== 'add' ) ? $t_mailboxes[ $f_select_mailbox ][ $t_config['name'] ] : '' ) ?>"/></label>
 	</td>
 </tr>
 <?php
@@ -98,7 +92,7 @@ foreach( $t_config_array AS $t_config )
 		<?php echo plugin_lang_get( $t_config['name'] )?>
 	</td>
 	<td class="center" width="40%">
-		<label><select name="<?php echo $t_config['name'] ?>"> <?php print_project_option_list( $t_config['value'], false, null, true ) ?></select></label>
+		<label><select name="<?php echo $t_config['name'] ?>"> <?php print_project_option_list( ( ( $f_mailbox_action !== 'add' ) ? $t_mailboxes[ $f_select_mailbox ][ $t_config['name'] ] : '' ), false, null, true ) ?></select></label>
 	</td>
 </tr>
 <?php
@@ -111,7 +105,7 @@ foreach( $t_config_array AS $t_config )
 		<?php echo plugin_lang_get( $t_config['name'] )?>
 	</td>
 	<td class="center" width="40%">
-		<label><select name="<?php echo $t_config['name'] ?>"> <?php print_category_option_list( $t_config['value'], ALL_PROJECTS ) ?></select></label>
+		<label><select name="<?php echo $t_config['name'] ?>"> <?php print_category_option_list( ( ( $f_mailbox_action !== 'add' ) ? $t_mailboxes[ $f_select_mailbox ][ $t_config['name'] ] : '' ), ALL_PROJECTS ) ?></select></label>
 	</td>
 </tr>
 <?php

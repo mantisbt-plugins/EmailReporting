@@ -78,6 +78,10 @@ This addon is distributed under the same conditions as Mantis itself.
 Gerrit Beine, August 2004
 
 Changelog:
+Aug 2009
+	- The script now also recognizes a possible name in the from part of emails. It uses this as the username during the creation of the user
+	- Cleaned up some more useless files that were not used
+	- User creation during the installation of the plugin is now handled by mantis api's, schema functions no longer needed.
 Jul 2009
 	- Modified script to the new plugin architecture of mantis 1.2.0rc1
 	- This script no longer needs new fields created in the database. This allows installation on mantis configurations where the database user only has select, insert, update and delete rights
@@ -164,7 +168,7 @@ Sep 2005:
 		category_get_all_rows in core/category_api.php
 Aug 2005:
 	- update to Mantis 1.0.0rc1
-	- include the additional patches submitted by      
+	- include the additional patches submitted by
 		- gernot (Fixed MIME handling and save the mail's sender)
 		  mail_get_all_mails in core/mail_api.php
 		  mail_parse_content in core/mail_api.php
