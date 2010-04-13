@@ -7,7 +7,7 @@
 	# See the README and LICENSE files for details
 
 	# --------------------------------------------------------
-	# $Id: mail_api.php,v 1.25 2010/02/26 18:04:19 SL-Server\SC Kruiper Exp $
+	# $Id: mail_api.php,v 1.27 2010/02/28 20:14:18 SL-Server\SC Kruiper Exp $
 	# --------------------------------------------------------
 
 	require_once( 'bug_api.php' );
@@ -275,9 +275,13 @@
 		}
 
 		$t_mail_from = mail_parse_address ( $t_mail[ 'From' ] );
-		if ( $t_limit_email_domain === OFF || email_is_valid( $t_mail_from ) )
+		if ( email_is_valid( $t_mail_from[ 'email' ] ) )
 		{
 			mail_add_bug( $t_mail, $p_mailbox, $p_project_id );
+		}
+		else
+		{
+			echo 'From email address rejected by email_is_valid function: ' . $t_mail[ 'From' ] . "\n";
 		}
 
 		if ( $t_mail_delete )
@@ -496,8 +500,7 @@
 					$t_reporter = mail_prepare_username ( $v_mailaddress );
 
 					if ( user_is_name_valid( $t_reporter ) &&
-						user_is_name_unique( $t_reporter ) &&
-						email_is_valid( $v_mailaddress[ 'email' ] ) )
+						user_is_name_unique( $t_reporter ) )
 					{
 						# notify the selected group a new user has signed-up
 						if( user_signup( $t_reporter, $v_mailaddress[ 'email' ] ) )

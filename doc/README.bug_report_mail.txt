@@ -121,4 +121,14 @@ their project name counterparts (but we haven't had problems in practice).
 	- replace multiple dots by a single one
 	- strip spaces, dots and dashes at the beginning and end
 
+All from email addresses will be validated. The validation is done by the
+email_is_valid function which checks for several things based on certain
+core mantis configuration options, namely:
+validate_email
+use_ldap_email
+allow_blank_email
+limit_email_domain
+check_mx_record
+
+
 Gerrit Beine, August 2004
