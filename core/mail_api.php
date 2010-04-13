@@ -6,7 +6,7 @@
 	# See the README and LICENSE files for details
 
 	# --------------------------------------------------------
-	# $Id: mail_api.php,v 1.10 2009/07/29 00:26:53 SC Kruiper Exp $
+	# $Id: mail_api.php,v 1.12 2009/09/22 16:35:52 SC Kruiper Exp $
 	# --------------------------------------------------------
 
 	require_once( 'bug_api.php' );
@@ -149,12 +149,21 @@
 	# --------------------
 	# return the mailadress from the mail's 'From'
 	function mail_parse_address ( $p_mailaddress ) {
-		if ( preg_match( "/(.*?)<(.*?)>/", $p_mailaddress, $matches ) ) {
+		if ( preg_match( "/(.*?)<(.*?)>/", $p_mailaddress, $matches ) )
+		{
 			$v_mailaddress = array(
 				'username' => trim( $matches[ 1 ], '"\' ' ),
 				'email' => trim( $matches[ 2 ] ),
 			);
 		}
+		else
+		{
+			$v_mailaddress = array(
+				'name' => '',
+				'email' => $p_mailaddress,
+			);
+		}
+
 		return $v_mailaddress;
 	}
 
@@ -264,8 +273,14 @@
 		# Handle the file upload
 		static $number = 1;
 		static $c_bug_id = null;
+		static $t_max_file_size = 'empty';
+
+		if ( $t_max_file_size === 'empty' ){
+			$t_max_file_size = config_get( 'max_file_size', 2 );
+		}
 
 		$t_part_name = ( ( isset( $p_part[ 'name' ] ) ) ? trim( $p_part[ 'name' ] ) : null );
+		$t_strlen_body = strlen( $p_part[ 'body' ] );
 
 		if ( empty( $t_part_name ) )
 		{
@@ -274,6 +289,10 @@
 		elseif( !file_type_check( $t_part_name ) )
 		{
 			return( $t_part_name . ' = filetype not allowed' . "\r\n" );
+		}
+		elseif( $t_strlen_body > $t_max_file_size )
+		{
+			return( $t_part_name . ' = attachment size exceeds maximum allowed file size (' . $t_strlen_body . ' / ' . $t_max_file_size . ')' . "\r\n" );
 		}
 		else
 		{

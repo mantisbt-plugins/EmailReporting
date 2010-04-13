@@ -73,11 +73,18 @@ No known method for scheduling this
 or via command line interface (the space between the .php file and the parameters is important)
 c:\php\php.exe c:\path\to\mantis\plugins\EmailReporting\scripts\bug_report_mail.php
 
+As can be seen in the "Sep 2009" changelog, this plugin now has a maximum size for attachments received by
+email. This however still requires significant time for processing because of the mime decoding
+
 This addon is distributed under the same conditions as Mantis itself.
 
 Gerrit Beine, August 2004
 
 Changelog:
+Sep 2009
+	- Incase the email address is not encapsulated with the proper chars EmailReporting will consider the whole string the email address (Note ~22839)
+	- Problems with locating pear.php have been corrected and pear5.php is now also present in the package
+	- Added a limit on the maximum allowed file size so that the emails containing those attachments don't block further processing (uses the max_file_size setting of mantis)
 Aug 2009 v2
 	- bug_report_mail.sql has been removed to avoid confusions about needing to use it
 	- Decrypting the mailbox password did not occur before editing. Fixed (Note ~22655)
