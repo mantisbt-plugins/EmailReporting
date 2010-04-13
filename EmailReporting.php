@@ -10,7 +10,7 @@ class EmailReportingPlugin extends MantisPlugin {
 		$this->description = plugin_lang_get( 'description' );
 		$this->page = 'config';
 
-		$this->version = '0.7.3';
+		$this->version = '0.7.4';
 		$this->requires = array(
 			'MantisCore' => '1.2',
 		);
@@ -250,12 +250,12 @@ class EmailReportingPlugin extends MantisPlugin {
 	 */
 	function EmailReporting_check_mantisbt_path( )
 	{
-		$t_mail_mantisbt_path = plugin_config_get( 'mail_mantisbt_url', '' );
+		$t_mail_mantisbt_url_fix = plugin_config_get( 'mail_mantisbt_url_fix', '' );
 		$t_path = config_get( 'path' );
 
-		if ( php_sapi_name() != 'cli' && $t_path !== $t_mail_mantisbt_path )
+		if ( php_sapi_name() != 'cli' && $t_path !== $t_mail_mantisbt_url_fix )
 		{
-			plugin_config_set( 'mail_mantisbt_url', $t_path );
+			plugin_config_set( 'mail_mantisbt_url_fix', $t_path );
 		}
 	}
 

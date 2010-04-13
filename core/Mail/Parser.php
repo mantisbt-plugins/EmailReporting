@@ -32,14 +32,18 @@ class Mail_Parser
 	}
 	
 	function prepare_mb_list_encodings () {
-		$t_charset_list = mb_list_encodings();
-
-		foreach ( $t_charset_list AS $value )
+		if ( extension_loaded( 'mbstring' ) )
 		{
-			$r_charset_list[ $value ] = strtolower( $value );
-		}
+			$t_charset_list = mb_list_encodings();
 
-		$this->_mb_list_encodings = $r_charset_list;
+			$r_charset_list = array();
+			foreach ( $t_charset_list AS $value )
+			{
+				$r_charset_list[ $value ] = strtolower( $value );
+			}
+
+			$this->_mb_list_encodings = $r_charset_list;
+		}
 	}
 
 	function setInputString ( $content ) {
@@ -52,10 +56,11 @@ class Mail_Parser
 	}
 
 	function process_encoding( $encode ) {
-		if ( $this->_mail_encoding !== $this->_charset )
+		if ( extension_loaded( 'mbstring' ) && $this->_mail_encoding !== $this->_charset )
 		{
 			$encode = mb_convert_encoding( $encode, $this->_mail_encoding, $this->_charset );
 		}
+
 		return( $encode );
 	}
 
@@ -64,7 +69,7 @@ class Mail_Parser
 		$params['include_bodies'] = true;
 		$params['decode_bodies'] = true;
 		$params['decode_headers'] = true;
-		$params['rfc_822bodies'] = false;
+		$params['rfc_822bodies'] = true;
 		$structure = $decoder->decode( $params );
 		$this->parseStructure( $structure );
 		unset( $this->_content );
@@ -118,15 +123,17 @@ class Mail_Parser
 	}
 
 	function setFrom( $from ) {
-		$this->_from = quoted_printable_decode( $from );
+//		$this->_from = quoted_printable_decode( $from );
+		$this->_from = $from;
 	}
 
 	function setSubject( $subject ) {
-		$this->_subject = quoted_printable_decode( $subject );
+//		$this->_subject = quoted_printable_decode( $subject );
+		$this->_subject = $subject;
 	}
 
 	function setCharset( $charset ) {
-		if ( $this->_charset === 'auto' )
+		if ( extension_loaded( 'mbstring' ) && $this->_charset === 'auto' )
 		{
 			$arraysearch_result = array_search( strtolower( $charset ), $this->_mb_list_encodings, true );
 			$this->_charset = ( ( $arraysearch_result !== false ) ? $arraysearch_result : 'auto' );
@@ -152,7 +159,8 @@ class Mail_Parser
 		}
 		if ( 'text' == $this->_ctype['primary'] &&
 			'plain' == $this->_ctype['secondary'] ) {
-			switch ( $this->_transferencoding ) {
+// disabled since the mimedecode package is already performing the transferencoding
+/*			switch ( $this->_transferencoding ) {
 				case 'base64':
 				case '8bit':
 				case 'quoted-printable':
@@ -161,7 +169,8 @@ class Mail_Parser
 			default:
 				$this->_body = $body;
 				break;
-			}
+			}*/
+			$this->_body = $body;
 		} elseif ( $this->_parse_html &&
 			'text' == $this->_ctype['primary'] &&
 			'html' == $this->_ctype['secondary'] ) {

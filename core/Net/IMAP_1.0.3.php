@@ -842,7 +842,7 @@ class Net_IMAP extends Net_IMAPProtocol {
     */
 
 
-
+	/* Small fix applied on line 860 - EmailReporting plugin required this fix for some specific imap servers */
     function getMailboxes($reference = ''  , $restriction_search = 0, $returnAttributes=false )
     {
 
@@ -857,7 +857,7 @@ class Net_IMAP extends Net_IMAPProtocol {
                     break;
                 case 1:
                     $mailbox = $reference;
-                    $reference = '%';
+                    $reference = '';
                     break;
                 case 2:
                     $mailbox = "%";

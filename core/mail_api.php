@@ -7,7 +7,7 @@
 	# See the README and LICENSE files for details
 
 	# --------------------------------------------------------
-	# $Id: mail_api.php,v 1.21 2009/12/13 05:37:51 SL-Server\SC Kruiper Exp $
+	# $Id: mail_api.php,v 1.22 2010/01/15 23:24:54 SL-Server\SC Kruiper Exp $
 	# --------------------------------------------------------
 
 	require_once( 'bug_api.php' );
@@ -34,20 +34,53 @@
 	}
 
 	# --------------------
-	# show error when connection to mailbox failed
+	# show error when login to mailbox failed
 	#  return an boolean for whether the mailbox has failed
-	function mail_connect_pear_error( &$p_mailbox, &$t_result )
+	function mail_connect_pear_error( &$p_mailbox, &$p_result )
 	{
-		if ( PEAR::isError( $t_result ) )
+		if ( PEAR::isError( $p_result ) )
 		{
-			echo "\n\nerror: " . $p_mailbox[ 'mailbox_description' ] . "\n";
-			echo $t_result->toString();
+			echo "\n\nerror: " . $p_mailbox[ 'mailbox_description' ] . "\n" . $p_result->toString();
 			return( true );
 		}
 		else
 		{
 			return( false );
 		}
+	}
+
+	# --------------------
+	# show error when connection to mailbox failed
+	#  return $t_result as-is or modified with a custom error
+	function mail_connect_error( &$p_mailbox, &$p_result, &$p_test_only, $p_error_text )
+	{
+		$t_result = $p_result;
+
+		if ( $t_result === false )
+		{
+			$t_error_text = "\n\n" . 'error: ' . $p_mailbox[ 'mailbox_description' ] . "\n" . ' -> ' . $p_error_text . '.';
+
+			if ( $p_test_only === false )
+			{
+				echo $t_error_text;
+			}
+			else
+			{
+				$t_result = array(
+					'ERROR_TYPE'	=> 'NON-PEAR-ERROR',
+					'ERROR_MESSAGE'	=> $t_error_text,
+				);
+			}
+		}
+		else
+		{
+			if ( $p_test_only === false )
+			{
+				mail_connect_pear_error( $p_mailbox, $t_result );
+			}
+		}
+
+		return( $t_result );
 	}
 
 	# --------------------
@@ -82,8 +115,18 @@
 		$t_mailbox_password = mail_prepare_mailbox_password( $p_mailbox[ 'mailbox_password' ] );
 		$t_mailbox_auth_method = mail_prepare_mailbox_auth_method( $p_mailbox );
 
-		$t_mailbox_connection->connect( $t_mailbox_hostname[ 'hostname' ], $t_mailbox_hostname[ 'port' ] );
-		$t_result = $t_mailbox_connection->login( $t_mailbox_username, $t_mailbox_password, $t_mailbox_auth_method );
+		$t_result = $t_mailbox_connection->connect( $t_mailbox_hostname[ 'hostname' ], $t_mailbox_hostname[ 'port' ] );
+		if ( $t_result === true )
+		{
+			$t_result = $t_mailbox_connection->login( $t_mailbox_username, $t_mailbox_password, $t_mailbox_auth_method );
+		}
+		else
+		{
+			$t_error_text = 'Failed to connect to mail server';
+			$t_result = mail_connect_error( $p_mailbox, $t_result, $p_test_only, $t_error_text );
+
+			return( $t_result );
+		}
 
 		if ( $p_test_only === false )
 		{
@@ -135,7 +178,7 @@
 
 		$t_mailbox_basefolder = $p_mailbox[ 'mailbox_basefolder' ];
 
-		if ( $t_mailbox_connection->mailboxExist( $t_mailbox_basefolder ) )
+		if ( $t_result === true && $t_mailbox_connection->mailboxExist( $t_mailbox_basefolder ) )
 		{
 			if ( $p_test_only === false )
 			{
@@ -194,20 +237,15 @@
 		}
 		else
 		{
-			$error_text = "\n\n" . 'error: ' . $p_mailbox[ 'mailbox_description' ] . "\n" . ' -> IMAP basefolder not found.';
-			if ( $p_test_only === false )
+			if ( $t_result === true )
 			{
-				echo $error_text;
-				return( $t_result );
+				$t_result = false;
 			}
-			else
-			{
-				$t_result = array(
-					'ERROR_TYPE'	=> 'IMAP_BASEFOLDER_NOTFOUND',
-					'ERROR_MESSAGE'	=> $error_text,
-				);
-				return( $t_result );
-			}
+
+			$t_error_text = 'IMAP basefolder not found';
+			$t_result = mail_connect_error( $p_mailbox, $t_result, $p_test_only, $t_error_text );
+
+			return( $t_result );
 		}
 
 		// Rolf Kleef: explicit expunge to remove deleted messages, disconnect() gives an error...
@@ -657,15 +695,20 @@
 
 			$t_description = mail_identify_reply_part( $t_bug_data->description );
 
-			bugnote_add ( $t_bug_id, $t_description );
+			$t_resolved = config_get( 'bug_resolved_status_threshold' );
+			$t_status = bug_get_field( $t_bug_id, 'status' );
 
-			email_bugnote_add ( $t_bug_id );
-
-			if ( bug_get_field( $t_bug_id, 'status' ) > config_get( 'bug_reopen_status' ) )
+			if ( $t_resolved <= $t_status )
 			{
-				bug_reopen( $t_bug_id );
+				bug_reopen( $t_bug_id, $t_description );
 			}
-		} else	{
+			else
+			{
+				bugnote_add( $t_bug_id, $t_description );
+			}
+		}
+		else
+		{
 			# Create the bug
 			$t_bug_id = $t_bug_data->create();
 
@@ -673,14 +716,17 @@
 		}
 		
 		# Add files
-		if ( true == $t_mail_add_complete_email ) {
+		if ( true == $t_mail_add_complete_email )
+		{
 			array_push( $p_mail[ 'X-Mantis-Parts' ], $p_mail[ 'X-Mantis-Complete' ] );
 		}
 
-		if ( null != $p_mail[ 'X-Mantis-Parts' ] ) {
+		if ( null != $p_mail[ 'X-Mantis-Parts' ] )
+		{
 			$t_rejected_files = null;
 
-			foreach ( $p_mail[ 'X-Mantis-Parts' ] as $part ) {
+			foreach ( $p_mail[ 'X-Mantis-Parts' ] as $part )
+			{
 				$t_file_rejected = mail_add_file ( $t_bug_id, $part );
 
 				if ( $t_file_rejected !== true )

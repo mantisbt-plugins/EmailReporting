@@ -1,7 +1,7 @@
 <?php
 $_GET[ 'mail_nocron' ] = true;
 
-$t_dir_emailreporting_adjust = '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
+$t_dir_emailreporting_adjust = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
 require_once( $t_dir_emailreporting_adjust . 'core.php' );
 
 $t_tmp_plugin_page = plugin_page( 'bug_report_mail', true, 'EmailReporting' );

@@ -43,7 +43,7 @@ elseif ( $f_mailbox_action === 'test' && $f_select_mailbox >= 0 )
 
 	$t_result = mail_process_all_mails( $t_mailbox, true );
 
-	if ( ( is_array( $t_result ) && $t_result[ 'ERROR_TYPE' ] === 'IMAP_BASEFOLDER_NOTFOUND' ) || PEAR::isError( $t_result ) )
+	if ( ( is_array( $t_result ) && $t_result[ 'ERROR_TYPE' ] === 'NON-PEAR-ERROR' ) || PEAR::isError( $t_result ) )
 	{
 		$t_no_redirect = true;
 
@@ -69,7 +69,7 @@ elseif ( $f_mailbox_action === 'test' && $f_select_mailbox >= 0 )
 	<br>
 		<?php echo plugin_lang_get( 'mailbox_basefolder' ) . ': ' . $t_mailbox[ 'mailbox_basefolder' ]; ?>
 	<br><br>
-		<?php echo ( ( is_array( $t_result ) && $t_result[ 'ERROR_TYPE' ] === 'IMAP_BASEFOLDER_NOTFOUND' ) ? $t_result[ 'ERROR_MESSAGE' ] : $t_result->toString() ); ?>
+		<?php echo ( ( is_array( $t_result ) && $t_result[ 'ERROR_TYPE' ] === 'NON-PEAR-ERROR' ) ? $t_result[ 'ERROR_MESSAGE' ] : $t_result->toString() ); ?>
 	<br><br>
 		<?php print_bracket_link( plugin_page( 'maintainmailbox', TRUE ), lang_get( 'proceed' ) ); ?>
 </div>

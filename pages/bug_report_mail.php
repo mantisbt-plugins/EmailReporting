@@ -6,7 +6,7 @@
 	# See the README and LICENSE files for details
 
 	# --------------------------------------------------------
-	# $Id: bug_report_mail.php,v 1.6 2009/12/13 05:37:52 SL-Server\SC Kruiper Exp $
+	# $Id: bug_report_mail.php,v 1.7 2010/01/18 19:12:07 SL-Server\SC Kruiper Exp $
 	# --------------------------------------------------------
 
 	# This page receives an E-Mail via POP3 and IMAP and generates a new issue
@@ -17,7 +17,8 @@
 	require_once( ( ( isset( $GLOBALS[ 't_dir_emailreporting_adjust' ] ) ) ? $GLOBALS[ 't_dir_emailreporting_adjust' ] : '' ) . 'core.php' );
 
 	# Make sure this script doesn't run via the webserver
-	if( php_sapi_name() != 'cli' && plugin_config_get( 'mail_secured_script', ON ) ) {
+	$t_mail_secured_script = plugin_config_get( 'mail_secured_script', ON );
+	if( php_sapi_name() != 'cli' && $t_mail_secured_script ) {
 		echo "bug_report_mail.php is not allowed to run through the webserver.\n";
 		exit( 1 );
 	}
@@ -29,10 +30,10 @@
 
 		$t_mailboxes = mail_get_mailboxes();
 
-		$t_mail_mantisbt_path = plugin_config_get( 'mail_mantisbt_url', '' );
-		if ( php_sapi_name() == 'cli' && !empty( $t_mail_mantisbt_path ) )
+		$t_mail_mantisbt_url_fix = plugin_config_get( 'mail_mantisbt_url_fix', '' );
+		if ( php_sapi_name() == 'cli' && !empty( $t_mail_mantisbt_url_fix ) )
 		{
-			config_set_cache( 'path', $t_mail_mantisbt_path, CONFIG_TYPE_STRING);
+			config_set_cache( 'path', $t_mail_mantisbt_url_fix, CONFIG_TYPE_STRING);
 		}
 
 		foreach ($t_mailboxes as $t_mailbox)

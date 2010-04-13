@@ -124,6 +124,16 @@ their project name counterparts (but we haven't had problems in practice).
 Gerrit Beine, August 2004
 
 Changelog:
+Jan 2010
+	- Small fix for possible problems finding core.php in scripts/bug_report_mail.php
+	- mbstring extension is no longer a requirement for running this plugin
+	- Disabled quoted_printable_decode in parser since mimedecode is already doing that
+	- rfc_822bodies forced to true (also needed transfer_encoding)
+	- Kerio Mailserver had a compatibility issue with net_imap 1.0.3 (was fixed in net_imap 1.1.0). The fix has been backported to 1.0.3 in this plugin
+	- Some connection error handling improvements
+	- Adding notes by email generated 2 exactly the same notifications
+	- Status change and resolution change for adding bugnotes by email now only occures when the status of the bug has gone past 'bug_resolved_status_threshold' instead of 'bug_reopen_status'
+	- mail_mantisbt_url is now called mail_mantisbt_url_fix because variables with url in the end are not allowed to be stored in the database anymore
 Dec 2009 v3
 	- Applied a natural case insensitive sort on the charset dropdown list in the configuration menu
 	- Changed the sort method from normal sort to natural case insensitive sort for mailbox_auth_method
