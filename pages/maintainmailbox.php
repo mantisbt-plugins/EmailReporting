@@ -143,7 +143,7 @@ foreach( $t_config_array AS $t_config )
 		<?php echo plugin_lang_get( $t_config[ 'name' ] )?>
 	</td>
 	<td class="center" width="40%" colspan="2">
-		<label><select name="<?php echo $t_config[ 'name' ] ?>"> <?php print_project_option_list( $t_config[ 'value' ], false, null, true ) ?></select></label>
+		<label><select name="<?php echo $t_config[ 'name' ] ?>"> <?php print_project_option_list( $t_config[ 'value' ], false, null, false ) ?></select></label>
 	</td>
 </tr>
 <?php

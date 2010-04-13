@@ -7,7 +7,7 @@
 	# See the README and LICENSE files for details
 
 	# --------------------------------------------------------
-	# $Id: mail_api.php,v 1.22 2010/01/15 23:24:54 SL-Server\SC Kruiper Exp $
+	# $Id: mail_api.php,v 1.25 2010/02/26 18:04:19 SL-Server\SC Kruiper Exp $
 	# --------------------------------------------------------
 
 	require_once( 'bug_api.php' );
@@ -260,8 +260,9 @@
 	# Process a single email from either a pop3 or imap mailbox
 	function mail_process_single_email( &$p_i, &$p_mailbox, &$p_mailbox_connection , $p_project_id = NULL )
 	{
-		$t_mail_delete		= plugin_config_get( 'mail_delete' );
-		$t_mail_debug		= plugin_config_get( 'mail_debug' );
+		$t_mail_delete			= plugin_config_get( 'mail_delete' );
+		$t_mail_debug			= plugin_config_get( 'mail_debug' );
+		$t_limit_email_domain	= config_get( 'limit_email_domain' );
 
 		$t_msg = $p_mailbox_connection->getMsg( $p_i );
 
@@ -273,7 +274,11 @@
 			mail_save_message_to_file( $t_msg );
 		}
 
-		mail_add_bug( $t_mail, $p_mailbox, $p_project_id );
+		$t_mail_from = mail_parse_address ( $t_mail[ 'From' ] );
+		if ( $t_limit_email_domain === OFF || email_is_valid( $t_mail_from ) )
+		{
+			mail_add_bug( $t_mail, $p_mailbox, $p_project_id );
+		}
 
 		if ( $t_mail_delete )
 		{
@@ -380,14 +385,8 @@
 		$t_mail[ 'From' ] = $t_mp->from();
 
 		$t_mail[ 'Subject' ] = trim( $t_mp->subject() );
-		if ( empty( $t_mail[ 'Subject' ] ) ) {
-			$t_mail[ 'Subject' ] = plugin_config_get( 'mail_nosubject' );
-		}
 
 		$t_mail[ 'X-Mantis-Body' ] = trim( $t_mp->body() );
-		if ( empty( $t_mail[ 'X-Mantis-Body' ] ) ) {
-			$t_mail[ 'X-Mantis-Body' ] = plugin_config_get( 'mail_nodescription' );
-		}
 
 		$t_mail[ 'X-Mantis-Parts' ] = $t_mp->parts();
 
@@ -616,22 +615,24 @@
 
 	# --------------------
 	# Removes the original mantis email from replies
-	# Very experimental new function
 	function mail_identify_reply_part ( $p_description )
 	{
 		$t_mail_identify_reply = plugin_config_get( 'mail_identify_reply' );
-		$t_email_separator1 = config_get( 'email_separator1' );
-
-		# The pear mimeDecode.php seems to be removing the last "=" in some versions of the pear package.
-		# the version delivered with this package seems to be working OK though
-		$t_email_separator1 = substr( $t_email_separator1, 0, -1);
 
 		if ( $t_mail_identify_reply )
 		{
+			$t_email_separator1 = config_get( 'email_separator1' );
+
+			# The pear mimeDecode.php seems to be removing the last "=" in some versions of the pear package.
+			# the version delivered with this package seems to be working OK though
+			$t_email_separator1 = substr( $t_email_separator1, 0, -1);
+
 			$t_first_occurence = strpos( $p_description, $t_email_separator1 );
 			if ( $t_first_occurence !== false && substr_count( $p_description, $t_email_separator1, $t_first_occurence ) >= 3 )
 			{
-				$t_description = substr( $p_description, 0, $t_first_occurence );
+				$t_mail_removed_reply_text = plugin_config_get( 'mail_removed_reply_text' );
+
+				$t_description = substr( $p_description, 0, $t_first_occurence ) . $t_mail_removed_reply_text;
 
 				return( $t_description );
 			}
@@ -641,74 +642,111 @@
 	}
 
 	# --------------------
+	# Fixes an empty subject and description with a predefined default text
+	function mail_fix_empty_fields ( &$p_mail )
+	{
+		$t_mail = $p_mail;
+
+		if ( empty( $t_mail[ 'Subject' ] ) ) {
+			$t_mail_nosubject = plugin_config_get( 'mail_nosubject' );
+
+			$t_mail[ 'Subject' ] = $t_mail_nosubject;
+		}
+		if ( empty( $t_mail[ 'X-Mantis-Body' ] ) ) {
+			$t_mail_nodescription = plugin_config_get( 'mail_nodescription' );
+
+			$t_mail[ 'X-Mantis-Body' ] = $t_mail_nodescription;
+		}
+
+		return( $t_mail );
+	}
+
+	# --------------------
+	# Add the save from text if enabled
+	function mail_apply_mail_save_from ( $p_from, $p_description )
+	{
+		$t_description = $p_description;
+		$t_mail_save_from	= plugin_config_get( 'mail_save_from' );
+
+		if ( $t_mail_save_from ) {
+			$t_description	= 'Email from: ' . $p_from . "\n\n" . $t_description;
+		}
+
+		return( $t_description );
+	}
+
+	# --------------------
 	# Adds a bug which is reported via email
 	# Taken from bug_report.php in MantisBT 1.2.0rc1
 	function mail_add_bug ( &$p_mail, &$p_mailbox, $p_imap_project_id = NULL ) {
-		$t_mail_save_from	= plugin_config_get( 'mail_save_from' );
 		$t_mail_add_complete_email	= plugin_config_get( 'mail_add_complete_email' );
 
-		$t_bug_data = new BugData;
-		$t_bug_data->build				= gpc_get_string( 'build', '' );
-		$t_bug_data->platform				= gpc_get_string( 'platform', '' );
-		$t_bug_data->os					= gpc_get_string( 'os', '' );
-		$t_bug_data->os_build				= gpc_get_string( 'os_build', '' );
-		$t_bug_data->version			= gpc_get_string( 'product_version', '' );
-		$t_bug_data->profile_id			= gpc_get_int( 'profile_id', 0 );
-		$t_bug_data->handler_id			= gpc_get_int( 'handler_id', 0 );
-		$t_bug_data->view_state			= gpc_get_int( 'view_state', config_get( 'default_bug_view_status' ) );
+		$t_reporter_id		= mail_get_user( $p_mail[ 'From' ] );
 
-		$t_bug_data->category_id			= gpc_get_int( 'category_id', $p_mailbox[ 'mailbox_global_category' ] );
-		$t_bug_data->reproducibility		= config_get( 'default_bug_reproducibility', 10 );
-		$t_bug_data->severity			= config_get( 'default_bug_severity', 50 );
-		$t_bug_data->priority			= $p_mail[ 'Priority' ];
-		$t_bug_data->projection				= gpc_get_int( 'projection', config_get( 'default_bug_projection' ) );
-		$t_bug_data->eta					= gpc_get_int( 'eta', config_get( 'default_bug_eta' ) );
-		$t_bug_data->resolution				= config_get( 'default_bug_resolution' );
-		$t_bug_data->status					= config_get( 'bug_submit_status' );
-		$t_bug_data->summary				= $p_mail[ 'Subject' ];
-		
-		# Ppostponed the saving of the description until after the bugnote identification
-		if ( $t_mail_save_from ) {
-			$t_bug_data->description	= 'Email from: ' . $p_mail[ 'From' ] . "\n\n" . $p_mail[ 'X-Mantis-Body' ];
-		} else {
-			$t_bug_data->description	= $p_mail[ 'X-Mantis-Body' ];
-		}
+		if ( mail_is_a_bugnote( $p_mail[ 'Subject' ] ) )
+		{
+			$t_description = $p_mail[ 'X-Mantis-Body' ];
 
-		$t_bug_data->steps_to_reproduce		= gpc_get_string( 'steps_to_reproduce', config_get( 'default_bug_steps_to_reproduce' ) );;
-		$t_bug_data->additional_information	= gpc_get_string( 'additional_info', config_get ( 'default_bug_additional_info' ) );
-		$t_bug_data->due_date 				= gpc_get_string( 'due_date', '' );
-		if ( is_blank ( $t_bug_data->due_date ) ) {
-			$t_bug_data->due_date = date_get_null();
-		} else {
-			$t_bug_data->due_date = $t_bug_data->due_date;
-		}
-
-		$t_bug_data->project_id			= ( ( is_null( $p_imap_project_id ) ) ? $p_mailbox[ 'mailbox_project' ] : $p_imap_project_id );
-
-		$t_bug_data->reporter_id		= mail_get_user( $p_mail[ 'From' ] );
-
-		$t_bug_data->summary			= trim( $t_bug_data->summary );
-
-		if ( mail_is_a_bugnote( $p_mail[ 'Subject' ] ) ) {
-			# Add a bug note
 			$t_bug_id = mail_get_bug_id_from_subject( $p_mail[ 'Subject' ] );
 
-			$t_description = mail_identify_reply_part( $t_bug_data->description );
+			$t_description = mail_identify_reply_part( $t_description );
+			$t_description = mail_apply_mail_save_from( $p_mail[ 'From' ], $t_description );
 
 			$t_resolved = config_get( 'bug_resolved_status_threshold' );
 			$t_status = bug_get_field( $t_bug_id, 'status' );
 
 			if ( $t_resolved <= $t_status )
 			{
+				# Reopen issue and add a bug note
 				bug_reopen( $t_bug_id, $t_description );
 			}
-			else
+			elseif ( !empty( $t_description ) )
 			{
+				# Add a bug note
 				bugnote_add( $t_bug_id, $t_description );
 			}
 		}
 		else
 		{
+			$p_mail = mail_fix_empty_fields ( $p_mail );
+
+			$t_bug_data = new BugData;
+			$t_bug_data->build					= gpc_get_string( 'build', '' );
+			$t_bug_data->platform				= gpc_get_string( 'platform', '' );
+			$t_bug_data->os						= gpc_get_string( 'os', '' );
+			$t_bug_data->os_build				= gpc_get_string( 'os_build', '' );
+			$t_bug_data->version				= gpc_get_string( 'product_version', '' );
+			$t_bug_data->profile_id				= gpc_get_int( 'profile_id', 0 );
+			$t_bug_data->handler_id				= gpc_get_int( 'handler_id', 0 );
+			$t_bug_data->view_state				= gpc_get_int( 'view_state', config_get( 'default_bug_view_status' ) );
+
+			$t_bug_data->category_id			= gpc_get_int( 'category_id', $p_mailbox[ 'mailbox_global_category' ] );
+			$t_bug_data->reproducibility		= config_get( 'default_bug_reproducibility', 10 );
+			$t_bug_data->severity				= config_get( 'default_bug_severity', 50 );
+			$t_bug_data->priority				= $p_mail[ 'Priority' ];
+			$t_bug_data->projection				= gpc_get_int( 'projection', config_get( 'default_bug_projection' ) );
+			$t_bug_data->eta					= gpc_get_int( 'eta', config_get( 'default_bug_eta' ) );
+			$t_bug_data->resolution				= config_get( 'default_bug_resolution' );
+			$t_bug_data->status					= config_get( 'bug_submit_status' );
+			$t_bug_data->summary				= $p_mail[ 'Subject' ];
+
+			$t_bug_data->description			= mail_apply_mail_save_from( $p_mail[ 'From' ], $p_mail[ 'X-Mantis-Body' ] );
+
+			$t_bug_data->steps_to_reproduce		= gpc_get_string( 'steps_to_reproduce', config_get( 'default_bug_steps_to_reproduce' ) );;
+			$t_bug_data->additional_information	= gpc_get_string( 'additional_info', config_get ( 'default_bug_additional_info' ) );
+			$t_bug_data->due_date 				= gpc_get_string( 'due_date', '' );
+			if ( is_blank ( $t_bug_data->due_date ) ) {
+				$t_bug_data->due_date = date_get_null();
+			} else {
+				$t_bug_data->due_date = $t_bug_data->due_date;
+			}
+
+			$t_bug_data->project_id				= ( ( is_null( $p_imap_project_id ) ) ? $p_mailbox[ 'mailbox_project' ] : $p_imap_project_id );
+
+			$t_bug_data->reporter_id			= $t_reporter_id;
+
+			$t_bug_data->summary				= trim( $t_bug_data->summary );
+
 			# Create the bug
 			$t_bug_id = $t_bug_data->create();
 

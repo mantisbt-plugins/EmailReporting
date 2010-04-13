@@ -21,6 +21,7 @@ $f_mail_debug = gpc_get_bool( 'mail_debug', OFF );
 $f_mail_directory = gpc_get_string( 'mail_directory', '/tmp/mantis' );
 $f_mail_nosubject = gpc_get_string( 'mail_nosubject', 'No subject found' );
 $f_mail_nodescription = gpc_get_string( 'mail_nodescription', 'No description found' );
+$f_mail_removed_reply_text = gpc_get_string( 'mail_removed_reply_text', '[EmailReporting -> Mantis reply removed]' );
 $f_mail_use_bug_priority = gpc_get_bool( 'mail_use_bug_priority', ON );
 $f_mail_bug_priority_default = gpc_get_int( 'mail_bug_priority_default', NORMAL );
 $f_mail_bug_priority = gpc_get_string( 'mail_bug_priority', array(
@@ -118,6 +119,10 @@ if( plugin_config_get( 'mail_nosubject' ) != $f_mail_nosubject ) {
 
 if( plugin_config_get( 'mail_nodescription' ) != $f_mail_nodescription ) {
 	plugin_config_set( 'mail_nodescription', $f_mail_nodescription );
+}
+
+if( plugin_config_get( 'mail_removed_reply_text' ) != $f_mail_removed_reply_text ) {
+	plugin_config_set( 'mail_removed_reply_text', $f_mail_removed_reply_text );
 }
 
 if( plugin_config_get( 'mail_use_bug_priority' ) != $f_mail_use_bug_priority ) {

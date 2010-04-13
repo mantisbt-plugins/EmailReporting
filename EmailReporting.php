@@ -10,7 +10,7 @@ class EmailReportingPlugin extends MantisPlugin {
 		$this->description = plugin_lang_get( 'description' );
 		$this->page = 'config';
 
-		$this->version = '0.7.4';
+		$this->version = '0.7.8';
 		$this->requires = array(
 			'MantisCore' => '1.2',
 		);
@@ -47,8 +47,8 @@ class EmailReportingPlugin extends MantisPlugin {
 			'mail_reporter'				=> 'Mail',
 		
 			# Signup new users automatically (possible security risk!)
-			# Default is OFF, if mail_use_reporter is ON and this is off then it will
-			# fallback on the mail_reporter account above
+			# Default is OFF, if mail_use_reporter is OFF and this is OFF then it will
+			# fallback to the mail_reporter account above
 			'mail_auto_signup'			=> OFF,
 		
 			# How many mails should be fetched at the same time
@@ -94,6 +94,9 @@ class EmailReportingPlugin extends MantisPlugin {
 
 			# Use the following text when the description is missing from the email
 			'mail_nodescription' 		=> 'No description found', 
+
+			# Use the following text when a mantis email has been removed
+			'mail_removed_reply_text'	=> '[EmailReporting -> Mantis reply removed]',
 		
 			# Classify bug priorities
 			'mail_bug_priority' 		=> array(

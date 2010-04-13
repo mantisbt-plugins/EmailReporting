@@ -116,6 +116,10 @@ $t_config_array = array(
 		'type' => 'string',
 	),
 	array(
+		'name' => 'mail_removed_reply_text',
+		'type' => 'string',
+	),
+	array(
 		'name' => 'mail_use_bug_priority',
 		'type' => 'boolean',
 	),
