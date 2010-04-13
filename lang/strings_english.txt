@@ -8,38 +8,35 @@ $s_plugin_EmailReporting_mailbox_settings = 'Mailbox settings';
 $s_plugin_EmailReporting_problems = 'To reset a configuration item to its default value, please delete the configuration item in question from the "<a href="adm_config_report.php">Configuration report</a>" page.';
 
 $s_plugin_EmailReporting_jobsetup = 'To collect the emails from the mailboxes you need to add a scheduled job which runs a script. You can run the script from 2 locations but only option 1 will work as a scheduled job. Both perform the same tasks. See the documentation for examples on how to schedule these.';
-$s_plugin_EmailReporting_jobsetup_nocron = 'It\'s also possible to not use a cron / scheduled job. EmailReporting will then check the mailboxes when someone visits a mantis page and the timer for how often a mailbox should be checked has passed. The pageload that triggered this will of course take a little bit longer then normal.';
 $s_plugin_EmailReporting_job1 = '1. ';
 $s_plugin_EmailReporting_job2 = '2. ';
 
-$s_plugin_EmailReporting_enabled = 'Yes';
-$s_plugin_EmailReporting_disabled = 'No';
+$s_plugin_EmailReporting_enabled = 'On';
+$s_plugin_EmailReporting_disabled = 'Off';
 $s_plugin_EmailReporting_directory_exists = 'Directory found';
 $s_plugin_EmailReporting_directory_unavailable = 'Warning: directory not found';
 $s_plugin_EmailReporting_directory_writable = 'Directory writable';
 $s_plugin_EmailReporting_directory_unwritable = 'Warning: directory not writable';
 
-$s_plugin_EmailReporting_mail_secured_script = 'Block this script from running via a webserver (recommended = Yes, set it to "No" only for debugging)';
-$s_plugin_EmailReporting_mail_cronjob_present = 'Have you (or will you) set up a cron / scheduled job for retrieving emails (recommended = Yes)';
-$s_plugin_EmailReporting_mail_check_timer = 'How often should the mailboxes be checked (In seconds. N/A when using a cron / scheduled job)';
+$s_plugin_EmailReporting_mail_secured_script = 'Block this script from running via a webserver (recommended = ON, turn it off only for debugging)';
 $s_plugin_EmailReporting_mail_use_reporter = 'Use one account for issues created by email';
 $s_plugin_EmailReporting_mail_reporter = 'The account name for issues created by email';
 $s_plugin_EmailReporting_mail_auto_signup = 'Signup new users automatically (possible security risk!, see documentation)';
-$s_plugin_EmailReporting_mail_fetch_max = 'How many emails per mailbox should be fetched every time this script is executed (see documentation)';
+$s_plugin_EmailReporting_mail_fetch_max = 'How many mails should be fetched at the same time (see documentation)';
 $s_plugin_EmailReporting_mail_add_complete_email = 'Add the complete email into the attachments';
 $s_plugin_EmailReporting_mail_save_from = 'Write the sender of the message into the issue report';
 $s_plugin_EmailReporting_mail_parse_mime = 'Parse MIME mails';
 $s_plugin_EmailReporting_mail_parse_html = 'Parse HTML mails';
-$s_plugin_EmailReporting_mail_identify_reply = 'Remove automatic Mantis emails from replies.';
+$s_plugin_EmailReporting_mail_identify_reply = 'Remove automatic Mantis emails from replies (experimental).';
 $s_plugin_EmailReporting_mail_tmp_directory = 'Directory for saving temporary mail content';
 $s_plugin_EmailReporting_mail_delete = 'Delete processed mail from the mailbox';
 $s_plugin_EmailReporting_mail_debug = 'Debug mode';
-$s_plugin_EmailReporting_mail_directory = 'Save mail contents to this directory if debug mode is activated';
+$s_plugin_EmailReporting_mail_directory = 'Save mail contents to this directory if debug mode is ON';
+$s_plugin_EmailReporting_mail_auth_method = 'The authentication method used for the mailbox';
 $s_plugin_EmailReporting_mail_use_bug_priority = 'Look for priority header field';
 $s_plugin_EmailReporting_mail_bug_priority_default = 'Default priority for issues created by email';
 $s_plugin_EmailReporting_mail_nosubject = 'Use this text if no subject is found in the email';
 $s_plugin_EmailReporting_mail_nodescription = 'Use this text if no description is found in the email';
-$s_plugin_EmailReporting_mail_removed_reply_text = 'Use this text if a mantis reply has been removed from the email';
 $s_plugin_EmailReporting_mail_bug_priority = 'Classify bug priorities';
 $s_plugin_EmailReporting_mail_encoding = 'Convert email to this charset (Should be the same as the database charset)';
 
@@ -51,15 +48,10 @@ $s_plugin_EmailReporting_test_mailbox = 'Test mailbox';
 $s_plugin_EmailReporting_select_mailbox = 'Select mailbox';
 
 $s_plugin_EmailReporting_mailbox_description = 'Mailbox description';
-$s_plugin_EmailReporting_mailbox_type = 'Mail server type';
-$s_plugin_EmailReporting_mailbox_hostname = 'Mail server hostname(:port)';
-$s_plugin_EmailReporting_mailbox_encryption = 'Mailbox connection encryption';
+$s_plugin_EmailReporting_mailbox_hostname = 'Mail server hostname:port';
 $s_plugin_EmailReporting_mailbox_username = 'Mailbox username';
 $s_plugin_EmailReporting_mailbox_password = 'Mailbox password';
-$s_plugin_EmailReporting_mailbox_auth_method = 'Authentication method';
-$s_plugin_EmailReporting_mailbox_basefolder = 'Mailbox basefolder (IMAP)';
-$s_plugin_EmailReporting_mailbox_createfolderstructure = 'Create project subfolder structure (IMAP)';
-$s_plugin_EmailReporting_mailbox_project = 'Select a project (N/A if above is set to "yes")';
+$s_plugin_EmailReporting_mailbox_project = 'Select a project';
 $s_plugin_EmailReporting_mailbox_global_category = 'Select a global category';
 
 $s_plugin_EmailReporting_unknown_setting = 'Unknown setting encountered. Setting ignored';
@@ -67,6 +59,5 @@ $s_plugin_EmailReporting_missing_reporter = 'Please select a user account';
 $s_plugin_EmailReporting_mbstring_unavailable = 'PHP mbstring functionality unavailable';
 $s_plugin_EmailReporting_zero_mailboxes = 'No mailboxes have been found';
 $s_plugin_EmailReporting_test_failure = 'Operation NOT successful';
-$s_plugin_EmailReporting_mail_bug_priority_array_failure = 'The given format is not an acceptable array.';
 
 ?>

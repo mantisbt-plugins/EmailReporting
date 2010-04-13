@@ -14,7 +14,7 @@
  * @author     Greg Beaver <cellog@php.net>
  * @copyright  1997-2009 The Authors
  * @license    http://opensource.org/licenses/bsd-license.php New BSD License
- * @version    CVS: $Id: PEAR.php,v 1.1 2009/09/22 16:35:52 SC Kruiper Exp $
+ * @version    CVS: $Id: PEAR.php,v 1.2 2009/07/28 18:52:43 SC Kruiper Exp $
  * @link       http://pear.php.net/package/PEAR
  * @since      File available since Release 0.1
  */
@@ -78,7 +78,7 @@ $GLOBALS['_PEAR_error_handler_stack']    = array();
  * @author     Greg Beaver <cellog@php.net>
  * @copyright  1997-2006 The PHP Group
  * @license    http://opensource.org/licenses/bsd-license.php New BSD License
- * @version    Release: 1.9.0
+ * @version    Release: 1.8.1
  * @link       http://pear.php.net/package/PEAR
  * @see        PEAR_Error
  * @since      Class available since PHP 4.0.2
@@ -803,7 +803,7 @@ function _PEAR_call_destructors()
     }
 
     // Now call the shutdown functions
-    if (isset($GLOBALS['_PEAR_shutdown_funcs']) AND is_array($GLOBALS['_PEAR_shutdown_funcs']) AND !empty($GLOBALS['_PEAR_shutdown_funcs'])) {
+    if (is_array($GLOBALS['_PEAR_shutdown_funcs']) AND !empty($GLOBALS['_PEAR_shutdown_funcs'])) {
         foreach ($GLOBALS['_PEAR_shutdown_funcs'] as $value) {
             call_user_func_array($value[0], $value[1]);
         }
@@ -823,7 +823,7 @@ function _PEAR_call_destructors()
  * @author     Gregory Beaver <cellog@php.net>
  * @copyright  1997-2006 The PHP Group
  * @license    http://opensource.org/licenses/bsd-license.php New BSD License
- * @version    Release: 1.9.0
+ * @version    Release: 1.8.1
  * @link       http://pear.php.net/manual/en/core.pear.pear-error.php
  * @see        PEAR::raiseError(), PEAR::throwError()
  * @since      Class available since PHP 4.0.2
@@ -886,7 +886,6 @@ class PEAR_Error
                 unset($this->backtrace[0]['object']);
             }
         }
-
         if ($mode & PEAR_ERROR_CALLBACK) {
             $this->level = E_USER_NOTICE;
             $this->callback = $options;
@@ -894,25 +893,20 @@ class PEAR_Error
             if ($options === null) {
                 $options = E_USER_NOTICE;
             }
-
             $this->level = $options;
             $this->callback = null;
         }
-
         if ($this->mode & PEAR_ERROR_PRINT) {
             if (is_null($options) || is_int($options)) {
                 $format = "%s";
             } else {
                 $format = $options;
             }
-
             printf($format, $this->getMessage());
         }
-
         if ($this->mode & PEAR_ERROR_TRIGGER) {
             trigger_error($this->getMessage(), $this->level);
         }
-
         if ($this->mode & PEAR_ERROR_DIE) {
             $msg = $this->getMessage();
             if (is_null($options) || is_int($options)) {
@@ -925,13 +919,11 @@ class PEAR_Error
             }
             die(sprintf($format, $msg));
         }
-
         if ($this->mode & PEAR_ERROR_CALLBACK) {
             if (is_callable($this->callback)) {
                 call_user_func($this->callback, $this);
             }
         }
-
         if ($this->mode & PEAR_ERROR_EXCEPTION) {
             trigger_error("PEAR_ERROR_EXCEPTION is obsolete, use class PEAR_Exception for exceptions", E_USER_WARNING);
             eval('$e = new Exception($this->message, $this->code);throw($e);');

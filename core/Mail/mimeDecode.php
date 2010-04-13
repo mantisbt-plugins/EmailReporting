@@ -52,7 +52,7 @@
  * @author     Sean Coates <sean@php.net>
  * @copyright  2003-2006 PEAR <pear-group@php.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php BSD License
- * @version    CVS: $Id: mimeDecode.php,v 1.4 2009/12/06 20:46:04 SL-Server\SC Kruiper Exp $
+ * @version    CVS: $Id: mimeDecode.php,v 1.2 2009/07/28 18:52:43 SC Kruiper Exp $
  * @link       http://pear.php.net/package/Mail_mime
  */
 
@@ -148,15 +148,6 @@ class Mail_mimeDecode extends PEAR
     var $_decode_headers;
 
     /**
-     * Flag to determine whether to include attached messages
-     * as body in the returned object. Depends on $_include_bodies
-     *
-     * @var    boolean
-     * @access private
-     */
-    var $_rfc822_bodies;
-
-    /**
      * Constructor.
      *
      * Sets up the object, initialise the variables, and splits and
@@ -174,7 +165,6 @@ class Mail_mimeDecode extends PEAR
         $this->_body           = $body;
         $this->_decode_bodies  = false;
         $this->_include_bodies = true;
-        $this->_rfc822_bodies  = false;
     }
 
     /**
@@ -218,8 +208,6 @@ class Mail_mimeDecode extends PEAR
 	                             $params['decode_bodies']  : false;
             $this->_decode_headers = isset($params['decode_headers']) ?
 	                             $params['decode_headers'] : false;
-            $this->_rfc822_bodies  = isset($params['rfc_822bodies']) ?
-	                             $params['rfc_822bodies']  : false;
 
             $structure = $this->_decode($this->_header, $this->_body);
             if ($structure === false) {
@@ -333,10 +321,6 @@ class Mail_mimeDecode extends PEAR
                     break;
 
                 case 'message/rfc822':
-					if ($this->_rfc822_bodies) {
-						$encoding = isset($content_transfer_encoding) ? $content_transfer_encoding['value'] : '7bit';
-						$return->body = ($this->_decode_bodies ? $this->_decodeBody($body, $encoding) : $body);
-					}
                     $obj = &new Mail_mimeDecode($body);
                     $return->parts[] = $obj->decode(array('include_bodies' => $this->_include_bodies,
 					                                      'decode_bodies'  => $this->_decode_bodies,
@@ -494,7 +478,7 @@ class Mail_mimeDecode extends PEAR
                 for ($i = 0; $i < count($parameters); $i++) {
                     $param_name  = trim(substr($parameters[$i], 0, $pos = strpos($parameters[$i], '=')), "'\";\t\\ ");
                     $param_value = trim(str_replace('\;', ';', substr($parameters[$i], $pos + 1)), "'\";\t\\ ");
-                    if (!empty($param_value[0]) && $param_value[0] == '"') {
+                    if ($param_value[0] == '"') {
                         $param_value = substr($param_value, 1, -1);
                     }
                     $return['other'][$param_name] = $param_value;
@@ -735,7 +719,7 @@ class Mail_mimeDecode extends PEAR
                 case "to":
                 case "cc":
                 case "bcc":
-                    $to .= ",".$item['value'];
+                    $to = ",".$item['value'];
                 default:
                    break;
             }

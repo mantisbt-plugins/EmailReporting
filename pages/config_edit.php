@@ -4,8 +4,6 @@ access_ensure_global_level( config_get( 'manage_plugin_threshold' ) );
 
 
 $f_mail_secured_script = gpc_get_bool( 'mail_secured_script', ON );
-$f_mail_cronjob_present = gpc_get_bool( 'mail_cronjob_present', ON );
-$f_mail_check_timer = gpc_get_int( 'mail_check_timer', 300 );
 $f_mail_use_reporter = gpc_get_bool( 'mail_use_reporter', ON );
 $f_mail_reporter = gpc_get_string( 'mail_reporter', 'Mail' );
 $f_mail_auto_signup = gpc_get_bool( 'mail_auto_signup', OFF );
@@ -19,9 +17,9 @@ $f_mail_tmp_directory = gpc_get_string( 'mail_tmp_directory', '/tmp' );
 $f_mail_delete = gpc_get_bool( 'mail_delete', ON );
 $f_mail_debug = gpc_get_bool( 'mail_debug', OFF );
 $f_mail_directory = gpc_get_string( 'mail_directory', '/tmp/mantis' );
+$f_mail_auth_method = gpc_get_string( 'mail_auth_method', 'USER' );
 $f_mail_nosubject = gpc_get_string( 'mail_nosubject', 'No subject found' );
 $f_mail_nodescription = gpc_get_string( 'mail_nodescription', 'No description found' );
-$f_mail_removed_reply_text = gpc_get_string( 'mail_removed_reply_text', '[EmailReporting -> Mantis reply removed]' );
 $f_mail_use_bug_priority = gpc_get_bool( 'mail_use_bug_priority', ON );
 $f_mail_bug_priority_default = gpc_get_int( 'mail_bug_priority_default', NORMAL );
 $f_mail_bug_priority = gpc_get_string( 'mail_bug_priority', array(
@@ -47,14 +45,6 @@ $f_mail_encoding = gpc_get_string( 'mail_encoding', 'UTF-8' );
 
 if( plugin_config_get( 'mail_secured_script' ) != $f_mail_secured_script ) {
 	plugin_config_set( 'mail_secured_script', $f_mail_secured_script );
-}
-
-if( plugin_config_get( 'mail_cronjob_present' ) != $f_mail_cronjob_present ) {
-	plugin_config_set( 'mail_cronjob_present', $f_mail_cronjob_present );
-}
-
-if( plugin_config_get( 'mail_check_timer' ) != $f_mail_check_timer ) {
-	plugin_config_set( 'mail_check_timer', $f_mail_check_timer );
 }
 
 if( plugin_config_get( 'mail_use_reporter' ) != $f_mail_use_reporter ) {
@@ -113,16 +103,16 @@ if( plugin_config_get( 'mail_directory' ) != $f_mail_directory ) {
 	plugin_config_set( 'mail_directory', $f_mail_directory );
 }
 
+if( plugin_config_get( 'mail_auth_method' ) != $f_mail_auth_method ) {
+	plugin_config_set( 'mail_auth_method', $f_mail_auth_method );
+}
+
 if( plugin_config_get( 'mail_nosubject' ) != $f_mail_nosubject ) {
 	plugin_config_set( 'mail_nosubject', $f_mail_nosubject );
 }
 
 if( plugin_config_get( 'mail_nodescription' ) != $f_mail_nodescription ) {
 	plugin_config_set( 'mail_nodescription', $f_mail_nodescription );
-}
-
-if( plugin_config_get( 'mail_removed_reply_text' ) != $f_mail_removed_reply_text ) {
-	plugin_config_set( 'mail_removed_reply_text', $f_mail_removed_reply_text );
 }
 
 if( plugin_config_get( 'mail_use_bug_priority' ) != $f_mail_use_bug_priority ) {
@@ -133,28 +123,13 @@ if( plugin_config_get( 'mail_bug_priority_default' ) != $f_mail_bug_priority_def
 	plugin_config_set( 'mail_bug_priority_default', $f_mail_bug_priority_default );
 }
 
-$t_mail_bug_priority = @eval( 'return ' . $f_mail_bug_priority . ';' );
-if( plugin_config_get( 'mail_bug_priority' ) != $t_mail_bug_priority && is_array( $t_mail_bug_priority ) ) {
+$t_mail_bug_priority = eval( 'return ' . $f_mail_bug_priority . ';' );
+if( plugin_config_get( 'mail_bug_priority' ) != $t_mail_bug_priority ) {
 	plugin_config_set( 'mail_bug_priority', $t_mail_bug_priority );
-}
-elseif ( !is_array( $t_mail_bug_priority ) ) {
-	html_page_top1();
-	html_page_top2();
-
-	echo '<br /><div class="center">';
-	echo plugin_lang_get( 'mail_bug_priority_array_failure' ) . ' ';
-	print_bracket_link( plugin_page( 'config', TRUE ), lang_get( 'proceed' ) );
-	echo '</div>';
-	$t_notsuccesfull = true;
-
-	html_page_bottom1(); 
 }
 
 if( plugin_config_get( 'mail_encoding' ) != $f_mail_encoding ) {
 	plugin_config_set( 'mail_encoding', $f_mail_encoding );
 }
 
-if ( !isset( $t_notsuccesfull ) )
-{
-	print_successful_redirect( plugin_page( 'config', true ) );
-}
+print_successful_redirect( plugin_page( 'config', true ) );

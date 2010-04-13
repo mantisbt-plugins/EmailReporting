@@ -6,53 +6,42 @@
 	# See the README and LICENSE files for details
 
 	# --------------------------------------------------------
-	# $Id: bug_report_mail.php,v 1.7 2010/01/18 19:12:07 SL-Server\SC Kruiper Exp $
+	# $Id: bug_report_mail.php,v 1.2 2009/07/28 18:52:43 SC Kruiper Exp $
 	# --------------------------------------------------------
 
-	# This page receives an E-Mail via POP3 and IMAP and generates a new issue
+	# This page receives an E-Mail via POP3 and generates an Report
 
-	global $g_bypass_headers;
-	$g_bypass_headers = 1;
+global $g_bypass_headers;
+$g_bypass_headers = 1;
 
 	require_once( ( ( isset( $GLOBALS[ 't_dir_emailreporting_adjust' ] ) ) ? $GLOBALS[ 't_dir_emailreporting_adjust' ] : '' ) . 'core.php' );
 
-	# Make sure this script doesn't run via the webserver
-	$t_mail_secured_script = plugin_config_get( 'mail_secured_script', ON );
-	if( php_sapi_name() != 'cli' && $t_mail_secured_script ) {
-		echo "bug_report_mail.php is not allowed to run through the webserver.\n";
-		exit( 1 );
-	}
+# Make sure this script doesn't run via the webserver
+/** @todo This is a hack to detect php-cgi, there must be a better way. */
+if( isset( $_SERVER['SERVER_PORT'] ) && plugin_config_get( 'mail_secured_script', ON ) ) {
+	echo "bug_report_mail_page.php is not allowed to run through the webserver.\n";
+	exit( 1 );
+}
 
 	$t_mail_tmp_directory = plugin_config_get( 'mail_tmp_directory' );
 	if ( is_dir( $t_mail_tmp_directory ) && is_writeable( $t_mail_tmp_directory ) )
 	{
 		require_once( 'mail_api.php' );
 
-		$t_mailboxes = mail_get_mailboxes();
+		$t_mailaccounts = mail_get_accounts();
 
-		$t_mail_mantisbt_url_fix = plugin_config_get( 'mail_mantisbt_url_fix', '' );
-		if ( php_sapi_name() == 'cli' && !empty( $t_mail_mantisbt_url_fix ) )
-		{
-			config_set_cache( 'path', $t_mail_mantisbt_url_fix, CONFIG_TYPE_STRING);
-		}
-
-		foreach ($t_mailboxes as $t_mailbox)
-		{
-			if ( plugin_config_get( 'mail_debug' ) )
-			{
-				var_dump( $t_mailbox );
+		foreach ($t_mailaccounts as $t_mailaccount) {
+			if ( plugin_config_get( 'mail_debug' ) ) {
+				var_dump( $t_mailaccount );
 			}
-
-			mail_process_all_mails( $t_mailbox );
+			mail_process_all_mails( $t_mailaccount );
 		}
-
-		echo "\n\n" . 'Done checking all mailboxes';
 	}
 	else
 	{
 		echo 'The temporary mail directory is not writable. Please correct it in the configuration';
 	}
 
-	exit( 0 );
+exit( 0 );
 ?>
 

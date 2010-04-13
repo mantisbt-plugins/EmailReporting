@@ -13,10 +13,7 @@ print_manage_menu( );
 
 <tr>
 	<td class="left">
-		<?php echo plugin_lang_get( 'jobsetup' ) . '<hr />' .
-			plugin_lang_get( 'jobsetup_nocron' ) . '<hr />' .
-			plugin_lang_get( 'job1' ) . '<a href="' . helper_mantis_url( 'plugins/' . plugin_get_current() . '/scripts/bug_report_mail.php' ) . '">/plugins/' . plugin_get_current() . '/scripts/bug_report_mail.php</a>' . '<br />' .
-			plugin_lang_get( 'job2' ) . '<a href="' . plugin_page( 'bug_report_mail' ) . '">/' . plugin_page( 'bug_report_mail', true ) . '</a>' ?>
+		<?php echo plugin_lang_get( 'jobsetup' ) . '<br />' . plugin_lang_get( 'job1' ) . '<a href="plugins/' . plugin_get_current() . '/scripts/bug_report_mail.php">/plugins/' . plugin_get_current() . '/scripts/bug_report_mail.php</a>' . '<br />' . plugin_lang_get( 'job2' ) . '<a href="' . plugin_page( 'bug_report_mail' ) . '">/' . plugin_page( 'bug_report_mail', true ) . '</a>' ?>
 	</td>
 </tr>
 
@@ -46,14 +43,6 @@ $t_config_array = array(
 	array(
 		'name' => 'mail_secured_script',
 		'type' => 'boolean',
-	),
-	array(
-		'name' => 'mail_cronjob_present',
-		'type' => 'boolean',
-	),
-	array(
-		'name' => 'mail_check_timer',
-		'type' => 'integer',
 	),
 	array(
 		'name' => 'mail_use_reporter',
@@ -108,15 +97,15 @@ $t_config_array = array(
 		'type' => 'directory_string',
 	),
 	array(
+		'name' => 'mail_auth_method',
+		'type' => 'custom_auth_string',
+	),
+	array(
 		'name' => 'mail_nosubject',
 		'type' => 'string',
 	),
 	array(
 		'name' => 'mail_nodescription',
-		'type' => 'string',
-	),
-	array(
-		'name' => 'mail_removed_reply_text',
 		'type' => 'string',
 	),
 	array(
@@ -241,6 +230,27 @@ foreach( $t_config_array AS $t_config )
 <?php
 			break;		
 
+		case 'custom_auth_string':
+			$t_mail_auth_method = plugin_config_get( $t_config['name'] );
+?>
+<tr <?php echo helper_alternate_class( )?>>
+	<td class="category">
+		<?php echo plugin_lang_get( $t_config['name'] )?>
+	</td>
+	<td class="center" colspan="2">
+		<label><select name="<?php echo $t_config['name'] ?>">
+			<option<?php echo ( ( 'APOP' == $t_mail_auth_method ) ? ' selected' : '' ) ?>>APOP</option>
+			<option<?php echo ( ( 'CRAM-MD5' == $t_mail_auth_method ) ? ' selected' : '' ) ?>>CRAM-MD5</option>
+			<option<?php echo ( ( 'DIGEST-MD5' == $t_mail_auth_method ) ? ' selected' : '' ) ?>>DIGEST-MD5</option>
+			<option<?php echo ( ( 'LOGIN' == $t_mail_auth_method ) ? ' selected' : '' ) ?>>LOGIN</option>
+			<option<?php echo ( ( 'PLAIN' == $t_mail_auth_method ) ? ' selected' : '' ) ?>>PLAIN</option>
+			<option<?php echo ( ( 'USER' == $t_mail_auth_method ) ? ' selected' : '' ) ?>>USER</option>
+		</select></label>
+	</td>
+</tr>
+<?php
+			break;		
+
 		case 'custom_mail_encoding':
 ?>
 <tr <?php echo helper_alternate_class( )?>>
@@ -256,7 +266,6 @@ foreach( $t_config_array AS $t_config )
 			<select name="<?php echo $t_config['name'] ?>">
 <?php
 				$t_list_encodings = mb_list_encodings();
-				natcasesort( $t_list_encodings );
 				foreach( $t_list_encodings AS $t_encoding )
 				{
 ?>
