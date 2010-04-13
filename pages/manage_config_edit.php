@@ -23,7 +23,6 @@ $f_mail_nosubject            = gpc_get_string( 'mail_nosubject' );
 $f_mail_nodescription        = gpc_get_string( 'mail_nodescription' );
 $f_mail_removed_reply_text   = gpc_get_string( 'mail_removed_reply_text' );
 $f_mail_use_bug_priority     = gpc_get_bool( 'mail_use_bug_priority' );
-$f_mail_bug_priority_default = gpc_get_int( 'mail_bug_priority_default' );
 $f_mail_bug_priority         = gpc_get_string( 'mail_bug_priority' );
 $f_mail_encoding             = gpc_get_string( 'mail_encoding' );
 
@@ -106,10 +105,6 @@ if( plugin_config_get( 'mail_removed_reply_text' ) != $f_mail_removed_reply_text
 
 if( plugin_config_get( 'mail_use_bug_priority' ) != $f_mail_use_bug_priority ) {
 	plugin_config_set( 'mail_use_bug_priority', $f_mail_use_bug_priority );
-}
-
-if( plugin_config_get( 'mail_bug_priority_default' ) != $f_mail_bug_priority_default ) {
-	plugin_config_set( 'mail_bug_priority_default', $f_mail_bug_priority_default );
 }
 
 $t_mail_bug_priority = @eval( 'return ' . $f_mail_bug_priority . ';' );

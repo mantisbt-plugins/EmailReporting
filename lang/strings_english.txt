@@ -49,7 +49,6 @@ $s_plugin_EmailReporting_mail_delete = 'Delete processed email from the mailbox'
 $s_plugin_EmailReporting_mail_debug = 'Debug mode';
 $s_plugin_EmailReporting_mail_debug_directory = 'Save email contents to this directory if debug mode is activated';
 $s_plugin_EmailReporting_mail_use_bug_priority = 'Look for priority header field';
-$s_plugin_EmailReporting_mail_bug_priority_default = 'Default priority for issues created by email';
 $s_plugin_EmailReporting_mail_nosubject = 'Use this text if no subject is found in the email';
 $s_plugin_EmailReporting_mail_nodescription = 'Use this text if no description is found in the email';
 $s_plugin_EmailReporting_mail_removed_reply_text = 'Use this text if a Mantis notification email has been removed from the email';

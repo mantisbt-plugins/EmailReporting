@@ -6,7 +6,7 @@
 	# See the README and LICENSE files for details
 
 	# --------------------------------------------------------
-	# $Id: bug_report_mail.php,v 1.16 2010/04/07 23:53:44 SL-Server\SC Kruiper Exp $
+	# $Id: bug_report_mail.php,v 1.17 2010/04/13 00:14:32 SL-Server\SC Kruiper Exp $
 	# --------------------------------------------------------
 
 	# This page receives an E-Mail via POP3 and IMAP and generates a new issue
@@ -21,36 +21,26 @@
 		exit( 1 );
 	}
 
-	$t_mail_tmp_directory = plugin_config_get( 'mail_tmp_directory' );
-	if ( is_dir( $t_mail_tmp_directory ) && is_writeable( $t_mail_tmp_directory ) )
+	require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/mail_api.php' );
+
+	$t_mailboxes  = plugin_config_get( 'mailboxes' );
+
+	$t_mail_mantisbt_url_fix = plugin_config_get( 'mail_mantisbt_url_fix', '' );
+	if ( php_sapi_name() === 'cli' && !is_blank( $t_mail_mantisbt_url_fix ) )
 	{
-		require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/mail_api.php' );
-
-		$t_mail_debug = plugin_config_get( 'mail_debug' );
-		$t_mailboxes  = plugin_config_get( 'mailboxes' );
-
-		$t_mail_mantisbt_url_fix = plugin_config_get( 'mail_mantisbt_url_fix', '' );
-		if ( php_sapi_name() === 'cli' && !empty( $t_mail_mantisbt_url_fix ) )
-		{
-			config_set_global( 'path', $t_mail_mantisbt_url_fix );
-		}
-
-		foreach ( $t_mailboxes as $t_mailbox )
-		{
-			if ( $t_mail_debug )
-			{
-				var_dump( $t_mailbox );
-			}
-
-			ERP_process_all_mails( $t_mailbox );
-		}
-
-		echo "\n\n" . 'Done checking all mailboxes';
+		config_set_global( 'path', $t_mail_mantisbt_url_fix );
 	}
-	else
+
+	$t_mailbox_api = new ERP_mailbox_api;
+
+	foreach ( $t_mailboxes as $t_mailbox )
 	{
-		echo 'The temporary mail directory is not writable. Please correct it in the configuration options';
+		set_time_limit( 30 );
+
+		$t_mailbox_api->process_mailbox( $t_mailbox );
 	}
+
+	echo "\n\n" . 'Done checking all mailboxes' . "\n";
 
 	exit( 0 );
 ?>

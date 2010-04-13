@@ -4,7 +4,7 @@
 	# See the README and LICENSE files for details
 
 	# --------------------------------------------------------
-	# $Id: config_api.php,v 1.13 2010/04/09 16:44:33 SL-Server\SC Kruiper Exp $
+	# $Id: config_api.php,v 1.14 2010/04/13 00:14:32 SL-Server\SC Kruiper Exp $
 	# --------------------------------------------------------
 
 
@@ -43,7 +43,7 @@
 
 	# --------------------
 	# output the menu with the ERP menu links
-	function ERP_print_erp_menu( $p_page = '' )
+	function ERP_print_menu( $p_page = '' )
 	{
 		$t_pages = array(
 			'plugin_lang_get' => array(
@@ -176,7 +176,6 @@
 			case 'string_hostname_port':
 			case 'directory_string':
 			case 'array':
-			case 'dropdown_priorities':
 			case 'dropdown_mbstring_encodings':
 			case 'dropdown_list_reporters':
 			case 'dropdown_projects':
@@ -273,16 +272,6 @@
 ?>
 	<td class="center" width="40%" colspan="2">
 		<textarea cols="40" rows="6" name="<?php echo $p_name ?>"><?php var_export( $t_value ) ?></textarea>
-	</td>
-<?php
-						break;
-
-					case 'dropdown_priorities':
-?>
-	<td class="center" width="40%" colspan="2">
-		<select name="<?php echo $p_name ?>">
-			<?php print_enum_string_option_list( 'priority', $t_value ) ?>
-		</select>
 	</td>
 <?php
 						break;

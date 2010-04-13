@@ -44,6 +44,14 @@ Apr 2010 - EmailReporting-0.8.0
 	- Fixed a problem with a missing port number when using the alternative method to running bug_report_mail (~25072)
 	- Updated readme with "Partial support" notice for Outlook RTF formatted emails
 	- Improved functionality when using IMAP in combination with the inbox folder as the basefolder
+	- mail_api.php has been restructured to form a class
+	- Improved email_is_valid with caching when check_mx_record is enabled (only for the current session).
+	- Email_is_valid will only be performed when the Mail Reporter is used
+	- Optimized the Mail_Parser a little bit
+	- Configuration option mail_bug_priority_default has been removed. The default_bug_priority from the core mantis configuration options will be used instead
+	- Every mailbox is allowed to run for 30 seconds before it returns a fatal error
+	- Default configuration option for mail_tmp_directory is php.ini option upload_tmp_dir if available else it will revert to the old value /tmp
+	- The regular expression for the bugnote check now accepts all characters for the project names
 
 Mar 2010 v2 - EmailReporting-0.7.9
 	- All from email addresses will now be checked by the email_is_valid function before a email will be processed

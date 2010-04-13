@@ -9,7 +9,7 @@ print_manage_menu();
 require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/config_api.php' );
 
 $t_this_page = 'view_readme';
-ERP_print_erp_menu( $t_this_page );
+ERP_print_menu( $t_this_page );
 
 ?>
 

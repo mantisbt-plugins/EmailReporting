@@ -3,36 +3,36 @@
 require_once( 'Mail/mimeDecode.php' );
 require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/Mail/simple_html_dom.php');
 
-class Mail_Parser
+class ERP_Mail_Parser
 {
-	var $_parse_html = FALSE;
-	var $_parse_mime = FALSE;
-	var $_mail_encoding = 'UTF-8';
+	private $_parse_html = FALSE;
+	private $_parse_mime = FALSE;
+	private $_encoding = 'UTF-8';
 
-	var $_file;
-	var $_content;
+	private $_file;
+	private $_content;
 
-	var $_from;
-	var $_subject;
-	var $_charset = 'auto';
-	var $_priority;
-	var $_transferencoding;
-	var $_body;
-	var $_parts = array ( );
-	var $_ctype = array ( );
+	private $_from;
+	private $_subject;
+	private $_charset = 'auto';
+	private $_priority;
+	private $_transferencoding;
+	private $_body;
+	private $_parts = array();
+	private $_ctype = array();
 
-	var $_mb_list_encodings = array();
+	private $_mb_list_encodings = array();
 
-	function Mail_Parser( $options = array() )
+	public function __construct( $options )
 	{
-		$this->_parse_mime = $options['parse_mime'];
-		$this->_parse_html = $options['parse_html'];
-		$this->_mail_encoding = $options['mail_encoding'];
+		$this->_parse_mime = $options[ 'parse_mime' ];
+		$this->_parse_html = $options[ 'parse_html' ];
+		$this->_encoding = $options[ 'encoding' ];
 
 		$this->prepare_mb_list_encodings();
 	}
 	
-	function prepare_mb_list_encodings()
+	private function prepare_mb_list_encodings()
 	{
 		if ( extension_loaded( 'mbstring' ) )
 		{
@@ -48,30 +48,32 @@ class Mail_Parser
 		}
 	}
 
-	function setInputString( $content )
+	public function setInputString( &$content )
 	{
+		$this->_file = NULL;
 		$this->_content = $content;
 	}
 
-	function setInputFile( $file )
+	public function setInputFile( $file )
 	{
 		$this->_file = $file;
 		$this->_content = file_get_contents( $this->_file );
 	}
 
-	function process_encoding( $encode )
+	private function process_encoding( $encode )
 	{
-		if ( extension_loaded( 'mbstring' ) && $this->_mail_encoding !== $this->_charset )
+		if ( extension_loaded( 'mbstring' ) && $this->_encoding !== $this->_charset )
 		{
-			$encode = mb_convert_encoding( $encode, $this->_mail_encoding, $this->_charset );
+			$encode = mb_convert_encoding( $encode, $this->_encoding, $this->_charset );
 		}
 
 		return( $encode );
 	}
 
-	function parse()
+	public function parse()
 	{
 		$decoder = new Mail_mimeDecode( $this->_content );
+		$this->_content = NULL;
 
 		$params['include_bodies'] = TRUE;
 		$params['decode_bodies'] = TRUE;
@@ -81,7 +83,6 @@ class Mail_Parser
 		$structure = $decoder->decode( $params );
 
 		$this->parseStructure( $structure );
-		unset( $this->_content );
 
 		if ( extension_loaded( 'mbstring' ) )
 		{
@@ -91,32 +92,32 @@ class Mail_Parser
 		}
 	}
 
-	function from()
+	public function from()
 	{
-		return $this->_from;
+		return( $this->_from );
 	}
 
-	function subject()
+	public function subject()
 	{
-		return $this->_subject;
+		return( $this->_subject );
 	}
 
-	function priority()
+	public function priority()
 	{
-		return $this->_priority;
+		return( $this->_priority );
 	}
 
-	function body()
+	public function body()
 	{
-		return $this->_body;
+		return( $this->_body );
 	}
 
-	function parts()
+	public function parts()
 	{
-		return $this->_parts;
+		return( $this->_parts );
 	}
 
-	function parseStructure( $structure )
+	private function parseStructure( $structure )
 	{
 		$this->setFrom( $structure->headers['from'] );
 		$this->setSubject( $structure->headers['subject'] );
@@ -148,42 +149,42 @@ class Mail_Parser
 		}
 	}
 
-	function setFrom( $from )
+	private function setFrom( $from )
 	{
 		$this->_from = $from;
 	}
 
-	function setSubject( $subject )
+	private function setSubject( $subject )
 	{
 		$this->_subject = $subject;
 	}
 
-	function setCharset( $charset )
+	private function setCharset( $charset )
 	{
 		if ( extension_loaded( 'mbstring' ) && $this->_charset === 'auto' )
 		{
-			$arraysearch_result = array_search( strtolower( $charset ), $this->_mb_list_encodings, TRUE );
-			$this->_charset = ( ( $arraysearch_result !== FALSE ) ? $arraysearch_result : 'auto' );
+			$t_arraysearch_result = array_search( strtolower( $charset ), $this->_mb_list_encodings, TRUE );
+			$this->_charset = ( ( $t_arraysearch_result !== FALSE ) ? $t_arraysearch_result : 'auto' );
 		}
 	}
 
-	function setPriority( $priority )
+	private function setPriority( $priority )
 	{
 		$this->_priority = $priority;
 	}
 
-	function setTransferEncoding( $transferencoding )
+	private function setTransferEncoding( $transferencoding )
 	{
 		$this->_transferencoding = $transferencoding;
 	}
 	
-	function setContentType( $primary, $secondary )
+	private function setContentType( $primary, $secondary )
 	{
 		$this->_ctype['primary'] = $primary;
 		$this->_ctype['secondary'] = $secondary;
 	}
 
-	function setBody( $body )
+	private function setBody( $body )
 	{
 		if ( is_blank( $body ) || !is_blank( $this->_body ) )
 		{
@@ -203,7 +204,7 @@ class Mail_Parser
 		}
 	}
 
-	function setParts( &$parts, $attachment = FALSE, $p_attached_email_subject = NULL )
+	private function setParts( &$parts, $attachment = FALSE, $p_attached_email_subject = NULL )
 	{
 		$i = 0;
 
@@ -212,7 +213,7 @@ class Mail_Parser
 			$p_attached_email_subject = $parts[ $i ]->headers[ 'subject' ];
 		}
 
-		if ( 'text' == $parts[ $i ]->ctype_primary && in_array( $parts[ $i ]->ctype_secondary, array( 'plain', 'html' ) ) )
+		if ( 'text' === $parts[ $i ]->ctype_primary && in_array( $parts[ $i ]->ctype_secondary, array( 'plain', 'html' ) ) )
 		{
 			$t_stop_part = FALSE;
 
@@ -261,6 +262,7 @@ class Mail_Parser
 
 			$i++;
 		}
+
 		for ( $i; $i < count( $parts ); $i++ )
 		{
 			if ( 'multipart' == $parts[ $i ]->ctype_primary )
@@ -278,7 +280,7 @@ class Mail_Parser
 		}
 	}
 	
-	function addPart( &$part, $p_alternative_name = NULL )
+	private function addPart( &$part, $p_alternative_name = NULL )
 	{
 		$p[ 'ctype' ] = $part->ctype_primary . "/" . $part->ctype_secondary;
 
@@ -287,15 +289,11 @@ class Mail_Parser
 		}
 		elseif ( isset( $part->headers[ 'content-disposition' ] ) && strpos( $part->headers[ 'content-disposition' ], 'filename="' ) !== FALSE )
 		{
-			$t_start = strpos( $part->headers[ 'content-disposition' ], 'filename="' ) + 10;
-			$t_end = strpos( $part->headers[ 'content-disposition' ], '"', $t_start );
-			$p[ 'name' ] = substr( $part->headers[ 'content-disposition' ], $t_start, ( $t_end - $t_start ) );
+			$p[ 'name' ] = custom_substr( $part->headers[ 'content-disposition' ], 'filename="', '"' );
 		}
 		elseif ( isset( $part->headers[ 'content-type' ] ) && strpos( $part->headers[ 'content-type' ], 'name="' ) !== FALSE )
 		{
-			$t_start = strpos( $part->headers[ 'content-type' ], 'name="' ) + 6;
-			$t_end = strpos( $part->headers[ 'content-type' ], '"', $t_start );
-			$p[ 'name' ] = substr( $part->headers[ 'content-type' ], $t_start, ( $t_end - $t_start ) );
+			$p[ 'name' ] = custom_substr( $part->headers[ 'content-type' ], 'name="', '"' );
 		}
 		elseif ( 'text' == $part->ctype_primary && in_array( $part->ctype_secondary, array( 'plain', 'html' ) ) && !empty( $p_alternative_name ) )
 		{
@@ -315,6 +313,15 @@ class Mail_Parser
 		}
 
 		$this->_parts[] = $p;
+	}
+
+	private function custom_substr( $p_string, $p_string_start, $p_string_end )
+	{
+		$t_start = strpos( $p_string, $p_string_start ) + strlen( $p_string_start );
+		$t_end = strpos( $p_string, $p_string_end, $t_start );
+		$t_result = substr( $p_string, $t_start, ( $t_end - $t_start ) );
+
+		return( $t_result );
 	}
 }
 

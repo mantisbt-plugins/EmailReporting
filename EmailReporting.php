@@ -1,7 +1,8 @@
 <?php
 require_once( config_get( 'class_path' ) . 'MantisPlugin.class.php' );
 
-class EmailReportingPlugin extends MantisPlugin {
+class EmailReportingPlugin extends MantisPlugin
+{
 	/**
 	 *  A method that populates the plugin information and minimum requirements.
 	 */ 
@@ -26,6 +27,8 @@ class EmailReportingPlugin extends MantisPlugin {
 	 */
 	function config()
 	{
+		$t_upload_tmp_dir = ini_get( 'upload_tmp_dir' );
+		
 		return array(
 			'config_version' => 0,
 			'schema' => -1,
@@ -34,7 +37,7 @@ class EmailReportingPlugin extends MantisPlugin {
 			# Empty default mailboxes array. This array will be used for all the mailbox
 			# accounts
 			'mailboxes' => array(),
-			
+
 			# Do you want to secure the EmailReporting script so that it cannot be run
 			# via a webserver?
 			'mail_secured_script'		=> ON,
@@ -74,7 +77,7 @@ class EmailReportingPlugin extends MantisPlugin {
 			'mail_identify_reply'		=> ON,
 		
 			# directory for saving temporary mail content
-			'mail_tmp_directory'		=> '/tmp',
+			'mail_tmp_directory'		=> ( ( is_blank( $t_upload_tmp_dir ) ) ? '/tmp' : $t_upload_tmp_dir ),
 		
 			# Delete incoming mail from POP3 server
 			'mail_delete'				=> ON,
@@ -89,9 +92,6 @@ class EmailReportingPlugin extends MantisPlugin {
 			# Looks for priority header field
 			'mail_use_bug_priority' 	=> ON,
 		
-			# Default priority for mail reported bugs
-			'mail_bug_priority_default'	=> NORMAL,
-
 			# Use the following text when the subject is missing from the email
 			'mail_nosubject' 			=> 'No subject found', 
 
@@ -164,7 +164,7 @@ class EmailReportingPlugin extends MantisPlugin {
 			# create the user
 			$t_result_user_create = user_create( $t_username, $t_password, $t_email, REPORTER, FALSE, TRUE, 'Mail Reporter' );
 
-			# Save these after the user has been created succesfully
+			# Save these after the user has been created successfully
 			if ( $t_result_user_create )
 			{
 				$t_user_id = user_get_id_by_name( $t_username );
@@ -190,7 +190,7 @@ class EmailReportingPlugin extends MantisPlugin {
 	}
 
 	/**
-	 * EmailReporting initialation function.
+	 * EmailReporting initialization function.
 	 */
 	function init()
 	{
@@ -208,15 +208,15 @@ class EmailReportingPlugin extends MantisPlugin {
 	function hooks( )
 	{
 		$hooks = array(
-			'EVENT_MENU_MANAGE'			=> 'ERP_manage_emailreporting_menu',
-			'EVENT_CORE_READY'			=> 'ERP_core_ready',
+			'EVENT_MENU_MANAGE' => 'ERP_manage_emailreporting_menu',
+			'EVENT_CORE_READY'  => 'ERP_core_ready',
 		);
 
 		return $hooks;
 	}
 
 	/**
-	 * EmailReporting plugin hooks - add mailbox settings menu item.
+	 * EmailReporting plugin hooks - add emailreporting menu item.
 	 */
 	function ERP_manage_emailreporting_menu( )
 	{
@@ -300,6 +300,7 @@ class EmailReportingPlugin extends MantisPlugin {
 			plugin_config_delete( 'mail_reporter' );
 			plugin_config_delete( 'mail_additional' );
 			plugin_config_delete( 'random_user_number' );
+			plugin_config_delete( 'mail_bug_priority_default' );
 
 			plugin_config_set( 'config_version', 2 );
 		}
@@ -351,11 +352,11 @@ class EmailReportingPlugin extends MantisPlugin {
 			$t_mail_check_timer = plugin_config_get( 'mail_check_timer' );
 			$t_mail_last_check  = plugin_config_get( 'mail_last_check', 0 );
 
-			$t_time_now = explode( ' ', microtime() );
+			$t_time_now = time();
 
-			if ( $t_mail_last_check < ( $t_time_now[ 1 ] - $t_mail_check_timer ) )
+			if ( $t_mail_last_check < ( $t_time_now - $t_mail_check_timer ) )
 			{
-				plugin_config_set( 'mail_last_check', $t_time_now[ 1 ] );
+				plugin_config_set( 'mail_last_check', $t_time_now );
 
 				$t_mail_debug          = plugin_config_get( 'mail_debug' );
 				$t_mail_secured_script = plugin_config_get( 'mail_secured_script' );

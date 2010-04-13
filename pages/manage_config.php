@@ -9,7 +9,7 @@ print_manage_menu();
 require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/config_api.php' );
 
 $t_this_page = 'manage_config';
-ERP_print_erp_menu( $t_this_page );
+ERP_print_menu( $t_this_page );
 
 ?>
 
@@ -70,7 +70,6 @@ ERP_output_config_option( 'mail_identify_reply', 'boolean', -2 );
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'priority_feature_options', 'header' );
 ERP_output_config_option( 'mail_use_bug_priority', 'boolean', -2 );
-ERP_output_config_option( 'mail_bug_priority_default', 'dropdown_priorities', -2 );
 ERP_output_config_option( 'mail_bug_priority', 'array', -2 );
 
 ERP_output_config_option( NULL, 'empty' );
