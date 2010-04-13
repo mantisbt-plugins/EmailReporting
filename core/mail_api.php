@@ -7,7 +7,7 @@
 	# See the README and LICENSE files for details
 
 	# --------------------------------------------------------
-	# $Id: mail_api.php,v 1.19 2009/12/05 22:39:36 SL-Server\SC Kruiper Exp $
+	# $Id: mail_api.php,v 1.21 2009/12/13 05:37:51 SL-Server\SC Kruiper Exp $
 	# --------------------------------------------------------
 
 	require_once( 'bug_api.php' );
@@ -34,6 +34,23 @@
 	}
 
 	# --------------------
+	# show error when connection to mailbox failed
+	#  return an boolean for whether the mailbox has failed
+	function mail_connect_pear_error( &$p_mailbox, &$t_result )
+	{
+		if ( PEAR::isError( $t_result ) )
+		{
+			echo "\n\nerror: " . $p_mailbox[ 'mailbox_description' ] . "\n";
+			echo $t_result->toString();
+			return( true );
+		}
+		else
+		{
+			return( false );
+		}
+	}
+
+	# --------------------
 	# return all mails for an mailbox
 	#  return an boolean for whether the mailbox was succesfully processed
 	function mail_process_all_mails( &$p_mailbox, $p_test_only = false )
@@ -57,8 +74,6 @@
 	#  return an boolean for whether the mailbox was succesfully processed
 	function mail_process_all_mails_pop3( &$p_mailbox, $p_test_only = false )
 	{
-		$t_mail_fetch_max	= plugin_config_get( 'mail_fetch_max' );
-
 		$t_mailbox_hostname = mail_prepare_mailbox_hostname( $p_mailbox, 110, 995 );
 
 		$t_mailbox_connection = &new Net_POP3();
@@ -72,16 +87,14 @@
 
 		if ( $p_test_only === false )
 		{
-			if ( PEAR::isError( $t_result ) )
+			if ( mail_connect_pear_error( $p_mailbox, $t_result ) )
 			{
-				echo "\n\nerror: " . $p_mailbox[ 'mailbox_description' ] . "\n";
-				echo $t_result->toString();
 				return( $t_result );
 			}
 
 			for ( $i = 1; $i <= $t_mailbox_connection->numMsg(); $i++ )
 			{
-				if ( $i > $t_mail_fetch_max )
+				if ( mail_reached_fetch_max( $i ) )
 				{
 					break;
 				}
@@ -102,8 +115,6 @@
 	#  return an boolean for whether the mailbox was succesfully processed
 	function mail_process_all_mails_imap( &$p_mailbox, $p_test_only = false )
 	{
-		$t_mail_fetch_max	= plugin_config_get( 'mail_fetch_max' );
-
 		$t_mailbox_hostname = mail_prepare_mailbox_hostname( $p_mailbox, 143, 993 );
 
 		$t_mailbox_connection = &new Net_IMAP( $t_mailbox_hostname[ 'hostname' ], $t_mailbox_hostname[ 'port' ] );
@@ -114,11 +125,12 @@
 
 		$t_result = $t_mailbox_connection->login( $t_mailbox_username, $t_mailbox_password, $t_mailbox_auth_method );
 
-		if ( $p_test_only === false && PEAR::isError( $t_result ) )
+		if ( $p_test_only === false )
 		{
-			echo "\n\nerror: " . $p_mailbox[ 'mailbox_description' ] . "\n";
-			echo $t_result->toString();
-			return( $t_result );
+			if ( mail_connect_pear_error( $p_mailbox, $t_result ) )
+			{
+				return( $t_result );
+			}
 		}
 
 		$t_mailbox_basefolder = $p_mailbox[ 'mailbox_basefolder' ];
@@ -147,15 +159,21 @@
 						{
 							$t_mailbox_connection->selectMailbox( $t_foldername );
 
+							$t_isdeleted_count = 0;
+
 							for ( $i = 1; $i <= $t_mailbox_connection->numMsg(); $i++ )
 							{
-								if ( $i > $t_mail_fetch_max )
+								if ( $t_mailbox_connection->isDeleted( $i ) )
 								{
-									break 2;
+									$t_isdeleted_count++;
 								}
 								else
 								{
-									if ( !$t_mailbox_connection->isDeleted( $i ) )
+									if ( mail_reached_fetch_max( $i-$t_isdeleted_count ) )
+									{
+										break 2;
+									}
+									else
 									{
 										mail_process_single_email( $i, $p_mailbox, $t_mailbox_connection, $t_project[ 'id' ] );
 									}
@@ -176,17 +194,17 @@
 		}
 		else
 		{
+			$error_text = "\n\n" . 'error: ' . $p_mailbox[ 'mailbox_description' ] . "\n" . ' -> IMAP basefolder not found.';
 			if ( $p_test_only === false )
 			{
-				echo "\n\nerror: " . $p_mailbox[ 'mailbox_description' ] . "\n";
-				echo 'IMAP basefolder not found.';
+				echo $error_text;
 				return( $t_result );
 			}
 			else
 			{
 				$t_result = array(
 					'ERROR_TYPE'	=> 'IMAP_BASEFOLDER_NOTFOUND',
-					'ERROR_MESSAGE'	=> "error: " . $p_mailbox[ 'mailbox_description' ] . "\n" . ' -> IMAP basefolder not found.'
+					'ERROR_MESSAGE'	=> $error_text,
 				);
 				return( $t_result );
 			}
@@ -200,6 +218,8 @@
 		return( $t_result );
 	}
 
+	# --------------------
+	# Process a single email from either a pop3 or imap mailbox
 	function mail_process_single_email( &$p_i, &$p_mailbox, &$p_mailbox_connection , $p_project_id = NULL )
 	{
 		$t_mail_delete		= plugin_config_get( 'mail_delete' );
@@ -267,17 +287,33 @@
 	}
 
 	# --------------------
-	# return the hostname parsed into a hostname + port
+	# return the password decoded
 	function mail_prepare_mailbox_password( &$p_mailbox_password )
 	{
 		return( base64_decode( $p_mailbox_password ) );
 	}
 
 	# --------------------
-	# return the hostname parsed into a hostname + port
+	# return the auth_method
 	function mail_prepare_mailbox_auth_method( &$p_mailbox )
 	{
 		return( ( !empty( $p_mailbox[ 'mailbox_auth_method' ] ) ) ? $p_mailbox[ 'mailbox_auth_method' ] : 'USER' );
+	}
+
+	# --------------------
+	# return whether the current process has reached the mail_fetch_max parameter
+	function mail_reached_fetch_max( $p_i )
+	{
+		$t_mail_fetch_max	= plugin_config_get( 'mail_fetch_max' );
+
+		if ( $p_i > $t_mail_fetch_max )
+		{
+			return( true );
+		}
+		else
+		{
+			return( false );
+		}
 	}
 
 	# --------------------
@@ -436,7 +472,7 @@
 
 					if ( ! $t_reporter_id )
 					{
-						echo 'Failed to create user based on: ' . $p_mailaddress . '<br />Falling back to the mail_reporter<br />';
+						echo 'Failed to create user based on: ' . $p_mailaddress . "\n" . 'Falling back to the mail_reporter' . "\n";
 					}
 				}
 
@@ -453,7 +489,7 @@
 			}
 		}
 
-		echo 'Reporter: ' . $t_reporter_id . '<br />' . $v_mailaddress[ 'email' ] . '<br />';
+		echo 'Reporter: ' . $t_reporter_id . ' - ' . $v_mailaddress[ 'email' ] . "\n\n";
 		auth_attempt_script_login( $t_reporter );
 
 		return $t_reporter_id;

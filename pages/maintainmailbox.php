@@ -191,7 +191,7 @@ foreach( $t_config_array AS $t_config )
 			$t_mailbox_connection_imap = &new Net_IMAPProtocol();
 
 			$t_supported_auth_methods = array_unique( array_merge( $t_mailbox_connection_pop3->supportedAuthMethods, $t_mailbox_connection_imap->supportedAuthMethods ) );
-			sort( $t_supported_auth_methods );
+			natcasesort( $t_supported_auth_methods );
 ?>
 <tr <?php echo helper_alternate_class( )?>>
 	<td class="category">

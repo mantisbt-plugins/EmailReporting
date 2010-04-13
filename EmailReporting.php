@@ -1,10 +1,4 @@
 <?php
-/*
-TODO
-
-encoding still not 100% ok
-the list in the configuration should not contain certain values
-*/
 require_once( config_get( 'class_path' ) . 'MantisPlugin.class.php' );
 
 class EmailReportingPlugin extends MantisPlugin {
@@ -16,7 +10,7 @@ class EmailReportingPlugin extends MantisPlugin {
 		$this->description = plugin_lang_get( 'description' );
 		$this->page = 'config';
 
-		$this->version = '0.7.2';
+		$this->version = '0.7.3';
 		$this->requires = array(
 			'MantisCore' => '1.2',
 		);
@@ -41,7 +35,7 @@ class EmailReportingPlugin extends MantisPlugin {
 			
 			# Do you want to secure the EmailReporting script so that it cannot be run
 			# via a webserver?
-			'mail_secured_script'			=> ON,
+			'mail_secured_script'		=> ON,
 
 			# This tells Mantis to report all the Mail with only one account
 			# ON = mail uses the reporter account in the setting below
@@ -62,7 +56,7 @@ class EmailReportingPlugin extends MantisPlugin {
 			'mail_fetch_max'			=> 1,
 		
 			# Add complete email into the attachments
-			'mail_add_complete_email'			=> OFF,
+			'mail_add_complete_email'	=> OFF,
 		
 			# Write sender of the message into the bug report
 			'mail_save_from'			=> ON,
@@ -125,6 +119,12 @@ class EmailReportingPlugin extends MantisPlugin {
 			# This should be the same as the character encoding used in the database system used for mantis
 			# values should be acceptable to the following function: http://www.php.net/mb_convert_encoding
 			'mail_encoding' 			=> 'UTF-8', 
+
+			# This decides whether this script will run as a cron / scheduled job or not
+			'mail_cronjob_present' 		=> ON, 
+
+			# This decides how long between checking the mailboxes for new emails when no cron / scheduled job is present
+			'mail_check_timer' 			=> 300,
 		);
 	} 
 
@@ -136,10 +136,9 @@ class EmailReportingPlugin extends MantisPlugin {
 		if ( $t_random_user_number === 'NOT FOUND' )
 		{
 			# We need to allow blank emails for a sec
-			$t_allow_blank_email = config_get( 'allow_blank_email' );
-			config_set( 'allow_blank_email', ON );
+			config_set_cache( 'allow_blank_email', ON, CONFIG_TYPE_STRING);
 
-			$t_rand = RAND();
+			$t_rand = MT_RAND( 4, 5 );
 
 			$t_username = plugin_config_get( 'mail_reporter', 'Mail' ) . $t_rand;
 
@@ -160,9 +159,6 @@ class EmailReportingPlugin extends MantisPlugin {
 				plugin_config_set( 'mail_reporter', $t_username );
 				plugin_config_set( 'reset_schema', 1 );
 			}
-
-			# return the setting back to its usual value
-			config_set( 'allow_blank_email', $t_allow_blank_email );
 
 			return( $t_result_user_create );
 		}
@@ -208,10 +204,22 @@ class EmailReportingPlugin extends MantisPlugin {
 	}
 
 	/* 
+	 * This function will run when the mantis core is ready
+	 */
+	function EmailReporting_core_ready( )
+	{
+		$this->EmailReporting_reset_schema_check( );
+
+		$this->EmailReporting_check_mantisbt_path( );
+
+		$this->EmailReporting_email_check_all( );
+	}
+
+	/* 
 	 * Since schema is not used anymore some corrections need to be applied
 	 * Schema will be completely reset by this just once
 	 */
-	function EmailReporting_core_ready( )
+	function EmailReporting_reset_schema_check( )
 	{
 		$t_reset_schema = plugin_config_get( 'reset_schema', 0 );
 
@@ -232,6 +240,95 @@ class EmailReportingPlugin extends MantisPlugin {
 	
 			plugin_config_set( 'schema', -1 );
 			plugin_config_set( 'reset_schema', 1 );
+		}
+	}
+
+	/* 
+	 * Prepare mantisbt variable for use while bug_report_mail is running
+	 * This variable fixes the problem where when EmailReporting sends emails
+	 * that the url in the emails is incorrect
+	 */
+	function EmailReporting_check_mantisbt_path( )
+	{
+		$t_mail_mantisbt_path = plugin_config_get( 'mail_mantisbt_url', '' );
+		$t_path = config_get( 'path' );
+
+		if ( php_sapi_name() != 'cli' && $t_path !== $t_mail_mantisbt_path )
+		{
+			plugin_config_set( 'mail_mantisbt_url', $t_path );
+		}
+	}
+
+	/* 
+	 * Check all mailboxes for new email if bug_report_mail can not or does not run in a cron / scheduled job
+	 */
+	function EmailReporting_email_check_all( )
+	{
+		$t_mail_cronjob_present = plugin_config_get( 'mail_cronjob_present' );
+		$t_mail_nocron = gpc_get_bool( 'mail_nocron', 0 );
+
+		if ( $t_mail_cronjob_present == false && $t_mail_nocron == false )
+		{
+			$t_mail_check_timer = plugin_config_get( 'mail_check_timer' );
+			$t_mail_last_check = plugin_config_get( 'mail_last_check', 0 );
+
+			$t_time_now = explode( ' ', microtime() );
+
+			if ( $t_mail_last_check < ( $t_time_now[ 1 ] - $t_mail_check_timer ) )
+			{
+				plugin_config_set( 'mail_last_check', $t_time_now[ 1 ] );
+				$t_mail_debug = plugin_config_get( 'mail_debug' );
+
+				$t_mail_secured_script = plugin_config_get( 'mail_secured_script' );
+
+				if ( $t_mail_secured_script == true )
+				{
+					plugin_config_set( 'mail_secured_script', OFF );
+				}
+
+				$t_address = config_get( 'path' ) . 'plugins/' . plugin_get_current() . '/scripts/bug_report_mail.php';
+
+				$t_address_parsed = parse_url( $t_address );
+
+				# file_get_contents crashed apache child process on windows using php 5.3.1 -> created work around
+				# Apparently there is a problem when the hostname is not an ip in the setup above. Will not use the code because virtual host support will be broken using this method
+//				$t_address = str_replace( $t_address_parsed[ 'scheme' ] . '://' . $t_address_parsed[ 'host' ], $t_address_parsed[ 'scheme' ] . '://' . gethostbyname( $t_address_parsed[ 'host' ] ), $t_address );
+//				$t_dummy = file_get_contents( $t_address ); 
+
+				$t_socket = fsockopen( gethostbyname( $t_address_parsed[ 'host' ] ), $t_address_parsed[ 'port' ], $errno, $errstr, 30);
+				if ( !$t_socket )
+				{
+				    if ( $t_mail_debug )
+				    {
+				    	echo "$errstr ($errno)<br />\n";
+				    }
+				}
+				else
+				{
+				    $t_out = "GET " . $t_address_parsed[ 'path' ] . " HTTP/1.1\r\n";
+				    $t_out .= "Host: " . $t_address_parsed[ 'host' ] . "\r\n";
+				    $t_out .= "Connection: Close\r\n\r\n";
+
+				    fwrite( $t_socket, $t_out );
+
+				    while ( !feof( $t_socket ) )
+				    {
+				        $t_line = fgets( $t_socket, 128 );
+
+				        if ( $t_mail_debug )
+				        {
+				        	echo $t_line;
+				        }
+				    }
+
+				    fclose( $t_socket );
+				}
+
+				if ( $t_mail_secured_script == true )
+				{
+					plugin_config_set( 'mail_secured_script', ON );
+				}
+			}
 		}
 	}
 }

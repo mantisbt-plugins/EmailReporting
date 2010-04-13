@@ -64,6 +64,7 @@ class Mail_Parser
 		$params['include_bodies'] = true;
 		$params['decode_bodies'] = true;
 		$params['decode_headers'] = true;
+		$params['rfc_822bodies'] = false;
 		$structure = $decoder->decode( $params );
 		$this->parseStructure( $structure );
 		unset( $this->_content );

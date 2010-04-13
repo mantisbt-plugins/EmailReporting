@@ -1,4 +1,6 @@
 <?php
+$_GET[ 'mail_nocron' ] = true;
+
 $t_dir_emailreporting_adjust = '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
 require_once( $t_dir_emailreporting_adjust . 'core.php' );
 

@@ -13,7 +13,10 @@ print_manage_menu( );
 
 <tr>
 	<td class="left">
-		<?php echo plugin_lang_get( 'jobsetup' ) . '<br />' . plugin_lang_get( 'job1' ) . '<a href="plugins/' . plugin_get_current() . '/scripts/bug_report_mail.php">/plugins/' . plugin_get_current() . '/scripts/bug_report_mail.php</a>' . '<br />' . plugin_lang_get( 'job2' ) . '<a href="' . plugin_page( 'bug_report_mail' ) . '">/' . plugin_page( 'bug_report_mail', true ) . '</a>' ?>
+		<?php echo plugin_lang_get( 'jobsetup' ) . '<hr />' .
+			plugin_lang_get( 'jobsetup_nocron' ) . '<hr />' .
+			plugin_lang_get( 'job1' ) . '<a href="' . helper_mantis_url( 'plugins/' . plugin_get_current() . '/scripts/bug_report_mail.php' ) . '">/plugins/' . plugin_get_current() . '/scripts/bug_report_mail.php</a>' . '<br />' .
+			plugin_lang_get( 'job2' ) . '<a href="' . plugin_page( 'bug_report_mail' ) . '">/' . plugin_page( 'bug_report_mail', true ) . '</a>' ?>
 	</td>
 </tr>
 
@@ -43,6 +46,14 @@ $t_config_array = array(
 	array(
 		'name' => 'mail_secured_script',
 		'type' => 'boolean',
+	),
+	array(
+		'name' => 'mail_cronjob_present',
+		'type' => 'boolean',
+	),
+	array(
+		'name' => 'mail_check_timer',
+		'type' => 'integer',
 	),
 	array(
 		'name' => 'mail_use_reporter',
@@ -241,6 +252,7 @@ foreach( $t_config_array AS $t_config )
 			<select name="<?php echo $t_config['name'] ?>">
 <?php
 				$t_list_encodings = mb_list_encodings();
+				natcasesort( $t_list_encodings );
 				foreach( $t_list_encodings AS $t_encoding )
 				{
 ?>
