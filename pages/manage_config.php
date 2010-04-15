@@ -66,6 +66,7 @@ ERP_output_config_option( 'mail_save_from', 'boolean', -2 );
 ERP_output_config_option( 'mail_parse_html', 'boolean', -2 );
 ERP_output_config_option( 'mail_parse_mime', 'boolean', -2 );
 ERP_output_config_option( 'mail_identify_reply', 'boolean', -2 );
+ERP_output_config_option( 'mail_remove_replies', 'boolean', -2 );
 
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'priority_feature_options', 'header' );
@@ -73,10 +74,11 @@ ERP_output_config_option( 'mail_use_bug_priority', 'boolean', -2 );
 ERP_output_config_option( 'mail_bug_priority', 'array', -2 );
 
 ERP_output_config_option( NULL, 'empty' );
-ERP_output_config_option( 'default_options', 'header' );
+ERP_output_config_option( 'default_texts_options', 'header' );
 ERP_output_config_option( 'mail_nosubject', 'string', -2 );
 ERP_output_config_option( 'mail_nodescription', 'string', -2 );
 ERP_output_config_option( 'mail_removed_reply_text', 'string', -2 );
+ERP_output_config_option( 'mail_remove_replies_after', 'string', -2 );
 
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'debug_options', 'header' );

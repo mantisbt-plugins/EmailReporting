@@ -22,7 +22,7 @@ $s_plugin_EmailReporting_runtime_options = 'Runtime configuration options';
 $s_plugin_EmailReporting_feature_options = 'Feature configuration options';
 $s_plugin_EmailReporting_priority_feature_options = 'Priority feature configuration options';
 $s_plugin_EmailReporting_debug_options = 'Debug configuration options';
-$s_plugin_EmailReporting_default_options = 'Default texts configuration options';
+$s_plugin_EmailReporting_default_texts_options = 'Default texts configuration options';
 
 $s_plugin_EmailReporting_enabled = 'Yes';
 $s_plugin_EmailReporting_disabled = 'No';
@@ -54,6 +54,8 @@ $s_plugin_EmailReporting_mail_nodescription = 'Use this text if no description i
 $s_plugin_EmailReporting_mail_removed_reply_text = 'Use this text if a Mantis notification email has been removed from the email';
 $s_plugin_EmailReporting_mail_bug_priority = 'Classify bug priorities';
 $s_plugin_EmailReporting_mail_encoding = 'Convert email to this charset (Should be the same as the database charset)';
+$s_plugin_EmailReporting_mail_remove_replies = 'Remove all replies from bugnotes';
+$s_plugin_EmailReporting_mail_remove_replies_after = 'Use this text to identify the start of a reply';
 
 $s_plugin_EmailReporting_mailboxes = 'Mailboxes';
 $s_plugin_EmailReporting_add_mailbox = 'Add mailbox';

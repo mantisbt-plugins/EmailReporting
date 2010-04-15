@@ -55,6 +55,8 @@ class ERP_mailbox_api
 	private $_mail_nosubject;
 	private $_mail_nodescription;
 	private $_mail_save_from;
+	private $_mail_remove_replies;
+	private $_mail_remove_replies_after;
 
 	private $_mp_options = array();
 
@@ -99,6 +101,8 @@ class ERP_mailbox_api
 		$this->_mail_nosubject                 = plugin_config_get( 'mail_nosubject' );
 		$this->_mail_nodescription             = plugin_config_get( 'mail_nodescription' );
 		$this->_mail_save_from                 = plugin_config_get( 'mail_save_from' );
+		$this->_mail_remove_replies            = plugin_config_get( 'mail_remove_replies' );
+		$this->_mail_remove_replies_after      = plugin_config_get( 'mail_remove_replies_after' );
 
 		$this->_mp_options[ 'parse_mime' ]     = plugin_config_get( 'mail_parse_mime' );
 		$this->_mp_options[ 'parse_html' ]     = plugin_config_get( 'mail_parse_html' );
@@ -908,6 +912,15 @@ class ERP_mailbox_api
 	# Removes the original mantis email from replies
 	private function identify_mantis_email( $p_description )
 	{
+		if ( $this->_mail_remove_replies )
+		{
+			$t_first_occurence = strpos( $p_description, $this->_mail_remove_replies_after );
+			if ( $t_first_occurence !== FALSE )
+			{
+				$t_description = substr( $p_description, 0, $t_first_occurence ) . $this->_mail_removed_reply_text;
+			}
+		}
+
 		if ( $this->_mail_identify_reply )
 		{
 			# The pear mimeDecode.php seems to be removing the last "=" in some versions of the pear package.
@@ -918,9 +931,12 @@ class ERP_mailbox_api
 			if ( $t_first_occurence !== FALSE && substr_count( $p_description, $t_email_separator1, $t_first_occurence ) >= 5 )
 			{
 				$t_description = substr( $p_description, 0, $t_first_occurence ) . $this->_mail_removed_reply_text;
-
-				return( $t_description );
 			}
+		}
+
+		if ( isset( $t_description ) )
+		{
+			return( $t_description );
 		}
 
 		return( $p_description );

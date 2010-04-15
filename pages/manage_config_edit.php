@@ -25,6 +25,8 @@ $f_mail_removed_reply_text   = gpc_get_string( 'mail_removed_reply_text' );
 $f_mail_use_bug_priority     = gpc_get_bool( 'mail_use_bug_priority' );
 $f_mail_bug_priority         = gpc_get_string( 'mail_bug_priority' );
 $f_mail_encoding             = gpc_get_string( 'mail_encoding' );
+$f_mail_remove_replies       = gpc_get_bool( 'mail_remove_replies' );
+$f_mail_remove_replies_after = gpc_get_string( 'mail_remove_replies_after' );
 
 
 if( plugin_config_get( 'mail_secured_script' ) != $f_mail_secured_script ) {
@@ -130,6 +132,14 @@ else
 
 if( plugin_config_get( 'mail_encoding' ) != $f_mail_encoding ) {
 	plugin_config_set( 'mail_encoding', $f_mail_encoding );
+}
+
+if( plugin_config_get( 'mail_remove_replies' ) != $f_mail_remove_replies ) {
+	plugin_config_set( 'mail_remove_replies', $f_mail_remove_replies );
+}
+
+if( plugin_config_get( 'mail_remove_replies_after' ) != $f_mail_remove_replies_after ) {
+	plugin_config_set( 'mail_remove_replies_after', $f_mail_remove_replies_after );
 }
 
 if ( !isset( $t_notsuccesfull ) )
