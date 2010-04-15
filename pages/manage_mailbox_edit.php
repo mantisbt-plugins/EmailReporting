@@ -10,22 +10,22 @@ $t_mailboxes = plugin_config_get( 'mailboxes' );
 if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailbox_action === 'edit' || $f_mailbox_action === 'test' ) && $f_select_mailbox >= 0 ) )
 {
 	$t_mailbox = array(
-		'mailbox_description'           => gpc_get_string( 'mailbox_description' ),
-		'mailbox_type'                  => gpc_get_string( 'mailbox_type' ),
-		'mailbox_hostname'              => gpc_get_string_array( 'mailbox_hostname' ),
-		'mailbox_encryption'            => gpc_get_string( 'mailbox_encryption' ),
-		'mailbox_username'              => gpc_get_string( 'mailbox_username' ),
-		'mailbox_password'              => base64_encode( gpc_get_string( 'mailbox_password' ) ),
-		'mailbox_auth_method'           => gpc_get_string( 'mailbox_auth_method' ),
-		'mailbox_project'               => gpc_get_int( 'mailbox_project' ),
-		'mailbox_global_category'       => gpc_get_int( 'mailbox_global_category' ),
+		'mailbox_description'		=> gpc_get_string( 'mailbox_description' ),
+		'mailbox_type'				=> gpc_get_string( 'mailbox_type' ),
+		'mailbox_hostname'			=> gpc_get_string_array( 'mailbox_hostname' ),
+		'mailbox_encryption'		=> gpc_get_string( 'mailbox_encryption' ),
+		'mailbox_username'			=> gpc_get_string( 'mailbox_username' ),
+		'mailbox_password'			=> base64_encode( gpc_get_string( 'mailbox_password' ) ),
+		'mailbox_auth_method'		=> gpc_get_string( 'mailbox_auth_method' ),
+		'mailbox_project'			=> gpc_get_int( 'mailbox_project' ),
+		'mailbox_global_category'	=> gpc_get_int( 'mailbox_global_category' ),
 	);
 
 	if ( $t_mailbox[ 'mailbox_type' ] === 'IMAP' )
 	{
 		$t_mailbox_imap = array(
-			'mailbox_basefolder'            => trim( str_replace( '\\', '/', gpc_get_string( 'mailbox_basefolder' ) ), '/ ' ),
-			'mailbox_createfolderstructure' => gpc_get_bool( 'mailbox_createfolderstructure' ),
+			'mailbox_basefolder'			=> trim( str_replace( '\\', '/', gpc_get_string( 'mailbox_basefolder' ) ), '/ ' ),
+			'mailbox_createfolderstructure'	=> gpc_get_bool( 'mailbox_createfolderstructure' ),
 		);
 
 		$t_mailbox += $t_mailbox_imap;

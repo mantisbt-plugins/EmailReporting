@@ -19,7 +19,7 @@
 
 	require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/mail_api.php' );
 
-	$t_mailboxes  = plugin_config_get( 'mailboxes' );
+	$t_mailboxes = plugin_config_get( 'mailboxes' );
 
 	$t_mail_mantisbt_url_fix = plugin_config_get( 'mail_mantisbt_url_fix', '' );
 	if ( php_sapi_name() === 'cli' && !is_blank( $t_mail_mantisbt_url_fix ) )

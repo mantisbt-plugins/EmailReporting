@@ -67,6 +67,7 @@ ERP_output_config_option( 'mail_parse_html', 'boolean', -2 );
 ERP_output_config_option( 'mail_parse_mime', 'boolean', -2 );
 ERP_output_config_option( 'mail_identify_reply', 'boolean', -2 );
 ERP_output_config_option( 'mail_remove_replies', 'boolean', -2 );
+ERP_output_config_option( 'mail_email_receive_own', 'boolean', -2 );
 
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'priority_feature_options', 'header' );

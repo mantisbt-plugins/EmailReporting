@@ -8,10 +8,10 @@
 	function ERP_get_default_mailbox( )
 	{
 		$t_mailbox = array(
-			'mailbox_type'              => 'POP3',
-			'mailbox_encryption'        => 'None',
-			'mailbox_auth_method'       => 'USER',
-			'mailbox_global_category'   => -1,
+			'mailbox_type'				=> 'POP3',
+			'mailbox_encryption'		=> 'None',
+			'mailbox_auth_method'		=> 'USER',
+			'mailbox_global_category'	=> -1,
 		);
 
 		return( $t_mailbox );
@@ -28,8 +28,8 @@
 			$t_hostname = explode( ':', $t_hostname, 2 );
 
 			$t_hostname = array(
-				'hostname' => $t_hostname[ 0 ],
-				'port'     => ( ( isset( $t_hostname[ 1 ] ) ) ? $t_hostname[ 1 ] : '' ),
+				'hostname'	=> $t_hostname[ 0 ],
+				'port'		=> ( ( isset( $t_hostname[ 1 ] ) ) ? $t_hostname[ 1 ] : '' ),
 			);
 		}
 
@@ -47,8 +47,8 @@
 				/*'manage_rules',*/
 			),
 			'lang_get' => array(
-				'documentation_link' => 'view_readme',
-				'changelog_link'     => 'view_changelog',
+				'documentation_link'	=> 'view_readme',
+				'changelog_link'		=> 'view_changelog',
 			),
 		);
 

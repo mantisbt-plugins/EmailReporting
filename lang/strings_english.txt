@@ -56,6 +56,7 @@ $s_plugin_EmailReporting_mail_bug_priority = 'Classify bug priorities';
 $s_plugin_EmailReporting_mail_encoding = 'Convert email to this charset (Should be the same as the database charset)';
 $s_plugin_EmailReporting_mail_remove_replies = 'Remove all replies from bugnotes';
 $s_plugin_EmailReporting_mail_remove_replies_after = 'Use this text to identify the start of a reply';
+$s_plugin_EmailReporting_mail_email_receive_own = 'Should users receive emails for their own actions (N/A if email_receive_own = ON)';
 
 $s_plugin_EmailReporting_mailboxes = 'Mailboxes';
 $s_plugin_EmailReporting_add_mailbox = 'Add mailbox';
