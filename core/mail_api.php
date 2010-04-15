@@ -224,6 +224,11 @@ class ERP_mailbox_api
 				for ( $i = 1; $i <= $t_numMsg; $i++ )
 				{
 					$this->process_single_email( $i );
+
+					if ( $this->_mail_delete )
+					{
+						$this->_mailserver->deleteMsg( $i );
+					}
 				}
 			}
 
@@ -304,6 +309,8 @@ class ERP_mailbox_api
 											{
 												$this->process_single_email( $i, $t_project[ 'id' ] );
 
+												$this->_mailserver->deleteMsg( $i );
+
 												$t_total_fetch_counter++;
 											}
 										}
@@ -372,11 +379,6 @@ class ERP_mailbox_api
 		else
 		{
 			$this->custom_error( 'From email address rejected by email_is_valid function based on: ' . $t_email[ 'From' ] );
-		}
-
-		if ( $this->_mail_delete || $this->_mailbox[ 'mailbox_type' ] === 'IMAP' )
-		{
-			$this->_mailserver->deleteMsg( $i );
 		}
 	}
 
