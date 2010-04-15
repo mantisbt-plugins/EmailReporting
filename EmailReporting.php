@@ -28,7 +28,7 @@ class EmailReportingPlugin extends MantisPlugin
 	function config()
 	{
 		$t_upload_tmp_dir = ini_get( 'upload_tmp_dir' );
-		
+
 		return array(
 			'config_version' => 0,
 			'schema' => -1,
@@ -46,52 +46,52 @@ class EmailReportingPlugin extends MantisPlugin
 			# ON = mail uses the reporter account in the setting below
 			# OFF = it identifies the reporter using the email address of the sender
 			'mail_use_reporter'			=> ON,
-		
+
 			# The account's name for mail reporting
 			# Also used for fallback if a user is not found in database
 			# Mail is just the default name which will be converted to a user id during installation
 			'mail_reporter_id'			=> 'Mail',
-		
+
 			# Signup new users automatically (possible security risk!)
 			# Default is OFF, if mail_use_reporter is OFF and this is OFF then it will
 			# fallback to the mail_reporter account above
 			'mail_auto_signup'			=> OFF,
-		
+
 			# How many mails should be fetched at the same time
 			# If big mails with attachments should be received, specify only one
 			'mail_fetch_max'			=> 1,
-		
+
 			# Add complete email into the attachments
 			'mail_add_complete_email'	=> OFF,
-		
+
 			# Write sender of the message into the bug report
 			'mail_save_from'			=> ON,
-		
+
 			# Parse MIME mails (may require a lot of memory)
 			'mail_parse_mime'			=> OFF,
-		
+
 			# Parse HTML mails
 			'mail_parse_html'			=> ON,
 
 			# Try to identify only the reply parts in emails incase of notes
 			'mail_identify_reply'		=> ON,
-		
+
 			# directory for saving temporary mail content
 			'mail_tmp_directory'		=> ( ( is_blank( $t_upload_tmp_dir ) ) ? '/tmp' : $t_upload_tmp_dir ),
-		
+
 			# Delete incoming mail from POP3 server
 			'mail_delete'				=> ON,
-		
+
 			# Used for debugging the system.
 			# Use with care
 			'mail_debug'				=> OFF,
-		
+
 			# Save mail contents to this directory if debug mode is ON
 			'mail_debug_directory'		=> '/tmp/mantis',
-		
+
 			# Looks for priority header field
 			'mail_use_bug_priority' 	=> ON,
-		
+
 			# Use the following text when the subject is missing from the email
 			'mail_nosubject' 			=> 'No subject found', 
 
@@ -100,7 +100,7 @@ class EmailReportingPlugin extends MantisPlugin
 
 			# Use the following text when a mantis email has been removed
 			'mail_removed_reply_text'	=> '[EmailReporting -> Mantis notification email removed]',
-		
+
 			# Classify bug priorities
 			'mail_bug_priority' 		=> array(
 				'5 (lowest)'    => 10,
@@ -120,7 +120,7 @@ class EmailReportingPlugin extends MantisPlugin
 				''       => 30,
 				'?'      => 30
 			),
-		
+
 			# Need to set the character encoding to which the email will be converted
 			# This should be the same as the character encoding used in the database system used for mantis
 			# values should be acceptable to the following function: http://www.php.net/mb_convert_encoding
@@ -200,7 +200,7 @@ class EmailReportingPlugin extends MantisPlugin
 		{
 			set_include_path( get_include_path() . PATH_SEPARATOR . $t_path );
 		}
-	} 
+	}
 
 	/**
 	 * EmailReporting plugin hooks.
@@ -260,11 +260,11 @@ class EmailReportingPlugin extends MantisPlugin
 				$t_username = plugin_config_get( 'mail_reporter' );
 
 				$t_user_id = user_get_id_by_name( $t_username );
-	
+
 				if ( $t_user_id !== FALSE )
 				{
 					$t_user_email = user_get_email( $t_user_id );
-			
+
 					if ( $t_user_email === 'nomail' )
 					{
 						# We need to allow blank emails for a sec
@@ -383,30 +383,30 @@ class EmailReportingPlugin extends MantisPlugin
 				$t_socket = fsockopen( gethostbyname( $t_address_parsed[ 'host' ] ), $t_address_parsed[ 'port' ], $errno, $errstr, 30);
 				if ( !$t_socket )
 				{
-				    if ( $t_mail_debug )
-				    {
-				    	echo "$errstr ($errno)<br />\n";
-				    }
+					if ( $t_mail_debug )
+					{
+						echo "$errstr ($errno)<br />\n";
+					}
 				}
 				else
 				{
-				    $t_out = "GET " . $t_address_parsed[ 'path' ] . " HTTP/1.1\r\n";
-				    $t_out .= "Host: " . $t_address_parsed[ 'host' ] . "\r\n";
-				    $t_out .= "Connection: Close\r\n\r\n";
+					$t_out = "GET " . $t_address_parsed[ 'path' ] . " HTTP/1.1\r\n";
+					$t_out .= "Host: " . $t_address_parsed[ 'host' ] . "\r\n";
+					$t_out .= "Connection: Close\r\n\r\n";
 
-				    fwrite( $t_socket, $t_out );
+					fwrite( $t_socket, $t_out );
 
-				    while ( !feof( $t_socket ) )
-				    {
-				        $t_line = fgets( $t_socket, 128 );
+					while ( !feof( $t_socket ) )
+					{
+						$t_line = fgets( $t_socket, 128 );
 
-				        if ( $t_mail_debug )
-				        {
-				        	echo $t_line;
-				        }
-				    }
+						if ( $t_mail_debug )
+						{
+							echo $t_line;
+						}
+					}
 
-				    fclose( $t_socket );
+					fclose( $t_socket );
 				}
 
 				if ( $t_mail_secured_script == TRUE )
@@ -414,11 +414,11 @@ class EmailReportingPlugin extends MantisPlugin
 					plugin_config_set( 'mail_secured_script', ON );
 				}
 
-		        if ( $t_mail_debug )
-		        {
-		        	echo 'DEBUG mode: Are there any errors above?';
-		        	exit;
-		        }
+				if ( $t_mail_debug )
+				{
+					echo 'DEBUG mode: Are there any errors above?';
+					exit;
+				}
 			}
 		}
 	}
