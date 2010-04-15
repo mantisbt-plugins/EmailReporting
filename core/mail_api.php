@@ -6,10 +6,6 @@
 	# This program is distributed under the terms and conditions of the GPL
 	# See the README and LICENSE files for details
 
-	# --------------------------------------------------------
-	# $Id: mail_api.php,v 1.42 2010/04/13 00:14:32 SL-Server\SC Kruiper Exp $
-	# --------------------------------------------------------
-
 	# This page receives an E-Mail via POP3 or IMAP and generates an Report
 
 	require_once( 'bug_api.php' );

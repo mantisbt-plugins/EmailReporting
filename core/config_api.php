@@ -3,11 +3,6 @@
 	# This program is distributed under the terms and conditions of the GPL
 	# See the README and LICENSE files for details
 
-	# --------------------------------------------------------
-	# $Id: config_api.php,v 1.14 2010/04/13 00:14:32 SL-Server\SC Kruiper Exp $
-	# --------------------------------------------------------
-
-
 	# --------------------
 	# Return the default mailbox options
 	function ERP_get_default_mailbox( )

@@ -5,10 +5,6 @@
 	# This program is distributed under the terms and conditions of the GPL
 	# See the README and LICENSE files for details
 
-	# --------------------------------------------------------
-	# $Id: bug_report_mail.php,v 1.17 2010/04/13 00:14:32 SL-Server\SC Kruiper Exp $
-	# --------------------------------------------------------
-
 	# This page receives an E-Mail via POP3 and IMAP and generates a new issue
 
 	$GLOBALS[ 'g_bypass_headers' ] = 1;
