@@ -59,6 +59,7 @@ class ERP_mailbox_api
 	private $_mail_remove_replies_after;
 	private $_mail_add_bug_reports;
 	private $_mail_add_bugnotes;
+	private $_mail_fallback_mail_reporter;
 
 	private $_mp_options = array();
 
@@ -107,6 +108,7 @@ class ERP_mailbox_api
 		$this->_mail_remove_replies_after		= plugin_config_get( 'mail_remove_replies_after' );
 		$this->_mail_add_bug_reports			= plugin_config_get( 'mail_add_bug_reports' );
 		$this->_mail_add_bugnotes				= plugin_config_get( 'mail_add_bugnotes' );
+		$this->_mail_fallback_mail_reporter		= plugin_config_get( 'mail_fallback_mail_reporter' );
 
 		$this->_mp_options[ 'parse_mime' ]		= plugin_config_get( 'mail_parse_mime' );
 		$this->_mp_options[ 'parse_html' ]		= plugin_config_get( 'mail_parse_html' );
@@ -385,14 +387,18 @@ class ERP_mailbox_api
 
 		unset( $t_msg );
 
-		// We don't need to validate the email address if it is an existing user (existing user also needs to be set as the reporter of the issue)
-		if ( $t_email[ 'Reporter_id' ] !== $this->_mail_reporter_id || validate_email_address( $t_email[ 'From_parsed' ][ 'email' ] ) )
+		// Only continue if we have a valid Reporter to work with
+		if ( $t_email[ 'Reporter_id' ] !== FALSE )
 		{
-			$this->add_bug( $t_email, $p_overwrite_project_id );
-		}
-		else
-		{
-			$this->custom_error( 'From email address rejected by email_is_valid function based on: ' . $t_email[ 'From' ] );
+			// We don't need to validate the email address if it is an existing user (existing user also needs to be set as the reporter of the issue)
+			if ( $t_email[ 'Reporter_id' ] !== $this->_mail_reporter_id || validate_email_address( $t_email[ 'From_parsed' ][ 'email' ] ) )
+			{
+				$this->add_bug( $t_email, $p_overwrite_project_id );
+			}
+			else
+			{
+				$this->custom_error( 'From email address rejected by email_is_valid function based on: ' . $t_email[ 'From' ] );
+			}
 		}
 	}
 
@@ -478,30 +484,36 @@ class ERP_mailbox_api
 
 					if ( !$t_reporter_id )
 					{
-						echo 'Failed to create user based on: ' . implode( ' - ', $p_parsed_from ) . "\n" . 'Falling back to the mail_reporter' . "\n";
+						$this->custom_error( 'Failed to create user based on: ' . implode( ' - ', $p_parsed_from ) );
 					}
 				}
 
-				if ( !$t_reporter_id )
+				if ( !$t_reporter_id && $this->_mail_fallback_mail_reporter )
 				{
 					// Fall back to the default mail_reporter
 					$t_reporter_id = $this->_mail_reporter_id;
 				}
 			}
-			else
-			{
-			}
 		}
 
-		if ( !isset( $t_reporter_name ) )
+		if ( !isset( $t_reporter_name ) && $t_reporter_id )
 		{
 			$t_reporter_name = user_get_name( $t_reporter_id );
 		}
 
-		echo 'Reporter: ' . $t_reporter_id . ' - ' . $p_parsed_from[ 'email' ] . "\n\n";
-		auth_attempt_script_login( $t_reporter_name );
+		if ( $t_reporter_id )
+		{
+			$this->custom_error( 'Reporter: ' . $t_reporter_id . ' - ' . $p_parsed_from[ 'email' ] );
+			auth_attempt_script_login( $t_reporter_name );
 
-		return( $t_reporter_id );
+			return( $t_reporter_id );
+		}
+		else
+		{
+			$this->custom_error( 'Could not get a valid reporter. Email will be ignored' );
+
+			return( FALSE );
+		}
 	}
 
 	# --------------------
@@ -687,7 +699,7 @@ class ERP_mailbox_api
 					if ( $t_reject_rejected_files !== TRUE )
 					{
 						$part[ 'body' ] .= $t_reject_rejected_files;
-						echo 'Failed to add "' . $part[ 'name' ] . '" to the issue. See below for all errors.' . "\n" . $part[ 'body' ];
+						$this->custom_error( 'Failed to add "' . $part[ 'name' ] . '" to the issue. See below for all errors.' . "\n" . $part[ 'body' ] );
 					}
 				}
 			}

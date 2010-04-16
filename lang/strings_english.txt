@@ -36,7 +36,8 @@ $s_plugin_EmailReporting_mail_secured_script = 'Block this script from running v
 $s_plugin_EmailReporting_mail_cronjob_present = 'Have/will you set up a scheduled job for retrieving emails (recommended = "Yes")';
 $s_plugin_EmailReporting_mail_check_timer = 'Interval at which to check the mailboxes (In seconds. N/A when above is set to "Yes")';
 $s_plugin_EmailReporting_mail_use_reporter = 'Use one reporter user for issues created by email';
-$s_plugin_EmailReporting_mail_reporter_id = 'The (fallback) reporter user for issues created by email';
+$s_plugin_EmailReporting_mail_fallback_mail_reporter = 'Enable fallback to default reporter';
+$s_plugin_EmailReporting_mail_reporter_id = 'The default / fallback reporter user for issues created by email';
 $s_plugin_EmailReporting_mail_auto_signup = 'Signup new users automatically (possible security risk!, see documentation)';
 $s_plugin_EmailReporting_mail_fetch_max = 'Maximum fetched emails per mailbox per execution of the scheduled job (see documentation)';
 $s_plugin_EmailReporting_mail_add_complete_email = 'Add the complete email into the attachments';

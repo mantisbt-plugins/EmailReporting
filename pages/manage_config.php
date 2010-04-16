@@ -57,6 +57,7 @@ ERP_output_config_option( 'mail_encoding', 'dropdown_mbstring_encodings', -2 );
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'reporter_options', 'header' );
 ERP_output_config_option( 'mail_use_reporter', 'boolean', -2 );
+ERP_output_config_option( 'mail_fallback_mail_reporter', 'boolean', -2 );
 ERP_output_config_option( 'mail_reporter_id', 'dropdown_list_reporters', -2 );
 ERP_output_config_option( 'mail_auto_signup', 'boolean', -2 );
 

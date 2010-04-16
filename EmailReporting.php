@@ -27,82 +27,82 @@ class EmailReportingPlugin extends MantisPlugin
 	 */
 	function config()
 	{
-		$t_upload_tmp_dir = ini_get( 'upload_tmp_dir' );
+		$t_upload_tmp_dir = trim( str_replace( '\\', '/', ini_get( 'upload_tmp_dir' ) ), '/ ' );
 
 		return array(
-			'config_version'			=> 0,
-			'schema'					=> -1,
+			'config_version'				=> 0,
+			'schema'						=> -1,
 
 			# --- mail reporting settings -----
 			# Empty default mailboxes array. This array will be used for all the mailbox
 			# accounts
-			'mailboxes'					=> array(),
+			'mailboxes'						=> array(),
 
 			# Do you want to secure the EmailReporting script so that it cannot be run
 			# via a webserver?
-			'mail_secured_script'		=> ON,
+			'mail_secured_script'			=> ON,
 
 			# This tells Mantis to report all the Mail with only one account
 			# ON = mail uses the reporter account in the setting below
 			# OFF = it identifies the reporter using the email address of the sender
-			'mail_use_reporter'			=> ON,
+			'mail_use_reporter'				=> ON,
 
 			# The account's name for mail reporting
 			# Also used for fallback if a user is not found in database
 			# Mail is just the default name which will be converted to a user id during installation
-			'mail_reporter_id'			=> 'Mail',
+			'mail_reporter_id'				=> 'Mail',
 
 			# Signup new users automatically (possible security risk!)
 			# Default is OFF, if mail_use_reporter is OFF and this is OFF then it will
 			# fallback to the mail_reporter account above
-			'mail_auto_signup'			=> OFF,
+			'mail_auto_signup'				=> OFF,
 
 			# How many mails should be fetched at the same time
 			# If big mails with attachments should be received, specify only one
-			'mail_fetch_max'			=> 1,
+			'mail_fetch_max'				=> 1,
 
 			# Add complete email into the attachments
-			'mail_add_complete_email'	=> OFF,
+			'mail_add_complete_email'		=> OFF,
 
 			# Write sender of the message into the bug report
-			'mail_save_from'			=> ON,
+			'mail_save_from'				=> ON,
 
 			# Parse MIME mails (may require a lot of memory)
-			'mail_parse_mime'			=> OFF,
+			'mail_parse_mime'				=> OFF,
 
 			# Parse HTML mails
-			'mail_parse_html'			=> ON,
+			'mail_parse_html'				=> ON,
 
 			# Try to identify only the reply parts in emails incase of notes
-			'mail_identify_reply'		=> ON,
+			'mail_identify_reply'			=> ON,
 
 			# directory for saving temporary mail content
-			'mail_tmp_directory'		=> ( ( is_blank( $t_upload_tmp_dir ) ) ? '/tmp' : $t_upload_tmp_dir ),
+			'mail_tmp_directory'			=> ( ( is_blank( $t_upload_tmp_dir ) ) ? '/tmp' : $t_upload_tmp_dir ),
 
 			# Delete incoming mail from POP3 server
-			'mail_delete'				=> ON,
+			'mail_delete'					=> ON,
 
 			# Used for debugging the system.
 			# Use with care
-			'mail_debug'				=> OFF,
+			'mail_debug'					=> OFF,
 
 			# Save mail contents to this directory if debug mode is ON
-			'mail_debug_directory'		=> '/tmp/mantis',
+			'mail_debug_directory'			=> '/tmp/mantis',
 
 			# Looks for priority header field
-			'mail_use_bug_priority'		=> ON,
+			'mail_use_bug_priority'			=> ON,
 
 			# Use the following text when the subject is missing from the email
-			'mail_nosubject'			=> 'No subject found', 
+			'mail_nosubject'				=> 'No subject found', 
 
 			# Use the following text when the description is missing from the email
-			'mail_nodescription'		=> 'No description found', 
+			'mail_nodescription'			=> 'No description found', 
 
 			# Use the following text when a mantis email has been removed
-			'mail_removed_reply_text'	=> '[EmailReporting -> Mantis notification email removed]',
+			'mail_removed_reply_text'		=> '[EmailReporting -> Mantis notification email removed]',
 
 			# Classify bug priorities
-			'mail_bug_priority'			=> array(
+			'mail_bug_priority'				=> array(
 				'5 (lowest)'	=> 10,
 				'4 (low)'		=> 20,
 				'3 (normal)'	=> 30,
@@ -124,31 +124,34 @@ class EmailReportingPlugin extends MantisPlugin
 			# Need to set the character encoding to which the email will be converted
 			# This should be the same as the character encoding used in the database system used for mantis
 			# values should be acceptable to the following function: http://www.php.net/mb_convert_encoding
-			'mail_encoding'				=> 'UTF-8', 
+			'mail_encoding'					=> 'UTF-8', 
 
 			# This decides whether this script will run as a scheduled job or not
-			'mail_cronjob_present'		=> ON, 
+			'mail_cronjob_present'			=> ON, 
 
 			# This decides how long between checking the mailboxes for new emails when no scheduled job is present
-			'mail_check_timer'			=> 300,
+			'mail_check_timer'				=> 300,
 
 			# Remove everything after and including the remove_replies_after text
-			'mail_remove_replies'		=> OFF,
+			'mail_remove_replies'			=> OFF,
 
 			# Text which decides after (and including) which all content needs to be removed
-			'mail_remove_replies_after'	=> '-----Original Message-----',
+			'mail_remove_replies_after'		=> '-----Original Message-----',
 
 			# Should users allways receive emails on actions they performed by email even though email_receive_own is OFF
-			'mail_email_receive_own'	=> OFF,
+			'mail_email_receive_own'		=> OFF,
 
 			# Is this plugin allowed to process and create new bug reports
-			'mail_add_bug_reports'		=> ON,
+			'mail_add_bug_reports'			=> ON,
 
 			# Is this plugin allowed to process and add bugnotes to existing issues
-			'mail_add_bugnotes'			=> ON,
+			'mail_add_bugnotes'				=> ON,
 
 			# Is this plugin allowed to process and add attachments to the issues
-			'mail_add_attachments'		=> ON,
+			'mail_add_attachments'			=> ON,
+
+			# Enable fallback to mail reporter
+			'mail_fallback_mail_reporter'	=> ON,
 		);
 	} 
 
