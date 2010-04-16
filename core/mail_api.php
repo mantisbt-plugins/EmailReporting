@@ -57,6 +57,8 @@ class ERP_mailbox_api
 	private $_mail_save_from;
 	private $_mail_remove_replies;
 	private $_mail_remove_replies_after;
+	private $_mail_add_bug_reports;
+	private $_mail_add_bugnotes;
 
 	private $_mp_options = array();
 
@@ -103,10 +105,13 @@ class ERP_mailbox_api
 		$this->_mail_save_from					= plugin_config_get( 'mail_save_from' );
 		$this->_mail_remove_replies				= plugin_config_get( 'mail_remove_replies' );
 		$this->_mail_remove_replies_after		= plugin_config_get( 'mail_remove_replies_after' );
+		$this->_mail_add_bug_reports			= plugin_config_get( 'mail_add_bug_reports' );
+		$this->_mail_add_bugnotes				= plugin_config_get( 'mail_add_bugnotes' );
 
 		$this->_mp_options[ 'parse_mime' ]		= plugin_config_get( 'mail_parse_mime' );
 		$this->_mp_options[ 'parse_html' ]		= plugin_config_get( 'mail_parse_html' );
 		$this->_mp_options[ 'encoding' ]		= plugin_config_get( 'mail_encoding' );
+		$this->_mp_options[ 'add_attachments' ]	= plugin_config_get( 'mail_add_attachments' );
 
 		$this->_default_bug_priority			= config_get( 'default_bug_priority' );
 		$this->_validate_email					= config_get( 'validate_email' );
@@ -504,7 +509,7 @@ class ERP_mailbox_api
 	# Taken from bug_report.php in MantisBT 1.2.0
 	private function add_bug( &$p_mail, $p_overwrite_project_id = FALSE )
 	{
-		if ( ( $t_bug_id = $this->mail_is_a_bugnote( $p_mail[ 'Subject' ] ) !== FALSE ) )
+		if ( $this->_mail_add_bugnotes && ( $t_bug_id = $this->mail_is_a_bugnote( $p_mail[ 'Subject' ] ) !== FALSE ) )
 		{
 			// @TODO@ Disabled for now until we find a good solution on how to handle the reporters possible lack of access permissions
 //			access_ensure_bug_level( config_get( 'add_bugnote_threshold' ), $f_bug_id );
@@ -527,7 +532,7 @@ class ERP_mailbox_api
 				bugnote_add( $t_bug_id, $t_description );
 			}
 		}
-		else
+		elseif ( $this->_mail_add_bug_reports )
 		{
 			// @TODO@ Disabled for now until we find a good solution on how to handle the reporters possible lack of access permissions
 //			access_ensure_project_level( config_get('report_bug_threshold' ) );

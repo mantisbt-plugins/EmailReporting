@@ -28,6 +28,9 @@ $f_mail_encoding				= gpc_get_string( 'mail_encoding' );
 $f_mail_remove_replies			= gpc_get_bool( 'mail_remove_replies' );
 $f_mail_remove_replies_after	= gpc_get_string( 'mail_remove_replies_after' );
 $f_mail_email_receive_own		= gpc_get_string( 'mail_email_receive_own' );
+$f_mail_add_bug_reports			= gpc_get_bool( 'mail_add_bug_reports' );
+$f_mail_add_bugnotes			= gpc_get_bool( 'mail_add_bugnotes' );
+$f_mail_add_attachments			= gpc_get_bool( 'mail_add_attachments' );
 
 
 if( plugin_config_get( 'mail_secured_script' ) != $f_mail_secured_script ) {
@@ -145,6 +148,18 @@ if( plugin_config_get( 'mail_remove_replies_after' ) != $f_mail_remove_replies_a
 
 if( plugin_config_get( 'mail_email_receive_own' ) != $f_mail_email_receive_own ) {
 	plugin_config_set( 'mail_email_receive_own', $f_mail_email_receive_own );
+}
+
+if( plugin_config_get( 'mail_add_bug_reports' ) != $f_mail_add_bug_reports ) {
+	plugin_config_set( 'mail_add_bug_reports', $f_mail_add_bug_reports );
+}
+
+if( plugin_config_get( 'mail_add_bugnotes' ) != $f_mail_add_bugnotes ) {
+	plugin_config_set( 'mail_add_bugnotes', $f_mail_add_bugnotes );
+}
+
+if( plugin_config_get( 'mail_add_attachments' ) != $f_mail_add_attachments ) {
+	plugin_config_set( 'mail_add_attachments', $f_mail_add_attachments );
 }
 
 if ( !isset( $t_notsuccesfull ) )

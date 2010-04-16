@@ -8,6 +8,7 @@ class ERP_Mail_Parser
 	private $_parse_html = FALSE;
 	private $_parse_mime = FALSE;
 	private $_encoding = 'UTF-8';
+	private $_add_attachments = TRUE;
 
 	private $_file;
 	private $_content;
@@ -28,6 +29,7 @@ class ERP_Mail_Parser
 		$this->_parse_mime = $options[ 'parse_mime' ];
 		$this->_parse_html = $options[ 'parse_html' ];
 		$this->_encoding = $options[ 'encoding' ];
+		$this->_add_attachments = $options[ 'add_attachments' ];
 
 		$this->prepare_mb_list_encodings();
 	}
@@ -282,37 +284,40 @@ class ERP_Mail_Parser
 	
 	private function addPart( &$part, $p_alternative_name = NULL )
 	{
-		$p[ 'ctype' ] = $part->ctype_primary . "/" . $part->ctype_secondary;
+		if ( $this->_add_attachments )
+		{
+			$p[ 'ctype' ] = $part->ctype_primary . "/" . $part->ctype_secondary;
 
-		if ( isset( $part->ctype_parameters[ 'name' ] ) ) {
-			$p[ 'name' ] = $part->ctype_parameters[ 'name' ];
-		}
-		elseif ( isset( $part->headers[ 'content-disposition' ] ) && strpos( $part->headers[ 'content-disposition' ], 'filename="' ) !== FALSE )
-		{
-			$p[ 'name' ] = custom_substr( $part->headers[ 'content-disposition' ], 'filename="', '"' );
-		}
-		elseif ( isset( $part->headers[ 'content-type' ] ) && strpos( $part->headers[ 'content-type' ], 'name="' ) !== FALSE )
-		{
-			$p[ 'name' ] = custom_substr( $part->headers[ 'content-type' ], 'name="', '"' );
-		}
-		elseif ( 'text' == $part->ctype_primary && in_array( $part->ctype_secondary, array( 'plain', 'html' ) ) && !empty( $p_alternative_name ) )
-		{
-			$p[ 'name' ] = $p_alternative_name . ( ( $part->ctype_secondary === 'plain' ) ? '.txt' : '.html' );
-		}
-
-		$p[ 'body' ] = $part->body;
-
-		if ( extension_loaded( 'mbstring' ) && !empty( $p[ 'name' ] ) )
-		{
-			if ( isset( $part->ctype_parameters[ 'charset' ] ) )
+			if ( isset( $part->ctype_parameters[ 'name' ] ) ) {
+				$p[ 'name' ] = $part->ctype_parameters[ 'name' ];
+			}
+			elseif ( isset( $part->headers[ 'content-disposition' ] ) && strpos( $part->headers[ 'content-disposition' ], 'filename="' ) !== FALSE )
 			{
-				$this->setCharset( $part->ctype_parameters[ 'charset' ] );
+				$p[ 'name' ] = custom_substr( $part->headers[ 'content-disposition' ], 'filename="', '"' );
+			}
+			elseif ( isset( $part->headers[ 'content-type' ] ) && strpos( $part->headers[ 'content-type' ], 'name="' ) !== FALSE )
+			{
+				$p[ 'name' ] = custom_substr( $part->headers[ 'content-type' ], 'name="', '"' );
+			}
+			elseif ( 'text' == $part->ctype_primary && in_array( $part->ctype_secondary, array( 'plain', 'html' ) ) && !empty( $p_alternative_name ) )
+			{
+				$p[ 'name' ] = $p_alternative_name . ( ( $part->ctype_secondary === 'plain' ) ? '.txt' : '.html' );
 			}
 
-			$p[ 'name' ] = $this->process_encoding( $p[ 'name' ] );
-		}
+			$p[ 'body' ] = $part->body;
 
-		$this->_parts[] = $p;
+			if ( extension_loaded( 'mbstring' ) && !empty( $p[ 'name' ] ) )
+			{
+				if ( isset( $part->ctype_parameters[ 'charset' ] ) )
+				{
+					$this->setCharset( $part->ctype_parameters[ 'charset' ] );
+				}
+
+				$p[ 'name' ] = $this->process_encoding( $p[ 'name' ] );
+			}
+
+			$this->_parts[] = $p;
+		}
 	}
 
 	private function custom_substr( $p_string, $p_string_start, $p_string_end )

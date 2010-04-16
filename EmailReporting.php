@@ -140,6 +140,15 @@ class EmailReportingPlugin extends MantisPlugin
 
 			# Should users allways receive emails on actions they performed by email even though email_receive_own is OFF
 			'mail_email_receive_own'	=> OFF,
+
+			# Is this plugin allowed to process and create new bug reports
+			'mail_add_bug_reports'		=> ON,
+
+			# Is this plugin allowed to process and add bugnotes to existing issues
+			'mail_add_bugnotes'			=> ON,
+
+			# Is this plugin allowed to process and add attachments to the issues
+			'mail_add_attachments'		=> ON,
 		);
 	} 
 
