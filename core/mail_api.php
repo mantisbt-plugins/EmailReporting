@@ -561,7 +561,7 @@ class ERP_mailbox_api
 			$t_bug_data->handler_id				= 0;
 			$t_bug_data->view_state				= $this->_default_bug_view_status;
 
-			$t_bug_data->category_id			= $p_mailbox[ 'mailbox_global_category' ];
+			$t_bug_data->category_id			= $this->_mailbox[ 'mailbox_global_category' ];
 			$t_bug_data->reproducibility		= $this->_default_bug_reproducibility;
 			$t_bug_data->severity				= $this->_default_bug_severity;
 			$t_bug_data->priority				= $p_mail[ 'Priority' ];
@@ -577,9 +577,9 @@ class ERP_mailbox_api
 			$t_bug_data->additional_information	= $this->_default_bug_additional_info;
 			$t_bug_data->due_date				= date_get_null();
 
-			$t_bug_data->project_id				= ( ( $p_overwrite_project_id === FALSE ) ? $this->mailbox[ 'mailbox_project' ] : $p_overwrite_project_id );
+			$t_bug_data->project_id				= ( ( $p_overwrite_project_id === FALSE ) ? $this->_mailbox[ 'mailbox_project' ] : $p_overwrite_project_id );
 
-			$t_bug_data->reporter_id			= $p_email[ 'Reporter_id' ];
+			$t_bug_data->reporter_id			= $p_mail[ 'Reporter_id' ];
 
 			if ( access_has_project_level( config_get( 'roadmap_update_threshold' ), $t_bug_data->project_id ) ) {
 				$t_bug_data->target_version = '';

@@ -50,7 +50,7 @@ class ERP_Mail_Parser
 		}
 	}
 
-	public function setInputString( &$content )
+	public function setInputString( $content )
 	{
 		$this->_file = NULL;
 		$this->_content = $content;
