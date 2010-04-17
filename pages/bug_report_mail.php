@@ -29,9 +29,12 @@
 
 	$t_mailbox_api = new ERP_mailbox_api;
 
+	ini_set( 'default_socket_timeout', 10 );
+	ini_set( 'memory_limit', -1 );
+
 	foreach ( $t_mailboxes as $t_mailbox )
 	{
-		set_time_limit( 30 );
+		set_time_limit( 60 );
 
 		$t_mailbox_api->process_mailbox( $t_mailbox );
 	}
