@@ -190,7 +190,7 @@ class ERP_mailbox_api
 		{
 			if ( $this->_test_only === FALSE )
 			{
-				echo "\n\n" . 'Error: ' . $this->_mailbox[ 'mailbox_description' ] . "\n" . $p_pear->toString();
+				echo "\n\n" . 'Mailbox: ' . $this->_mailbox[ 'mailbox_description' ] . "\n" . $p_pear->toString();
 			}
 
 			return( TRUE );
@@ -206,7 +206,7 @@ class ERP_mailbox_api
 	#  set $this->result to an array with the error or show it
 	private function custom_error( $p_error_text )
 	{
-		$t_error_text = "\n\n" . 'Error: ' . $this->_mailbox[ 'mailbox_description' ] . "\n" . ' -> ' . $p_error_text . '.';
+		$t_error_text = "\n\n" . 'Mailbox: ' . $this->_mailbox[ 'mailbox_description' ] . "\n" . ' -> ' . $p_error_text . '.';
 
 		if ( $this->_test_only )
 		{
@@ -323,7 +323,7 @@ class ERP_mailbox_api
 											}
 											else
 											{
-												$this->process_single_email( $i, $t_project[ 'id' ] );
+												$this->process_single_email( $i, (int) $t_project[ 'id' ] );
 
 												$this->_mailserver->deleteMsg( $i );
 
@@ -506,7 +506,7 @@ class ERP_mailbox_api
 			$this->custom_error( 'Reporter: ' . $t_reporter_id . ' - ' . $p_parsed_from[ 'email' ] );
 			auth_attempt_script_login( $t_reporter_name );
 
-			return( $t_reporter_id );
+			return( (int) $t_reporter_id );
 		}
 		else
 		{
@@ -521,7 +521,7 @@ class ERP_mailbox_api
 	# Taken from bug_report.php in MantisBT 1.2.0
 	private function add_bug( &$p_mail, $p_overwrite_project_id = FALSE )
 	{
-		if ( $this->_mail_add_bugnotes && ( $t_bug_id = $this->mail_is_a_bugnote( $p_mail[ 'Subject' ] ) !== FALSE ) )
+		if ( $this->_mail_add_bugnotes && ( $t_bug_id = $this->mail_is_a_bugnote( $p_mail[ 'Subject' ] ) ) !== FALSE )
 		{
 			// @TODO@ Disabled for now until we find a good solution on how to handle the reporters possible lack of access permissions
 //			access_ensure_bug_level( config_get( 'add_bugnote_threshold' ), $f_bug_id );
