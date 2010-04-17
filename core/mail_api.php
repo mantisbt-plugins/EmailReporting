@@ -113,7 +113,7 @@ class ERP_mailbox_api
 		$this->_mp_options[ 'parse_mime' ]		= plugin_config_get( 'mail_parse_mime' );
 		$this->_mp_options[ 'parse_html' ]		= plugin_config_get( 'mail_parse_html' );
 		$this->_mp_options[ 'encoding' ]		= plugin_config_get( 'mail_encoding' );
-		$this->_mp_options[ 'add_attachments' ]	= plugin_config_get( 'mail_add_attachments' );
+		$this->_mp_options[ 'add_attachments' ]	= config_get( 'allow_file_upload' );
 
 		$this->_default_bug_priority			= config_get( 'default_bug_priority' );
 		$this->_validate_email					= config_get( 'validate_email' );
@@ -666,6 +666,11 @@ class ERP_mailbox_api
 			event_signal( 'EVENT_REPORT_BUG', array( $t_bug_data, $t_bug_id ) );
 
 			email_new_bug( $t_bug_id );
+		}
+		else
+		{
+			// Not allowed to add bugs and not allowed / able to add bugnote. Need to stop processing
+			return;
 		}
 		
 		# Add files

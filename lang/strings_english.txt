@@ -60,7 +60,6 @@ $s_plugin_EmailReporting_mail_remove_replies_after = 'Use this text to identify 
 $s_plugin_EmailReporting_mail_email_receive_own = 'Should users receive emails for their own actions (N/A if email_receive_own = ON)';
 $s_plugin_EmailReporting_mail_add_bug_reports = 'Create new issues';
 $s_plugin_EmailReporting_mail_add_bugnotes = 'Add bugnotes';
-$s_plugin_EmailReporting_mail_add_attachments = 'Add files (attachments)';
 
 $s_plugin_EmailReporting_mailboxes = 'Mailboxes';
 $s_plugin_EmailReporting_add_mailbox = 'Add mailbox';

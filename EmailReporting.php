@@ -147,9 +147,6 @@ class EmailReportingPlugin extends MantisPlugin
 			# Is this plugin allowed to process and add bugnotes to existing issues
 			'mail_add_bugnotes'				=> ON,
 
-			# Is this plugin allowed to process and add attachments to the issues
-			'mail_add_attachments'			=> ON,
-
 			# Enable fallback to mail reporter
 			'mail_fallback_mail_reporter'	=> ON,
 		);
