@@ -10,6 +10,7 @@ $t_mailboxes = plugin_config_get( 'mailboxes' );
 if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailbox_action === 'edit' || $f_mailbox_action === 'test' ) && $f_select_mailbox >= 0 ) )
 {
 	$t_mailbox = array(
+		'mailbox_enabled'			=> gpc_get_bool( 'mailbox_enabled' ),
 		'mailbox_description'		=> gpc_get_string( 'mailbox_description' ),
 		'mailbox_type'				=> gpc_get_string( 'mailbox_type' ),
 		'mailbox_hostname'			=> gpc_get_string_array( 'mailbox_hostname' ),
@@ -76,7 +77,7 @@ elseif ( $f_mailbox_action === 'test' && $f_select_mailbox >= 0 )
 			echo plugin_lang_get( 'mailbox_basefolder' ) . ': ' . $t_mailbox_api->_mailbox[ 'mailbox_basefolder' ] . '<br />';
 		}
 
-		echo '<br />' . ( ( $t_is_custom_error ) ? $t_result[ 'ERROR_MESSAGE' ] : $t_result->toString() ) . '<br /><br />';
+		echo '<br />' . ( ( $t_is_custom_error ) ? nl2br( $t_result[ 'ERROR_MESSAGE' ] ) : $t_result->toString() ) . '<br /><br />';
 
 		print_bracket_link( plugin_page( 'manage_mailbox', TRUE ), lang_get( 'proceed' ) );
 ?>

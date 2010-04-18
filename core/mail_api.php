@@ -114,6 +114,7 @@ class ERP_mailbox_api
 		$this->_mp_options[ 'parse_html' ]		= plugin_config_get( 'mail_parse_html' );
 		$this->_mp_options[ 'encoding' ]		= plugin_config_get( 'mail_encoding' );
 		$this->_mp_options[ 'add_attachments' ]	= config_get( 'allow_file_upload' );
+		$this->_mp_options[ 'debug' ]			= $this->_mail_debug;
 
 		$this->_default_bug_priority			= config_get( 'default_bug_priority' );
 		$this->_validate_email					= config_get( 'validate_email' );
@@ -155,6 +156,8 @@ class ERP_mailbox_api
 		{
 			$this->custom_error( 'The temporary mail directory is not writable. Please correct it in the configuration options' );
 		}
+
+		$this->show_memory_usage( 'Finished __construct' );
 	}
 
 	# --------------------
@@ -166,16 +169,27 @@ class ERP_mailbox_api
 
 		if ( $this->_functionality_enabled )
 		{
-			$this->prepare_mailbox_hostname();
-
-			if ( $this->_mail_debug )
+			if ( $this->_mailbox[ 'mailbox_enabled' ] )
 			{
-				var_dump( $this->_mailbox );
+				$this->prepare_mailbox_hostname();
+
+				if ( $this->_mail_debug )
+				{
+					var_dump( $this->_mailbox );
+				}
+
+				$this->show_memory_usage( 'Start process mailbox' );
+
+				$t_process_mailbox_function = 'process_' . strtolower( $this->_mailbox[ 'mailbox_type' ] ) . '_mailbox';
+
+				$this->show_memory_usage( 'Finished process mailbox' );
+
+				$this->$t_process_mailbox_function();
 			}
-
-			$t_process_mailbox_function = 'process_' . strtolower( $this->_mailbox[ 'mailbox_type' ] ) . '_mailbox';
-
-			$this->$t_process_mailbox_function();
+			else
+			{
+				$this->custom_error( 'Mailbox disabled' );
+			}
 		}
 
 		return( $this->_result );
@@ -190,7 +204,7 @@ class ERP_mailbox_api
 		{
 			if ( $this->_test_only === FALSE )
 			{
-				echo "\n\n" . 'Mailbox: ' . $this->_mailbox[ 'mailbox_description' ] . "\n" . $p_pear->toString();
+				echo "\n\n" . 'Mailbox: ' . $this->_mailbox[ 'mailbox_description' ] . "\n" . $p_pear->toString() . "\n";
 			}
 
 			return( TRUE );
@@ -206,7 +220,7 @@ class ERP_mailbox_api
 	#  set $this->result to an array with the error or show it
 	private function custom_error( $p_error_text )
 	{
-		$t_error_text = "\n\n" . 'Mailbox: ' . $this->_mailbox[ 'mailbox_description' ] . "\n" . ' -> ' . $p_error_text . '.';
+		$t_error_text = 'Message: ' . $p_error_text . "\n";
 
 		if ( $this->_test_only )
 		{
@@ -217,7 +231,7 @@ class ERP_mailbox_api
 		}
 		else
 		{
-			echo $t_error_text;
+			echo "\n\n" . 'Mailbox: ' . $this->_mailbox[ 'mailbox_description' ] . "\n" . $t_error_text;
 		}
 	}
 
@@ -375,17 +389,19 @@ class ERP_mailbox_api
 	# Process a single email from either a pop3 or imap mailbox
 	private function process_single_email( $p_i, $p_overwrite_project_id = FALSE )
 	{
+		$this->show_memory_usage( 'Start process single email' );
+
 		$t_msg = $this->_mailserver->getMsg( $p_i );
+
+		$this->save_message_to_file( $t_msg );
 
 		$t_email = $this->parse_content( $t_msg );
 
-		if ( $this->_mail_debug )
-		{
-			var_dump( $t_email );
-			$this->save_message_to_file( $t_msg );
-		}
-
 		unset( $t_msg );
+
+		$this->show_memory_usage( 'Parsed single email' );
+
+		$this->save_message_to_file( $t_email );
 
 		// Only continue if we have a valid Reporter to work with
 		if ( $t_email[ 'Reporter_id' ] !== FALSE )
@@ -400,15 +416,25 @@ class ERP_mailbox_api
 				$this->custom_error( 'From email address rejected by email_is_valid function based on: ' . $t_email[ 'From' ] );
 			}
 		}
+
+		$this->show_memory_usage( 'Finished process single email' );
 	}
 
 	# --------------------
 	# parse the email for Mantis
 	private function parse_content( &$p_msg )
 	{
+		$this->show_memory_usage( 'Start Mail Parser' );
+
 		$t_mp = new ERP_Mail_Parser( $this->_mp_options );
 
 		$t_mp->setInputString( $p_msg );
+
+		// We can only empty msg if we don't need it anymore
+		if ( !$this->_mail_add_complete_email )
+		{
+			$p_msg = NULL;
+		}
 
 		$t_mp->parse();
 
@@ -442,6 +468,8 @@ class ERP_mailbox_api
 
 			$t_email[ 'X-Mantis-Parts' ][] = $t_part;
 		}
+
+		$this->show_memory_usage( 'Finished Mail Parser' );
 
 		return( $t_email );
 	}
@@ -519,17 +547,19 @@ class ERP_mailbox_api
 	# --------------------
 	# Adds a bug which is reported via email
 	# Taken from bug_report.php in MantisBT 1.2.0
-	private function add_bug( &$p_mail, $p_overwrite_project_id = FALSE )
+	private function add_bug( &$p_email, $p_overwrite_project_id = FALSE )
 	{
-		if ( $this->_mail_add_bugnotes && ( $t_bug_id = $this->mail_is_a_bugnote( $p_mail[ 'Subject' ] ) ) !== FALSE )
+		$this->show_memory_usage( 'Start add bug' );
+
+		if ( $this->_mail_add_bugnotes && ( $t_bug_id = $this->mail_is_a_bugnote( $p_email[ 'Subject' ] ) ) !== FALSE )
 		{
 			// @TODO@ Disabled for now until we find a good solution on how to handle the reporters possible lack of access permissions
 //			access_ensure_bug_level( config_get( 'add_bugnote_threshold' ), $f_bug_id );
 
-			$t_description = $p_mail[ 'X-Mantis-Body' ];
+			$t_description = $p_email[ 'X-Mantis-Body' ];
 
 			$t_description = $this->identify_mantis_email( $t_description );
-			$t_description = $this->apply_mail_save_from( $p_mail[ 'From' ], $t_description );
+			$t_description = $this->apply_mail_save_from( $p_email[ 'From' ], $t_description );
 
 			$t_status = bug_get_field( $t_bug_id, 'status' );
 
@@ -549,7 +579,7 @@ class ERP_mailbox_api
 			// @TODO@ Disabled for now until we find a good solution on how to handle the reporters possible lack of access permissions
 //			access_ensure_project_level( config_get('report_bug_threshold' ) );
 
-			$this->fix_empty_fields( $p_mail );
+			$this->fix_empty_fields( $p_email );
 
 			$t_bug_data = new BugData;
 			$t_bug_data->build					= '';
@@ -564,14 +594,14 @@ class ERP_mailbox_api
 			$t_bug_data->category_id			= $this->_mailbox[ 'mailbox_global_category' ];
 			$t_bug_data->reproducibility		= $this->_default_bug_reproducibility;
 			$t_bug_data->severity				= $this->_default_bug_severity;
-			$t_bug_data->priority				= $p_mail[ 'Priority' ];
+			$t_bug_data->priority				= $p_email[ 'Priority' ];
 			$t_bug_data->projection				= $this->_default_bug_projection;
 			$t_bug_data->eta					= $this->_default_bug_eta;
 			$t_bug_data->resolution				= $this->_default_bug_resolution;
 			$t_bug_data->status					= $this->_bug_submit_status;
-			$t_bug_data->summary				= $p_mail[ 'Subject' ];
+			$t_bug_data->summary				= $p_email[ 'Subject' ];
 
-			$t_bug_data->description			= $this->apply_mail_save_from( $p_mail[ 'From' ], $p_mail[ 'X-Mantis-Body' ] );
+			$t_bug_data->description			= $this->apply_mail_save_from( $p_email[ 'From' ], $p_email[ 'X-Mantis-Body' ] );
 
 			$t_bug_data->steps_to_reproduce		= $this->_default_bug_steps_to_reproduce;
 			$t_bug_data->additional_information	= $this->_default_bug_additional_info;
@@ -579,7 +609,7 @@ class ERP_mailbox_api
 
 			$t_bug_data->project_id				= ( ( $p_overwrite_project_id === FALSE ) ? $this->_mailbox[ 'mailbox_project' ] : $p_overwrite_project_id );
 
-			$t_bug_data->reporter_id			= $p_mail[ 'Reporter_id' ];
+			$t_bug_data->reporter_id			= $p_email[ 'Reporter_id' ];
 
 			if ( access_has_project_level( config_get( 'roadmap_update_threshold' ), $t_bug_data->project_id ) ) {
 				$t_bug_data->target_version = '';
@@ -672,17 +702,19 @@ class ERP_mailbox_api
 			// Not allowed to add bugs and not allowed / able to add bugnote. Need to stop processing
 			return;
 		}
-		
+
+		$this->show_memory_usage( 'Start processing attachments' );
+
 		# Add files
 		if ( $this->_allow_file_upload )
 		{
-			if ( NULL != $p_mail[ 'X-Mantis-Parts' ] )
+			if ( NULL != $p_email[ 'X-Mantis-Parts' ] )
 			{
 				$t_rejected_files = NULL;
 
 				$this->_file_number = 1;
 
-				foreach ( $p_mail[ 'X-Mantis-Parts' ] as $part )
+				foreach ( $p_email[ 'X-Mantis-Parts' ] as $part )
 				{
 					$t_file_rejected = $this->add_file( $t_bug_id, $part );
 
@@ -934,8 +966,18 @@ class ERP_mailbox_api
 	{
 		if ( $this->_mail_debug && is_dir( $this->_mail_debug_directory ) && is_writeable( $this->_mail_debug_directory ) )
 		{
-			$t_file_name = $this->_mail_debug_directory . '/' . time() . '_' . md5( microtime() );
-			file_put_contents( $t_file_name, $p_msg );
+			$t_end_file_name = time() . '_' . md5( microtime() );
+
+			if ( is_array( $p_msg ) )
+			{
+				$t_file_name = $this->_mail_debug_directory . '/parsed_email_' . $t_end_file_name;
+				file_put_contents( $t_file_name, print_r( $p_msg, TRUE ) );
+			}
+			else
+			{
+				$t_file_name = $this->_mail_debug_directory . '/rawmsg_' . $t_end_file_name;
+				file_put_contents( $t_file_name, $p_msg );
+			}
 		}
 	}
 
@@ -1000,5 +1042,36 @@ class ERP_mailbox_api
 
 		return( $p_description );
 	}
+
+	# --------------------
+	# Show memory usage in debug mode
+	private function show_memory_usage( $p_location )
+	{
+		if ( !$this->_test_only && $this->_mail_debug )
+		{
+			$this->custom_error( 'Debug output memory usage' . "\n" .
+				'Location: Mail API - ' . $p_location . "\n" .
+				'Current memory usage: ' . ERP_formatbytes( memory_get_usage( FALSE ) ) . ' / ' . ERP_formatbytes( memory_get_peak_usage ( FALSE ) ) . ' (memory_limit: ' . ini_get( 'memory_limit' ) . ')' . "\n" .
+				'Current real memory usage: ' . ERP_formatbytes( memory_get_usage( TRUE ) ) . ' / ' . ERP_formatbytes( memory_get_peak_usage ( TRUE ) ) . ' (memory_limit: ' . ini_get( 'memory_limit' ) . ')' . "\n"
+			);
+		}
+	}
 }
+
+	# --------------------
+	# This function formats the bytes so that they are easily readable.
+	# Not part of a class
+	function ERP_formatbytes( $p_bytes )
+	{
+		$t_units = array( ' B', ' KiB', ' MiB', ' GiB', ' TiB' );
+
+		$t_bytes = $p_bytes;
+
+		for ( $i = 0; $t_bytes > 1024; $i++ )
+		{
+			$t_bytes /= 1024;
+		}
+
+		return( round( $t_bytes, 2 ) . $t_units[ $i ] );
+	}
 ?>

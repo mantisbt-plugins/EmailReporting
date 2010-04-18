@@ -54,6 +54,7 @@ ERP_output_config_option( 'select_mailbox', 'hidden', $f_select_mailbox );
 
 ERP_output_config_option( 'mailbox_settings', 'header', 'manage_config' );
 
+ERP_output_config_option( 'mailbox_enabled', 'boolean', -3, $t_mailbox );
 ERP_output_config_option( 'mailbox_description', 'string', -3, $t_mailbox );
 ERP_output_config_option( 'mailbox_type', 'dropdown_mailbox_type', -3, $t_mailbox );
 ERP_output_config_option( 'mailbox_hostname', 'string_hostname_port', -3, $t_mailbox );
@@ -61,11 +62,14 @@ ERP_output_config_option( 'mailbox_encryption', 'dropdown_mailbox_encryption', -
 ERP_output_config_option( 'mailbox_username', 'string', -3, $t_mailbox );
 ERP_output_config_option( 'mailbox_password', 'string_password', -3, $t_mailbox );
 ERP_output_config_option( 'mailbox_auth_method', 'dropdown_auth_method', -3, $t_mailbox );
+
+ERP_output_config_option( NULL, 'empty' );
+ERP_output_config_option( 'mailbox_settings_imap', 'header' );
 ERP_output_config_option( 'mailbox_basefolder', 'string', -3, $t_mailbox );
+ERP_output_config_option( 'mailbox_createfolderstructure', 'boolean', -3, $t_mailbox );
 
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'mailbox_settings_issue', 'header' );
-ERP_output_config_option( 'mailbox_createfolderstructure', 'boolean', -3, $t_mailbox );
 ERP_output_config_option( 'mailbox_project', 'dropdown_projects', -3, $t_mailbox );
 ERP_output_config_option( 'mailbox_global_category', 'dropdown_global_categories', -3, $t_mailbox );
 
@@ -85,6 +89,7 @@ ERP_output_config_option( 'mailboxes', 'header', 'manage_config' );
 
 ERP_output_config_option( 'mailbox_action', 'radio_actions', $f_mailbox_action, $t_mailboxes );
 ERP_output_config_option( 'select_mailbox', 'dropdown_mailboxes', $f_select_mailbox, $t_mailboxes );
+ERP_output_config_option( 'mailboxes_disabled', 'empty' );
 
 ERP_output_config_option( 'select_mailbox', 'submit' );
 

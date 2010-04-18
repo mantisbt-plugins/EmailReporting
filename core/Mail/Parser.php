@@ -9,6 +9,7 @@ class ERP_Mail_Parser
 	private $_parse_mime = FALSE;
 	private $_encoding = 'UTF-8';
 	private $_add_attachments = TRUE;
+	private $_debug = FALSE;
 
 	private $_file;
 	private $_content;
@@ -30,6 +31,7 @@ class ERP_Mail_Parser
 		$this->_parse_html = $options[ 'parse_html' ];
 		$this->_encoding = $options[ 'encoding' ];
 		$this->_add_attachments = $options[ 'add_attachments' ];
+		$this->_debug = $options[ 'debug' ];
 
 		$this->prepare_mb_list_encodings();
 	}
@@ -74,15 +76,26 @@ class ERP_Mail_Parser
 
 	public function parse()
 	{
+		$this->show_memory_usage( 'Start parse' );
+
 		$decoder = new Mail_mimeDecode( $this->_content );
 		$this->_content = NULL;
+		$decoder->_input = NULL;
+
+		$this->show_memory_usage( 'mimeDecode initiated' );
 
 		$params['include_bodies'] = TRUE;
 		$params['decode_bodies'] = TRUE;
 		$params['decode_headers'] = TRUE;
 		$params['rfc_822bodies'] = TRUE;
 
+		$this->show_memory_usage( 'Start decode' );
+
 		$structure = $decoder->decode( $params );
+
+		unset( $decoder );
+
+		$this->show_memory_usage( 'Start parse structure' );
 
 		$this->parseStructure( $structure );
 
@@ -327,6 +340,19 @@ class ERP_Mail_Parser
 		$t_result = substr( $p_string, $t_start, ( $t_end - $t_start ) );
 
 		return( $t_result );
+	}
+
+	# --------------------
+	# Show memory usage in debug mode
+	private function show_memory_usage( $p_location )
+	{
+		if ( $this->_debug )
+		{
+			echo "\n" . 'Debug output memory usage' . "\n" .
+				'Location: Mail Parser - ' . $p_location . "\n" .
+				'Current memory usage: ' . ERP_formatbytes( memory_get_usage( FALSE ) ) . ' / ' . ERP_formatbytes( memory_get_peak_usage ( FALSE ) ) . ' (memory_limit: ' . ini_get( 'memory_limit' ) . ')' . "\n" .
+				'Current real memory usage: ' . ERP_formatbytes( memory_get_usage( TRUE ) ) . ' / ' . ERP_formatbytes( memory_get_peak_usage ( TRUE ) ) . ' (memory_limit: ' . ini_get( 'memory_limit' ) . ')' . "\n";
+		}
 	}
 }
 

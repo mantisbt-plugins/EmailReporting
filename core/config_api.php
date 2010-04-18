@@ -5,9 +5,10 @@
 
 	# --------------------
 	# Return the default mailbox options
-	function ERP_get_default_mailbox( )
+	function ERP_get_default_mailbox()
 	{
 		$t_mailbox = array(
+			'mailbox_enabled'			=> TRUE,
 			'mailbox_type'				=> 'POP3',
 			'mailbox_encryption'		=> 'None',
 			'mailbox_auth_method'		=> 'USER',
@@ -44,7 +45,6 @@
 			'plugin_lang_get' => array(
 				'manage_config',
 				'manage_mailbox',
-				/*'manage_rules',*/
 			),
 			'lang_get' => array(
 				'documentation_link'	=> 'view_readme',
@@ -412,8 +412,9 @@
 <?php
 							foreach ( $p_optional_information AS $t_mailbox_key => $t_mailbox_data )
 							{
+								$t_mailbox_data = array_merge( ERP_get_default_mailbox(), $t_mailbox_data );
 ?>
-			<option value="<?php echo $t_mailbox_key ?>"<?php echo ( ( $t_value === $t_mailbox_key ) ? ' selected' : NULL ) ?>><?php echo $t_mailbox_data[ 'mailbox_description' ] ?></option>
+			<option value="<?php echo $t_mailbox_key ?>"<?php echo ( ( $t_value === $t_mailbox_key ) ? ' selected' : NULL ) ?>><?php echo ( ( $t_mailbox_data[ 'mailbox_enabled' ] === FALSE ) ? '* ' : NULL ) . $t_mailbox_data[ 'mailbox_description' ] ?></option>
 <?php
 							}
 ?>

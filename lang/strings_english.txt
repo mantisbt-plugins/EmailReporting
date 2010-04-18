@@ -13,6 +13,7 @@ $s_plugin_EmailReporting_job1 = '1. ';
 $s_plugin_EmailReporting_job2 = '2. ';
 
 $s_plugin_EmailReporting_mailbox_settings = 'Mailbox settings';
+$s_plugin_EmailReporting_mailbox_settings_imap = 'Mailbox IMAP only settings';
 $s_plugin_EmailReporting_mailbox_settings_issue = 'Mailbox issue settings';
 $s_plugin_EmailReporting_problems = 'To reset a configuration option to its default value, please delete the configuration option in question from the "<a href="adm_config_report.php">Configuration Report</a>" page.';
 $s_plugin_EmailReporting_security_options = 'Security configuration options';
@@ -70,6 +71,7 @@ $s_plugin_EmailReporting_test_mailbox = 'Test mailbox';
 $s_plugin_EmailReporting_select_mailbox = 'Select mailbox';
 $s_plugin_EmailReporting_update_configuration = 'Update configuration';
 
+$s_plugin_EmailReporting_mailbox_enabled = 'Mailbox enabled';
 $s_plugin_EmailReporting_mailbox_description = 'Mailbox description';
 $s_plugin_EmailReporting_mailbox_type = 'Mailbox type';
 $s_plugin_EmailReporting_mailbox_hostname = 'Mailbox hostname (port)';
@@ -77,9 +79,9 @@ $s_plugin_EmailReporting_mailbox_encryption = 'Mailbox connection encryption';
 $s_plugin_EmailReporting_mailbox_username = 'Mailbox username';
 $s_plugin_EmailReporting_mailbox_password = 'Mailbox password';
 $s_plugin_EmailReporting_mailbox_auth_method = 'Mailbox authentication method';
-$s_plugin_EmailReporting_mailbox_basefolder = 'Mailbox basefolder (IMAP)';
-$s_plugin_EmailReporting_mailbox_createfolderstructure = 'Create project subfolder structure (IMAP)';
-$s_plugin_EmailReporting_mailbox_project = 'Select a project (N/A if above is set to "Yes")';
+$s_plugin_EmailReporting_mailbox_basefolder = 'Mailbox basefolder (optional)';
+$s_plugin_EmailReporting_mailbox_createfolderstructure = 'Create project subfolder structure';
+$s_plugin_EmailReporting_mailbox_project = 'Select a project';
 $s_plugin_EmailReporting_mailbox_global_category = 'Select a global category';
 
 $s_plugin_EmailReporting_unknown_setting = 'Unknown setting encountered. Setting ignored: ';
@@ -89,5 +91,6 @@ $s_plugin_EmailReporting_openssl_unavailable = 'PHP OpenSSL extension unavailabl
 $s_plugin_EmailReporting_zero_mailboxes = 'No mailboxes have been found';
 $s_plugin_EmailReporting_test_failure = 'Operation NOT successful';
 $s_plugin_EmailReporting_mail_bug_priority_array_failure = 'The given format is not an acceptable array.';
+$s_plugin_EmailReporting_mailboxes_disabled = '* = Disabled mailbox';
 
 ?>
