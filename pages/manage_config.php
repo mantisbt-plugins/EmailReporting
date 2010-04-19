@@ -22,7 +22,6 @@ ERP_print_menu( $t_this_page );
 	$t_link1 = helper_mantis_url( 'plugins/' . plugin_get_current() . '/scripts/bug_report_mail.php' );
 	$t_link2 = plugin_page( 'bug_report_mail' );
 	echo plugin_lang_get( 'jobsetup' ) . '<hr />' .
-		plugin_lang_get( 'jobsetup_nocron' ) . '<hr />' .
 		plugin_lang_get( 'job1' ) . '<a href="' . $t_link1 . '">' . $t_link1 . '</a><br />' .
 		plugin_lang_get( 'job2' ) . '<a href="' . $t_link2 . '">' . $t_link2 . '</a>';
 ?>
@@ -41,11 +40,6 @@ ERP_output_config_option( 'problems', 'header' );
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'security_options', 'header', 'manage_mailbox' );
 ERP_output_config_option( 'mail_secured_script', 'boolean', -2 );
-
-ERP_output_config_option( NULL, 'empty' );
-ERP_output_config_option( 'cron_options', 'header' );
-ERP_output_config_option( 'mail_cronjob_present', 'boolean', -2 );
-ERP_output_config_option( 'mail_check_timer', 'integer', -2 );
 
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'runtime_options', 'header' );

@@ -4,8 +4,6 @@ access_ensure_global_level( config_get( 'manage_plugin_threshold' ) );
 
 
 $f_mail_secured_script			= gpc_get_bool( 'mail_secured_script' );
-$f_mail_cronjob_present			= gpc_get_bool( 'mail_cronjob_present' );
-$f_mail_check_timer				= gpc_get_int( 'mail_check_timer' );
 $f_mail_use_reporter			= gpc_get_bool( 'mail_use_reporter' );
 $f_mail_reporter_id				= gpc_get_int( 'mail_reporter_id' );
 $f_mail_auto_signup				= gpc_get_bool( 'mail_auto_signup' );
@@ -35,14 +33,6 @@ $f_mail_fallback_mail_reporter	= gpc_get_bool( 'mail_fallback_mail_reporter' );
 
 if( plugin_config_get( 'mail_secured_script' ) != $f_mail_secured_script ) {
 	plugin_config_set( 'mail_secured_script', $f_mail_secured_script );
-}
-
-if( plugin_config_get( 'mail_cronjob_present' ) != $f_mail_cronjob_present ) {
-	plugin_config_set( 'mail_cronjob_present', $f_mail_cronjob_present );
-}
-
-if( plugin_config_get( 'mail_check_timer' ) != $f_mail_check_timer ) {
-	plugin_config_set( 'mail_check_timer', $f_mail_check_timer );
 }
 
 if( plugin_config_get( 'mail_use_reporter' ) != $f_mail_use_reporter ) {

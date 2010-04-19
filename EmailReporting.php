@@ -126,12 +126,6 @@ class EmailReportingPlugin extends MantisPlugin
 			# values should be acceptable to the following function: http://www.php.net/mb_convert_encoding
 			'mail_encoding'					=> 'UTF-8', 
 
-			# This decides whether this script will run as a scheduled job or not
-			'mail_cronjob_present'			=> ON, 
-
-			# This decides how long between checking the mailboxes for new emails when no scheduled job is present
-			'mail_check_timer'				=> 300,
-
 			# Remove everything after and including the remove_replies_after text
 			'mail_remove_replies'			=> OFF,
 
@@ -251,8 +245,6 @@ class EmailReportingPlugin extends MantisPlugin
 		$this->ERP_check_mantisbt_url( );
 
 		$this->ERP_check_mantisbt_erp_path( );
-
-		$this->ERP_email_check_all( );
 	}
 
 	/* 
@@ -322,6 +314,15 @@ class EmailReportingPlugin extends MantisPlugin
 
 			plugin_config_set( 'config_version', 2 );
 		}
+
+		if ( $t_config_version <= 2 )
+		{
+			plugin_config_delete( 'mail_cronjob_present' );
+			plugin_config_delete( 'mail_check_timer' );
+			plugin_config_delete( 'mail_last_check' );
+
+			plugin_config_set( 'config_version', 3 );
+		}
 	}
 
 	/* 
@@ -355,89 +356,5 @@ class EmailReportingPlugin extends MantisPlugin
 		// a plugin_config_set for globals does not exist. So we create it ourselves
 		$t_full_option = 'plugin_' . $t_basename . '_path_erp';
 		config_set_global( $t_full_option, $t_path );
-	}
-
-	/* 
-	 * Check all mailboxes for new email if bug_report_mail can not or does not run in as a scheduled job
-	 */
-	function ERP_email_check_all( )
-	{
-		$t_mail_cronjob_present	= plugin_config_get( 'mail_cronjob_present' );
-		$t_mail_nocron			= gpc_get_bool( 'mail_nocron', 0 );
-
-		if ( php_sapi_name() !== 'cli' && $t_mail_cronjob_present == FALSE && $t_mail_nocron == FALSE )
-		{
-			$t_mail_check_timer	= plugin_config_get( 'mail_check_timer' );
-			$t_mail_last_check	= plugin_config_get( 'mail_last_check', 0 );
-
-			$t_time_now = time();
-
-			if ( $t_mail_last_check < ( $t_time_now - $t_mail_check_timer ) )
-			{
-				plugin_config_set( 'mail_last_check', $t_time_now );
-
-				$t_mail_debug			= plugin_config_get( 'mail_debug' );
-				$t_mail_secured_script	= plugin_config_get( 'mail_secured_script' );
-
-				if ( $t_mail_secured_script == TRUE )
-				{
-					plugin_config_set( 'mail_secured_script', OFF );
-				}
-
-				$t_address = config_get( 'path' ) . 'plugins/' . plugin_get_current() . '/scripts/bug_report_mail.php';
-
-				$t_address_parsed = parse_url( $t_address );
-
-				# file_get_contents crashed apache child process on windows using php 5.3.1 -> created work around
-				# Apparently there is a problem when the hostname is not an ip in the setup above. Will not use the code because virtual host support will be broken using this method
-//				$t_address = str_replace( $t_address_parsed[ 'scheme' ] . '://' . $t_address_parsed[ 'host' ], $t_address_parsed[ 'scheme' ] . '://' . gethostbyname( $t_address_parsed[ 'host' ] ), $t_address );
-//				$t_dummy = file_get_contents( $t_address ); 
-
-				if ( empty( $t_address_parsed[ 'port' ] ) )
-				{
-					$t_address_parsed[ 'port' ] = ( ( $t_address_parsed[ 'scheme' ] === 'https' ) ? 443 : 80 );
-				}
-
-				$t_socket = fsockopen( gethostbyname( $t_address_parsed[ 'host' ] ), $t_address_parsed[ 'port' ], $errno, $errstr, 30);
-				if ( !$t_socket )
-				{
-					if ( $t_mail_debug )
-					{
-						echo "$errstr ($errno)<br />\n";
-					}
-				}
-				else
-				{
-					$t_out = "GET " . $t_address_parsed[ 'path' ] . " HTTP/1.1\r\n";
-					$t_out .= "Host: " . $t_address_parsed[ 'host' ] . "\r\n";
-					$t_out .= "Connection: Close\r\n\r\n";
-
-					fwrite( $t_socket, $t_out );
-
-					while ( !feof( $t_socket ) )
-					{
-						$t_line = fgets( $t_socket, 128 );
-
-						if ( $t_mail_debug )
-						{
-							echo $t_line;
-						}
-					}
-
-					fclose( $t_socket );
-				}
-
-				if ( $t_mail_secured_script == TRUE )
-				{
-					plugin_config_set( 'mail_secured_script', ON );
-				}
-
-				if ( $t_mail_debug )
-				{
-					echo 'DEBUG mode: Are there any errors above?';
-					exit;
-				}
-			}
-		}
 	}
 }

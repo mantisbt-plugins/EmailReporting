@@ -106,7 +106,7 @@ config page in mantis)
 or via command line interface
 */5 *   *   *   * /usr/local/bin/php /path/to/mantis/plugins/EmailReporting/scripts/bug_report_mail.php
 
-This line fetch bug reports from via POP3 every 5 minutes. 
+This line fetch bug reports from via POP3 or IMAP every 5 minutes. 
 
 Windows or similar OS:
 Via webserver (see settings because this is disabled by default, see plugin
@@ -114,12 +114,6 @@ config page in mantis)
 No known method for scheduling this via webserver
 or via command line interface
 c:\php\php.exe c:\path\to\mantis\plugins\EmailReporting\scripts\bug_report_mail.php
-
-Scheduling bug_report_mail.php as a scheduled job is no longer a
-requirement, but is recommended for performance purposes and because a page
-visit is required to trigger the alternative method. By default this plugin
-assumes you will be creating a scheduled job. You can change the setting in
-the configuration page if needed
 
 
 IMAP:
