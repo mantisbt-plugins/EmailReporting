@@ -81,7 +81,7 @@
 	{
 		// $p_def_value has special purposes when containing the following values
 		// NULL is default value
-		// -1 reserved for use
+		// -1 reserved for normal use
 		// -2 is for settings on the configuration page
 		// -3 is for settings on the manage mailboxes page
 		if ( $p_def_value === -2 )
@@ -120,16 +120,6 @@
 <?php
 				break;
 
-			case 'submit':
-?>
-<tr>
-	<td class="center" width="100%" colspan="3">
-		<input type="submit" class="button" value="<?php echo plugin_lang_get( $p_name ) ?>" />
-	</td>
-</tr>
-<?php
-				break;
-
 			case 'hidden':
 ?>
 <input type="hidden" name="<?php echo $p_name ?>" value="<?php echo $t_value ?>"/>
@@ -164,21 +154,31 @@
 <?php
 				break;
 
+			case 'submit':
+?>
+<tr>
+	<td class="center" width="100%" colspan="3">
+		<input type="submit" class="button" value="<?php echo plugin_lang_get( $p_name ) ?>" />
+	</td>
+</tr>
+<?php
+				break;
+
+			case 'array':
 			case 'boolean':
+			case 'directory_string':
 			case 'integer':
 			case 'string':
-			case 'string_password':
 			case 'string_hostname_port':
-			case 'directory_string':
-			case 'array':
-			case 'dropdown_mbstring_encodings':
-			case 'dropdown_list_reporters':
-			case 'dropdown_projects':
-			case 'dropdown_global_categories':
-			case 'dropdown_mailbox_type':
+			case 'string_password':
 			case 'dropdown_auth_method':
+			case 'dropdown_global_categories':
+			case 'dropdown_list_reporters':
 			case 'dropdown_mailbox_encryption':
+			case 'dropdown_mailbox_type':
 			case 'dropdown_mailboxes':
+			case 'dropdown_mbstring_encodings':
+			case 'dropdown_projects':
 ?>
 <tr <?php echo helper_alternate_class( )?>>
 	<td class="category" width="60%">
@@ -187,6 +187,14 @@
 <?php
 				switch ( $p_type )
 				{
+					case 'array':
+?>
+	<td class="center" width="40%" colspan="2">
+		<textarea cols="40" rows="6" name="<?php echo $p_name ?>"><?php var_export( $t_value ) ?></textarea>
+	</td>
+<?php
+						break;
+
 					case 'boolean':
 ?>
 	<td class="center" width="20%">
@@ -199,34 +207,6 @@
 	</td>
 <?php
 						break;
-
-					case 'integer':
-					case 'string':
-?>
-	<td class="center" width="40%" colspan="2">
-		<input type="text" size="50" maxlength="100" name="<?php echo $p_name ?>" value="<?php echo $t_value ?>"/>
-	</td>
-<?php
-						break;
-
-					case 'string_password':
-?>
-	<td class="center" width="40%" colspan="2">
-		<input type="password" size="50" maxlength="50" name="<?php echo $p_name ?>" value="<?php echo base64_decode( $t_value ) ?>"/>
-	</td>
-<?php
-						break;
-
-					case 'string_hostname_port':
-						$t_value = ERP_correct_hostname_port( $t_value );
-?>
-	<td class="center" width="40%" colspan="2">
-		<input type="text" size="40" maxlength="100" name="<?php echo $p_name ?>[hostname]" value="<?php echo $t_value[ 'hostname' ] ?>"/>
-		<input type="text" size="5" maxlength="5" name="<?php echo $p_name ?>[port]" value="<?php echo $t_value[ 'port' ] ?>"/>
-	</td>
-<?php
-						break;
-
 
 					case 'directory_string':
 						$t_dir = $t_value;
@@ -263,84 +243,29 @@
 <?php
 						break;
 
-					case 'array':
+					case 'integer':
+					case 'string':
 ?>
 	<td class="center" width="40%" colspan="2">
-		<textarea cols="40" rows="6" name="<?php echo $p_name ?>"><?php var_export( $t_value ) ?></textarea>
+		<input type="text" size="50" maxlength="100" name="<?php echo $p_name ?>" value="<?php echo $t_value ?>"/>
 	</td>
 <?php
 						break;
 
-					case 'dropdown_mbstring_encodings':
+					case 'string_hostname_port':
+						$t_value = ERP_correct_hostname_port( $t_value );
 ?>
 	<td class="center" width="40%" colspan="2">
-			<select name="<?php echo $p_name ?>">
-<?php
-						if ( extension_loaded( 'mbstring' ) )
-						{
-							$t_list_encodings = mb_list_encodings();
-							natcasesort( $t_list_encodings );
-							foreach( $t_list_encodings AS $t_encoding )
-							{
-?>
-			<option<?php echo ( ( $t_encoding == $t_value ) ? ' selected' : '' ) ?>><?php echo $t_encoding ?></option>
-<?php
-							}
-						}
-						else
-						{
-?>
-			<option value="<?php echo $t_value ?>" selected class="negative"><?php echo plugin_lang_get( 'mbstring_unavailable' ) ?></option>
-<?php
-						}
-?>
-			</select>
+		<input type="text" size="40" maxlength="100" name="<?php echo $p_name ?>[hostname]" value="<?php echo $t_value[ 'hostname' ] ?>"/>
+		<input type="text" size="5" maxlength="5" name="<?php echo $p_name ?>[port]" value="<?php echo $t_value[ 'port' ] ?>"/>
 	</td>
 <?php
 						break;
 
-					case 'dropdown_list_reporters':
+					case 'string_password':
 ?>
 	<td class="center" width="40%" colspan="2">
-<?php
-						if ( !user_exists( $t_value ) )
-						{
-							echo '<span class="negative">' . plugin_lang_get( 'missing_reporter' ) . '</span><br />';
-						}
-?>
-		<select name="<?php echo $p_name ?>"><?php print_user_option_list( $t_value, ALL_PROJECTS, config_get_global( 'report_bug_threshold' ) ) ?></select>
-	</td>
-<?php
-						break;
-
-					case 'dropdown_projects':
-?>
-	<td class="center" width="40%" colspan="2">
-		<select name="<?php echo $p_name ?>"><?php print_project_option_list( $t_value, FALSE, NULL, FALSE ) ?></select>
-	</td>
-<?php
-						break;
-
-					case 'dropdown_global_categories':
-?>
-	<td class="center" width="40%" colspan="2">
-		<select name="<?php echo $p_name ?>"><?php print_category_option_list( $t_value, ALL_PROJECTS ) ?></select>
-	</td>
-<?php
-						break;
-
-					case 'dropdown_mailbox_type':
-						$t_mailbox_types = array( 'IMAP', 'POP3' );
-?>
-	<td class="center" width="40%" colspan="2">
-		<select name="<?php echo $p_name ?>">
-<?php
-						foreach ( $t_mailbox_types AS $t_mailbox_type )
-						{
-							echo '<option' . ( ( $t_value === $t_mailbox_type ) ? ' selected' : '' ) . '>' . $t_mailbox_type . '</option>';
-						}
-?>
-		</select>
+		<input type="password" size="50" maxlength="50" name="<?php echo $p_name ?>" value="<?php echo base64_decode( $t_value ) ?>"/>
 	</td>
 <?php
 						break;
@@ -368,6 +293,28 @@
 <?php
 						unset( $t_mailbox_connection_pop3, $t_mailbox_connection_imap );
 
+						break;
+
+					case 'dropdown_global_categories':
+?>
+	<td class="center" width="40%" colspan="2">
+		<select name="<?php echo $p_name ?>"><?php print_category_option_list( $t_value, ALL_PROJECTS ) ?></select>
+	</td>
+<?php
+						break;
+
+					case 'dropdown_list_reporters':
+?>
+	<td class="center" width="40%" colspan="2">
+<?php
+						if ( !user_exists( $t_value ) )
+						{
+							echo '<span class="negative">' . plugin_lang_get( 'missing_reporter' ) . '</span><br />';
+						}
+?>
+		<select name="<?php echo $p_name ?>"><?php print_user_option_list( $t_value, ALL_PROJECTS, config_get_global( 'report_bug_threshold' ) ) ?></select>
+	</td>
+<?php
 						break;
 
 					case 'dropdown_mailbox_encryption':
@@ -401,6 +348,22 @@
 <?php
 						break;
 
+					case 'dropdown_mailbox_type':
+						$t_mailbox_types = array( 'IMAP', 'POP3' );
+?>
+	<td class="center" width="40%" colspan="2">
+		<select name="<?php echo $p_name ?>">
+<?php
+						foreach ( $t_mailbox_types AS $t_mailbox_type )
+						{
+							echo '<option' . ( ( $t_value === $t_mailbox_type ) ? ' selected' : '' ) . '>' . $t_mailbox_type . '</option>';
+						}
+?>
+		</select>
+	</td>
+<?php
+						break;
+
 					case 'dropdown_mailboxes':
 ?>
 	<td class="center" width="40%" colspan="2">
@@ -426,6 +389,42 @@
 							echo plugin_lang_get( 'zero_mailboxes' );
 						}
 ?>
+	</td>
+<?php
+						break;
+
+					case 'dropdown_mbstring_encodings':
+?>
+	<td class="center" width="40%" colspan="2">
+			<select name="<?php echo $p_name ?>">
+<?php
+						if ( extension_loaded( 'mbstring' ) )
+						{
+							$t_list_encodings = mb_list_encodings();
+							natcasesort( $t_list_encodings );
+							foreach( $t_list_encodings AS $t_encoding )
+							{
+?>
+			<option<?php echo ( ( $t_encoding == $t_value ) ? ' selected' : '' ) ?>><?php echo $t_encoding ?></option>
+<?php
+							}
+						}
+						else
+						{
+?>
+			<option value="<?php echo $t_value ?>" selected class="negative"><?php echo plugin_lang_get( 'mbstring_unavailable' ) ?></option>
+<?php
+						}
+?>
+			</select>
+	</td>
+<?php
+						break;
+
+					case 'dropdown_projects':
+?>
+	<td class="center" width="40%" colspan="2">
+		<select name="<?php echo $p_name ?>"><?php print_project_option_list( $t_value, FALSE, NULL, FALSE ) ?></select>
 	</td>
 <?php
 						break;

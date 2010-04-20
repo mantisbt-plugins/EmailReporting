@@ -38,68 +38,19 @@ class EmailReportingPlugin extends MantisPlugin
 			# accounts
 			'mailboxes'						=> array(),
 
-			# Do you want to secure the EmailReporting script so that it cannot be run
-			# via a webserver?
-			'mail_secured_script'			=> ON,
+			# Is this plugin allowed to process and create new bug reports
+			'mail_add_bug_reports'			=> ON,
 
-			# This tells Mantis to report all the Mail with only one account
-			# ON = mail uses the reporter account in the setting below
-			# OFF = it identifies the reporter using the email address of the sender
-			'mail_use_reporter'				=> ON,
+			# Is this plugin allowed to process and add bugnotes to existing issues
+			'mail_add_bugnotes'				=> ON,
 
-			# The account's name for mail reporting
-			# Also used for fallback if a user is not found in database
-			# Mail is just the default name which will be converted to a user id during installation
-			'mail_reporter_id'				=> 'Mail',
+			# Add complete email into the attachments
+			'mail_add_complete_email'		=> OFF,
 
 			# Signup new users automatically (possible security risk!)
 			# Default is OFF, if mail_use_reporter is OFF and this is OFF then it will
 			# fallback to the mail_reporter account above
 			'mail_auto_signup'				=> OFF,
-
-			# How many mails should be fetched at the same time
-			# If big mails with attachments should be received, specify only one
-			'mail_fetch_max'				=> 1,
-
-			# Add complete email into the attachments
-			'mail_add_complete_email'		=> OFF,
-
-			# Write sender of the message into the bug report
-			'mail_save_from'				=> ON,
-
-			# Parse MIME mails (may require a lot of memory)
-			'mail_parse_mime'				=> OFF,
-
-			# Parse HTML mails
-			'mail_parse_html'				=> ON,
-
-			# Try to identify only the reply parts in emails incase of notes
-			'mail_identify_reply'			=> ON,
-
-			# directory for saving temporary mail content
-			'mail_tmp_directory'			=> ( ( is_blank( $t_upload_tmp_dir ) ) ? '/tmp' : $t_upload_tmp_dir ),
-
-			# Delete incoming mail from POP3 server
-			'mail_delete'					=> ON,
-
-			# Used for debugging the system.
-			# Use with care
-			'mail_debug'					=> OFF,
-
-			# Save mail contents to this directory if debug mode is ON
-			'mail_debug_directory'			=> '/tmp/mantis',
-
-			# Looks for priority header field
-			'mail_use_bug_priority'			=> ON,
-
-			# Use the following text when the subject is missing from the email
-			'mail_nosubject'				=> 'No subject found', 
-
-			# Use the following text when the description is missing from the email
-			'mail_nodescription'			=> 'No description found', 
-
-			# Use the following text when a mantis email has been removed
-			'mail_removed_reply_text'		=> '[EmailReporting -> Mantis notification email removed]',
 
 			# Classify bug priorities
 			'mail_bug_priority'				=> array(
@@ -121,10 +72,45 @@ class EmailReportingPlugin extends MantisPlugin
 				'?'		=> 30
 			),
 
+			# Used for debugging the system.
+			# Use with care
+			'mail_debug'					=> OFF,
+
+			# Save mail contents to this directory if debug mode is ON
+			'mail_debug_directory'			=> '/tmp/mantis',
+
+			# Delete incoming mail from POP3 server
+			'mail_delete'					=> ON,
+
+			# Should users allways receive emails on actions they performed by email even though email_receive_own is OFF
+			'mail_email_receive_own'		=> OFF,
+
 			# Need to set the character encoding to which the email will be converted
 			# This should be the same as the character encoding used in the database system used for mantis
 			# values should be acceptable to the following function: http://www.php.net/mb_convert_encoding
 			'mail_encoding'					=> 'UTF-8', 
+
+			# Enable fallback to mail reporter
+			'mail_fallback_mail_reporter'	=> ON,
+
+			# How many mails should be fetched at the same time
+			# If big mails with attachments should be received, specify only one
+			'mail_fetch_max'				=> 1,
+
+			# Try to identify only the reply parts in emails incase of notes
+			'mail_identify_reply'			=> ON,
+
+			# Use the following text when the description is missing from the email
+			'mail_nodescription'			=> 'No description found', 
+
+			# Use the following text when the subject is missing from the email
+			'mail_nosubject'				=> 'No subject found', 
+
+			# Parse HTML mails
+			'mail_parse_html'				=> ON,
+
+			# Parse MIME mails (may require a lot of memory)
+			'mail_parse_mime'				=> OFF,
 
 			# Remove everything after and including the remove_replies_after text
 			'mail_remove_replies'			=> OFF,
@@ -132,17 +118,31 @@ class EmailReportingPlugin extends MantisPlugin
 			# Text which decides after (and including) which all content needs to be removed
 			'mail_remove_replies_after'		=> '-----Original Message-----',
 
-			# Should users allways receive emails on actions they performed by email even though email_receive_own is OFF
-			'mail_email_receive_own'		=> OFF,
+			# Use the following text when part of the email has been removed
+			'mail_removed_reply_text'		=> '[EmailReporting -> Removed part identified as reply]',
 
-			# Is this plugin allowed to process and create new bug reports
-			'mail_add_bug_reports'			=> ON,
+			# The account's name for mail reporting
+			# Also used for fallback if a user is not found in database
+			# Mail is just the default name which will be converted to a user id during installation
+			'mail_reporter_id'				=> 'Mail',
 
-			# Is this plugin allowed to process and add bugnotes to existing issues
-			'mail_add_bugnotes'				=> ON,
+			# Write sender of the message into the bug report
+			'mail_save_from'				=> ON,
 
-			# Enable fallback to mail reporter
-			'mail_fallback_mail_reporter'	=> ON,
+			# Do you want to secure the EmailReporting script so that it cannot be run
+			# via a webserver?
+			'mail_secured_script'			=> ON,
+
+			# directory for saving temporary mail content
+			'mail_tmp_directory'			=> ( ( is_blank( $t_upload_tmp_dir ) ) ? '/tmp' : $t_upload_tmp_dir ),
+
+			# Looks for priority header field
+			'mail_use_bug_priority'			=> ON,
+
+			# This tells Mantis to report all the Mail with only one account
+			# ON = mail uses the reporter account in the setting below
+			# OFF = it identifies the reporter using the email address of the sender
+			'mail_use_reporter'				=> ON,
 		);
 	} 
 

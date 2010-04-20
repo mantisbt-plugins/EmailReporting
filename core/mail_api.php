@@ -134,10 +134,6 @@ class ERP_mailbox_api
 
 		$this->_max_file_size					= (int) min( ini_get_number( 'upload_max_filesize' ), ini_get_number( 'post_max_size' ), config_get( 'max_file_size' ) );
 
-		// Need to disable show_realname because i must have the username for the user_get_name function
-		config_set_cache( 'show_realname', OFF, CONFIG_TYPE_STRING );
-		config_set_global( 'show_realname', OFF );
-
 		// Do we need to remporarily enable emails on self actions?
 		$t_mail_email_receive_own				= plugin_config_get( 'mail_email_receive_own' );
 		$t_email_receive_own					= config_get( 'email_receive_own' );
@@ -202,7 +198,7 @@ class ERP_mailbox_api
 	{
 		if ( PEAR::isError( $p_pear ) )
 		{
-			if ( $this->_test_only === FALSE )
+			if ( !$this->_test_only )
 			{
 				echo "\n\n" . 'Mailbox: ' . $this->_mailbox[ 'mailbox_description' ] . "\n" . $p_pear->toString() . "\n";
 			}
@@ -524,13 +520,13 @@ class ERP_mailbox_api
 			}
 		}
 
-		if ( !isset( $t_reporter_name ) && $t_reporter_id )
-		{
-			$t_reporter_name = user_get_name( $t_reporter_id );
-		}
-
 		if ( $t_reporter_id )
 		{
+			if ( !isset( $t_reporter_name ) )
+			{
+				$t_reporter_name = user_get_field( $t_reporter_id, 'username' );
+			}
+
 			$this->custom_error( 'Reporter: ' . $t_reporter_id . ' - ' . $p_parsed_from[ 'email' ] );
 			auth_attempt_script_login( $t_reporter_name );
 
