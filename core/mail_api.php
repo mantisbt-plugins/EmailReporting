@@ -136,8 +136,7 @@ class ERP_mailbox_api
 
 		// Do we need to remporarily enable emails on self actions?
 		$t_mail_email_receive_own				= plugin_config_get( 'mail_email_receive_own' );
-		$t_email_receive_own					= config_get( 'email_receive_own' );
-		if ( $t_mail_email_receive_own && !$t_email_receive_own )
+		if ( $t_mail_email_receive_own )
 		{
 			config_set_cache( 'email_receive_own', ON, CONFIG_TYPE_STRING );
 			config_set_global( 'email_receive_own', ON );
@@ -403,7 +402,7 @@ class ERP_mailbox_api
 		if ( $t_email[ 'Reporter_id' ] !== FALSE )
 		{
 			// We don't need to validate the email address if it is an existing user (existing user also needs to be set as the reporter of the issue)
-			if ( $t_email[ 'Reporter_id' ] !== $this->_mail_reporter_id || validate_email_address( $t_email[ 'From_parsed' ][ 'email' ] ) )
+			if ( $t_email[ 'Reporter_id' ] !== $this->_mail_reporter_id || $this->validate_email_address( $t_email[ 'From_parsed' ][ 'email' ] ) )
 			{
 				$this->add_bug( $t_email, $p_overwrite_project_id );
 			}
@@ -498,6 +497,12 @@ class ERP_mailbox_api
 					{
 						if( user_signup( $t_new_reporter_name, $p_parsed_from[ 'email' ] ) )
 						{
+							// Because of a notice level errors in core/email_api.php on line 516 in MantisBT 1.2.0 we need to fill this value
+							if ( !isset( $_SERVER[ 'REMOTE_ADDR' ] ) )
+							{
+								$_SERVER[ 'REMOTE_ADDR' ] = '127.0.0.1';
+							}
+
 							# notify the selected group a new user has signed-up
 							email_notify_new_account( $t_new_reporter_name, $p_parsed_from[ 'email' ] );
 
@@ -527,7 +532,6 @@ class ERP_mailbox_api
 				$t_reporter_name = user_get_field( $t_reporter_id, 'username' );
 			}
 
-			$this->custom_error( 'Reporter: ' . $t_reporter_id . ' - ' . $p_parsed_from[ 'email' ] );
 			auth_attempt_script_login( $t_reporter_name );
 
 			return( (int) $t_reporter_id );
@@ -696,8 +700,11 @@ class ERP_mailbox_api
 		else
 		{
 			// Not allowed to add bugs and not allowed / able to add bugnote. Need to stop processing
+			$this->custom_error( 'Not allowed to create a new issue. Email ignored' );
 			return;
 		}
+
+		$this->custom_error( 'Reporter: ' . $p_email[ 'Reporter_id' ] . ' - ' . $p_email[ 'From_parsed' ][ 'email' ] . ' --> Issue ID: #' . $t_bug_id );
 
 		$this->show_memory_usage( 'Start processing attachments' );
 
@@ -983,7 +990,7 @@ class ERP_mailbox_api
 	{
 		if ( $this->_mail_remove_replies )
 		{
-			$t_first_occurence = strpos( $p_description, $this->_mail_remove_replies_after );
+			$t_first_occurence = stripos( $p_description, $this->_mail_remove_replies_after );
 			if ( $t_first_occurence !== FALSE )
 			{
 				$t_description = substr( $p_description, 0, $t_first_occurence ) . $this->_mail_removed_reply_text;
