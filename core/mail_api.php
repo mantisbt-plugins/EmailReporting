@@ -35,9 +35,10 @@ class ERP_mailbox_api
 		'POP3' => array( 'normal' => 110, 'encrypted' => 995 ),
 		'IMAP' => array( 'normal' => 143, 'encrypted' => 993 ),
 	);
+
 	private $_file_number = 1;
 
-	private $_validated_email_list;
+	private $_validated_email_list = array();
 
 	private $_mail_delete;
 	private $_mail_debug;
@@ -66,7 +67,6 @@ class ERP_mailbox_api
 	private $_default_bug_priority;
 
 	private $_validate_email;
-	private $_check_mx_record;
 	private $_allow_file_upload;
 	private $_bug_resolved_status_threshold;
 	private $_email_separator1;
@@ -118,7 +118,6 @@ class ERP_mailbox_api
 
 		$this->_default_bug_priority			= config_get( 'default_bug_priority' );
 		$this->_validate_email					= config_get( 'validate_email' );
-		$this->_check_mx_record					= config_get( 'check_mx_record' );
 		$this->_allow_file_upload				= config_get( 'allow_file_upload' );
 		$this->_bug_resolved_status_threshold	= config_get( 'bug_resolved_status_threshold' );
 		$this->_email_separator1				= config_get( 'email_separator1' );
@@ -326,13 +325,17 @@ class ERP_mailbox_api
 									$t_isdeleted_count = 0;
 
 									$t_numMsg = $this->_mailserver->numMsg();
-									if ( !$this->pear_error( $t_numMsg ) )
+									if ( !$this->pear_error( $t_numMsg ) && $t_numMsg > 0 )
 									{
-										$t_numMsg = $this->check_fetch_max( $t_numMsg, $t_total_fetch_counter );
+										$t_allowed_numMsg = $this->check_fetch_max( $t_numMsg, $t_total_fetch_counter );
 
-										for ( $i = 1; ( $i - $t_isdeleted_count ) <= $t_numMsg; $i++ )
+										for ( $i = 1; $i <= $t_numMsg; $i++ )
 										{
-											if ( $this->_mailserver->isDeleted( $i ) === TRUE )
+											if ( ( $i - $t_isdeleted_count ) > $t_allowed_numMsg )
+											{
+												break;
+											}
+											elseif ( $this->_mailserver->isDeleted( $i ) === TRUE )
 											{
 												$t_isdeleted_count++;
 											}
@@ -869,27 +872,26 @@ class ERP_mailbox_api
 
 	# --------------------
 	# Validate the email address
-	#  caching is only performed when mx records are checked
 	private function validate_email_address( $p_email_address )
 	{
 		if ( $this->_validate_email )
 		{
 			// Lets see if the email address is valid and maybe we already have a cached result
-			if ( $this->_check_mx_record && isset( $this->_validated_email_list[ $p_email_address ] ) )
+			if ( isset( $this->_validated_email_list[ $p_email_address ] ) )
 			{
 				$t_valid = $this->_validated_email_list[ $p_email_address ];
 			}
-			elseif ( email_is_valid( $p_email_address ) )
-			{
-				$t_valid = TRUE;
-			}
 			else
 			{
-				$t_valid = FALSE;
-			}
+				if ( email_is_valid( $p_email_address ) )
+				{
+					$t_valid = TRUE;
+				}
+				else
+				{
+					$t_valid = FALSE;
+				}
 
-			if ( $this->_check_mx_record )
-			{
 				$this->_validated_email_list[ $p_email_address ] = $t_valid;
 			}
 		}
@@ -942,7 +944,9 @@ class ERP_mailbox_api
 	# return bug_id if there is a valid mantis bug refererence in subject or return false if not found
 	private function mail_is_a_bugnote( $p_mail_subject )
 	{
-		if ( ( $t_bug_id = $this->get_bug_id_from_subject( $p_mail_subject ) ) !== FALSE )
+		$t_bug_id = $this->get_bug_id_from_subject( $p_mail_subject );
+
+		if ( $t_bug_id !== FALSE )
 		{
 			if ( bug_exists( $t_bug_id ) && !bug_is_readonly( $t_bug_id ) )
 			{
