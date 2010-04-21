@@ -1,12 +1,10 @@
 <?php
 
 require_once( 'Mail/mimeDecode.php' );
-require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/Mail/simple_html_dom.php');
 
 class ERP_Mail_Parser
 {
 	private $_parse_html = FALSE;
-	private $_parse_mime = FALSE;
 	private $_encoding = 'UTF-8';
 	private $_add_attachments = TRUE;
 	private $_debug = FALSE;
@@ -27,7 +25,6 @@ class ERP_Mail_Parser
 
 	public function __construct( $options )
 	{
-		$this->_parse_mime = $options[ 'parse_mime' ];
 		$this->_parse_html = $options[ 'parse_html' ];
 		$this->_encoding = $options[ 'encoding' ];
 		$this->_add_attachments = $options[ 'add_attachments' ];
@@ -158,7 +155,7 @@ class ERP_Mail_Parser
 			$this->setBody( $structure->body );
 		}
 
-		if ( $this->_parse_mime && isset( $structure->parts ) )
+		if ( isset( $structure->parts ) )
 		{
 			$this->setParts( $structure->parts );
 		}

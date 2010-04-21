@@ -18,8 +18,9 @@
 	require_once( 'Net/POP3.php' );
 	require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/Net/IMAP_1.0.3.php' );
 
-	require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/Mail/Parser.php' );
 	require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/config_api.php' );
+	require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/Mail/Parser.php' );
+	require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/Mail/simple_html_dom.php');
 
 class ERP_mailbox_api
 {
@@ -52,6 +53,7 @@ class ERP_mailbox_api
 	private $_mail_fetch_max;
 	private $_mail_nodescription;
 	private $_mail_nosubject;
+	private $_mail_parse_mime;
 	private $_mail_remove_mantis_email;
 	private $_mail_remove_replies;
 	private $_mail_remove_replies_after;
@@ -100,6 +102,7 @@ class ERP_mailbox_api
 		$this->_mail_fetch_max					= plugin_config_get( 'mail_fetch_max' );
 		$this->_mail_nodescription				= plugin_config_get( 'mail_nodescription' );
 		$this->_mail_nosubject					= plugin_config_get( 'mail_nosubject' );
+		$this->_mail_parse_mime					= plugin_config_get( 'mail_parse_mime' );
 		$this->_mail_remove_mantis_email		= plugin_config_get( 'mail_remove_mantis_email' );
 		$this->_mail_remove_replies				= plugin_config_get( 'mail_remove_replies' );
 		$this->_mail_remove_replies_after		= plugin_config_get( 'mail_remove_replies_after' );
@@ -114,7 +117,6 @@ class ERP_mailbox_api
 		$this->_mp_options[ 'debug' ]			= $this->_mail_debug;
 		$this->_mp_options[ 'encoding' ]		= plugin_config_get( 'mail_encoding' );
 		$this->_mp_options[ 'parse_html' ]		= plugin_config_get( 'mail_parse_html' );
-		$this->_mp_options[ 'parse_mime' ]		= plugin_config_get( 'mail_parse_mime' );
 
 		$this->_allow_file_upload				= config_get( 'allow_file_upload' );
 		$this->_bug_resolved_status_threshold	= config_get( 'bug_resolved_status_threshold' );
@@ -396,11 +398,22 @@ class ERP_mailbox_api
 	{
 		$this->show_memory_usage( 'Start process single email' );
 
-		$t_msg = $this->_mailserver->getMsg( $p_i );
+		if ( $this->_mail_parse_mime )
+		{
+			$t_msg = $this->_mailserver->getMsg( $p_i );
+
+			$t_parse_method = 'parse_content_mime';
+		}
+		else
+		{
+			$t_msg = $this->_mailserver->getParsedHeaders( $p_i ) + array( 'X-Mantis-Body' => $this->_mailserver->getBody( $p_i ) );
+
+			$t_parse_method = 'parse_content_native';
+		}
 
 		$this->save_message_to_file( $t_msg );
 
-		$t_email = $this->parse_content( $t_msg );
+		$t_email = $this->$t_parse_method( $t_msg );
 
 		unset( $t_msg );
 
@@ -426,10 +439,10 @@ class ERP_mailbox_api
 	}
 
 	# --------------------
-	# parse the email for Mantis
-	private function parse_content( &$p_msg )
+	# parse the email using mimeDecode for Mantis
+	private function parse_content_mime( &$p_msg )
 	{
-		$this->show_memory_usage( 'Start Mail Parser' );
+		$this->show_memory_usage( 'Start Mail MIME Parser' );
 
 		$t_mp = new ERP_Mail_Parser( $this->_mp_options );
 
@@ -474,7 +487,49 @@ class ERP_mailbox_api
 			$t_email[ 'X-Mantis-Parts' ][] = $t_part;
 		}
 
-		$this->show_memory_usage( 'Finished Mail Parser' );
+		$this->show_memory_usage( 'Finished Mail MIME Parser' );
+
+		return( $t_email );
+	}
+
+	# --------------------
+	# parse the email natively for Mantis
+	private function parse_content_native( &$p_mp )
+	{
+		$this->show_memory_usage( 'Start Mail native Parser' );
+
+		$t_email[ 'From' ] = $p_mp[ 'From' ];
+		$t_email[ 'From_parsed' ] = $this->parse_address( $t_email[ 'From' ] );
+		$t_email[ 'Reporter_id' ] = $this->get_user( $t_email[ 'From_parsed' ] );
+
+		$t_email[ 'Subject' ] = trim( $p_mp[ 'Subject' ] );
+
+		$t_email[ 'X-Mantis-Body' ] = trim( $p_mp[ 'X-Mantis-Body' ] );
+
+		if ( $this->_mp_options[ 'parse_html' ] )
+		{
+			$htmlToText = str_get_html( $t_email[ 'X-Mantis-Body' ] );
+
+			// extract text from HTML
+			$t_email[ 'X-Mantis-Body' ] = $htmlToText->plaintext;
+		}
+
+		$t_email[ 'X-Mantis-Parts' ] = array();
+
+		$t_email[ 'Priority' ] = $this->_default_bug_priority;
+
+		if ( $this->_mail_add_complete_email )
+		{
+			$t_part = array(
+				'name' => 'Complete email.txt',
+				'ctype' => 'text/plain',
+				'body' => implode( "\n", $p_mp ),
+			);
+
+			$t_email[ 'X-Mantis-Parts' ][] = $t_part;
+		}
+
+		$this->show_memory_usage( 'Finished Mail native Parser' );
 
 		return( $t_email );
 	}
@@ -720,7 +775,7 @@ class ERP_mailbox_api
 		# Add files
 		if ( $this->_allow_file_upload )
 		{
-			if ( NULL != $p_email[ 'X-Mantis-Parts' ] )
+			if ( count( $p_email[ 'X-Mantis-Parts' ] ) > 0 )
 			{
 				$t_rejected_files = NULL;
 
