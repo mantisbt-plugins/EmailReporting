@@ -51,7 +51,7 @@ class ERP_mailbox_api
 	private $_mail_reporter_id;
 	private $_mail_auto_signup;
 	private $_mail_tmp_directory;
-	private $_mail_identify_reply;
+	private $_mail_remove_mantis_email;
 	private $_mail_removed_reply_text;
 	private $_mail_nosubject;
 	private $_mail_nodescription;
@@ -99,7 +99,7 @@ class ERP_mailbox_api
 		$this->_mail_reporter_id				= plugin_config_get( 'mail_reporter_id' );
 		$this->_mail_auto_signup				= plugin_config_get( 'mail_auto_signup' );
 		$this->_mail_tmp_directory				= plugin_config_get( 'mail_tmp_directory' );
-		$this->_mail_identify_reply				= plugin_config_get( 'mail_identify_reply' );
+		$this->_mail_remove_mantis_email		= plugin_config_get( 'mail_remove_mantis_email' );
 		$this->_mail_removed_reply_text			= plugin_config_get( 'mail_removed_reply_text' );
 		$this->_mail_nosubject					= plugin_config_get( 'mail_nosubject' );
 		$this->_mail_nodescription				= plugin_config_get( 'mail_nodescription' );
@@ -304,7 +304,7 @@ class ERP_mailbox_api
 						}
 						else
 						{
-							$t_projects = array( 0 => project_get_row( $this->_mailbox[ 'mailbox_project' ] ) );
+							$t_projects = array( 0 => project_get_row( $this->_mailbox[ 'mailbox_project_id' ] ) );
 						}
 
 						$t_total_fetch_counter = 0;
@@ -566,7 +566,7 @@ class ERP_mailbox_api
 
 			$t_description = $p_email[ 'X-Mantis-Body' ];
 
-			$t_description = $this->identify_mantis_email( $t_description );
+			$t_description = $this->identify_replies( $t_description );
 			$t_description = $this->apply_mail_save_from( $p_email[ 'From' ], $t_description );
 
 			$t_status = bug_get_field( $t_bug_id, 'status' );
@@ -599,7 +599,7 @@ class ERP_mailbox_api
 			$t_bug_data->handler_id				= 0;
 			$t_bug_data->view_state				= $this->_default_bug_view_status;
 
-			$t_bug_data->category_id			= $this->_mailbox[ 'mailbox_global_category' ];
+			$t_bug_data->category_id			= $this->_mailbox[ 'mailbox_global_category_id' ];
 			$t_bug_data->reproducibility		= $this->_default_bug_reproducibility;
 			$t_bug_data->severity				= $this->_default_bug_severity;
 			$t_bug_data->priority				= $p_email[ 'Priority' ];
@@ -615,7 +615,7 @@ class ERP_mailbox_api
 			$t_bug_data->additional_information	= $this->_default_bug_additional_info;
 			$t_bug_data->due_date				= date_get_null();
 
-			$t_bug_data->project_id				= ( ( $p_overwrite_project_id === FALSE ) ? $this->_mailbox[ 'mailbox_project' ] : $p_overwrite_project_id );
+			$t_bug_data->project_id				= ( ( $p_overwrite_project_id === FALSE ) ? $this->_mailbox[ 'mailbox_project_id' ] : $p_overwrite_project_id );
 
 			$t_bug_data->reporter_id			= $p_email[ 'Reporter_id' ];
 
@@ -850,8 +850,6 @@ class ERP_mailbox_api
 	# return the hostname parsed into a hostname + port
 	private function prepare_mailbox_hostname()
 	{
-		$this->_mailbox[ 'mailbox_hostname' ] = ERP_correct_hostname_port( $this->_mailbox[ 'mailbox_hostname' ] );
-
 		if ( $this->_mailbox[ 'mailbox_encryption' ] !== 'None' && extension_loaded( 'openssl' ) )
 		{
 			$this->_mailbox[ 'mailbox_hostname' ][ 'hostname' ] = strtolower( $this->_mailbox[ 'mailbox_encryption' ] ) . '://' . $this->_mailbox[ 'mailbox_hostname' ][ 'hostname' ];
@@ -994,8 +992,8 @@ class ERP_mailbox_api
 	}
 
 	# --------------------
-	# Removes the original mantis email from replies
-	private function identify_mantis_email( $p_description )
+	# Removes replies from mails
+	private function identify_replies( $p_description )
 	{
 		if ( $this->_mail_remove_replies )
 		{
@@ -1006,7 +1004,7 @@ class ERP_mailbox_api
 			}
 		}
 
-		if ( $this->_mail_identify_reply )
+		if ( $this->_mail_remove_mantis_email )
 		{
 			# The pear mimeDecode.php seems to be removing the last "=" in some versions of the pear package.
 			# the version delivered with this package seems to be working OK though but just to be sure

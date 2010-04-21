@@ -70,8 +70,8 @@ ERP_output_config_option( 'mailbox_createfolderstructure', 'boolean', -3, $t_mai
 
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'mailbox_settings_issue', 'header' );
-ERP_output_config_option( 'mailbox_project', 'dropdown_projects', -3, $t_mailbox );
-ERP_output_config_option( 'mailbox_global_category', 'dropdown_global_categories', -3, $t_mailbox );
+ERP_output_config_option( 'mailbox_project_id', 'dropdown_projects', -3, $t_mailbox );
+ERP_output_config_option( 'mailbox_global_category_id', 'dropdown_global_categories', -3, $t_mailbox );
 
 ERP_output_config_option( $f_mailbox_action . '_mailbox', 'submit' );
 

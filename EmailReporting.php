@@ -97,9 +97,6 @@ class EmailReportingPlugin extends MantisPlugin
 			# If big mails with attachments should be received, specify only one
 			'mail_fetch_max'				=> 1,
 
-			# Try to identify only the reply parts in emails incase of notes
-			'mail_identify_reply'			=> ON,
-
 			# Use the following text when the description is missing from the email
 			'mail_nodescription'			=> 'No description found', 
 
@@ -111,6 +108,9 @@ class EmailReportingPlugin extends MantisPlugin
 
 			# Parse MIME mails (may require a lot of memory)
 			'mail_parse_mime'				=> OFF,
+
+			# Try to identify the original mantis email and remove it from the description
+			'mail_remove_mantis_email'		=> ON,
 
 			# Remove everything after and including the remove_replies_after text
 			'mail_remove_replies'			=> OFF,
@@ -182,7 +182,8 @@ class EmailReportingPlugin extends MantisPlugin
 				$t_user_id = user_get_id_by_name( $t_username );
 
 				plugin_config_set( 'mail_reporter_id', $t_user_id );
-				plugin_config_set( 'config_version', 2 );
+
+				plugin_config_set( 'config_version', 5 );
 			}
 
 			return( $t_result_user_create );
@@ -252,6 +253,10 @@ class EmailReportingPlugin extends MantisPlugin
 	 * Schema will be completely reset by this just once
 	 * 
 	 * The second part updates various configuration options and performs some cleaning
+	 * Further updates to the configuration options follow below
+	 *
+	 * Make sure that if you change anything to the config_version value that you
+	 * also change the update the value in install
 	 */
 	function ERP_update_check( )
 	{
@@ -322,6 +327,64 @@ class EmailReportingPlugin extends MantisPlugin
 			plugin_config_delete( 'mail_last_check' );
 
 			plugin_config_set( 'config_version', 3 );
+		}
+
+		if ( $t_config_version <= 3 )
+		{
+			$t_mailboxes = plugin_config_get( 'mailboxes' );
+
+			foreach ( $t_mailboxes AS $t_key => $t_value )
+			{
+				# Correct the hostname if it is stored in an older format
+				$t_hostname = $t_value[ 'mailbox_hostname' ];
+
+				if ( !is_array( $t_hostname ) )
+				{
+					$t_hostname = explode( ':', $t_hostname, 2 );
+
+					$t_hostname = array(
+						'hostname'	=> $t_hostname[ 0 ],
+						'port'		=> ( ( isset( $t_hostname[ 1 ] ) ) ? $t_hostname[ 1 ] : '' ),
+					);
+
+					$t_value[ 'mailbox_hostname' ] = $t_hostname;
+				}
+
+				# Correct index mailbox_project --> mailbox_project_id
+				if ( isset( $t_value[ 'mailbox_project' ] ) )
+				{
+					$t_value[ 'mailbox_project_id' ] = $t_value[ 'mailbox_project' ];
+					unset( $t_value[ 'mailbox_project' ] );
+				}
+
+				# Correct index mailbox_global_category --> mailbox_global_category_id
+				if ( isset( $t_value[ 'mailbox_global_category' ] ) )
+				{
+					$t_value[ 'mailbox_global_category_id' ] = $t_value[ 'mailbox_global_category' ];
+					unset( $t_value[ 'mailbox_global_category' ] );
+				}
+
+				$t_mailboxes[ $t_key ] = $t_value;
+			}
+
+			plugin_config_set( 'mailboxes', $t_mailboxes );
+
+			plugin_config_set( 'config_version', 4 );
+		}
+
+		if ( $t_config_version <= 4 )
+		{
+			$t_mail_remove_mantis_email	= plugin_config_get( 'mail_remove_mantis_email' );
+			$t_mail_identify_reply		= plugin_config_get( 'mail_identify_reply', $t_mail_remove_mantis_email );
+
+			if ( $t_mail_identify_reply !== $t_mail_remove_mantis_email )
+			{
+				plugin_config_set( 'mail_remove_mantis_email', $t_mail_identify_reply );
+			}
+
+			plugin_config_delete( 'mail_identify_reply' );
+
+			plugin_config_set( 'config_version', 5 );
 		}
 	}
 

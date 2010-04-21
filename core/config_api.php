@@ -8,33 +8,14 @@
 	function ERP_get_default_mailbox()
 	{
 		$t_mailbox = array(
-			'mailbox_enabled'			=> TRUE,
-			'mailbox_type'				=> 'POP3',
-			'mailbox_encryption'		=> 'None',
-			'mailbox_auth_method'		=> 'USER',
-			'mailbox_global_category'	=> -1,
+			'mailbox_enabled'				=> TRUE,
+			'mailbox_type'					=> 'POP3',
+			'mailbox_encryption'			=> 'None',
+			'mailbox_auth_method'			=> 'USER',
+			'mailbox_global_category_id'	=> -1,
 		);
 
 		return( $t_mailbox );
-	}
-
-	# --------------------
-	# Correct the hostname if it is stored in an older format
-	function ERP_correct_hostname_port( $p_hostname )
-	{
-		$t_hostname = $p_hostname;
-
-		if ( !is_array( $t_hostname ) )
-		{
-			$t_hostname = explode( ':', $t_hostname, 2 );
-
-			$t_hostname = array(
-				'hostname'	=> $t_hostname[ 0 ],
-				'port'		=> ( ( isset( $t_hostname[ 1 ] ) ) ? $t_hostname[ 1 ] : '' ),
-			);
-		}
-
-		return( $t_hostname );
 	}
 
 	# --------------------
@@ -253,7 +234,6 @@
 						break;
 
 					case 'string_hostname_port':
-						$t_value = ERP_correct_hostname_port( $t_value );
 ?>
 	<td class="center" width="40%" colspan="2">
 		<input type="text" size="40" maxlength="100" name="<?php echo $p_name ?>[hostname]" value="<?php echo $t_value[ 'hostname' ] ?>"/>

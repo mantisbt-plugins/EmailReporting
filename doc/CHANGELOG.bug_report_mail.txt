@@ -67,6 +67,9 @@ Apr 2010 - EmailReporting-0.8.0
 	- Applied a fix for bug #11818 (~25040)
 	- Besides the reporter id and email, bug_report_mail now also shows the bug_id where the actions were performed
 	- Found existing users must have an enabled account
+	- mailbox_project is now called mailbox_project_id
+	- mailbox_global_category is now called mailbox_global_category_id
+	- mail_identify_reply is now called mail_remove_mantis_email
 
 Mar 2010 v2 - EmailReporting-0.7.9
 	- All from email addresses will now be checked by the email_is_valid function before a email will be processed
