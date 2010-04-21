@@ -39,19 +39,34 @@ Apr 2010 - EmailReporting-0.8.0
 	- Fixed an error which occurs if you try to perform an action on a mailbox that no longer exists
 	- Changed the random number generator for user creations from mt_rand( 4, 5 ) to mt_rand( 1000, 50000 )
 	- mail_get_mailboxes function removed as it outlived its function
-	- Improved the error handling of adding files to bugs
 	- Mailbox encryption features now only available if PHP OpenSSL extension is available
 	- Fixed a problem with a missing port number when using the alternative method to running bug_report_mail (~25072)
 	- Updated readme with "Partial support" notice for Outlook RTF formatted emails
 	- Improved functionality when using IMAP in combination with the inbox folder as the basefolder
 	- mail_api.php has been restructured to form a class
-	- Improved email_is_valid with caching when check_mx_record is enabled (only for the current session).
-	- Email_is_valid will only be performed when the Mail Reporter is used
+	- Improved email_is_valid check with caching (only for the current session).
+	- Email_is_valid will only be performed when the Mail Reporter is used or on a new user creation
 	- Optimized the Mail_Parser a little bit
 	- Configuration option mail_bug_priority_default has been removed. The default_bug_priority from the core mantis configuration options will be used instead
-	- Every mailbox is allowed to run for 30 seconds before it returns a fatal error
+	- bug_report_mail is now allowed to run for as long as it needs
 	- Default configuration option for mail_tmp_directory is php.ini option upload_tmp_dir if available else it will revert to the old value /tmp
 	- The regular expression for the bugnote check now accepts all characters for the project names
+	- Removed useless CVS $id$ tags in three files as git can not use them
+	- Updated the add_bug function to be more like its counterpart in bug_report.php
+	- Improved the mail_is_a_bugnote function. Now only one regex is needed
+	- A new functionality has been added which optionally removes all replies from emails
+	- A new functionality has been added which optionally temporarily enables email_receive_own during the current session
+	- 2 new options with which you can enable or disable the adding of bugnotes and bugs
+	- Added a new option to disable the fallback to the mail reporter account
+	- The PHP memory limit is disabled when bug_report_mail is running.
+	- When debug mode is enabled the memory usage of the mail_api will be shown at specific moments of processing
+	- Mailboxes can be disabled
+	- Memory usage optimized (~20% less memory required)
+	- Debug mode will no longer show the parsed email contents. They will be saved to the debug directory in a file just like the raw email contents
+	- Removed the alternative method to running bug_report_mail as a scheduled job.
+	- Applied a fix for bug #11818 (~25040)
+	- Besides the reporter id and email, bug_report_mail now also shows the bug_id where the actions were performed
+	- Found existing users must have an enabled account
 
 Mar 2010 v2 - EmailReporting-0.7.9
 	- All from email addresses will now be checked by the email_is_valid function before a email will be processed
