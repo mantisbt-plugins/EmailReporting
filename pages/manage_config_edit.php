@@ -18,7 +18,6 @@ $f_gpc = array(
 	'mail_nodescription'			=> gpc_get_string( 'mail_nodescription' ),
 	'mail_nosubject'				=> gpc_get_string( 'mail_nosubject' ),
 	'mail_parse_html'				=> gpc_get_bool( 'mail_parse_html' ),
-	'mail_parse_mime'				=> gpc_get_bool( 'mail_parse_mime' ),
 	'mail_remove_mantis_email'		=> gpc_get_bool( 'mail_remove_mantis_email' ),
 	'mail_remove_replies'			=> gpc_get_bool( 'mail_remove_replies' ),
 	'mail_remove_replies_after'		=> gpc_get_string( 'mail_remove_replies_after' ),

@@ -47,7 +47,6 @@ $s_plugin_EmailReporting_mail_fetch_max = 'Maximum fetched emails per mailbox pe
 $s_plugin_EmailReporting_mail_nodescription = 'Use this text if no description is found in the email';
 $s_plugin_EmailReporting_mail_nosubject = 'Use this text if no subject is found in the email';
 $s_plugin_EmailReporting_mail_parse_html = 'Parse HTML emails';
-$s_plugin_EmailReporting_mail_parse_mime = 'Parse MIME emails (may require a lot of memory)';
 $s_plugin_EmailReporting_mail_remove_mantis_email = 'Remove Mantis notification emails from replies.';
 $s_plugin_EmailReporting_mail_remove_replies = 'Remove all replies from bugnotes';
 $s_plugin_EmailReporting_mail_remove_replies_after = 'Use this text to identify the start of a reply';

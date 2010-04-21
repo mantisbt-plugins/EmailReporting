@@ -106,9 +106,6 @@ class EmailReportingPlugin extends MantisPlugin
 			# Parse HTML mails
 			'mail_parse_html'				=> ON,
 
-			# Parse MIME mails (may require a lot of memory)
-			'mail_parse_mime'				=> OFF,
-
 			# Try to identify the original mantis email and remove it from the description
 			'mail_remove_mantis_email'		=> ON,
 
@@ -183,7 +180,7 @@ class EmailReportingPlugin extends MantisPlugin
 
 				plugin_config_set( 'mail_reporter_id', $t_user_id );
 
-				plugin_config_set( 'config_version', 5 );
+				plugin_config_set( 'config_version', 6 );
 			}
 
 			return( $t_result_user_create );
@@ -385,6 +382,13 @@ class EmailReportingPlugin extends MantisPlugin
 			plugin_config_delete( 'mail_identify_reply' );
 
 			plugin_config_set( 'config_version', 5 );
+		}
+
+		if ( $t_config_version <= 5 )
+		{
+			plugin_config_delete( 'mail_parse_mime' );
+
+			plugin_config_set( 'config_version', 6 );
 		}
 	}
 

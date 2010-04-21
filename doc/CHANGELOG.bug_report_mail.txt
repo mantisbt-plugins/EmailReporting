@@ -70,7 +70,7 @@ Apr 2010 - EmailReporting-0.8.0
 	- mailbox_project is now called mailbox_project_id
 	- mailbox_global_category is now called mailbox_global_category_id
 	- mail_identify_reply is now called mail_remove_mantis_email
-	- Disabling Parse MIME now actually makes a difference in memory usage and is usefull but results in less functionality
+	- Parse MIME setting removed. It was useless as simply parsing the raw message already costs much more memory then processing subparts in the message
 
 Mar 2010 v2 - EmailReporting-0.7.9
 	- All from email addresses will now be checked by the email_is_valid function before a email will be processed
