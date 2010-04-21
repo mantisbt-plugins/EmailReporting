@@ -152,6 +152,12 @@ class ERP_mailbox_api
 			$this->custom_error( 'The temporary mail directory is not writable. Please correct it in the configuration options' );
 		}
 
+		// Because of a notice level errors in core/email_api.php on line 516 in MantisBT 1.2.0 we need to fill this value
+		if ( !isset( $_SERVER[ 'REMOTE_ADDR' ] ) )
+		{
+			$_SERVER[ 'REMOTE_ADDR' ] = '127.0.0.1';
+		}
+
 		$this->show_memory_usage( 'Finished __construct' );
 	}
 
@@ -497,12 +503,6 @@ class ERP_mailbox_api
 					{
 						if( user_signup( $t_new_reporter_name, $p_parsed_from[ 'email' ] ) )
 						{
-							// Because of a notice level errors in core/email_api.php on line 516 in MantisBT 1.2.0 we need to fill this value
-							if ( !isset( $_SERVER[ 'REMOTE_ADDR' ] ) )
-							{
-								$_SERVER[ 'REMOTE_ADDR' ] = '127.0.0.1';
-							}
-
 							# notify the selected group a new user has signed-up
 							email_notify_new_account( $t_new_reporter_name, $p_parsed_from[ 'email' ] );
 
@@ -522,6 +522,11 @@ class ERP_mailbox_api
 					// Fall back to the default mail_reporter
 					$t_reporter_id = $this->_mail_reporter_id;
 				}
+			}
+			elseif ( !user_is_enabled( $t_reporter_id ) && $this->_mail_fallback_mail_reporter )
+			{
+				// Fall back to the default mail_reporter
+				$t_reporter_id = $this->_mail_reporter_id;
 			}
 		}
 
