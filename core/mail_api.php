@@ -40,45 +40,45 @@ class ERP_mailbox_api
 
 	private $_validated_email_list = array();
 
-	private $_mail_delete;
-	private $_mail_debug;
-	private $_mail_debug_directory;
-	private $_mail_fetch_max;
-	private $_mail_use_bug_priority;
-	private $_mail_bug_priority;
-	private $_mail_add_complete_email;
-	private $_mail_use_reporter;
-	private $_mail_reporter_id;
-	private $_mail_auto_signup;
-	private $_mail_tmp_directory;
-	private $_mail_remove_mantis_email;
-	private $_mail_removed_reply_text;
-	private $_mail_nosubject;
-	private $_mail_nodescription;
-	private $_mail_save_from;
-	private $_mail_remove_replies;
-	private $_mail_remove_replies_after;
 	private $_mail_add_bug_reports;
 	private $_mail_add_bugnotes;
+	private $_mail_add_complete_email;
+	private $_mail_auto_signup;
+	private $_mail_bug_priority;
+	private $_mail_debug;
+	private $_mail_debug_directory;
+	private $_mail_delete;
 	private $_mail_fallback_mail_reporter;
+	private $_mail_fetch_max;
+	private $_mail_nodescription;
+	private $_mail_nosubject;
+	private $_mail_remove_mantis_email;
+	private $_mail_remove_replies;
+	private $_mail_remove_replies_after;
+	private $_mail_removed_reply_text;
+	private $_mail_reporter_id;
+	private $_mail_save_from;
+	private $_mail_tmp_directory;
+	private $_mail_use_bug_priority;
+	private $_mail_use_reporter;
 
 	private $_mp_options = array();
 
-	private $_default_bug_priority;
-
-	private $_validate_email;
 	private $_allow_file_upload;
 	private $_bug_resolved_status_threshold;
 	private $_email_separator1;
-	private $_default_bug_view_status;
-	private $_default_bug_reproducibility;
-	private $_default_bug_severity;
-	private $_default_bug_projection;
-	private $_default_bug_eta;
-	private $_default_bug_resolution;
+	private $_validate_email;
+
 	private $_bug_submit_status;
-	private $_default_bug_steps_to_reproduce;
 	private $_default_bug_additional_info;
+	private $_default_bug_eta;
+	private $_default_bug_priority;
+	private $_default_bug_projection;
+	private $_default_bug_reproducibility;
+	private $_default_bug_resolution;
+	private $_default_bug_severity;
+	private $_default_bug_steps_to_reproduce;
+	private $_default_bug_view_status;
 
 	private $_max_file_size;
 
@@ -88,48 +88,49 @@ class ERP_mailbox_api
 	{
 		$this->_test_only = $p_test_only;
 
-		$this->_mail_delete						= plugin_config_get( 'mail_delete' );
-		$this->_mail_debug						= plugin_config_get( 'mail_debug' );
-		$this->_mail_debug_directory			= plugin_config_get( 'mail_debug_directory' );
-		$this->_mail_fetch_max					= plugin_config_get( 'mail_fetch_max' );
-		$this->_mail_use_bug_priority			= plugin_config_get( 'mail_use_bug_priority' );
-		$this->_mail_bug_priority				= plugin_config_get( 'mail_bug_priority' );
-		$this->_mail_add_complete_email			= plugin_config_get( 'mail_add_complete_email' );
-		$this->_mail_use_reporter				= plugin_config_get( 'mail_use_reporter' );
-		$this->_mail_reporter_id				= plugin_config_get( 'mail_reporter_id' );
-		$this->_mail_auto_signup				= plugin_config_get( 'mail_auto_signup' );
-		$this->_mail_tmp_directory				= plugin_config_get( 'mail_tmp_directory' );
-		$this->_mail_remove_mantis_email		= plugin_config_get( 'mail_remove_mantis_email' );
-		$this->_mail_removed_reply_text			= plugin_config_get( 'mail_removed_reply_text' );
-		$this->_mail_nosubject					= plugin_config_get( 'mail_nosubject' );
-		$this->_mail_nodescription				= plugin_config_get( 'mail_nodescription' );
-		$this->_mail_save_from					= plugin_config_get( 'mail_save_from' );
-		$this->_mail_remove_replies				= plugin_config_get( 'mail_remove_replies' );
-		$this->_mail_remove_replies_after		= plugin_config_get( 'mail_remove_replies_after' );
 		$this->_mail_add_bug_reports			= plugin_config_get( 'mail_add_bug_reports' );
 		$this->_mail_add_bugnotes				= plugin_config_get( 'mail_add_bugnotes' );
+		$this->_mail_add_complete_email			= plugin_config_get( 'mail_add_complete_email' );
+		$this->_mail_auto_signup				= plugin_config_get( 'mail_auto_signup' );
+		$this->_mail_bug_priority				= plugin_config_get( 'mail_bug_priority' );
+		$this->_mail_debug						= plugin_config_get( 'mail_debug' );
+		$this->_mail_debug_directory			= plugin_config_get( 'mail_debug_directory' );
+		$this->_mail_delete						= plugin_config_get( 'mail_delete' );
 		$this->_mail_fallback_mail_reporter		= plugin_config_get( 'mail_fallback_mail_reporter' );
+		$this->_mail_fetch_max					= plugin_config_get( 'mail_fetch_max' );
+		$this->_mail_nodescription				= plugin_config_get( 'mail_nodescription' );
+		$this->_mail_nosubject					= plugin_config_get( 'mail_nosubject' );
+		$this->_mail_remove_mantis_email		= plugin_config_get( 'mail_remove_mantis_email' );
+		$this->_mail_remove_replies				= plugin_config_get( 'mail_remove_replies' );
+		$this->_mail_remove_replies_after		= plugin_config_get( 'mail_remove_replies_after' );
+		$this->_mail_removed_reply_text			= plugin_config_get( 'mail_removed_reply_text' );
+		$this->_mail_reporter_id				= plugin_config_get( 'mail_reporter_id' );
+		$this->_mail_save_from					= plugin_config_get( 'mail_save_from' );
+		$this->_mail_tmp_directory				= plugin_config_get( 'mail_tmp_directory' );
+		$this->_mail_use_bug_priority			= plugin_config_get( 'mail_use_bug_priority' );
+		$this->_mail_use_reporter				= plugin_config_get( 'mail_use_reporter' );
 
-		$this->_mp_options[ 'parse_mime' ]		= plugin_config_get( 'mail_parse_mime' );
-		$this->_mp_options[ 'parse_html' ]		= plugin_config_get( 'mail_parse_html' );
-		$this->_mp_options[ 'encoding' ]		= plugin_config_get( 'mail_encoding' );
 		$this->_mp_options[ 'add_attachments' ]	= config_get( 'allow_file_upload' );
 		$this->_mp_options[ 'debug' ]			= $this->_mail_debug;
+		$this->_mp_options[ 'encoding' ]		= plugin_config_get( 'mail_encoding' );
+		$this->_mp_options[ 'parse_html' ]		= plugin_config_get( 'mail_parse_html' );
+		$this->_mp_options[ 'parse_mime' ]		= plugin_config_get( 'mail_parse_mime' );
 
-		$this->_default_bug_priority			= config_get( 'default_bug_priority' );
-		$this->_validate_email					= config_get( 'validate_email' );
 		$this->_allow_file_upload				= config_get( 'allow_file_upload' );
 		$this->_bug_resolved_status_threshold	= config_get( 'bug_resolved_status_threshold' );
 		$this->_email_separator1				= config_get( 'email_separator1' );
-		$this->_default_bug_view_status			= config_get( 'default_bug_view_status' );
-		$this->_default_bug_reproducibility		= config_get( 'default_bug_reproducibility', 10 );
-		$this->_default_bug_severity			= config_get( 'default_bug_severity', 50 );
-		$this->_default_bug_projection			= config_get( 'default_bug_projection' );
-		$this->_default_bug_eta					= config_get( 'default_bug_eta' );
-		$this->_default_bug_resolution			= config_get( 'default_bug_resolution' );
+		$this->_validate_email					= config_get( 'validate_email' );
+
 		$this->_bug_submit_status				= config_get( 'bug_submit_status' );
-		$this->_default_bug_steps_to_reproduce	= config_get( 'default_bug_steps_to_reproduce' );
 		$this->_default_bug_additional_info		= config_get( 'default_bug_additional_info' );
+		$this->_default_bug_eta					= config_get( 'default_bug_eta' );
+		$this->_default_bug_priority			= config_get( 'default_bug_priority' );
+		$this->_default_bug_projection			= config_get( 'default_bug_projection' );
+		$this->_default_bug_reproducibility		= config_get( 'default_bug_reproducibility', 10 );
+		$this->_default_bug_resolution			= config_get( 'default_bug_resolution' );
+		$this->_default_bug_severity			= config_get( 'default_bug_severity', 50 );
+		$this->_default_bug_steps_to_reproduce	= config_get( 'default_bug_steps_to_reproduce' );
+		$this->_default_bug_view_status			= config_get( 'default_bug_view_status' );
 
 		$this->_max_file_size					= (int) min( ini_get_number( 'upload_max_filesize' ), ini_get_number( 'post_max_size' ), config_get( 'max_file_size' ) );
 
