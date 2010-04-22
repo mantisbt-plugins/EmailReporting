@@ -159,6 +159,7 @@
 			case 'dropdown_mailbox_type':
 			case 'dropdown_mailboxes':
 			case 'dropdown_mbstring_encodings':
+			case 'dropdown_pref_usernames':
 			case 'dropdown_projects':
 ?>
 <tr <?php echo helper_alternate_class( )?>>
@@ -402,6 +403,25 @@
 			</select>
 	</td>
 <?php
+						break;
+
+					case 'dropdown_pref_usernames':
+						$t_username_options = array( 'name', 'email_address', 'email_no_domain' );
+?>
+	<td class="center" width="40%" colspan="2">
+		<select name="<?php echo $p_name ?>">
+<?php
+						foreach ( $t_username_options AS $t_option )
+						{
+?>
+			<option value="<?php echo $t_option ?>"<?php echo ( ( $t_option == $t_value ) ? ' selected' : '' ) ?>><?php echo plugin_lang_get( $t_option ) ?></option>
+<?php
+						}
+?>
+		</select>
+	</td>
+<?php
+
 						break;
 
 					case 'dropdown_projects':

@@ -106,6 +106,9 @@ class EmailReportingPlugin extends MantisPlugin
 			# Parse HTML mails
 			'mail_parse_html'				=> ON,
 
+			# Preferred username for new username creations
+			'mail_preferred_username'		=> 'name',
+
 			# Try to identify the original mantis email and remove it from the description
 			'mail_remove_mantis_email'		=> ON,
 

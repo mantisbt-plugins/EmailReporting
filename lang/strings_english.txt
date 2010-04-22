@@ -47,6 +47,7 @@ $s_plugin_EmailReporting_mail_fetch_max = 'Maximum fetched emails per mailbox pe
 $s_plugin_EmailReporting_mail_nodescription = 'Use this text if no description is found in the email';
 $s_plugin_EmailReporting_mail_nosubject = 'Use this text if no subject is found in the email';
 $s_plugin_EmailReporting_mail_parse_html = 'Parse HTML emails';
+$s_plugin_EmailReporting_mail_preferred_username = 'Preferred username for new user creations';
 $s_plugin_EmailReporting_mail_remove_mantis_email = 'Remove Mantis notification emails from replies.';
 $s_plugin_EmailReporting_mail_remove_replies = 'Remove all replies from bugnotes';
 $s_plugin_EmailReporting_mail_remove_replies_after = 'Use this text to identify the start of a reply';
@@ -57,6 +58,10 @@ $s_plugin_EmailReporting_mail_secured_script = 'Block this script from running v
 $s_plugin_EmailReporting_mail_tmp_directory = 'Directory for saving temporary email content';
 $s_plugin_EmailReporting_mail_use_bug_priority = 'Look for priority header field';
 $s_plugin_EmailReporting_mail_use_reporter = 'Use one reporter user for issues created by email';
+
+$s_plugin_EmailReporting_name = 'Name';
+$s_plugin_EmailReporting_email_address = 'Email address';
+$s_plugin_EmailReporting_email_no_domain = 'Email address without the domain name';
 
 $s_plugin_EmailReporting_mailboxes = 'Mailboxes';
 $s_plugin_EmailReporting_add_mailbox = 'Add mailbox';

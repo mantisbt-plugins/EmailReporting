@@ -31,7 +31,7 @@ if ( $f_mailbox_action !== 'add' )
 	if ( isset( $t_mailboxes[ $f_select_mailbox ] ) )
 	{
 		// merge existing selected mailbox into the default mailbox overwriting existing default values
-		$t_mailbox = array_merge( $t_mailbox, $t_mailboxes[ $f_select_mailbox ] );
+		$t_mailbox = $t_mailboxes[ $f_select_mailbox ] + $t_mailbox;
 
 		// Add "Copy of" text if necessary to mailboxes being copied
 		if ( $f_mailbox_action === 'copy' )

@@ -54,6 +54,7 @@ ERP_output_config_option( 'mail_use_reporter', 'boolean', -2 );
 ERP_output_config_option( 'mail_fallback_mail_reporter', 'boolean', -2 );
 ERP_output_config_option( 'mail_reporter_id', 'dropdown_list_reporters', -2 );
 ERP_output_config_option( 'mail_auto_signup', 'boolean', -2 );
+ERP_output_config_option( 'mail_preferred_username', 'dropdown_pref_usernames', -2 );
 
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'feature_options', 'header' );

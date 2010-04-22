@@ -72,6 +72,7 @@ Apr 2010 - EmailReporting-0.8.0
 	- mail_identify_reply is now called mail_remove_mantis_email
 	- Parse MIME setting removed. It was useless as simply parsing the raw message already costs much more memory then processing subparts in the message
 	- bugnotes to readonly issues will now generate a new bug report with a bug relation to the readonly issue
+	- New configuration option which allows you to select a preferred username for new user creations
 
 Mar 2010 v2 - EmailReporting-0.7.9
 	- All from email addresses will now be checked by the email_is_valid function before a email will be processed

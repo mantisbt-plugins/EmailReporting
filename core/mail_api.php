@@ -53,6 +53,7 @@ class ERP_mailbox_api
 	private $_mail_fetch_max;
 	private $_mail_nodescription;
 	private $_mail_nosubject;
+	private $_mail_preferred_username;
 	private $_mail_remove_mantis_email;
 	private $_mail_remove_replies;
 	private $_mail_remove_replies_after;
@@ -101,6 +102,7 @@ class ERP_mailbox_api
 		$this->_mail_fetch_max					= plugin_config_get( 'mail_fetch_max' );
 		$this->_mail_nodescription				= plugin_config_get( 'mail_nodescription' );
 		$this->_mail_nosubject					= plugin_config_get( 'mail_nosubject' );
+		$this->_mail_preferred_username			= plugin_config_get( 'mail_preferred_username' );
 		$this->_mail_remove_mantis_email		= plugin_config_get( 'mail_remove_mantis_email' );
 		$this->_mail_remove_replies				= plugin_config_get( 'mail_remove_replies' );
 		$this->_mail_remove_replies_after		= plugin_config_get( 'mail_remove_replies_after' );
@@ -166,7 +168,7 @@ class ERP_mailbox_api
 	#  return a boolean for whether the mailbox was successfully processed
 	public function process_mailbox( $p_mailbox )
 	{
-		$this->_mailbox = array_merge( ERP_get_default_mailbox(), $p_mailbox );
+		$this->_mailbox = $p_mailbox + ERP_get_default_mailbox();
 
 		if ( $this->_functionality_enabled )
 		{
@@ -500,10 +502,7 @@ class ERP_mailbox_api
 					// So, we have to sign up a new user...
 					$t_new_reporter_name = $this->prepare_username( $p_parsed_from );
 
-					// user_is_name_valid is performed twice (one time in mail_prepare_username
-					// and one time here because the name could be the email address if the
-					// username already failed)
-					if ( user_is_name_valid( $t_new_reporter_name ) && user_is_name_unique( $t_new_reporter_name ) && email_is_valid( $p_parsed_from[ 'email' ] ) )
+					if ( $t_new_reporter_name !== FALSE && email_is_valid( $p_parsed_from[ 'email' ] ) )
 					{
 						if( user_signup( $t_new_reporter_name, $p_parsed_from[ 'email' ] ) )
 						{
@@ -512,6 +511,11 @@ class ERP_mailbox_api
 
 							$t_reporter_id = user_get_id_by_email( $p_parsed_from[ 'email' ] );
 							$t_reporter_name = $t_new_reporter_name;
+
+							if ( user_is_realname_valid( $p_parsed_from[ 'name' ] ) && user_is_realname_unique( $t_reporter_name, $p_parsed_from[ 'name' ] ) )
+							{
+								user_set_realname( $t_reporter_id, $p_parsed_from[ 'name' ] );
+							}
 						}
 					}
 
@@ -902,15 +906,15 @@ class ERP_mailbox_api
 		if ( preg_match( "/(.*?)<(.*?)>/", $p_from_address, $matches ) )
 		{
 			$v_from_address = array(
-				'username'	=> trim( $matches[ 1 ], '"\' ' ),
-				'email'		=> trim( $matches[ 2 ] ),
+				'name'	=> trim( $matches[ 1 ], '"\' ' ),
+				'email'	=> trim( $matches[ 2 ] ),
 			);
 		}
 		else
 		{
 			$v_from_address = array(
-				'username'	=> '',
-				'email'		=> $p_from_address,
+				'name'	=> '',
+				'email'	=> $p_from_address,
 			);
 		}
 
@@ -923,13 +927,40 @@ class ERP_mailbox_api
 	{
 		# I would have liked to validate the username and remove any non-allowed characters
 		# using the config user_login_valid_regex but that seems not possible and since
-		# it's a config any mantis installation could have a different one
-		if ( user_is_name_valid( $p_user_info[ 'username' ] ) )
+		# it's a config, any mantis installation could have a different one
+		if ( $this->_mail_preferred_username === 'name' )
 		{
-			return( $p_user_info[ 'username' ] );
+			$t_username = $p_user_info[ 'name' ];
+		}
+		elseif ( $this->_mail_preferred_username === 'email_address' )
+		{
+			$t_username = $p_user_info[ 'email' ];
+		}
+		elseif ( $this->_mail_preferred_username === 'email_no_domain' )
+		{
+			if( preg_match( email_regex_simple(), $p_user_info[ 'email' ], $t_check ) )
+			{
+				$t_local = $t_check[ 1 ];
+				$t_domain = $t_check[ 2 ];
+
+				$t_username = $t_local;
+			}
 		}
 
-		return( strtolower( str_replace( array( '@', '.', '-' ), '_', $p_user_info[ 'email' ] ) ) );
+		if ( user_is_name_valid( $t_username ) && user_is_name_unique( $t_username ) )
+		{
+			return( $t_username );
+		}
+
+		// fallback username
+		$t_username = strtolower( str_replace( array( '@', '.', '-' ), '_', $p_user_info[ 'email' ] ) );
+
+		if ( user_is_name_valid( $t_username ) && user_is_name_unique( $t_username ) )
+		{
+			return( $t_username );
+		}
+
+		return( FALSE );
 	}
 
 	# --------------------
