@@ -60,11 +60,11 @@ ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'feature_options', 'header' );
 ERP_output_config_option( 'mail_add_bug_reports', 'boolean', -2 );
 ERP_output_config_option( 'mail_add_bugnotes', 'boolean', -2 );
-ERP_output_config_option( 'mail_save_from', 'boolean', -2 );
 ERP_output_config_option( 'mail_parse_html', 'boolean', -2 );
 ERP_output_config_option( 'mail_remove_mantis_email', 'boolean', -2 );
 ERP_output_config_option( 'mail_remove_replies', 'boolean', -2 );
 ERP_output_config_option( 'mail_email_receive_own', 'boolean', -2 );
+ERP_output_config_option( 'mail_save_from', 'boolean', -2 );
 
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'priority_feature_options', 'header' );
