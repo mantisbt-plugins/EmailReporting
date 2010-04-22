@@ -63,7 +63,7 @@
 		// $p_def_value has special purposes when containing the following values
 		// NULL is default value
 		// -1 reserved for normal use
-		// -2 is for settings on the configuration page
+		// -2 is for settings on the manage configurations page
 		// -3 is for settings on the manage mailboxes page
 		if ( $p_def_value === -2 )
 		{
@@ -355,7 +355,10 @@
 <?php
 							foreach ( $p_optional_information AS $t_mailbox_key => $t_mailbox_data )
 							{
-								$t_mailbox_data = array_merge( ERP_get_default_mailbox(), $t_mailbox_data );
+								if ( !isset( $t_mailbox_data[ 'mailbox_enabled' ] ) )
+								{
+									$t_mailbox_data[ 'mailbox_enabled' ] = TRUE;
+								}
 ?>
 			<option value="<?php echo $t_mailbox_key ?>"<?php echo ( ( $t_value === $t_mailbox_key ) ? ' selected' : NULL ) ?>><?php echo ( ( $t_mailbox_data[ 'mailbox_enabled' ] === FALSE ) ? '* ' : NULL ) . $t_mailbox_data[ 'mailbox_description' ] ?></option>
 <?php
