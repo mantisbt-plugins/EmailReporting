@@ -52,7 +52,7 @@ Apr 2010 - EmailReporting-0.8.0
 	- Default configuration option for mail_tmp_directory is php.ini option upload_tmp_dir if available else it will revert to the old value /tmp
 	- The regular expression for the bugnote check now accepts all characters for the project names
 	- Removed useless CVS $id$ tags in three files as git can not use them
-	- Updated the add_bug function to be more like its counterpart in bug_report.php
+	- Updated the add_bug function to be more like its counterpart in bug_report.php including plugin hooks
 	- Improved the mail_is_a_bugnote function. Now only one regex is needed
 	- A new functionality has been added which optionally removes all replies from emails
 	- A new functionality has been added which optionally temporarily enables email_receive_own during the current session
@@ -71,6 +71,7 @@ Apr 2010 - EmailReporting-0.8.0
 	- mailbox_global_category is now called mailbox_global_category_id
 	- mail_identify_reply is now called mail_remove_mantis_email
 	- Parse MIME setting removed. It was useless as simply parsing the raw message already costs much more memory then processing subparts in the message
+	- bugnotes to readonly issues will now generate a new bug report with a bug relation to the readonly issue
 
 Mar 2010 v2 - EmailReporting-0.7.9
 	- All from email addresses will now be checked by the email_is_valid function before a email will be processed

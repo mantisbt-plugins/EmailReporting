@@ -560,7 +560,16 @@ class ERP_mailbox_api
 	{
 		$this->show_memory_usage( 'Start add bug' );
 
-		if ( $this->_mail_add_bugnotes && ( $t_bug_id = $this->mail_is_a_bugnote( $p_email[ 'Subject' ] ) ) !== FALSE )
+		if ( $this->_mail_add_bugnotes )
+		{
+			$t_bug_id = $this->mail_is_a_bugnote( $p_email[ 'Subject' ] );
+		}
+		else
+		{
+			$t_bug_id = FALSE;
+		}
+
+		if ( $t_bug_id !== FALSE && !bug_is_readonly( $t_bug_id ) )
 		{
 			// @TODO@ Disabled for now until we find a good solution on how to handle the reporters possible lack of access permissions
 //			access_ensure_bug_level( config_get( 'add_bugnote_threshold' ), $f_bug_id );
@@ -587,6 +596,8 @@ class ERP_mailbox_api
 		{
 			// @TODO@ Disabled for now until we find a good solution on how to handle the reporters possible lack of access permissions
 //			access_ensure_project_level( config_get('report_bug_threshold' ) );
+
+			$f_master_bug_id = ( ( $t_bug_id !== FALSE && bug_is_readonly( $t_bug_id ) ) ? $t_bug_id : 0 );
 
 			$this->fix_empty_fields( $p_email );
 
@@ -620,14 +631,7 @@ class ERP_mailbox_api
 
 			$t_bug_data->reporter_id			= $p_email[ 'Reporter_id' ];
 
-			if ( access_has_project_level( config_get( 'roadmap_update_threshold' ), $t_bug_data->project_id ) ) {
-				$t_bug_data->target_version = '';
-			}
-
-			// @TODO@ Disabled for now until we find a good solution on how to handle the possible errors this function could produce
-//			helper_call_custom_function( 'issue_create_validate', array( $t_bug_data ) );
-
-			// @TODO@ Disabled for now but possibly needed for the new rules system
+			// @TODO@ Disabled for now but possibly needed for other future features
 			# Validate the custom fields before adding the bug.
 /*			$t_related_custom_field_ids = custom_field_get_linked_ids( $t_bug_data->project_id );
 			foreach( $t_related_custom_field_ids as $t_id )
@@ -651,7 +655,7 @@ class ERP_mailbox_api
 			# Create the bug
 			$t_bug_id = $t_bug_data->create();
 
-			// @TODO@ Disabled for now but possibly needed for the new rules system
+			// @TODO@ Disabled for now but possibly needed for other future features
 			# Handle custom field submission
 /*			foreach( $t_related_custom_field_ids as $t_id )
 {
@@ -669,37 +673,26 @@ class ERP_mailbox_api
 				}
 			}*/
 
-			// @TODO@ See about implementing this code incase the mail_is_a_bugnote failed because the bug that was found was readonly
-/*			$f_master_bug_id = gpc_get_int( 'm_id', 0 );
-			$f_rel_type = gpc_get_int( 'rel_type', -1 );
-
+			// Lets link a readonly already existing bug to the newly created one
 			if ( $f_master_bug_id > 0 )
 			{
-				# it's a child generation... let's create the relationship and add some lines in the history
+				$f_rel_type = BUG_RELATED;
 
 				# update master bug last updated
 				bug_update_date( $f_master_bug_id );
 
-				# Add log line to record the cloning action
-				history_log_event_special( $t_bug_id, BUG_CREATED_FROM, '', $f_master_bug_id );
-				history_log_event_special( $f_master_bug_id, BUG_CLONED_TO, '', $t_bug_id );
+				# Add the relationship
+				relationship_add( $t_bug_id, $f_master_bug_id, $f_rel_type );
 
-				if ( $f_rel_type >= 0 )
-				{
-					# Add the relationship
-					relationship_add( $t_bug_id, $f_master_bug_id, $f_rel_type );
+				# Add log line to the history (both issues)
+				history_log_event_special( $f_master_bug_id, BUG_ADD_RELATIONSHIP, relationship_get_complementary_type( $f_rel_type ), $t_bug_id );
+				history_log_event_special( $t_bug_id, BUG_ADD_RELATIONSHIP, $f_rel_type, $f_master_bug_id );
 
-					# Add log line to the history (both issues)
-					history_log_event_special( $f_master_bug_id, BUG_ADD_RELATIONSHIP, relationship_get_complementary_type( $f_rel_type ), $t_bug_id );
-					history_log_event_special( $t_bug_id, BUG_ADD_RELATIONSHIP, $f_rel_type, $f_master_bug_id );
+				# Send the email notification
+				email_relationship_added( $f_master_bug_id, $t_bug_id, relationship_get_complementary_type( $f_rel_type ) );
+			}
 
-					# Send the email notification
-					email_relationship_added( $f_master_bug_id, $t_bug_id, relationship_get_complementary_type( $f_rel_type ) );
-				}
-			}*/
-
-			// @TODO@ Disabled for now until we find a good solution on how to handle the possible errors this function could produce
-//			helper_call_custom_function( 'issue_create_notify', array( $t_bug_id ) );
+			helper_call_custom_function( 'issue_create_notify', array( $t_bug_id ) );
 
 			# Allow plugins to post-process bug data with the new bug ID
 			event_signal( 'EVENT_REPORT_BUG', array( $t_bug_data, $t_bug_id ) );
@@ -947,7 +940,7 @@ class ERP_mailbox_api
 
 		if ( $t_bug_id !== FALSE )
 		{
-			if ( bug_exists( $t_bug_id ) && !bug_is_readonly( $t_bug_id ) )
+			if ( bug_exists( $t_bug_id ) )
 			{
 				return( $t_bug_id );
 			}
