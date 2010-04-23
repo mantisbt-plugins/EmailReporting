@@ -12,7 +12,7 @@ class EmailReportingPlugin extends MantisPlugin
 		$this->description = plugin_lang_get( 'description' );
 		$this->page = 'manage_config';
 
-		$this->version = '0.8.0-DEV';
+		$this->version = '0.8.0';
 		$this->requires = array(
 			'MantisCore' => '1.2',
 		);
@@ -162,7 +162,7 @@ class EmailReportingPlugin extends MantisPlugin
 			config_set_cache( 'allow_blank_email', ON, CONFIG_TYPE_STRING );
 			config_set_global( 'allow_blank_email', ON );
 
-			$t_rand = MT_RAND( 1000, 50000 );
+			$t_rand = mt_rand( 1000, 99999 );
 
 			$t_username = $t_mail_reporter_id . $t_rand;
 
