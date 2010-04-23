@@ -37,7 +37,7 @@ Apr 2010 - EmailReporting-0.8.0
 	- Added IPv6 support
 	- Testing a mailbox now shows default ports used if you did not fill any in
 	- Fixed an error which occurs if you try to perform an action on a mailbox that no longer exists
-	- Changed the random number generator for user creations from mt_rand( 4, 5 ) to mt_rand( 1000, 50000 )
+	- Changed the random number generator for user creations from mt_rand( 4, 5 ) to mt_rand( 1000, 99999 )
 	- mail_get_mailboxes function removed as it outlived its function
 	- Mailbox encryption features now only available if PHP OpenSSL extension is available
 	- Fixed a problem with a missing port number when using the alternative method to running bug_report_mail (~25072)
@@ -73,6 +73,7 @@ Apr 2010 - EmailReporting-0.8.0
 	- Parse MIME setting removed. It was useless as simply parsing the raw message already costs much more memory then processing subparts in the message
 	- bugnotes to readonly issues will now generate a new bug report with a bug relation to the readonly issue
 	- New configuration option which allows you to select a preferred username for new user creations
+	- User creations with long usernames longer then 32 characters have been fixed
 
 Mar 2010 v2 - EmailReporting-0.7.9
 	- All from email addresses will now be checked by the email_is_valid function before a email will be processed

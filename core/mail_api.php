@@ -512,9 +512,16 @@ class ERP_mailbox_api
 							$t_reporter_id = user_get_id_by_email( $p_parsed_from[ 'email' ] );
 							$t_reporter_name = $t_new_reporter_name;
 
-							if ( user_is_realname_valid( $p_parsed_from[ 'name' ] ) && user_is_realname_unique( $t_reporter_name, $p_parsed_from[ 'name' ] ) )
+							$t_realname = $p_parsed_from[ 'name' ];
+
+							if ( utf8_strlen( $t_realname ) > REALLEN )
 							{
-								user_set_realname( $t_reporter_id, $p_parsed_from[ 'name' ] );
+								$t_realname = utf8_substr( $t_realname, 0, REALLEN );
+							}
+
+							if ( user_is_realname_valid( $t_realname ) && user_is_realname_unique( $t_reporter_name, $t_realname ) )
+							{
+								user_set_realname( $t_reporter_id, $t_realname );
 							}
 						}
 					}
@@ -947,6 +954,11 @@ class ERP_mailbox_api
 			}
 		}
 
+		if ( utf8_strlen( $t_username ) > USERLEN )
+		{
+			$t_username = utf8_substr( $t_username, 0, USERLEN );
+		}
+
 		if ( user_is_name_valid( $t_username ) && user_is_name_unique( $t_username ) )
 		{
 			return( $t_username );
@@ -954,6 +966,14 @@ class ERP_mailbox_api
 
 		// fallback username
 		$t_username = strtolower( str_replace( array( '@', '.', '-' ), '_', $p_user_info[ 'email' ] ) );
+		$t_rand = '_' . mt_rand( 1000, 99999 );
+
+		if ( utf8_strlen( $t_username . $t_rand ) > USERLEN )
+		{
+			$t_username = utf8_substr( $t_username, 0, ( USERLEN - strlen( $t_rand ) ) );
+		}
+
+		$t_username = $t_username . $t_rand;
 
 		if ( user_is_name_valid( $t_username ) && user_is_name_unique( $t_username ) )
 		{
