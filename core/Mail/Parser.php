@@ -332,8 +332,8 @@ class ERP_Mail_Parser
 
 	private function custom_substr( $p_string, $p_string_start, $p_string_end )
 	{
-		$t_start = strpos( $p_string, $p_string_start ) + strlen( $p_string_start );
-		$t_end = strpos( $p_string, $p_string_end, $t_start );
+		$t_start = stripos( $p_string, $p_string_start ) + strlen( $p_string_start );
+		$t_end = stripos( $p_string, $p_string_end, $t_start );
 		$t_result = substr( $p_string, $t_start, ( $t_end - $t_start ) );
 
 		return( $t_result );
