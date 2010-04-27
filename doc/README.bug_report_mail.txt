@@ -19,14 +19,14 @@ not fully supported
 
 
 Bugnotes:
-bug_report_mail is able to recognize if mail is a reply to an already
-opened bug and adds the content as a bugnote.
+bug_report_mail is able to recognize if an email is a reply to an
+already opened bug and adds the content as a bugnote.
 
 
 Mailboxes:
-After installing this plugin, you can add a POP3 server's hostname
-and authentication data for each of your projects with the Mailbox
-settings form.
+After installing this plugin, you can add a mail server's hostname
+and authentication data for each of your projects with the Manage
+mailboxes form.
 
 
 Mail Reporters:
@@ -97,7 +97,7 @@ setting (see plugin config page in mantis)
 
 
 Scheduling a job for bug_report_mail:
-After this, bug_report_mail can be used via scheduled job like this:
+bug_report_mail can be used via scheduled job like this:
 
 Linux or similar OS using Cron jobs:
 Via webserver (see settings because this is disabled by default, see plugin
@@ -114,6 +114,11 @@ config page in mantis)
 No known method for scheduling this via webserver
 or via command line interface
 c:\php\php.exe c:\path\to\mantis\plugins\EmailReporting\scripts\bug_report_mail.php
+
+For correct operation of the scheduled job its advised that the job and
+the webserver are operating under the same OS user account. If this is not
+possible, you should not use the DISK storage method (file_upload_method)
+for MantisBT.
 
 
 IMAP:
