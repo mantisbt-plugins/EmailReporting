@@ -760,8 +760,6 @@ class ERP_mailbox_api
 	# returns true on success and the filename with reason on error
 	private function add_file( $p_bug_id, &$p_part )
 	{
-		$t_file_number = 0;
-
 		# Handle the file upload
 		$t_part_name = ( ( isset( $p_part[ 'name' ] ) ) ? trim( $p_part[ 'name' ] ) : NULL );
 		$t_strlen_body = strlen( trim( $p_part[ 'body' ] ) );
@@ -784,9 +782,13 @@ class ERP_mailbox_api
 		}
 		else
 		{
-			while ( !file_is_name_unique( $t_file_number . '-' . $t_part_name, $p_bug_id ) )
+			$t_file_number = 0;
+			$t_opt_name = '';
+
+			while ( !file_is_name_unique( $t_opt_name . $t_part_name, $p_bug_id ) )
 			{
 				$t_file_number++;
+				$t_opt_name = $t_file_number . '-';
 			}
 
 			$t_file_name = $this->_mail_tmp_directory . '/' . md5( microtime() );
@@ -795,7 +797,7 @@ class ERP_mailbox_api
 
 			ERP_custom_file_add( $p_bug_id, array(
 				'tmp_name'	=> realpath( $t_file_name ),
-				'name'		=> $t_file_number . '-' . $t_part_name,
+				'name'		=> $t_opt_name . $t_part_name,
 				'type'		=> $p_part[ 'ctype' ],
 				'error'		=> NULL
 			), 'bug' );
