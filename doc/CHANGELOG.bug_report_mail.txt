@@ -1,6 +1,8 @@
 Changelog:
 Apr 2010 v2 - EmailReporting-0.8.1
+	- Officially compatible with MantisBT 1.2.1
 	- Fixed a bug on linux with directory strings in the configurations (obones)
+	- File number before attachments only added when required
 Apr 2010 - EmailReporting-0.8.0
 	- Improved the mailbox settings page
 	- Improved the plugin configuration page

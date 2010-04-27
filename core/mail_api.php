@@ -37,8 +37,6 @@ class ERP_mailbox_api
 		'IMAP' => array( 'normal' => 143, 'encrypted' => 993 ),
 	);
 
-	private $_file_number = 1;
-
 	private $_validated_email_list = array();
 
 	private $_mail_add_bug_reports;
@@ -728,8 +726,6 @@ class ERP_mailbox_api
 			{
 				$t_rejected_files = NULL;
 
-				$this->_file_number = 1;
-
 				foreach ( $p_email[ 'X-Mantis-Parts' ] as $part )
 				{
 					$t_file_rejected = $this->add_file( $t_bug_id, $part );
@@ -764,6 +760,8 @@ class ERP_mailbox_api
 	# returns true on success and the filename with reason on error
 	private function add_file( $p_bug_id, &$p_part )
 	{
+		$t_file_number = 0;
+
 		# Handle the file upload
 		$t_part_name = ( ( isset( $p_part[ 'name' ] ) ) ? trim( $p_part[ 'name' ] ) : NULL );
 		$t_strlen_body = strlen( trim( $p_part[ 'body' ] ) );
@@ -786,9 +784,9 @@ class ERP_mailbox_api
 		}
 		else
 		{
-			while ( !file_is_name_unique( $this->_file_number . '-' . $t_part_name, $p_bug_id ) )
+			while ( !file_is_name_unique( $t_file_number . '-' . $t_part_name, $p_bug_id ) )
 			{
-				$this->_file_number++;
+				$t_file_number++;
 			}
 
 			$t_file_name = $this->_mail_tmp_directory . '/' . md5( microtime() );
@@ -797,7 +795,7 @@ class ERP_mailbox_api
 
 			ERP_custom_file_add( $p_bug_id, array(
 				'tmp_name'	=> realpath( $t_file_name ),
-				'name'		=> $this->_file_number . '-' . $t_part_name,
+				'name'		=> $t_file_number . '-' . $t_part_name,
 				'type'		=> $p_part[ 'ctype' ],
 				'error'		=> NULL
 			), 'bug' );
@@ -806,8 +804,6 @@ class ERP_mailbox_api
 			{
 				unlink( $t_file_name );
 			}
-
-			$this->_file_number++;
 		}
 
 		return( TRUE );
