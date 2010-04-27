@@ -1,6 +1,8 @@
 <?php
 require_once( config_get( 'class_path' ) . 'MantisPlugin.class.php' );
 
+require_once( dirname( __FILE__ ) . '/core/config_api.php' );
+
 class EmailReportingPlugin extends MantisPlugin
 {
 	/**
@@ -12,7 +14,7 @@ class EmailReportingPlugin extends MantisPlugin
 		$this->description = plugin_lang_get( 'description' );
 		$this->page = 'manage_config';
 
-		$this->version = '0.8.0';
+		$this->version = '0.8.1-DEV';
 		$this->requires = array(
 			'MantisCore' => '1.2',
 		);
@@ -27,7 +29,7 @@ class EmailReportingPlugin extends MantisPlugin
 	 */
 	function config()
 	{
-		$t_upload_tmp_dir = trim( str_replace( '\\', '/', ini_get( 'upload_tmp_dir' ) ), '/ ' );
+		$t_upload_tmp_dir = ERP_prepare_directory_string( ini_get( 'upload_tmp_dir' ) );
 
 		return array(
 			'config_version'				=> 0,

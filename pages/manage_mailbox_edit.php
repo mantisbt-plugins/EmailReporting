@@ -2,6 +2,8 @@
 auth_reauthenticate( );
 access_ensure_global_level( config_get( 'manage_plugin_threshold' ) );
 
+require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/config_api.php' );
+
 $f_mailbox_action = gpc_get_string( 'mailbox_action' );
 $f_select_mailbox = gpc_get_int( 'select_mailbox' );
 
@@ -25,7 +27,7 @@ if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailb
 	if ( $t_mailbox[ 'mailbox_type' ] === 'IMAP' )
 	{
 		$t_mailbox_imap = array(
-			'mailbox_basefolder'			=> trim( str_replace( '\\', '/', gpc_get_string( 'mailbox_basefolder' ) ), '/ ' ),
+			'mailbox_basefolder'			=> ERP_prepare_directory_string( gpc_get_string( 'mailbox_basefolder' ) ),
 			'mailbox_createfolderstructure'	=> gpc_get_bool( 'mailbox_createfolderstructure' ),
 		);
 

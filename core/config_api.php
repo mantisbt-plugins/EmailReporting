@@ -57,6 +57,13 @@
 	}
 
 	# --------------------
+	# Process a string containing a directory location
+	function ERP_prepare_directory_string( $p_path )
+	{
+		return( rtrim( rtrim( trim( str_replace( '\\', '/', $p_path ) ), '/' ) ) );
+	}
+
+	# --------------------
 	# output a configuration option
 	function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, &$p_optional_information = NULL )
 	{

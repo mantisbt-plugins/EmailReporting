@@ -2,6 +2,7 @@
 auth_reauthenticate( );
 access_ensure_global_level( config_get( 'manage_plugin_threshold' ) );
 
+require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/config_api.php' );
 
 $f_gpc = array(
 	'mail_add_bug_reports'			=> gpc_get_bool( 'mail_add_bug_reports' ),
@@ -9,7 +10,7 @@ $f_gpc = array(
 	'mail_add_complete_email'		=> gpc_get_bool( 'mail_add_complete_email' ),
 	'mail_auto_signup'				=> gpc_get_bool( 'mail_auto_signup' ),
 	'mail_debug'					=> gpc_get_bool( 'mail_debug' ),
-	'mail_debug_directory'			=> trim( str_replace( '\\', '/', gpc_get_string( 'mail_debug_directory' ) ), '/ ' ),
+	'mail_debug_directory'			=> ERP_prepare_directory_string( gpc_get_string( 'mail_debug_directory' ) ),
 	'mail_delete'					=> gpc_get_bool( 'mail_delete' ),
 	'mail_email_receive_own'		=> gpc_get_string( 'mail_email_receive_own' ),
 	'mail_encoding'					=> gpc_get_string( 'mail_encoding' ),
@@ -26,7 +27,7 @@ $f_gpc = array(
 	'mail_reporter_id'				=> gpc_get_int( 'mail_reporter_id' ),
 	'mail_save_from'				=> gpc_get_bool( 'mail_save_from' ),
 	'mail_secured_script'			=> gpc_get_bool( 'mail_secured_script' ),
-	'mail_tmp_directory'			=> trim( str_replace( '\\', '/', gpc_get_string( 'mail_tmp_directory' ) ), '/ ' ),
+	'mail_tmp_directory'			=> ERP_prepare_directory_string( gpc_get_string( 'mail_tmp_directory' ) ),
 	'mail_use_bug_priority'			=> gpc_get_bool( 'mail_use_bug_priority' ),
 	'mail_use_reporter'				=> gpc_get_bool( 'mail_use_reporter' ),
 );
