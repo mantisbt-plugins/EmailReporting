@@ -69,7 +69,7 @@ ERP_output_config_option( 'mail_save_from', 'boolean', -2 );
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'priority_feature_options', 'header' );
 ERP_output_config_option( 'mail_use_bug_priority', 'boolean', -2 );
-ERP_output_config_option( 'mail_bug_priority', 'array', -2 );
+ERP_output_config_option( 'mail_bug_priority', 'string_multiline', -2 );
 
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'default_texts_options', 'header' );

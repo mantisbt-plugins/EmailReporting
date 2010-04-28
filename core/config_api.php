@@ -152,12 +152,12 @@
 <?php
 				break;
 
-			case 'array':
 			case 'boolean':
 			case 'directory_string':
 			case 'integer':
 			case 'string':
 			case 'string_hostname_port':
+			case 'string_multiline':
 			case 'string_password':
 			case 'dropdown_auth_method':
 			case 'dropdown_global_categories':
@@ -176,14 +176,6 @@
 <?php
 				switch ( $p_type )
 				{
-					case 'array':
-?>
-	<td class="center" width="40%" colspan="2">
-		<textarea cols="40" rows="6" name="<?php echo $p_name ?>"><?php var_export( $t_value ) ?></textarea>
-	</td>
-<?php
-						break;
-
 					case 'boolean':
 ?>
 	<td class="center" width="20%">
@@ -246,6 +238,14 @@
 	<td class="center" width="40%" colspan="2">
 		<input type="text" size="40" maxlength="100" name="<?php echo $p_name ?>[hostname]" value="<?php echo $t_value[ 'hostname' ] ?>"/>
 		<input type="text" size="5" maxlength="5" name="<?php echo $p_name ?>[port]" value="<?php echo $t_value[ 'port' ] ?>"/>
+	</td>
+<?php
+						break;
+
+					case 'string_multiline':
+?>
+	<td class="center" width="40%" colspan="2">
+		<textarea cols="40" rows="6" name="<?php echo $p_name ?>"><?php var_export( $t_value ) ?></textarea>
 	</td>
 <?php
 						break;

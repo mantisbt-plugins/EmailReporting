@@ -1,6 +1,7 @@
 Changelog:
 May 2010 - EmailReporting-0.8.2
 	- Fixed a problem when both remove mantis and remove all replies are turned ON
+	- Configuration option type array is now called string_multiline
 Apr 2010 v2 - EmailReporting-0.8.1
 	- Officially compatible with MantisBT 1.2.1
 	- Fixed a bug on linux with directory strings in the configurations (obones)
