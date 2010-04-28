@@ -245,7 +245,18 @@
 					case 'string_multiline':
 ?>
 	<td class="center" width="40%" colspan="2">
-		<textarea cols="40" rows="6" name="<?php echo $p_name ?>"><?php var_export( $t_value ) ?></textarea>
+		<textarea cols="40" rows="6" name="<?php echo $p_name ?>">
+<?php
+						if ( is_array( $t_value ) )
+						{
+							var_export( $t_value );
+						}
+						else
+						{
+							echo $t_value;
+						}
+?>
+		</textarea>
 	</td>
 <?php
 						break;
