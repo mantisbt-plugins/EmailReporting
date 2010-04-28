@@ -1044,12 +1044,14 @@ class ERP_mailbox_api
 	# Removes replies from mails
 	private function identify_replies( $p_description )
 	{
+		$t_description = $p_description;
+
 		if ( $this->_mail_remove_replies )
 		{
-			$t_first_occurence = stripos( $p_description, $this->_mail_remove_replies_after );
+			$t_first_occurence = stripos( $t_description, $this->_mail_remove_replies_after );
 			if ( $t_first_occurence !== FALSE )
 			{
-				$t_description = substr( $p_description, 0, $t_first_occurence ) . $this->_mail_removed_reply_text;
+				$t_description = substr( $t_description, 0, $t_first_occurence ) . $this->_mail_removed_reply_text;
 			}
 		}
 
@@ -1059,19 +1061,14 @@ class ERP_mailbox_api
 			# the version delivered with this package seems to be working OK though but just to be sure
 			$t_email_separator1 = substr( $this->_email_separator1, 0, -1 );
 
-			$t_first_occurence = strpos( $p_description, $t_email_separator1 );
-			if ( $t_first_occurence !== FALSE && substr_count( $p_description, $t_email_separator1, $t_first_occurence ) >= 5 )
+			$t_first_occurence = strpos( $t_description, $t_email_separator1 );
+			if ( $t_first_occurence !== FALSE && substr_count( $t_description, $t_email_separator1, $t_first_occurence ) >= 5 )
 			{
-				$t_description = substr( $p_description, 0, $t_first_occurence ) . $this->_mail_removed_reply_text;
+				$t_description = substr( $t_description, 0, $t_first_occurence ) . $this->_mail_removed_reply_text;
 			}
 		}
 
-		if ( isset( $t_description ) )
-		{
-			return( $t_description );
-		}
-
-		return( $p_description );
+		return( $t_description );
 	}
 
 	# --------------------
