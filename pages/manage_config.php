@@ -76,7 +76,7 @@ ERP_output_config_option( 'default_texts_options', 'header' );
 ERP_output_config_option( 'mail_nosubject', 'string', -2 );
 ERP_output_config_option( 'mail_nodescription', 'string', -2 );
 ERP_output_config_option( 'mail_removed_reply_text', 'string', -2 );
-ERP_output_config_option( 'mail_remove_replies_after', 'string', -2 );
+ERP_output_config_option( 'mail_remove_replies_after', 'string_multiline', -2 );
 
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'debug_options', 'header' );
