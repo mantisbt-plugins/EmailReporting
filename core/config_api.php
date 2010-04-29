@@ -243,11 +243,12 @@
 			case 'string_multiline':
 			case 'string_password':
 			case 'dropdown_auth_method':
+			case 'dropdown_descriptions':
+			case 'dropdown_descriptions_multiselect':
 			case 'dropdown_global_categories':
 			case 'dropdown_list_reporters':
 			case 'dropdown_encryption':
 			case 'dropdown_mailbox_type':
-			case 'dropdown_descriptions':
 			case 'dropdown_mbstring_encodings':
 			case 'dropdown_pref_usernames':
 			case 'dropdown_projects':
@@ -320,8 +321,7 @@
 					case 'string_multiline':
 ?>
 	<td class="center" width="40%" colspan="2">
-		<textarea cols="40" rows="6" name="<?php echo $p_name ?>">
-<?php
+		<textarea cols="40" rows="6" name="<?php echo $p_name ?>"><?php
 						if ( is_array( $t_value ) )
 						{
 							var_export( $t_value );
@@ -330,8 +330,7 @@
 						{
 							echo $t_value;
 						}
-?>
-		</textarea>
+?></textarea>
 	</td>
 <?php
 						break;
@@ -367,6 +366,39 @@
 <?php
 						unset( $t_mailbox_connection_pop3, $t_mailbox_connection_imap );
 
+						break;
+
+					case 'dropdown_descriptions':
+					case 'dropdown_descriptions_multiselect':
+?>
+	<td class="center" width="40%" colspan="2">
+<?php
+						if ( is_array( $p_variable_array ) && count( $p_variable_array ) > 0 )
+						{
+?>
+		<select name="<?php echo $p_name ?>"<?php echo ( ( $p_type === 'dropdown_descriptions_multiselect' ) ? ' multiple' : NULL ) ?>>
+<?php
+							foreach ( $p_variable_array AS $t_key => $t_data )
+							{
+								if ( !isset( $t_data[ 'enabled' ] ) )
+								{
+									$t_data[ 'enabled' ] = TRUE;
+								}
+?>
+			<option value="<?php echo $t_key ?>"<?php echo ( ( $t_value === $t_key ) ? ' selected' : NULL ) ?>><?php echo ( ( $t_data[ 'enabled' ] === FALSE ) ? '* ' : NULL ) . $t_data[ 'description' ] ?></option>
+<?php
+							}
+?>
+		</select>
+<?php
+						}
+						else
+						{
+							echo plugin_lang_get( 'zero_descriptions' );
+						}
+?>
+	</td>
+<?php
 						break;
 
 					case 'dropdown_global_categories':
@@ -434,38 +466,6 @@
 						}
 ?>
 		</select>
-	</td>
-<?php
-						break;
-
-					case 'dropdown_descriptions':
-?>
-	<td class="center" width="40%" colspan="2">
-<?php
-						if ( is_array( $p_variable_array ) && count( $p_variable_array ) > 0 )
-						{
-?>
-		<select name="<?php echo $p_name ?>">
-<?php
-							foreach ( $p_variable_array AS $t_key => $t_data )
-							{
-								if ( !isset( $t_data[ 'enabled' ] ) )
-								{
-									$t_data[ 'enabled' ] = TRUE;
-								}
-?>
-			<option value="<?php echo $t_key ?>"<?php echo ( ( $t_value === $t_key ) ? ' selected' : NULL ) ?>><?php echo ( ( $t_data[ 'enabled' ] === FALSE ) ? '* ' : NULL ) . $t_data[ 'description' ] ?></option>
-<?php
-							}
-?>
-		</select>
-<?php
-						}
-						else
-						{
-							echo plugin_lang_get( 'zero_descriptions' );
-						}
-?>
 	</td>
 <?php
 						break;
