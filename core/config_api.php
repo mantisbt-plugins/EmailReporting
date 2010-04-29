@@ -369,14 +369,13 @@
 						break;
 
 					case 'dropdown_descriptions':
-					case 'dropdown_descriptions_multiselect':
 ?>
 	<td class="center" width="40%" colspan="2">
 <?php
 						if ( is_array( $p_variable_array ) && count( $p_variable_array ) > 0 )
 						{
 ?>
-		<select name="<?php echo $t_input_name . ( ( $p_type === 'dropdown_descriptions_multiselect' ) ? '[]" multiple' : '"' ) ?>>
+		<select name="<?php echo $t_input_name ?>">
 <?php
 							foreach ( $p_variable_array AS $t_key => $t_data )
 							{
@@ -386,6 +385,38 @@
 								}
 ?>
 			<option value="<?php echo $t_key ?>"<?php echo ( ( $t_value === $t_key ) ? ' selected' : NULL ) ?>><?php echo ( ( $t_data[ 'enabled' ] === FALSE ) ? '* ' : NULL ) . $t_data[ 'description' ] ?></option>
+<?php
+							}
+?>
+		</select>
+<?php
+						}
+						else
+						{
+							echo plugin_lang_get( 'zero_descriptions' );
+						}
+?>
+	</td>
+<?php
+						break;
+
+					case 'dropdown_descriptions_multiselect':
+?>
+	<td class="center" width="40%" colspan="2">
+<?php
+						if ( is_array( $p_variable_array ) && count( $p_variable_array ) > 0 )
+						{
+?>
+		<select name="<?php echo $t_input_name ?>[]" multiple size="6">
+<?php
+							foreach ( $p_variable_array AS $t_key => $t_data )
+							{
+								if ( !isset( $t_data[ 'enabled' ] ) )
+								{
+									$t_data[ 'enabled' ] = TRUE;
+								}
+?>
+			<option value="<?php echo $t_key ?>"<?php echo ( ( in_array( $t_key, $t_value ) ) ? ' selected' : NULL ) ?>><?php echo ( ( $t_data[ 'enabled' ] === FALSE ) ? '* ' : NULL ) . $t_data[ 'description' ] ?></option>
 <?php
 							}
 ?>
