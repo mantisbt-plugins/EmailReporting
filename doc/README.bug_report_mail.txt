@@ -178,6 +178,12 @@ some functions available that improve the ability to integrate those
 plugins. Please have a look at core/config_api.php for the functions
 available.
 
+EVENT_ERP_OUTPUT_MAILBOX_FIELDS allows plugins to add extra mailbox form
+fields. Its highly advised you use ERP_output_config_option for outputting
+the options. If you don't use that function you will need to structure the
+variable names yourself to the following format (brackets included):
+"[plugin_content][plugin_get_current()][variable_name]"
+
 
 Included PEAR packages within this distribution are:
 Mail_mimeDecode

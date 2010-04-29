@@ -167,6 +167,13 @@
 			$t_value = $p_def_value;
 		}
 
+		// incase we are used from within another plugin, we need a prefix
+		$t_name_prefix = NULL;
+		if ( plugin_get_current() !== 'EmailReporting' )
+		{
+			$t_name_prefix = '[plugin_content][' . plugin_get_current() . ']';
+		}
+
 		switch ( $p_type )
 		{
 			case 'empty':
@@ -192,7 +199,7 @@
 
 			case 'hidden':
 ?>
-<input type="hidden" name="<?php echo $p_name ?>" value="<?php echo $t_value ?>"/>
+<input type="hidden" name="<?php echo $t_name_prefix . $p_name ?>" value="<?php echo $t_value ?>"/>
 <?php
 				break;
 
@@ -208,7 +215,7 @@
 						foreach ( $t_actions AS $t_action )
 						{
 ?>
-		<label><input type="radio" name="<?php echo $p_name ?>" value="<?php echo $t_action ?>"<?php echo ( ( $t_value === $t_action ) ? ' checked="checked"' : NULL ) ?>/><?php echo plugin_lang_get( $t_action . '_action' )?></label>
+		<label><input type="radio" name="<?php echo $t_name_prefix . $p_name ?>" value="<?php echo $t_action ?>"<?php echo ( ( $t_value === $t_action ) ? ' checked="checked"' : NULL ) ?>/><?php echo plugin_lang_get( $t_action . '_action' )?></label>
 <?php
 						}
 					}
@@ -250,17 +257,18 @@
 		<?php echo plugin_lang_get( $p_name )?>
 	</td>
 <?php
+				// Now we can permenantly add the name_prefix
+				$p_name = $t_name_prefix . $p_name;
+
 				switch ( $p_type )
 				{
 					case 'boolean':
 ?>
 	<td class="center" width="20%">
-		<label><input type="radio" name="<?php echo $p_name ?>" value="1" <?php echo ( ( ON == $t_value ) ? 'checked="checked" ' : '' )?>/>
-			<?php echo lang_get( 'yes' ) ?></label>
+		<label><input type="radio" name="<?php echo $p_name ?>" value="1" <?php echo ( ( ON == $t_value ) ? 'checked="checked" ' : '' )?>/><?php echo lang_get( 'yes' ) ?></label>
 	</td>
 	<td class="center" width="20%">
-		<label><input type="radio" name="<?php echo $p_name ?>" value="0" <?php echo ( ( !is_null($t_value) && OFF == $t_value ) ? 'checked="checked" ' : '' ) ?>/>
-			<?php echo lang_get( 'no' ) ?></label>
+		<label><input type="radio" name="<?php echo $p_name ?>" value="0" <?php echo ( ( !is_null($t_value) && OFF == $t_value ) ? 'checked="checked" ' : '' ) ?>/><?php echo lang_get( 'no' ) ?></label>
 	</td>
 <?php
 						break;

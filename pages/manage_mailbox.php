@@ -74,6 +74,8 @@ ERP_output_config_option( 'mailbox_settings_issue', 'header' );
 ERP_output_config_option( 'project_id', 'dropdown_projects', -3, $t_mailbox );
 ERP_output_config_option( 'global_category_id', 'dropdown_global_categories', -3, $t_mailbox );
 
+event_signal( 'EVENT_ERP_OUTPUT_MAILBOX_FIELDS', $f_select_mailbox );
+
 ERP_output_config_option( $f_mailbox_action . '_action', 'submit' );
 
 ?>

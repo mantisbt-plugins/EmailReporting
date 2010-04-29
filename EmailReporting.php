@@ -217,6 +217,13 @@ class EmailReportingPlugin extends MantisPlugin
 		}
 	}
 
+	function events()
+	{
+		return array(
+			'EVENT_ERP_OUTPUT_MAILBOX_FIELDS' => EVENT_TYPE_OUTPUT,
+		);
+	}
+
 	/**
 	 * EmailReporting plugin hooks.
 	 */

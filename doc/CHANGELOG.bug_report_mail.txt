@@ -14,6 +14,7 @@ May 2010 - EmailReporting-0.8.2
 	- 2 new functions which can return milabox data (ERP_get_current_mailbox and ERP_get_mailboxes)
 	- Updated readme based on added plugins that depend on EmailReporting
 	- hostname and port are no longer stored in a sub array within mailbox. They now have there own indexes
+	- Event added that allows the addition of extra mailbox form fields
 Apr 2010 v2 - EmailReporting-0.8.1
 	- Officially compatible with MantisBT 1.2.1
 	- Fixed a bug on linux with directory strings in the configurations (obones)

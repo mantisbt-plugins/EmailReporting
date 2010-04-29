@@ -34,6 +34,13 @@ if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailb
 
 		$t_mailbox += $t_mailbox_imap;
 	}
+
+	$t_plugin_content = gpc_get_string_array( 'plugin_content', NULL );
+
+	if ( is_array( $t_plugin_content ) )
+	{
+		$t_mailbox += array( 'plugin_content' => $t_plugin_content );
+	}
 }
 
 if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' )
