@@ -167,9 +167,9 @@
 			$t_value = $p_def_value;
 		}
 
-		// incase we are used from within another plugin, we need a prefix
+		// incase we are used from within another plugin within the manage_mailbox page, we need a prefix
 		$t_name_prefix = NULL;
-		if ( plugin_get_current() !== 'EmailReporting' )
+		if ( plugin_get_current() !== 'EmailReporting' && $GLOBALS[ 't_this_page' ] === 'manage_mailbox' )
 		{
 			$t_name_prefix = '[plugin_content][' . plugin_get_current() . ']';
 		}
@@ -376,7 +376,7 @@
 						if ( is_array( $p_variable_array ) && count( $p_variable_array ) > 0 )
 						{
 ?>
-		<select name="<?php echo $p_name ?>"<?php echo ( ( $p_type === 'dropdown_descriptions_multiselect' ) ? ' multiple' : NULL ) ?>>
+		<select name="<?php echo $p_name . ( ( $p_type === 'dropdown_descriptions_multiselect' ) ? '[]" multiple' : '"' ) ?>>
 <?php
 							foreach ( $p_variable_array AS $t_key => $t_data )
 							{
