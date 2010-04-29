@@ -185,7 +185,7 @@ class EmailReportingPlugin extends MantisPlugin
 
 				plugin_config_set( 'mail_reporter_id', $t_user_id );
 
-				plugin_config_set( 'config_version', 6 );
+				plugin_config_set( 'config_version', 7 );
 			}
 
 			return( $t_result_user_create );
@@ -394,6 +394,30 @@ class EmailReportingPlugin extends MantisPlugin
 			plugin_config_delete( 'mail_parse_mime' );
 
 			plugin_config_set( 'config_version', 6 );
+		}
+
+		if ( $t_config_version <= 6 )
+		{
+			$t_mailboxes = plugin_config_get( 'mailboxes' );
+
+			foreach ( $t_mailboxes AS $t_key => $t_array )
+			{
+				foreach ( $t_array AS $t_index => $t_value )
+				{
+					if ( substr( $t_index, 0, 8 ) === 'mailbox_' )
+					{
+						$t_new_index = substr( $t_index, 8 );
+						$t_array[ $t_new_index ] = $t_value;
+						unset( $t_array[ $t_index ] );
+					}
+				}
+
+				$t_mailboxes[ $t_key ] = $t_array;
+			}
+
+			plugin_config_set( 'mailboxes', $t_mailboxes );
+
+			plugin_config_set( 'config_version', 7 );
 		}
 	}
 

@@ -27,7 +27,7 @@ class ERP_mailbox_api
 	private $_functionality_enabled = FALSE;
 	private $_test_only = FALSE;
 
-	public $_mailbox = array( 'mailbox_description' => 'INITIALIZATION PHASE' );
+	public $_mailbox = array( 'description' => 'INITIALIZATION PHASE' );
 
 	private $_mailserver = NULL;
 	private $_result = FALSE;
@@ -170,7 +170,7 @@ class ERP_mailbox_api
 
 		if ( $this->_functionality_enabled )
 		{
-			if ( $this->_mailbox[ 'mailbox_enabled' ] )
+			if ( $this->_mailbox[ 'enabled' ] )
 			{
 				$this->prepare_mailbox_hostname();
 
@@ -181,7 +181,7 @@ class ERP_mailbox_api
 
 				$this->show_memory_usage( 'Start process mailbox' );
 
-				$t_process_mailbox_function = 'process_' . strtolower( $this->_mailbox[ 'mailbox_type' ] ) . '_mailbox';
+				$t_process_mailbox_function = 'process_' . strtolower( $this->_mailbox[ 'type' ] ) . '_mailbox';
 
 				$this->show_memory_usage( 'Finished process mailbox' );
 
@@ -205,7 +205,7 @@ class ERP_mailbox_api
 		{
 			if ( !$this->_test_only )
 			{
-				echo "\n\n" . 'Mailbox: ' . $this->_mailbox[ 'mailbox_description' ] . "\n" . $p_pear->toString() . "\n";
+				echo "\n\n" . 'Mailbox: ' . $this->_mailbox[ 'description' ] . "\n" . $p_pear->toString() . "\n";
 			}
 
 			return( TRUE );
@@ -232,7 +232,7 @@ class ERP_mailbox_api
 		}
 		else
 		{
-			echo "\n\n" . 'Mailbox: ' . $this->_mailbox[ 'mailbox_description' ] . "\n" . $t_error_text;
+			echo "\n\n" . 'Mailbox: ' . $this->_mailbox[ 'description' ] . "\n" . $t_error_text;
 		}
 	}
 
@@ -242,7 +242,7 @@ class ERP_mailbox_api
 	{
 		$this->_mailserver = new Net_POP3();
 
-		$this->_result = $this->_mailserver->connect( $this->_mailbox[ 'mailbox_hostname' ][ 'hostname' ], $this->_mailbox[ 'mailbox_hostname' ][ 'port' ] );
+		$this->_result = $this->_mailserver->connect( $this->_mailbox[ 'hostname' ][ 'hostname' ], $this->_mailbox[ 'hostname' ][ 'port' ] );
 
 		if ( $this->_result === TRUE )
 		{
@@ -275,25 +275,25 @@ class ERP_mailbox_api
 	# process all mails for an imap mailbox
 	private function process_imap_mailbox()
 	{
-		$this->_mailserver = new Net_IMAP( $this->_mailbox[ 'mailbox_hostname' ][ 'hostname' ], $this->_mailbox[ 'mailbox_hostname' ][ 'port' ] );
+		$this->_mailserver = new Net_IMAP( $this->_mailbox[ 'hostname' ][ 'hostname' ], $this->_mailbox[ 'hostname' ][ 'port' ] );
 
 		if ( $this->_mailserver->_connected === TRUE )
 		{
 			$this->mailbox_login();
 
 			// If basefolder is empty we try to select the inbox folder
-			if ( is_blank( $this->_mailbox[ 'mailbox_basefolder' ] ) )
+			if ( is_blank( $this->_mailbox[ 'basefolder' ] ) )
 			{
-				$this->_mailbox[ 'mailbox_basefolder' ] = $this->_mailserver->getCurrentMailbox();
+				$this->_mailbox[ 'basefolder' ] = $this->_mailserver->getCurrentMailbox();
 			}
 
 			if ( !$this->pear_error( $this->_result ) )
 			{
-				if ( $this->_mailserver->mailboxExist( $this->_mailbox[ 'mailbox_basefolder' ] ) )
+				if ( $this->_mailserver->mailboxExist( $this->_mailbox[ 'basefolder' ] ) )
 				{
 					if ( $this->_test_only === FALSE )
 					{
-						$t_createfolderstructure = $this->_mailbox[ 'mailbox_createfolderstructure' ];
+						$t_createfolderstructure = $this->_mailbox[ 'createfolderstructure' ];
 
 						// There does not seem to be a viable api function which removes this plugins dependability on table column names
 						// So if a column name is changed it might cause problems if the code below depends on it.
@@ -305,7 +305,7 @@ class ERP_mailbox_api
 						}
 						else
 						{
-							$t_projects = array( 0 => project_get_row( $this->_mailbox[ 'mailbox_project_id' ] ) );
+							$t_projects = array( 0 => project_get_row( $this->_mailbox[ 'project_id' ] ) );
 						}
 
 						$t_total_fetch_counter = 0;
@@ -316,7 +316,7 @@ class ERP_mailbox_api
 							{
 								$t_project_name = $this->cleanup_project_name( $t_project[ 'name' ] );
 
-								$t_foldername = $this->_mailbox[ 'mailbox_basefolder' ] . ( ( $t_createfolderstructure ) ? $t_hierarchydelimiter . $t_project_name : NULL );
+								$t_foldername = $this->_mailbox[ 'basefolder' ] . ( ( $t_createfolderstructure ) ? $t_hierarchydelimiter . $t_project_name : NULL );
 
 								// We don't need to check twice whether the mailbox exist twice incase createfolderstructure is false
 								if ( !$t_createfolderstructure || $this->_mailserver->mailboxExist( $t_foldername ) === TRUE )
@@ -383,9 +383,9 @@ class ERP_mailbox_api
 	# Perform the login to the mailbox
 	private function mailbox_login()
 	{
-		$t_mailbox_username = $this->_mailbox[ 'mailbox_username' ];
-		$t_mailbox_password = base64_decode( $this->_mailbox[ 'mailbox_password' ] );
-		$t_mailbox_auth_method = $this->_mailbox[ 'mailbox_auth_method' ];
+		$t_mailbox_username = $this->_mailbox[ 'username' ];
+		$t_mailbox_password = base64_decode( $this->_mailbox[ 'password' ] );
+		$t_mailbox_auth_method = $this->_mailbox[ 'auth_method' ];
 
 		$this->_result = $this->_mailserver->login( $t_mailbox_username, $t_mailbox_password, $t_mailbox_auth_method );
 	}
@@ -620,7 +620,7 @@ class ERP_mailbox_api
 			$t_bug_data->handler_id				= 0;
 			$t_bug_data->view_state				= $this->_default_bug_view_status;
 
-			$t_bug_data->category_id			= $this->_mailbox[ 'mailbox_global_category_id' ];
+			$t_bug_data->category_id			= $this->_mailbox[ 'global_category_id' ];
 			$t_bug_data->reproducibility		= $this->_default_bug_reproducibility;
 			$t_bug_data->severity				= $this->_default_bug_severity;
 			$t_bug_data->priority				= $p_email[ 'Priority' ];
@@ -636,7 +636,7 @@ class ERP_mailbox_api
 			$t_bug_data->additional_information	= $this->_default_bug_additional_info;
 			$t_bug_data->due_date				= date_get_null();
 
-			$t_bug_data->project_id				= ( ( $p_overwrite_project_id === FALSE ) ? $this->_mailbox[ 'mailbox_project_id' ] : $p_overwrite_project_id );
+			$t_bug_data->project_id				= ( ( $p_overwrite_project_id === FALSE ) ? $this->_mailbox[ 'project_id' ] : $p_overwrite_project_id );
 
 			$t_bug_data->reporter_id			= $p_email[ 'Reporter_id' ];
 
@@ -859,9 +859,9 @@ class ERP_mailbox_api
 	# return the hostname parsed into a hostname + port
 	private function prepare_mailbox_hostname()
 	{
-		if ( $this->_mailbox[ 'mailbox_encryption' ] !== 'None' && extension_loaded( 'openssl' ) )
+		if ( $this->_mailbox[ 'encryption' ] !== 'None' && extension_loaded( 'openssl' ) )
 		{
-			$this->_mailbox[ 'mailbox_hostname' ][ 'hostname' ] = strtolower( $this->_mailbox[ 'mailbox_encryption' ] ) . '://' . $this->_mailbox[ 'mailbox_hostname' ][ 'hostname' ];
+			$this->_mailbox[ 'hostname' ][ 'hostname' ] = strtolower( $this->_mailbox[ 'encryption' ] ) . '://' . $this->_mailbox[ 'hostname' ][ 'hostname' ];
 
 			$t_mailbox_port_index = 'encrypted';
 		}
@@ -870,10 +870,10 @@ class ERP_mailbox_api
 			$t_mailbox_port_index = 'normal';
 		}
 
-		$this->_mailbox[ 'mailbox_hostname' ][ 'port' ] = (int) $this->_mailbox[ 'mailbox_hostname' ][ 'port' ];
-		if ( $this->_mailbox[ 'mailbox_hostname' ][ 'port' ] <= 0 )
+		$this->_mailbox[ 'hostname' ][ 'port' ] = (int) $this->_mailbox[ 'hostname' ][ 'port' ];
+		if ( $this->_mailbox[ 'hostname' ][ 'port' ] <= 0 )
 		{
-			$this->_mailbox[ 'mailbox_hostname' ][ 'port' ] = (int) $this->_default_ports[ $this->_mailbox[ 'mailbox_type' ] ][ $t_mailbox_port_index ];
+			$this->_mailbox[ 'hostname' ][ 'port' ] = (int) $this->_default_ports[ $this->_mailbox[ 'type' ] ][ $t_mailbox_port_index ];
 		}
 	}
 

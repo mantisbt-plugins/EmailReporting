@@ -12,23 +12,23 @@ $t_mailboxes = plugin_config_get( 'mailboxes' );
 if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailbox_action === 'edit' || $f_mailbox_action === 'test' ) && $f_select_mailbox >= 0 ) )
 {
 	$t_mailbox = array(
-		'mailbox_enabled'				=> gpc_get_bool( 'mailbox_enabled' ),
-		'mailbox_description'			=> gpc_get_string( 'mailbox_description' ),
-		'mailbox_type'					=> gpc_get_string( 'mailbox_type' ),
-		'mailbox_hostname'				=> gpc_get_string_array( 'mailbox_hostname' ),
-		'mailbox_encryption'			=> gpc_get_string( 'mailbox_encryption' ),
-		'mailbox_username'				=> gpc_get_string( 'mailbox_username' ),
-		'mailbox_password'				=> base64_encode( gpc_get_string( 'mailbox_password' ) ),
-		'mailbox_auth_method'			=> gpc_get_string( 'mailbox_auth_method' ),
-		'mailbox_project_id'			=> gpc_get_int( 'mailbox_project_id' ),
-		'mailbox_global_category_id'	=> gpc_get_int( 'mailbox_global_category_id' ),
+		'enabled'				=> gpc_get_bool( 'enabled' ),
+		'description'			=> gpc_get_string( 'description' ),
+		'type'					=> gpc_get_string( 'type' ),
+		'hostname'				=> gpc_get_string_array( 'hostname' ),
+		'encryption'			=> gpc_get_string( 'encryption' ),
+		'username'				=> gpc_get_string( 'username' ),
+		'password'				=> base64_encode( gpc_get_string( 'password' ) ),
+		'auth_method'			=> gpc_get_string( 'auth_method' ),
+		'project_id'			=> gpc_get_int( 'project_id' ),
+		'global_category_id'	=> gpc_get_int( 'global_category_id' ),
 	);
 
-	if ( $t_mailbox[ 'mailbox_type' ] === 'IMAP' )
+	if ( $t_mailbox[ 'type' ] === 'IMAP' )
 	{
 		$t_mailbox_imap = array(
-			'mailbox_basefolder'			=> ERP_prepare_directory_string( gpc_get_string( 'mailbox_basefolder' ) ),
-			'mailbox_createfolderstructure'	=> gpc_get_bool( 'mailbox_createfolderstructure' ),
+			'basefolder'			=> ERP_prepare_directory_string( gpc_get_string( 'basefolder' ) ),
+			'createfolderstructure'	=> gpc_get_bool( 'createfolderstructure' ),
 		);
 
 		$t_mailbox += $t_mailbox_imap;
@@ -66,17 +66,17 @@ elseif ( $f_mailbox_action === 'test' && $f_select_mailbox >= 0 )
 <br /><div class="center">
 <?php
 		echo plugin_lang_get( 'test_failure' ) . '<br /><br />';
-		echo plugin_lang_get( 'mailbox_description' ) . ': ' . $t_mailbox_api->_mailbox[ 'mailbox_description' ] . '<br />';
-		echo plugin_lang_get( 'mailbox_type' ) . ': ' . $t_mailbox_api->_mailbox[ 'mailbox_type' ] . '<br />';
-		echo plugin_lang_get( 'mailbox_hostname' ) . ': ' . implode( ' (', $t_mailbox_api->_mailbox[ 'mailbox_hostname' ] ) . ')<br />';
-		echo plugin_lang_get( 'mailbox_encryption' ) . ': ' . $t_mailbox_api->_mailbox[ 'mailbox_encryption' ] . '<br />';
-		echo plugin_lang_get( 'mailbox_username' ) . ': ' . $t_mailbox_api->_mailbox[ 'mailbox_username' ] . '<br />';
-		echo plugin_lang_get( 'mailbox_password' ) . ': ******' . '<br />';
-		echo plugin_lang_get( 'mailbox_auth_method' ) . ': ' . $t_mailbox_api->_mailbox[ 'mailbox_auth_method' ] . '<br />';
+		echo plugin_lang_get( 'description' ) . ': ' . $t_mailbox_api->_mailbox[ 'description' ] . '<br />';
+		echo plugin_lang_get( 'type' ) . ': ' . $t_mailbox_api->_mailbox[ 'type' ] . '<br />';
+		echo plugin_lang_get( 'hostname' ) . ': ' . implode( ' (', $t_mailbox_api->_mailbox[ 'hostname' ] ) . ')<br />';
+		echo plugin_lang_get( 'encryption' ) . ': ' . $t_mailbox_api->_mailbox[ 'encryption' ] . '<br />';
+		echo plugin_lang_get( 'username' ) . ': ' . $t_mailbox_api->_mailbox[ 'username' ] . '<br />';
+		echo plugin_lang_get( 'password' ) . ': ******' . '<br />';
+		echo plugin_lang_get( 'auth_method' ) . ': ' . $t_mailbox_api->_mailbox[ 'auth_method' ] . '<br />';
 
-		if ( $t_mailbox[ 'mailbox_type' ] === 'IMAP' )
+		if ( $t_mailbox_api->_mailbox[ 'type' ] === 'IMAP' )
 		{
-			echo plugin_lang_get( 'mailbox_basefolder' ) . ': ' . $t_mailbox_api->_mailbox[ 'mailbox_basefolder' ] . '<br />';
+			echo plugin_lang_get( 'basefolder' ) . ': ' . $t_mailbox_api->_mailbox[ 'basefolder' ] . '<br />';
 		}
 
 		echo '<br />' . ( ( $t_is_custom_error ) ? $t_result[ 'ERROR_MESSAGE' ] : $t_result->toString() ) . '<br /><br />';

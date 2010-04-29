@@ -8,14 +8,29 @@
 	function ERP_get_default_mailbox()
 	{
 		$t_mailbox = array(
-			'mailbox_enabled'				=> TRUE,
-			'mailbox_type'					=> 'POP3',
-			'mailbox_encryption'			=> 'None',
-			'mailbox_auth_method'			=> 'USER',
-			'mailbox_global_category_id'	=> -1,
+			'enabled'				=> TRUE,
+			'type'					=> 'POP3',
+			'encryption'			=> 'None',
+			'auth_method'			=> 'USER',
+			'global_category_id'	=> -1,
 		);
 
 		return( $t_mailbox );
+	}
+
+	# --------------------
+	# Returns true if emailreporting is currently the one reporting a issue
+	# This is to make it easier for plugins to detect this if necessary
+	function ERP_is_emailreporting()
+	{
+		if ( isset( $GLOBALS[ 't_mailbox_api' ] ) && is_object( $GLOBALS[ 't_mailbox_api' ] ) )
+		{
+			return( TRUE );
+		}
+		else
+		{
+			return( FALSE );
+		}
 	}
 
 	# --------------------
@@ -65,7 +80,7 @@
 
 	# --------------------
 	# output a configuration option
-	function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, &$p_optional_information = NULL )
+	function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, &$p_variable_array = NULL, &$p_display_array = NULL )
 	{
 		// $p_def_value has special purposes when containing the following values
 		// NULL is default value
@@ -78,7 +93,7 @@
 		}
 		elseif ( $p_def_value === -3 )
 		{
-			$t_value = ( ( isset( $p_optional_information[ $p_name ] ) ) ? $p_optional_information[ $p_name ] : NULL );
+			$t_value = ( ( isset( $p_variable_array[ $p_name ] ) ) ? $p_variable_array[ $p_name ] : NULL );
 		}
 		else
 		{
@@ -115,23 +130,18 @@
 				break;
 
 			case 'radio_actions':
-				$t_actions_list = array(
-					0 => array( 'add' ),
-					1 => array( 'copy', 'edit', 'delete', 'test' ),
-				);
-
 ?>
 <tr <?php echo helper_alternate_class( )?>>
 	<td class="center" width="100%" colspan="3">
 <?php
-				foreach ( $t_actions_list AS $t_action_key => $t_actions )
+				foreach ( $p_display_array AS $t_action_key => $t_actions )
 				{
-					if ( is_array( $p_optional_information ) && count( $p_optional_information ) >= $t_action_key )
+					if ( is_array( $p_variable_array ) && count( $p_variable_array ) >= $t_action_key )
 					{
 						foreach ( $t_actions AS $t_action )
 						{
 ?>
-		<label><input type="radio" name="<?php echo $p_name ?>" value="<?php echo $t_action ?>"<?php echo ( ( $t_value === $t_action ) ? ' checked="checked"' : NULL ) ?>/><?php echo plugin_lang_get( $t_action . '_mailbox' )?></label>
+		<label><input type="radio" name="<?php echo $p_name ?>" value="<?php echo $t_action ?>"<?php echo ( ( $t_value === $t_action ) ? ' checked="checked"' : NULL ) ?>/><?php echo plugin_lang_get( $t_action . '_action' )?></label>
 <?php
 						}
 					}
@@ -162,9 +172,9 @@
 			case 'dropdown_auth_method':
 			case 'dropdown_global_categories':
 			case 'dropdown_list_reporters':
-			case 'dropdown_mailbox_encryption':
+			case 'dropdown_encryption':
 			case 'dropdown_mailbox_type':
-			case 'dropdown_mailboxes':
+			case 'dropdown_descriptions':
 			case 'dropdown_mbstring_encodings':
 			case 'dropdown_pref_usernames':
 			case 'dropdown_projects':
@@ -180,11 +190,11 @@
 ?>
 	<td class="center" width="20%">
 		<label><input type="radio" name="<?php echo $p_name ?>" value="1" <?php echo ( ( ON == $t_value ) ? 'checked="checked" ' : '' )?>/>
-			<?php echo plugin_lang_get( 'enabled' ) ?></label>
+			<?php echo lang_get( 'yes' ) ?></label>
 	</td>
 	<td class="center" width="20%">
 		<label><input type="radio" name="<?php echo $p_name ?>" value="0" <?php echo ( ( !is_null($t_value) && OFF == $t_value ) ? 'checked="checked" ' : '' ) ?>/>
-			<?php echo plugin_lang_get( 'disabled' ) ?></label>
+			<?php echo lang_get( 'no' ) ?></label>
 	</td>
 <?php
 						break;
@@ -316,7 +326,7 @@
 <?php
 						break;
 
-					case 'dropdown_mailbox_encryption':
+					case 'dropdown_encryption':
 ?>
 	<td class="center" width="40%" colspan="2">
 		<select name="<?php echo $p_name ?>">
@@ -363,23 +373,23 @@
 <?php
 						break;
 
-					case 'dropdown_mailboxes':
+					case 'dropdown_descriptions':
 ?>
 	<td class="center" width="40%" colspan="2">
 <?php
-						if ( is_array( $p_optional_information ) && count( $p_optional_information ) > 0 )
+						if ( is_array( $p_variable_array ) && count( $p_variable_array ) > 0 )
 						{
 ?>
 		<select name="<?php echo $p_name ?>">
 <?php
-							foreach ( $p_optional_information AS $t_mailbox_key => $t_mailbox_data )
+							foreach ( $p_variable_array AS $t_key => $t_data )
 							{
-								if ( !isset( $t_mailbox_data[ 'mailbox_enabled' ] ) )
+								if ( !isset( $t_data[ 'enabled' ] ) )
 								{
-									$t_mailbox_data[ 'mailbox_enabled' ] = TRUE;
+									$t_data[ 'enabled' ] = TRUE;
 								}
 ?>
-			<option value="<?php echo $t_mailbox_key ?>"<?php echo ( ( $t_value === $t_mailbox_key ) ? ' selected' : NULL ) ?>><?php echo ( ( $t_mailbox_data[ 'mailbox_enabled' ] === FALSE ) ? '* ' : NULL ) . $t_mailbox_data[ 'mailbox_description' ] ?></option>
+			<option value="<?php echo $t_key ?>"<?php echo ( ( $t_value === $t_key ) ? ' selected' : NULL ) ?>><?php echo ( ( $t_data[ 'enabled' ] === FALSE ) ? '* ' : NULL ) . $t_data[ 'description' ] ?></option>
 <?php
 							}
 ?>
@@ -388,7 +398,7 @@
 						}
 						else
 						{
-							echo plugin_lang_get( 'zero_mailboxes' );
+							echo plugin_lang_get( 'zero_descriptions' );
 						}
 ?>
 	</td>

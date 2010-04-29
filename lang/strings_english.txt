@@ -25,8 +25,6 @@ $s_plugin_EmailReporting_runtime_options = 'Runtime configuration options';
 $s_plugin_EmailReporting_security_options = 'Security configuration options';
 
 $s_plugin_EmailReporting_copy_of = 'Copy of';
-$s_plugin_EmailReporting_enabled = 'Yes';
-$s_plugin_EmailReporting_disabled = 'No';
 $s_plugin_EmailReporting_directory_exists = 'Directory found';
 $s_plugin_EmailReporting_directory_unavailable = 'Warning: directory not found';
 $s_plugin_EmailReporting_directory_writable = 'Directory writable';
@@ -64,26 +62,26 @@ $s_plugin_EmailReporting_email_address = 'Email address';
 $s_plugin_EmailReporting_email_no_domain = 'Email address without the domain name';
 
 $s_plugin_EmailReporting_mailboxes = 'Mailboxes';
-$s_plugin_EmailReporting_add_mailbox = 'Add mailbox';
-$s_plugin_EmailReporting_copy_mailbox = 'Copy mailbox';
-$s_plugin_EmailReporting_edit_mailbox = 'Edit mailbox';
-$s_plugin_EmailReporting_delete_mailbox = 'Delete mailbox';
-$s_plugin_EmailReporting_test_mailbox = 'Test mailbox';
+$s_plugin_EmailReporting_add_action = 'Add mailbox';
+$s_plugin_EmailReporting_copy_action = 'Copy mailbox';
+$s_plugin_EmailReporting_edit_action = 'Edit mailbox';
+$s_plugin_EmailReporting_delete_action = 'Delete mailbox';
+$s_plugin_EmailReporting_test_action = 'Test mailbox';
 $s_plugin_EmailReporting_select_mailbox = 'Select mailbox';
 $s_plugin_EmailReporting_update_configuration = 'Update configuration';
 
-$s_plugin_EmailReporting_mailbox_enabled = 'Mailbox enabled';
-$s_plugin_EmailReporting_mailbox_description = 'Mailbox description';
-$s_plugin_EmailReporting_mailbox_type = 'Mailbox type';
-$s_plugin_EmailReporting_mailbox_hostname = 'Mailbox hostname (port)';
-$s_plugin_EmailReporting_mailbox_encryption = 'Mailbox connection encryption';
-$s_plugin_EmailReporting_mailbox_username = 'Mailbox username';
-$s_plugin_EmailReporting_mailbox_password = 'Mailbox password';
-$s_plugin_EmailReporting_mailbox_auth_method = 'Mailbox authentication method';
-$s_plugin_EmailReporting_mailbox_basefolder = 'Mailbox basefolder (optional)';
-$s_plugin_EmailReporting_mailbox_createfolderstructure = 'Create project subfolder structure';
-$s_plugin_EmailReporting_mailbox_project_id = 'Select a project';
-$s_plugin_EmailReporting_mailbox_global_category_id = 'Select a global category';
+$s_plugin_EmailReporting_enabled = 'Mailbox enabled';
+$s_plugin_EmailReporting_description = 'Mailbox description';
+$s_plugin_EmailReporting_type = 'Mailbox type';
+$s_plugin_EmailReporting_hostname = 'Mailbox hostname (port)';
+$s_plugin_EmailReporting_encryption = 'Mailbox connection encryption';
+$s_plugin_EmailReporting_username = 'Mailbox username';
+$s_plugin_EmailReporting_password = 'Mailbox password';
+$s_plugin_EmailReporting_auth_method = 'Mailbox authentication method';
+$s_plugin_EmailReporting_basefolder = 'Mailbox basefolder (optional)';
+$s_plugin_EmailReporting_createfolderstructure = 'Create project subfolder structure';
+$s_plugin_EmailReporting_project_id = 'Select a project';
+$s_plugin_EmailReporting_global_category_id = 'Select a global category';
 
 $s_plugin_EmailReporting_mail_bug_priority_array_failure = 'The given format is not an acceptable array.';
 $s_plugin_EmailReporting_mailboxes_disabled = '* = Disabled mailbox';
@@ -92,6 +90,6 @@ $s_plugin_EmailReporting_missing_reporter = 'Current mail reporter is missing. P
 $s_plugin_EmailReporting_openssl_unavailable = 'PHP OpenSSL extension unavailable';
 $s_plugin_EmailReporting_test_failure = 'Operation NOT successful';
 $s_plugin_EmailReporting_unknown_setting = 'Unknown setting encountered. Setting ignored: ';
-$s_plugin_EmailReporting_zero_mailboxes = 'No mailboxes have been found';
+$s_plugin_EmailReporting_zero_descriptions = 'None available';
 
 ?>
