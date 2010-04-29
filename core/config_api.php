@@ -20,12 +20,20 @@
 
 	# --------------------
 	# Returns true if emailreporting is currently the one reporting a issue
+	# Can also return the current GLOBALS index name of the variable using the ERP_mailbox_api object
 	# This is to make it easier for plugins to detect this if necessary
-	function ERP_is_emailreporting()
+	function ERP_is_emailreporting( $p_return_bool = TRUE )
 	{
 		if ( isset( $GLOBALS[ 't_mailbox_api' ] ) && is_object( $GLOBALS[ 't_mailbox_api' ] ) )
 		{
-			return( TRUE );
+			if ( $p_return_bool )
+			{
+				return( TRUE );
+			}
+			else
+			{
+				return( 't_mailbox_api' );
+			}
 		}
 		else
 		{
