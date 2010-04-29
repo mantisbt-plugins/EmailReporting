@@ -233,7 +233,6 @@
 			case 'directory_string':
 			case 'integer':
 			case 'string':
-			case 'string_hostname_port':
 			case 'string_multiline':
 			case 'string_password':
 			case 'dropdown_auth_method':
@@ -306,15 +305,6 @@
 ?>
 	<td class="center" width="40%" colspan="2">
 		<input type="text" size="50" maxlength="100" name="<?php echo $p_name ?>" value="<?php echo $t_value ?>"/>
-	</td>
-<?php
-						break;
-
-					case 'string_hostname_port':
-?>
-	<td class="center" width="40%" colspan="2">
-		<input type="text" size="40" maxlength="100" name="<?php echo $p_name ?>[hostname]" value="<?php echo $t_value[ 'hostname' ] ?>"/>
-		<input type="text" size="5" maxlength="5" name="<?php echo $p_name ?>[port]" value="<?php echo $t_value[ 'port' ] ?>"/>
 	</td>
 <?php
 						break;

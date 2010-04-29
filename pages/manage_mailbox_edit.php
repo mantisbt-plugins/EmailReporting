@@ -15,7 +15,8 @@ if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailb
 		'enabled'				=> gpc_get_bool( 'enabled' ),
 		'description'			=> gpc_get_string( 'description' ),
 		'type'					=> gpc_get_string( 'type' ),
-		'hostname'				=> gpc_get_string_array( 'hostname' ),
+		'hostname'				=> gpc_get_string( 'hostname' ),
+		'port'					=> gpc_get_string( 'port' ),
 		'encryption'			=> gpc_get_string( 'encryption' ),
 		'username'				=> gpc_get_string( 'username' ),
 		'password'				=> base64_encode( gpc_get_string( 'password' ) ),
@@ -68,7 +69,8 @@ elseif ( $f_mailbox_action === 'test' && $f_select_mailbox >= 0 )
 		echo plugin_lang_get( 'test_failure' ) . '<br /><br />';
 		echo plugin_lang_get( 'description' ) . ': ' . $t_mailbox_api->_mailbox[ 'description' ] . '<br />';
 		echo plugin_lang_get( 'type' ) . ': ' . $t_mailbox_api->_mailbox[ 'type' ] . '<br />';
-		echo plugin_lang_get( 'hostname' ) . ': ' . implode( ' (', $t_mailbox_api->_mailbox[ 'hostname' ] ) . ')<br />';
+		echo plugin_lang_get( 'hostname' ) . ': ', $t_mailbox_api->_mailbox[ 'hostname' ] . '<br />';
+		echo plugin_lang_get( 'port' ) . ': ', $t_mailbox_api->_mailbox[ 'port' ] . '<br />';
 		echo plugin_lang_get( 'encryption' ) . ': ' . $t_mailbox_api->_mailbox[ 'encryption' ] . '<br />';
 		echo plugin_lang_get( 'username' ) . ': ' . $t_mailbox_api->_mailbox[ 'username' ] . '<br />';
 		echo plugin_lang_get( 'password' ) . ': ******' . '<br />';

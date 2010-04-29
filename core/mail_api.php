@@ -242,7 +242,7 @@ class ERP_mailbox_api
 	{
 		$this->_mailserver = new Net_POP3();
 
-		$this->_result = $this->_mailserver->connect( $this->_mailbox[ 'hostname' ][ 'hostname' ], $this->_mailbox[ 'hostname' ][ 'port' ] );
+		$this->_result = $this->_mailserver->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ] );
 
 		if ( $this->_result === TRUE )
 		{
@@ -275,7 +275,7 @@ class ERP_mailbox_api
 	# process all mails for an imap mailbox
 	private function process_imap_mailbox()
 	{
-		$this->_mailserver = new Net_IMAP( $this->_mailbox[ 'hostname' ][ 'hostname' ], $this->_mailbox[ 'hostname' ][ 'port' ] );
+		$this->_mailserver = new Net_IMAP( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ] );
 
 		if ( $this->_mailserver->_connected === TRUE )
 		{
@@ -861,19 +861,19 @@ class ERP_mailbox_api
 	{
 		if ( $this->_mailbox[ 'encryption' ] !== 'None' && extension_loaded( 'openssl' ) )
 		{
-			$this->_mailbox[ 'hostname' ][ 'hostname' ] = strtolower( $this->_mailbox[ 'encryption' ] ) . '://' . $this->_mailbox[ 'hostname' ][ 'hostname' ];
+			$this->_mailbox[ 'hostname' ] = strtolower( $this->_mailbox[ 'encryption' ] ) . '://' . $this->_mailbox[ 'hostname' ];
 
-			$t_mailbox_port_index = 'encrypted';
+			$t_def_mailbox_port_index = 'encrypted';
 		}
 		else
 		{
-			$t_mailbox_port_index = 'normal';
+			$t_def_mailbox_port_index = 'normal';
 		}
 
-		$this->_mailbox[ 'hostname' ][ 'port' ] = (int) $this->_mailbox[ 'hostname' ][ 'port' ];
-		if ( $this->_mailbox[ 'hostname' ][ 'port' ] <= 0 )
+		$this->_mailbox[ 'port' ] = (int) $this->_mailbox[ 'port' ];
+		if ( $this->_mailbox[ 'port' ] <= 0 )
 		{
-			$this->_mailbox[ 'hostname' ][ 'port' ] = (int) $this->_default_ports[ $this->_mailbox[ 'type' ] ][ $t_mailbox_port_index ];
+			$this->_mailbox[ 'port' ] = (int) $this->_default_ports[ $this->_mailbox[ 'type' ] ][ $t_def_mailbox_port_index ];
 		}
 	}
 
