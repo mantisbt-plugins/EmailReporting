@@ -167,11 +167,14 @@
 			$t_value = $p_def_value;
 		}
 
-		// incase we are used from within another plugin within the manage_mailbox page, we need a prefix
-		$t_name_prefix = NULL;
+		// incase we are used from within another plugin within the manage_mailbox page, we need to modify its name
 		if ( plugin_get_current() !== 'EmailReporting' && $GLOBALS[ 't_this_page' ] === 'manage_mailbox' )
 		{
-			$t_name_prefix = '[plugin_content][' . plugin_get_current() . ']';
+			$t_input_name = 'plugin_content[' . plugin_get_current() . '][' . $p_name . ']';
+		}
+		else
+		{
+			$t_input_name = $p_name;
 		}
 
 		switch ( $p_type )
@@ -199,7 +202,7 @@
 
 			case 'hidden':
 ?>
-<input type="hidden" name="<?php echo $t_name_prefix . $p_name ?>" value="<?php echo $t_value ?>"/>
+<input type="hidden" name="<?php echo $t_input_name ?>" value="<?php echo $t_value ?>"/>
 <?php
 				break;
 
@@ -215,7 +218,7 @@
 						foreach ( $t_actions AS $t_action )
 						{
 ?>
-		<label><input type="radio" name="<?php echo $t_name_prefix . $p_name ?>" value="<?php echo $t_action ?>"<?php echo ( ( $t_value === $t_action ) ? ' checked="checked"' : NULL ) ?>/><?php echo plugin_lang_get( $t_action . '_action' )?></label>
+		<label><input type="radio" name="<?php echo $t_input_name ?>" value="<?php echo $t_action ?>"<?php echo ( ( $t_value === $t_action ) ? ' checked="checked"' : NULL ) ?>/><?php echo plugin_lang_get( $t_action . '_action' )?></label>
 <?php
 						}
 					}
@@ -258,18 +261,15 @@
 		<?php echo plugin_lang_get( $p_name )?>
 	</td>
 <?php
-				// Now we can permenantly add the name_prefix
-				$p_name = $t_name_prefix . $p_name;
-
 				switch ( $p_type )
 				{
 					case 'boolean':
 ?>
 	<td class="center" width="20%">
-		<label><input type="radio" name="<?php echo $p_name ?>" value="1" <?php echo ( ( ON == $t_value ) ? 'checked="checked" ' : '' )?>/><?php echo lang_get( 'yes' ) ?></label>
+		<label><input type="radio" name="<?php echo $t_input_name ?>" value="1" <?php echo ( ( ON == $t_value ) ? 'checked="checked" ' : '' )?>/><?php echo lang_get( 'yes' ) ?></label>
 	</td>
 	<td class="center" width="20%">
-		<label><input type="radio" name="<?php echo $p_name ?>" value="0" <?php echo ( ( !is_null($t_value) && OFF == $t_value ) ? 'checked="checked" ' : '' ) ?>/><?php echo lang_get( 'no' ) ?></label>
+		<label><input type="radio" name="<?php echo $t_input_name ?>" value="0" <?php echo ( ( !is_null($t_value) && OFF == $t_value ) ? 'checked="checked" ' : '' ) ?>/><?php echo lang_get( 'no' ) ?></label>
 	</td>
 <?php
 						break;
@@ -301,7 +301,7 @@
 						}
 ?>
 	<td class="center" width="20%">
-		<input type="text" size="30" maxlength="200" name="<?php echo $p_name ?>" value="<?php echo $t_dir ?>"/>
+		<input type="text" size="30" maxlength="200" name="<?php echo $t_input_name ?>" value="<?php echo $t_dir ?>"/>
 	</td>
 	<td class="center" width="20%">
 		<span class="<?php echo $t_result_is_dir_color ?>"><?php echo $t_result_is_dir_text ?></span><br /><span class="<?php echo $t_result_is_writable_color ?>"><?php echo $t_result_is_writable_text ?></span>
@@ -313,7 +313,7 @@
 					case 'string':
 ?>
 	<td class="center" width="40%" colspan="2">
-		<input type="text" size="50" maxlength="100" name="<?php echo $p_name ?>" value="<?php echo $t_value ?>"/>
+		<input type="text" size="50" maxlength="100" name="<?php echo $t_input_name ?>" value="<?php echo $t_value ?>"/>
 	</td>
 <?php
 						break;
@@ -321,7 +321,7 @@
 					case 'string_multiline':
 ?>
 	<td class="center" width="40%" colspan="2">
-		<textarea cols="40" rows="6" name="<?php echo $p_name ?>"><?php
+		<textarea cols="40" rows="6" name="<?php echo $t_input_name ?>"><?php
 						if ( is_array( $t_value ) )
 						{
 							var_export( $t_value );
@@ -338,7 +338,7 @@
 					case 'string_password':
 ?>
 	<td class="center" width="40%" colspan="2">
-		<input type="password" size="50" maxlength="50" name="<?php echo $p_name ?>" value="<?php echo base64_decode( $t_value ) ?>"/>
+		<input type="password" size="50" maxlength="50" name="<?php echo $t_input_name ?>" value="<?php echo base64_decode( $t_value ) ?>"/>
 	</td>
 <?php
 						break;
@@ -354,7 +354,7 @@
 						natcasesort( $t_supported_auth_methods );
 ?>
 	<td class="center" width="40%" colspan="2">
-		<select name="<?php echo $p_name ?>">
+		<select name="<?php echo $t_input_name ?>">
 <?php
 						foreach ( $t_supported_auth_methods AS $t_supported_auth_method )
 						{
@@ -376,7 +376,7 @@
 						if ( is_array( $p_variable_array ) && count( $p_variable_array ) > 0 )
 						{
 ?>
-		<select name="<?php echo $p_name . ( ( $p_type === 'dropdown_descriptions_multiselect' ) ? '[]" multiple' : '"' ) ?>>
+		<select name="<?php echo $t_input_name . ( ( $p_type === 'dropdown_descriptions_multiselect' ) ? '[]" multiple' : '"' ) ?>>
 <?php
 							foreach ( $p_variable_array AS $t_key => $t_data )
 							{
@@ -404,7 +404,7 @@
 					case 'dropdown_global_categories':
 ?>
 	<td class="center" width="40%" colspan="2">
-		<select name="<?php echo $p_name ?>"><?php print_category_option_list( $t_value, ALL_PROJECTS ) ?></select>
+		<select name="<?php echo $t_input_name ?>"><?php print_category_option_list( $t_value, ALL_PROJECTS ) ?></select>
 	</td>
 <?php
 						break;
@@ -418,7 +418,7 @@
 							echo '<span class="negative">' . plugin_lang_get( 'missing_reporter' ) . '</span><br />';
 						}
 ?>
-		<select name="<?php echo $p_name ?>"><?php print_user_option_list( $t_value, ALL_PROJECTS, config_get_global( 'report_bug_threshold' ) ) ?></select>
+		<select name="<?php echo $t_input_name ?>"><?php print_user_option_list( $t_value, ALL_PROJECTS, config_get_global( 'report_bug_threshold' ) ) ?></select>
 	</td>
 <?php
 						break;
@@ -426,7 +426,7 @@
 					case 'dropdown_encryption':
 ?>
 	<td class="center" width="40%" colspan="2">
-		<select name="<?php echo $p_name ?>">
+		<select name="<?php echo $t_input_name ?>">
 <?php
 						if ( extension_loaded( 'openssl' ) )
 						{
@@ -458,7 +458,7 @@
 						$t_mailbox_types = array( 'IMAP', 'POP3' );
 ?>
 	<td class="center" width="40%" colspan="2">
-		<select name="<?php echo $p_name ?>">
+		<select name="<?php echo $t_input_name ?>">
 <?php
 						foreach ( $t_mailbox_types AS $t_mailbox_type )
 						{
@@ -473,7 +473,7 @@
 					case 'dropdown_mbstring_encodings':
 ?>
 	<td class="center" width="40%" colspan="2">
-			<select name="<?php echo $p_name ?>">
+			<select name="<?php echo $t_input_name ?>">
 <?php
 						if ( extension_loaded( 'mbstring' ) )
 						{
@@ -502,7 +502,7 @@
 						$t_username_options = array( 'name', 'email_address', 'email_no_domain' );
 ?>
 	<td class="center" width="40%" colspan="2">
-		<select name="<?php echo $p_name ?>">
+		<select name="<?php echo $t_input_name ?>">
 <?php
 						foreach ( $t_username_options AS $t_option )
 						{
@@ -520,7 +520,7 @@
 					case 'dropdown_projects':
 ?>
 	<td class="center" width="40%" colspan="2">
-		<select name="<?php echo $p_name ?>"><?php print_project_option_list( $t_value, FALSE, NULL, FALSE ) ?></select>
+		<select name="<?php echo $t_input_name ?>"><?php print_project_option_list( $t_value, FALSE, NULL, FALSE ) ?></select>
 	</td>
 <?php
 						break;

@@ -8,13 +8,13 @@ print_manage_menu();
 
 require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/config_api.php' );
 
-$t_this_page = 'manage_mailbox';
-ERP_print_menu( $t_this_page );
+$GLOBALS[ 't_this_page' ] = 'manage_mailbox';
+ERP_print_menu( $GLOBALS[ 't_this_page' ] );
 
 ?>
 
 <br />
-<form action="<?php echo plugin_page( $t_this_page . '_edit' )?>" method="post">
+<form action="<?php echo plugin_page( $GLOBALS[ 't_this_page' ] . '_edit' )?>" method="post">
 
 <?php
 
@@ -84,7 +84,7 @@ ERP_output_config_option( $f_mailbox_action . '_action', 'submit' );
 
 <br />
 
-<form action="<?php echo plugin_page( $t_this_page )?>" method="post">
+<form action="<?php echo plugin_page( $GLOBALS[ 't_this_page' ] )?>" method="post">
 <table align="center" class="width50 nowrap" cellspacing="1">
 <?php
 
