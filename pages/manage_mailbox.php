@@ -18,7 +18,7 @@ ERP_print_menu( $t_this_page );
 
 <?php
 
-$t_mailboxes = plugin_config_get( 'mailboxes' );
+$GLOBALS[ 't_mailboxes' ] = plugin_config_get( 'mailboxes' );
 
 $f_mailbox_action = gpc_get_string( 'mailbox_action', 'add' );
 $f_select_mailbox = gpc_get_int( 'select_mailbox', -1 );
@@ -28,10 +28,10 @@ $t_mailbox = ERP_get_default_mailbox();
 
 if ( $f_mailbox_action !== 'add' )
 {
-	if ( isset( $t_mailboxes[ $f_select_mailbox ] ) )
+	if ( isset( $GLOBALS[ 't_mailboxes' ][ $f_select_mailbox ] ) )
 	{
 		// merge existing selected mailbox into the default mailbox overwriting existing default values
-		$t_mailbox = $t_mailboxes[ $f_select_mailbox ] + $t_mailbox;
+		$t_mailbox = $GLOBALS[ 't_mailboxes' ][ $f_select_mailbox ] + $t_mailbox;
 
 		// Add "Copy of" text if necessary to mailboxes being copied
 		if ( $f_mailbox_action === 'copy' )
@@ -91,8 +91,8 @@ $t_actions_list = array(
 	0 => array( 'add' ),
 	1 => array( 'copy', 'edit', 'delete', 'test' ),
 );
-ERP_output_config_option( 'mailbox_action', 'radio_actions', $f_mailbox_action, $t_mailboxes, $t_actions_list );
-ERP_output_config_option( 'select_mailbox', 'dropdown_descriptions', $f_select_mailbox, $t_mailboxes );
+ERP_output_config_option( 'mailbox_action', 'radio_actions', $f_mailbox_action, $GLOBALS[ 't_mailboxes' ], $t_actions_list );
+ERP_output_config_option( 'select_mailbox', 'dropdown_descriptions', $f_select_mailbox, $GLOBALS[ 't_mailboxes' ] );
 ERP_output_config_option( 'mailboxes_disabled', 'empty' );
 
 ERP_output_config_option( 'select_mailbox', 'submit' );

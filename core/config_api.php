@@ -24,7 +24,9 @@
 	# This is to make it easier for plugins to detect this if necessary
 	function ERP_is_emailreporting( $p_return_bool = TRUE )
 	{
-		if ( isset( $GLOBALS[ 't_mailbox_api' ] ) && is_object( $GLOBALS[ 't_mailbox_api' ] ) )
+		$t_mailbox_api_index = 't_mailbox_api';
+
+		if ( isset( $GLOBALS[ $t_mailbox_api_index ] ) && is_object( $GLOBALS[ $t_mailbox_api_index ] ) && is_array( $GLOBALS[ $t_mailbox_api_index ]->_mailbox ) )
 		{
 			if ( $p_return_bool )
 			{
@@ -32,7 +34,64 @@
 			}
 			else
 			{
-				return( 't_mailbox_api' );
+				return( $t_mailbox_api_index );
+			}
+		}
+		else
+		{
+			return( FALSE );
+		}
+	}
+
+	# --------------------
+	# Returns the current mailbox being processed by the mailbox_api
+	# This function is not meant for usage within the user interface
+	function ERP_get_current_mailbox( $p_mailbox_plugin_content = TRUE )
+	{
+		$t_mailbox_api_index = ERP_is_emailreporting( FALSE );
+
+		if ( $t_mailbox_api_index )
+		{
+			if ( $p_mailbox_plugin_content && isset( $GLOBALS[ $t_mailbox_api_index ]->_mailbox[ 'plugin_content' ][ plugin_get_current() ] ) )
+			{
+				return( $GLOBALS[ $t_mailbox_api_index ]->_mailbox[ 'plugin_content' ][ plugin_get_current() ] );
+			}
+			else
+			{
+				return( $GLOBALS[ $t_mailbox_api_index ]->_mailbox );
+			}
+		}
+		else
+		{
+			return( FALSE );
+		}
+	}
+
+	# --------------------
+	# Returns the complete mailbox array
+	# You can also get a specific mailbox if you give a mailbox_id
+	# If you wish you can also only get the plugin content
+	# This is meant for plugin usage and is only available on pages where the mailbox has been retrieved already
+	function ERP_get_mailboxes( $p_mailbox_id = FALSE, $p_mailbox_plugin_content = TRUE )
+	{
+		$t_mailboxes_index = 't_mailboxes';
+
+		if ( isset( $GLOBALS[ $t_mailboxes_index ] ) && is_array( $GLOBALS[ $t_mailboxes_index ] ) )
+		{
+			if ( $p_mailbox_id !== FALSE && isset( $GLOBALS[ $t_mailboxes_index ][ $p_mailbox_id ] ) )
+			{
+				if ( $p_mailbox_plugin_content && isset( $GLOBALS[ $t_mailboxes_index ][ $p_mailbox_id ][ 'plugin_content' ][ plugin_get_current() ] ) )
+				{
+					return( $GLOBALS[ $t_mailboxes_index ][ $p_mailbox_id ][ 'plugin_content' ][ plugin_get_current() ] );
+				}
+				else
+				{
+					return( $GLOBALS[ $t_mailboxes_index ][ $p_mailbox_id ] );
+				}
+			}
+			else
+			{
+				return( $GLOBALS[ $t_mailboxes_index ] );
 			}
 		}
 		else

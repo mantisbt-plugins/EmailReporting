@@ -19,7 +19,7 @@
 
 	require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/mail_api.php' );
 
-	$t_mailboxes = plugin_config_get( 'mailboxes' );
+	$GLOBALS[ 't_mailboxes' ] = plugin_config_get( 'mailboxes' );
 
 	$t_mail_mantisbt_url_fix = plugin_config_get( 'mail_mantisbt_url_fix', '' );
 	if ( php_sapi_name() === 'cli' && !is_blank( $t_mail_mantisbt_url_fix ) )
@@ -27,14 +27,14 @@
 		config_set_global( 'path', $t_mail_mantisbt_url_fix );
 	}
 
-	$t_mailbox_api = new ERP_mailbox_api;
+	$GLOBALS[ 't_mailbox_api' ] = new ERP_mailbox_api;
 
 	ini_set( 'memory_limit', -1 );
 	set_time_limit( 0 );
 
-	foreach ( $t_mailboxes as $t_mailbox )
+	foreach ( $GLOBALS[ 't_mailboxes' ] as $t_mailbox )
 	{
-		$t_mailbox_api->process_mailbox( $t_mailbox );
+		$GLOBALS[ 't_mailbox_api' ]->process_mailbox( $t_mailbox );
 	}
 
 	echo "\n\n" . 'Done checking all mailboxes' . "\n";

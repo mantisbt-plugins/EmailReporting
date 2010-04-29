@@ -172,6 +172,13 @@ limit_email_domain
 check_mx_record
 
 
+Plugins that depend on EmailReporting:
+It possible for plugins to depend on the EmailReporting plugin. There are
+some functions available that improve the ability to integrate those
+plugins. Please have a look at core/config_api.php for the functions
+available.
+
+
 Included PEAR packages within this distribution are:
 Mail_mimeDecode
 Net_POP3

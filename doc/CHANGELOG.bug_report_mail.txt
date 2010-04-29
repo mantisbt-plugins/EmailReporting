@@ -11,6 +11,8 @@ May 2010 - EmailReporting-0.8.2
 	- language indexes for actions that ended on _mailbox have been changed to _action
 	- The configuration option that defines what identifies a reply is now a multiline input box
 	- new function added which allows other plugins to detect whether EmailReporting is currently the one doing the reporting (ERP_is_emailreporting())
+	- 2 new functions which can return milabox data (ERP_get_current_mailbox and ERP_get_mailboxes)
+	- Updated readme based on added plugins that depend on EmailReporting
 Apr 2010 v2 - EmailReporting-0.8.1
 	- Officially compatible with MantisBT 1.2.1
 	- Fixed a bug on linux with directory strings in the configurations (obones)
