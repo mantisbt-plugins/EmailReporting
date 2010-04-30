@@ -181,7 +181,7 @@
 		}
 
 		// incase we are used from within another plugin within the manage_mailbox page, we need to modify its name
-		if ( plugin_get_current() !== 'EmailReporting' && $GLOBALS[ 't_this_page' ] === 'manage_mailbox' )
+		if ( $p_def_value === -3 && plugin_get_current() !== 'EmailReporting' && $GLOBALS[ 't_this_page' ] === 'manage_mailbox' )
 		{
 			$t_input_name = 'plugin_content[' . plugin_get_current() . '][' . $p_name . ']';
 		}
