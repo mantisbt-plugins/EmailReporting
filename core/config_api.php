@@ -160,7 +160,8 @@
 
 	# --------------------
 	# output a configuration option
-	function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, &$p_variable_array = NULL, &$p_options_array = NULL )
+	# radio_actions type can not be used with the special $p_def_value content (-2 and -3)
+	function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, $p_variable_array = NULL, $p_options_array = NULL )
 	{
 		// $p_def_value has special purposes when containing the following values
 		// NULL is default value
@@ -385,12 +386,12 @@
 ?>
 	<td class="center" width="40%" colspan="2">
 <?php
-						if ( is_array( $p_variable_array ) && count( $p_variable_array ) > 0 )
+						if ( is_array( $p_options_array ) && count( $p_options_array ) > 0 )
 						{
 ?>
 		<select name="<?php echo $t_input_name ?>">
 <?php
-							foreach ( $p_variable_array AS $t_key => $t_data )
+							foreach ( $p_options_array AS $t_key => $t_data )
 							{
 								if ( !isset( $t_data[ 'enabled' ] ) )
 								{

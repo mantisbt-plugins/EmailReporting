@@ -95,7 +95,7 @@ $t_actions_list = array(
 	1 => array( 'copy', 'edit', 'delete', 'test' ),
 );
 ERP_output_config_option( 'mailbox_action', 'radio_actions', $f_mailbox_action, $GLOBALS[ 't_mailboxes' ], $t_actions_list );
-ERP_output_config_option( 'select_mailbox', 'dropdown_descriptions', $f_select_mailbox, $GLOBALS[ 't_mailboxes' ] );
+ERP_output_config_option( 'select_mailbox', 'dropdown_descriptions', $f_select_mailbox, NULL, $GLOBALS[ 't_mailboxes' ] );
 ERP_output_config_option( 'mailboxes_disabled', 'empty' );
 
 ERP_output_config_option( 'select_mailbox', 'submit' );
