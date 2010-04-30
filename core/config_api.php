@@ -78,21 +78,29 @@
 
 		if ( isset( $GLOBALS[ $t_mailboxes_index ] ) && is_array( $GLOBALS[ $t_mailboxes_index ] ) )
 		{
-			if ( $p_mailbox_id !== FALSE && isset( $GLOBALS[ $t_mailboxes_index ][ $p_mailbox_id ] ) )
+			if ( $p_mailbox_id !== FALSE )
 			{
-				if ( $p_mailbox_plugin_content && isset( $GLOBALS[ $t_mailboxes_index ][ $p_mailbox_id ][ 'plugin_content' ][ plugin_get_current() ] ) )
+				if ( isset( $GLOBALS[ $t_mailboxes_index ][ $p_mailbox_id ] ) )
 				{
-					return( $GLOBALS[ $t_mailboxes_index ][ $p_mailbox_id ][ 'plugin_content' ][ plugin_get_current() ] );
-				}
-				else
-				{
-					return( $GLOBALS[ $t_mailboxes_index ][ $p_mailbox_id ] );
+					if ( $p_mailbox_plugin_content )
+					{
+						if ( isset( $GLOBALS[ $t_mailboxes_index ][ $p_mailbox_id ][ 'plugin_content' ][ plugin_get_current() ] ) )
+						{
+							return( $GLOBALS[ $t_mailboxes_index ][ $p_mailbox_id ][ 'plugin_content' ][ plugin_get_current() ] );
+						}
+					}
+					else
+					{
+						return( $GLOBALS[ $t_mailboxes_index ][ $p_mailbox_id ] );
+					}
 				}
 			}
 			else
 			{
 				return( $GLOBALS[ $t_mailboxes_index ] );
 			}
+
+			return( array() );
 		}
 		else
 		{
@@ -147,7 +155,7 @@
 
 	# --------------------
 	# output a configuration option
-	function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, &$p_variable_array = NULL, &$p_display_array = NULL )
+	function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, &$p_variable_array = NULL, &$p_options_array = NULL )
 	{
 		// $p_def_value has special purposes when containing the following values
 		// NULL is default value
@@ -211,7 +219,7 @@
 <tr <?php echo helper_alternate_class( )?>>
 	<td class="center" width="100%" colspan="3">
 <?php
-				foreach ( $p_display_array AS $t_action_key => $t_actions )
+				foreach ( $p_options_array AS $t_action_key => $t_actions )
 				{
 					if ( is_array( $p_variable_array ) && count( $p_variable_array ) >= $t_action_key )
 					{
@@ -404,19 +412,19 @@
 ?>
 	<td class="center" width="40%" colspan="2">
 <?php
-						if ( is_array( $p_variable_array ) && count( $p_variable_array ) > 0 )
+						if ( is_array( $p_options_array ) && count( $p_options_array ) > 0 )
 						{
 ?>
 		<select name="<?php echo $t_input_name ?>[]" multiple size="6">
 <?php
-							foreach ( $p_variable_array AS $t_key => $t_data )
+							foreach ( $p_options_array AS $t_key => $t_data )
 							{
 								if ( !isset( $t_data[ 'enabled' ] ) )
 								{
 									$t_data[ 'enabled' ] = TRUE;
 								}
 ?>
-			<option value="<?php echo $t_key ?>"<?php echo ( ( in_array( $t_key, $t_value ) ) ? ' selected' : NULL ) ?>><?php echo ( ( $t_data[ 'enabled' ] === FALSE ) ? '* ' : NULL ) . $t_data[ 'description' ] ?></option>
+			<option value="<?php echo $t_key ?>"<?php echo ( ( !is_null( $t_value ) && in_array( $t_key, $t_value ) ) ? ' selected' : NULL ) ?>><?php echo ( ( $t_data[ 'enabled' ] === FALSE ) ? '* ' : NULL ) . $t_data[ 'description' ] ?></option>
 <?php
 							}
 ?>
