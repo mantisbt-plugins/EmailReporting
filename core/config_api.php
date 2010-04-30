@@ -52,14 +52,19 @@
 
 		if ( $t_mailbox_api_index )
 		{
-			if ( $p_mailbox_plugin_content && isset( $GLOBALS[ $t_mailbox_api_index ]->_mailbox[ 'plugin_content' ][ plugin_get_current() ] ) )
+			if ( $p_mailbox_plugin_content )
 			{
-				return( $GLOBALS[ $t_mailbox_api_index ]->_mailbox[ 'plugin_content' ][ plugin_get_current() ] );
+				if ( isset( $GLOBALS[ $t_mailbox_api_index ]->_mailbox[ 'plugin_content' ][ plugin_get_current() ] ) )
+				{
+					return( $GLOBALS[ $t_mailbox_api_index ]->_mailbox[ 'plugin_content' ][ plugin_get_current() ] );
+				}
 			}
 			else
 			{
 				return( $GLOBALS[ $t_mailbox_api_index ]->_mailbox );
 			}
+
+			return( array() );
 		}
 		else
 		{
