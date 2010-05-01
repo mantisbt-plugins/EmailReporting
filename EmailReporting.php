@@ -1,8 +1,6 @@
 <?php
 require_once( config_get( 'class_path' ) . 'MantisPlugin.class.php' );
 
-require_once( dirname( __FILE__ ) . '/core/config_api.php' );
-
 class EmailReportingPlugin extends MantisPlugin
 {
 	/**
@@ -29,7 +27,10 @@ class EmailReportingPlugin extends MantisPlugin
 	 */
 	function config()
 	{
-		$t_upload_tmp_dir = ERP_prepare_directory_string( ini_get( 'upload_tmp_dir' ) );
+		// This function does not use ERP_prepare_directory_string
+		// It would require including config_api.php within this file
+		// I decided against that since it would make the functions available at all times and since it not necessary most of the time
+		$t_upload_tmp_dir = rtrim( rtrim( trim( str_replace( '\\', '/', ini_get( 'upload_tmp_dir' ) ) ), '/' ) );
 
 		return array(
 			'config_version'				=> 0,
