@@ -19,38 +19,23 @@
 	}
 
 	# --------------------
-	# Returns true if emailreporting is currently the one reporting a issue
-	# Can also return the current GLOBALS index name of the variable using the ERP_mailbox_api object
-	# This is to make it easier for plugins to detect this if necessary
-	function ERP_is_emailreporting( $p_return_bool = TRUE )
+	# Returns the mailbox api name. This allows other plugins to access this api though $GLOBALS[ ERP_get_mailbox_api_name() ]
+	function ERP_get_mailbox_api_name()
 	{
 		$t_mailbox_api_index = 't_mailbox_api';
 
-		if ( isset( $GLOBALS[ $t_mailbox_api_index ] ) && is_object( $GLOBALS[ $t_mailbox_api_index ] ) && is_array( $GLOBALS[ $t_mailbox_api_index ]->_mailbox ) )
-		{
-			if ( $p_return_bool )
-			{
-				return( TRUE );
-			}
-			else
-			{
-				return( $t_mailbox_api_index );
-			}
-		}
-		else
-		{
-			return( FALSE );
-		}
+		return( $t_mailbox_api_index );
 	}
 
 	# --------------------
 	# Returns the current mailbox being processed by the mailbox_api
+	# By default it will only return the added fields by the plugin in question using the EVENT_ERP_OUTPUT_MAILBOX_FIELDS event
 	# This function is not meant for usage within the user interface
 	function ERP_get_current_mailbox( $p_mailbox_plugin_content = TRUE )
 	{
-		$t_mailbox_api_index = ERP_is_emailreporting( FALSE );
+		$t_mailbox_api_index = ERP_get_mailbox_api_name();
 
-		if ( $t_mailbox_api_index )
+		if ( isset( $GLOBALS[ $t_mailbox_api_index ] ) && is_object( $GLOBALS[ $t_mailbox_api_index ] ) && is_array( $GLOBALS[ $t_mailbox_api_index ]->_mailbox ) )
 		{
 			if ( $p_mailbox_plugin_content )
 			{
@@ -161,6 +146,7 @@
 	# --------------------
 	# output a configuration option
 	# radio_actions type can not be used with the special $p_def_value content (-2 and -3)
+	# This function is only meant to be used by the EmailReporting plugin or by other plugins within the EVENT_ERP_OUTPUT_MAILBOX_FIELDS event
 	function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, $p_variable_array = NULL, $p_options_array = NULL )
 	{
 		// $p_def_value has special purposes when containing the following values
@@ -181,8 +167,8 @@
 			$t_value = $p_def_value;
 		}
 
-		// incase we are used from within another plugin within the manage_mailbox page, we need to modify its name
-		if ( $p_def_value === -3 && plugin_get_current() !== 'EmailReporting' && isset( $GLOBALS[ 't_this_page' ] ) && $GLOBALS[ 't_this_page' ] === 'manage_mailbox' )
+		// incase we are used from within another plugin, we need to modify its name
+		if ( plugin_get_current() !== 'EmailReporting' )
 		{
 			$t_input_name = 'plugin_content[' . plugin_get_current() . '][' . $p_name . ']';
 		}
