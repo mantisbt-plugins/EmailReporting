@@ -588,6 +588,10 @@ class ERP_mailbox_api
 			$t_description = $this->identify_replies( $t_description );
 			$t_description = $this->apply_mail_save_from( $p_email[ 'From' ], $t_description );
 
+			# Event integration
+			# Core mantis event already exists within bignote_add function
+			$t_bugnote_text = event_signal( 'EVENT_ERP_BUGNOTE_DATA', $t_description, $t_bug_id );
+
 			$t_status = bug_get_field( $t_bug_id, 'status' );
 
 			if ( $this->_bug_resolved_status_threshold <= $t_status )
@@ -666,6 +670,7 @@ class ERP_mailbox_api
 
 			# Allow plugins to pre-process bug data
 			$t_bug_data = event_signal( 'EVENT_REPORT_BUG_DATA', $t_bug_data );
+			$t_bug_data = event_signal( 'EVENT_ERP_REPORT_BUG_DATA', $t_bug_data );
 
 			# Create the bug
 			$t_bug_id = $t_bug_data->create();

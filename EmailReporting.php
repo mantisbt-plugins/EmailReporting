@@ -222,6 +222,8 @@ class EmailReportingPlugin extends MantisPlugin
 	{
 		return array(
 			'EVENT_ERP_OUTPUT_MAILBOX_FIELDS' => EVENT_TYPE_OUTPUT,
+			'EVENT_ERP_BUGNOTE_DATA' => EVENT_TYPE_CHAIN,
+			'EVENT_ERP_REPORT_BUG_DATA' => EVENT_TYPE_CHAIN,
 		);
 	}
 

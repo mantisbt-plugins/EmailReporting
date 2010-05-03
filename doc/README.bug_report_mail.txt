@@ -180,9 +180,21 @@ available.
 
 EVENT_ERP_OUTPUT_MAILBOX_FIELDS allows plugins to add extra mailbox form
 fields. Its highly advised you use ERP_output_config_option for outputting
-the options. If you don't use that function you will need to structure the
+the options. ERP_output_config_option is only meant to be used by the
+EmailReporting plugin or within by other plugins while this event is
+triggered. If you don't use that function you will need to structure the
 names of the input form fields yourself to the following format (brackets
 included): "plugin_content[plugin_get_current()][variable_name]"
+
+Two other events are available which perform the same function as their
+core mantis counterparts. But these are only triggered when a bug report
+or bugnote is added by EmailReporting.
+EVENT_ERP_BUGNOTE_DATA
+EVENT_ERP_REPORT_BUG_DATA
+
+Please consult the function within EmailReporting/core/config_api.php for
+functions which can help you to access mailbox information, including the
+possible fields you added with the EVENT_ERP_OUTPUT_MAILBOX_FIELDS event
 
 
 Included PEAR packages within this distribution are:
