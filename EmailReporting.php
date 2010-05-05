@@ -222,7 +222,12 @@ class EmailReportingPlugin extends MantisPlugin
 	{
 		return array(
 			'EVENT_ERP_OUTPUT_MAILBOX_FIELDS' => EVENT_TYPE_OUTPUT,
+
+			// Keep in mind that this event is called BEFORE its MantisBT core counterpart
+			// After the MantisBT core event is not possible since that one is integrated into the bugnote_add function
 			'EVENT_ERP_BUGNOTE_DATA' => EVENT_TYPE_CHAIN,
+
+			// Keep in mind that this event is called AFTER its MantisBT core counterpart
 			'EVENT_ERP_REPORT_BUG_DATA' => EVENT_TYPE_CHAIN,
 		);
 	}
