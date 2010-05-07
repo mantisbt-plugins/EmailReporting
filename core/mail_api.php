@@ -68,6 +68,7 @@ class ERP_mailbox_api
 	private $_bug_resolved_status_threshold;
 	private $_email_separator1;
 	private $_validate_email;
+	private $_login_method;
 
 	private $_bug_submit_status;
 	private $_default_bug_additional_info;
@@ -120,6 +121,7 @@ class ERP_mailbox_api
 		$this->_bug_resolved_status_threshold	= config_get( 'bug_resolved_status_threshold' );
 		$this->_email_separator1				= config_get( 'email_separator1' );
 		$this->_validate_email					= config_get( 'validate_email' );
+		$this->_login_method					= config_get( 'login_method' );
 
 		$this->_bug_submit_status				= config_get( 'bug_submit_status' );
 		$this->_default_bug_additional_info		= config_get( 'default_bug_additional_info' );
@@ -962,6 +964,10 @@ class ERP_mailbox_api
 				$t_username = $t_local;
 			}
 		}
+		elseif ( $this->_login_method === LDAP && $this->_mail_preferred_username === 'from_ldap' )
+		{
+			$t_username = ERP_ldap_get_username_from_email( $p_user_info[ 'email' ] );
+		}
 
 		if ( utf8_strlen( $t_username ) > USERLEN )
 		{
@@ -1134,5 +1140,67 @@ class ERP_mailbox_api
 		}
 
 		return( round( $t_bytes, 2 ) . $t_units[ $i ] );
+	}
+
+	/**
+	 * Gets the username from LDAP given the email address
+	 *
+	 * @todo Implement caching by retrieving all needed information in one query.
+	 * @todo Implement logging to LDAP queries same way like DB queries.
+	 *
+	 * @param string $p_email The email address.
+	 * @return string The username or null if not found.
+	 *
+	 * Based on ldap_get_field_from_username from MantisBT 1.2.1
+	 */
+	function ERP_ldap_get_username_from_email( $p_email ) {
+		$t_ldap_organization    = config_get( 'ldap_organization' );
+		$t_ldap_root_dn         = config_get( 'ldap_root_dn' );
+		$t_ldap_uid_field		= config_get( 'ldap_uid_field' );
+
+		$c_email = ldap_escape_string( $p_email );
+
+		# Bind
+		log_event( LOG_LDAP, "Binding to LDAP server" );
+		$t_ds = ldap_connect_bind();
+		if ( $t_ds === false ) {
+			log_event( LOG_LDAP, "ldap_connect_bind() returned false." );
+			return null;
+		}
+
+		# Search
+		$t_search_filter        = "(&$t_ldap_organization(mail=$c_email))";
+		$t_search_attrs         = array( $t_ldap_uid_field, 'mail', 'dn' );
+
+		log_event( LOG_LDAP, "Searching for $t_search_filter" );
+		$t_sr = ldap_search( $t_ds, $t_ldap_root_dn, $t_search_filter, $t_search_attrs );
+		if ( $t_sr === false ) {
+			ldap_unbind( $t_ds );
+			log_event( LOG_LDAP, "ldap_search() returned false." );
+			return null;
+		}
+
+		# Get results
+		$t_info = ldap_get_entries( $t_ds, $t_sr );
+		if ( $t_info === false ) {
+			log_event( LOG_LDAP, "ldap_get_entries() returned false." );
+			return null;
+		}
+	
+		# Free results / unbind
+		log_event( LOG_LDAP, "Unbinding from LDAP server" );
+		ldap_free_result( $t_sr );
+		ldap_unbind( $t_ds );
+
+		# If no matches, return null.
+		if ( count( $t_info ) == 0 ) {
+			log_event( LOG_LDAP, "No matches found." );
+			return null;
+		}
+
+		$t_value = $t_info[0]['mail'][0];
+		log_event( LOG_LDAP, "Found value '{$t_value}' for field '{$p_field}'." );
+
+		return $t_value;
 	}
 ?>

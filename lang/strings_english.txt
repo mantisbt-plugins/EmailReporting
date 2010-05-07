@@ -60,6 +60,7 @@ $s_plugin_EmailReporting_mail_use_reporter = 'Use only default reporter user for
 $s_plugin_EmailReporting_name = 'Name';
 $s_plugin_EmailReporting_email_address = 'Email address';
 $s_plugin_EmailReporting_email_no_domain = 'Email address without the domain name';
+$s_plugin_EmailReporting_from_ldap = 'Get username from LDAP';
 
 $s_plugin_EmailReporting_mailboxes = 'Mailboxes';
 $s_plugin_EmailReporting_add_action = 'Add mailbox';

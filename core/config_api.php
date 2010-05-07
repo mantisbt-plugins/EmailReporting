@@ -530,7 +530,7 @@
 						break;
 
 					case 'dropdown_pref_usernames':
-						$t_username_options = array( 'name', 'email_address', 'email_no_domain' );
+						$t_username_options = array( 'name', 'email_address', 'email_no_domain', 'from_ldap' );
 ?>
 	<td class="center" width="40%" colspan="2">
 		<select name="<?php echo $t_input_name ?>">

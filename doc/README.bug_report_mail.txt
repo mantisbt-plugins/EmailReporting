@@ -36,12 +36,15 @@ plugin config page in mantis)
 
 The other way is to signup new user accounts automatically. (see plugin 
 config page in mantis)
-Now, bug_report_mail will look for an user named like the mail's sender
-or an user which mail adress is identical.
-If no user is found, then a new account will be created.
-The new user's name will be the mail address.
+Now, bug_report_mail will look for an user which mail adress is
+identical to the from email address. If no user is found, then a new
+account will be created. The new user's name will be the mail address.
 
 This could be used for attacks, but there is no other way at this moment.
+
+It's possible to select the preferred username layouts for new user
+creations. The "Get from LDAP" uses the email address to find a user if
+you have enabled LDAP as the login method (login_method).
 
 
 MIME encoded mails:
