@@ -17,11 +17,14 @@ May 2010 - EmailReporting-0.8.2
 	- Event added that allows the addition of extra mailbox form fields (see readme)
 	- New config type added called dropdown_descriptions_multiselect
 	- Added 2 specific ERP events for manipulating data before adding bug reports and bugnotes
+	- Some texts in the ERP_output_config_option will always use the EmailReporting plugins translation even if its called from another plugin
+
 Apr 2010 v2 - EmailReporting-0.8.1
 	- Officially compatible with MantisBT 1.2.1
 	- Fixed a bug on linux with directory strings in the configurations (obones)
 	- File number before attachments only added when required (obones)
 	- Added a notice to the readme stating that for proper operation of EmailReporting, the scheduled job needs to operate under the same user account as the webserver
+
 Apr 2010 - EmailReporting-0.8.0
 	- Improved the mailbox settings page
 	- Improved the plugin configuration page

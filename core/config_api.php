@@ -279,23 +279,23 @@
 						if ( is_dir( $t_dir ) )
 						{
 							$t_result_is_dir_color = 'positive';
-							$t_result_is_dir_text = plugin_lang_get( 'directory_exists' );
+							$t_result_is_dir_text = plugin_lang_get( 'directory_exists', 'EmailReporting' );
 
 							if ( is_writable( $t_dir ) )
 							{
 								$t_result_is_writable_color = 'positive';
-								$t_result_is_writable_text = plugin_lang_get( 'directory_writable' );
+								$t_result_is_writable_text = plugin_lang_get( 'directory_writable', 'EmailReporting' );
 							}
 							else
 							{
 								$t_result_is_writable_color = 'negative';
-								$t_result_is_writable_text = plugin_lang_get( 'directory_unwritable' );
+								$t_result_is_writable_text = plugin_lang_get( 'directory_unwritable', 'EmailReporting' );
 							}
 						}
 						else
 						{
 							$t_result_is_dir_color = 'negative';
-							$t_result_is_dir_text = plugin_lang_get( 'directory_unavailable' );
+							$t_result_is_dir_text = plugin_lang_get( 'directory_unavailable', 'EmailReporting' );
 							$t_result_is_writable_color = NULL;
 							$t_result_is_writable_text = NULL;
 						}
@@ -393,7 +393,7 @@
 						}
 						else
 						{
-							echo plugin_lang_get( 'zero_descriptions' );
+							echo plugin_lang_get( 'zero_descriptions', 'EmailReporting' );
 						}
 ?>
 	</td>
@@ -425,7 +425,7 @@
 						}
 						else
 						{
-							echo plugin_lang_get( 'zero_descriptions' );
+							echo plugin_lang_get( 'zero_descriptions', 'EmailReporting' );
 						}
 ?>
 	</td>
@@ -446,7 +446,7 @@
 <?php
 						if ( !user_exists( $t_value ) )
 						{
-							echo '<span class="negative">' . plugin_lang_get( 'missing_reporter' ) . '</span><br />';
+							echo '<span class="negative">' . plugin_lang_get( 'missing_reporter', 'EmailReporting' ) . '</span><br />';
 						}
 ?>
 		<select name="<?php echo $t_input_name ?>"><?php print_user_option_list( $t_value, ALL_PROJECTS, config_get_global( 'report_bug_threshold' ) ) ?></select>
@@ -476,7 +476,7 @@
 						else
 						{
 ?>
-			<option value="None" selected class="negative"><?php echo plugin_lang_get( 'openssl_unavailable' ) ?></option>
+			<option value="None" selected class="negative"><?php echo plugin_lang_get( 'openssl_unavailable', 'EmailReporting' ) ?></option>
 <?php
 						}
 ?>
@@ -520,7 +520,7 @@
 						else
 						{
 ?>
-			<option value="<?php echo $t_value ?>" selected class="negative"><?php echo plugin_lang_get( 'mbstring_unavailable' ) ?></option>
+			<option value="<?php echo $t_value ?>" selected class="negative"><?php echo plugin_lang_get( 'mbstring_unavailable', 'EmailReporting' ) ?></option>
 <?php
 						}
 ?>
@@ -556,14 +556,14 @@
 <?php
 						break;
 
-					default: echo '<tr><td colspan="3">' . plugin_lang_get( 'unknown_setting' ) . $p_name . ' -> level 2</td></tr>';
+					default: echo '<tr><td colspan="3">' . plugin_lang_get( 'unknown_setting', 'EmailReporting' ) . $p_name . ' -> level 2</td></tr>';
 				}
 ?>
 </tr>
 <?php
 				break;
 
-			default: echo '<tr><td colspan="3">' . plugin_lang_get( 'unknown_setting' ) . $p_name . ' -> level 1</td></tr>';
+			default: echo '<tr><td colspan="3">' . plugin_lang_get( 'unknown_setting', 'EmailReporting' ) . $p_name . ' -> level 1</td></tr>';
 		}
 	}
 
