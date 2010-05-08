@@ -36,9 +36,9 @@ plugin config page in mantis)
 
 The other way is to signup new user accounts automatically. (see plugin 
 config page in mantis)
-Now, bug_report_mail will look for an user which mail adress is
-identical to the from email address. If no user is found, then a new
-account will be created. The new user's name will be the mail address.
+Now, bug_report_mail will look for a user with a mail address identical
+to the from email address. If no user is found, then a new account will
+be created. The new user's name will be the mail address.
 
 This could be used for attacks, but there is no other way at this moment.
 
