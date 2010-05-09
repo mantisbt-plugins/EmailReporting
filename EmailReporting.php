@@ -32,9 +32,12 @@ class EmailReportingPlugin extends MantisPlugin
 		// I decided against that since it would make the functions available at all times and since it not necessary most of the time
 		$t_upload_tmp_dir = rtrim( rtrim( trim( str_replace( '\\', '/', ini_get( 'upload_tmp_dir' ) ) ), '/' ) );
 
+		$t_path = config_get_global( 'plugin_path' ) . plugin_get_current() . '/';
+
 		return array(
 			'config_version'				=> 0,
 			'schema'						=> -1,
+			'path_erp'						=> $t_path,
 
 			# --- mail reporting settings -----
 			# Empty default mailboxes array. This array will be used for all the mailbox
@@ -210,7 +213,7 @@ class EmailReportingPlugin extends MantisPlugin
 	 */
 	function init()
 	{
-		$t_path = config_get_global( 'plugin_path' ) . plugin_get_current() . '/core_pear/';
+		$t_path = config_get_global( 'plugin_path' ) . plugin_get_current() . DIRECTORY_SEPARATOR . 'core_pear' . DIRECTORY_SEPARATOR;
 
 		if ( is_dir( $t_path ) )
 		{
@@ -261,8 +264,6 @@ class EmailReportingPlugin extends MantisPlugin
 		$this->ERP_update_check( );
 
 		$this->ERP_check_mantisbt_url( );
-
-		$this->ERP_check_mantisbt_erp_path( );
 	}
 
 	/* 
@@ -475,19 +476,5 @@ class EmailReportingPlugin extends MantisPlugin
 				plugin_config_set( 'mail_mantisbt_url_fix', $t_path );
 			}
 		}
-	}
-
-	/* 
-	 * Prepare mantisbt variable for use with including files
-	 * This variable contains the full folder location of this plugin
-	 */
-	function ERP_check_mantisbt_erp_path( )
-	{
-		$t_basename = plugin_get_current();
-		$t_path = config_get_global( 'plugin_path' ) . $t_basename . '/';
-
-		// a plugin_config_set for globals does not exist. So we create it ourselves
-		$t_full_option = 'plugin_' . $t_basename . '_path_erp';
-		config_set_global( $t_full_option, $t_path );
 	}
 }
