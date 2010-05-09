@@ -187,7 +187,7 @@ the options. ERP_output_config_option is only meant to be used by the
 EmailReporting plugin or within by other plugins while this event is
 triggered. If you don't use that function you will need to structure the
 names of the input form fields yourself to the following format (brackets
-included): "plugin_content[plugin_get_current()][variable_name]"
+included): 'plugin_content[' . plugin_get_current() . '][variable name]'
 
 Two other events are available which perform the same function as their
 core mantis counterparts. But these are only triggered when a bug report
