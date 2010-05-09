@@ -1,6 +1,6 @@
 Changelog:
 May 2010 - EmailReporting-0.8.2
-	- Fixed a problem when both remove mantis and remove all replies are turned ON
+	- Fixed a problem when both remove mantis and remove all replies are turned ON (obones)
 	- Configuration option type array is now called string_multiline
 	- Configuration option type dropdown_mailbox_encryption is now called dropdown_encryption
 	- Configuration option type dropdown_mailboxes is now called dropdown_descriptions
@@ -9,7 +9,7 @@ May 2010 - EmailReporting-0.8.2
 	- Fixed wrong variable usage during testing of mailbox
 	- zero_mailboxes lang index name changed to zero_descriptions
 	- Language indexes for actions that ended on _mailbox have been changed to _action
-	- The configuration option that defines what identifies a reply is now a multiline input box
+	- The configuration option that defines what identifies a reply is now a multiline input box (obones)
 	- New function which returns the GLOBALS index name of the mailbox_api (ERP_get_mailbox_api_name())
 	- 2 new functions which can return mailbox data (ERP_get_current_mailbox and ERP_get_mailboxes)
 	- Updated readme based on added plugins that depend on EmailReporting
