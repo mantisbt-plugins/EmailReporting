@@ -545,7 +545,7 @@ class ERP_mailbox_api
 			}
 		}
 
-		if ( $t_reporter_id )
+		if ( $t_reporter_id && user_is_enabled( $t_reporter_id ) )
 		{
 			if ( !isset( $t_reporter_name ) )
 			{
