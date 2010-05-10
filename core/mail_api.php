@@ -1198,7 +1198,7 @@ class ERP_mailbox_api
 			return null;
 		}
 
-		$t_value = $t_info[0]['mail'][0];
+		$t_value = $t_info[0][ strtolower( $t_ldap_uid_field ) ][0];
 		log_event( LOG_LDAP, "Found value '{$t_value}' for field '{$p_field}'." );
 
 		return $t_value;
