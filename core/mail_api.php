@@ -69,6 +69,7 @@ class ERP_mailbox_api
 	private $_email_separator1;
 	private $_validate_email;
 	private $_login_method;
+	private $_use_ldap_email;
 
 	private $_bug_submit_status;
 	private $_default_bug_additional_info;
@@ -122,6 +123,7 @@ class ERP_mailbox_api
 		$this->_email_separator1				= config_get( 'email_separator1' );
 		$this->_validate_email					= config_get( 'validate_email' );
 		$this->_login_method					= config_get( 'login_method' );
+		$this->_use_ldap_email					= config_get( 'use_ldap_email' );
 
 		$this->_bug_submit_status				= config_get( 'bug_submit_status' );
 		$this->_default_bug_additional_info		= config_get( 'default_bug_additional_info' );
@@ -493,7 +495,19 @@ class ERP_mailbox_api
 		else
 		{
 			// Try to get the reporting users id
-			$t_reporter_id = user_get_id_by_email( $p_parsed_from[ 'email' ] );
+			if ( $this->_login_method == LDAP && $this->_use_ldap_email )
+			{
+				$t_username = ERP_ldap_get_username_from_email( $p_parsed_from[ 'email' ] );
+
+				if ( user_is_name_valid( $t_username ) )
+				{
+					$t_reporter_id = user_get_id_by_name( $t_username );
+				}
+			}
+			else
+			{
+				$t_reporter_id = user_get_id_by_email( $p_parsed_from[ 'email' ] );
+			}
 
 			if ( !$t_reporter_id )
 			{
@@ -964,7 +978,7 @@ class ERP_mailbox_api
 				$t_username = $t_local;
 			}
 		}
-		elseif ( $this->_login_method === LDAP && $this->_mail_preferred_username === 'from_ldap' )
+		elseif ( $this->_login_method == LDAP && $this->_mail_preferred_username === 'from_ldap' )
 		{
 			$t_username = ERP_ldap_get_username_from_email( $p_user_info[ 'email' ] );
 		}
