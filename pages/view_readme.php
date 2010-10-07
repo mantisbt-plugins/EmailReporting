@@ -2,7 +2,7 @@
 auth_reauthenticate( );
 access_ensure_global_level( config_get( 'manage_plugin_threshold' ) );
 
-html_page_top( plugin_lang_get( 'title' ) );
+html_page_top( plugin_lang_get( 'plugin_title' ) );
 
 print_manage_menu();
 

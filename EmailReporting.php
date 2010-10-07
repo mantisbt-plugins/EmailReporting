@@ -8,8 +8,8 @@ class EmailReportingPlugin extends MantisPlugin
 	 */ 
 	function register()
 	{
-		$this->name = plugin_lang_get( 'title' );
-		$this->description = plugin_lang_get( 'description' );
+		$this->name = plugin_lang_get( 'plugin_title' );
+		$this->description = plugin_lang_get( 'plugin_description' );
 		$this->page = 'manage_config';
 
 		$this->version = '0.8.2';
@@ -17,7 +17,7 @@ class EmailReportingPlugin extends MantisPlugin
 			'MantisCore' => '1.2',
 		);
 
-		$this->author = plugin_lang_get( 'author' );
+		$this->author = plugin_lang_get( 'plugin_author' );
 		$this->contact = '';
 		$this->url = 'http://git.mantisforge.org/w/EmailReporting.git';
 	}
@@ -253,7 +253,7 @@ class EmailReportingPlugin extends MantisPlugin
 	 */
 	function ERP_manage_emailreporting_menu( )
 	{
-		return array( '<a href="' . plugin_page( 'manage_mailbox' ) . '">' . plugin_lang_get( 'manage' ) . ' ' . plugin_lang_get( 'title' ) . '</a>', );
+		return array( '<a href="' . plugin_page( 'manage_mailbox' ) . '">' . plugin_lang_get( 'manage' ) . ' ' . plugin_lang_get( 'plugin_title' ) . '</a>', );
 	}
 
 	/* 

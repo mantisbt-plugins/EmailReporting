@@ -184,7 +184,7 @@
 ?>
 <tr>
 	<td class="form-title" <?php echo ( ( is_blank( $t_value ) ) ? 'width="100%" colspan="3"' : 'width="60%"' ) ?>>
-		<?php echo ( ( !is_blank( $p_name ) ) ? plugin_lang_get( 'title' ) . ': ' . plugin_lang_get( $p_name ) : '&nbsp;' ) ?>
+		<?php echo ( ( !is_blank( $p_name ) ) ? plugin_lang_get( 'plugin_title' ) . ': ' . plugin_lang_get( $p_name ) : '&nbsp;' ) ?>
 	</td>
 <?php
 				if ( !is_blank( $t_value ) )

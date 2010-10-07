@@ -51,7 +51,7 @@ if( is_array( $t_mail_bug_priority ) )
 }
 else
 {
-	html_page_top( plugin_lang_get( 'title' ) );
+	html_page_top( plugin_lang_get( 'plugin_title' ) );
 
 	echo '<br /><div class="center">';
 	echo plugin_lang_get( 'mail_bug_priority_array_failure' ) . ' ';

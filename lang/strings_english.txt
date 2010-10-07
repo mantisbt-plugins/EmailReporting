@@ -1,7 +1,7 @@
 <?php
-$s_plugin_EmailReporting_title = 'Email Reporting';
-$s_plugin_EmailReporting_description = 'Offers the functionality to add issues and notes by email.<br />Support: http://www.mantisbt.org/bugs/view.php?id=4286';
-$s_plugin_EmailReporting_author = 'Indy and various people after him.';
+$s_plugin_EmailReporting_plugin_title = 'Email Reporting';
+$s_plugin_EmailReporting_plugin_description = 'Offers the functionality to add issues and notes by email.<br />Support: http://www.mantisbt.org/bugs/view.php?id=4286';
+$s_plugin_EmailReporting_plugin_author = 'Indy and various people after him.';
 
 $s_plugin_EmailReporting_manage = 'Manage';
 $s_plugin_EmailReporting_manage_config = 'Manage Configuration Options';

@@ -69,7 +69,7 @@ elseif ( $f_mailbox_action === 'test' && $f_select_mailbox >= 0 )
 	{
 		$t_no_redirect = TRUE;
 
-		html_page_top( plugin_lang_get( 'title' ) );
+		html_page_top( plugin_lang_get( 'plugin_title' ) );
 ?>
 <br /><div class="center">
 <?php

@@ -120,8 +120,9 @@ c:\php\php.exe c:\path\to\mantis\plugins\EmailReporting\scripts\bug_report_mail.
 
 For correct operation of the scheduled job its advised that the job and
 the webserver are operating under the same OS user account. If this is not
-possible, you should not use the DISK storage method (file_upload_method)
-for MantisBT.
+possible, you should either not use the DISK storage method
+(file_upload_method) for MantisBT or you should adjust the global variable
+attachments_file_permissions with the proper rights.
 
 
 IMAP:
