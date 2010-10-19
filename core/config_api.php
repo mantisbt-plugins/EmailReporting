@@ -435,7 +435,25 @@
 					case 'dropdown_global_categories':
 ?>
 	<td class="center" width="40%" colspan="2">
-		<select name="<?php echo $t_input_name ?>"><?php print_category_option_list( $t_value, ALL_PROJECTS ) ?></select>
+		<select name="<?php echo $t_input_name ?>">
+<?php
+						print_category_option_list( $t_value, ALL_PROJECTS );
+
+						$t_project_ids = user_get_all_accessible_projects( auth_get_current_user_id(), ALL_PROJECTS );
+						project_cache_array_rows( $t_project_ids );
+						foreach( $t_project_ids AS $t_project_id )
+						{
+							echo '<optgroup label="' . string_attribute( project_get_field( $t_project_id, 'name' ) ) . '">';
+
+							// Need to disable inherit projects for one moment.
+							config_set_cache( 'subprojects_inherit_categories', OFF, CONFIG_TYPE_STRING );
+							config_set_global( 'subprojects_inherit_categories', OFF );
+
+							print_category_option_list( $t_value, $t_project_id );
+							echo '</optgroup>';
+						}
+?>
+		</select>
 	</td>
 <?php
 						break;

@@ -83,7 +83,7 @@ $s_plugin_EmailReporting_auth_method = 'Mailbox authentication method';
 $s_plugin_EmailReporting_basefolder = 'Mailbox basefolder (optional)';
 $s_plugin_EmailReporting_createfolderstructure = 'Create project subfolder structure';
 $s_plugin_EmailReporting_project_id = 'Select a project';
-$s_plugin_EmailReporting_global_category_id = 'Select a global category';
+$s_plugin_EmailReporting_global_category_id = 'Select a category';
 
 $s_plugin_EmailReporting_mail_bug_priority_array_failure = 'The given format is not an acceptable array.';
 $s_plugin_EmailReporting_mailboxes_disabled = '* = Disabled mailbox';

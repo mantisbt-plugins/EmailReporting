@@ -4,6 +4,7 @@ Sep 2010 - EmailReporting-0.8.3
 	- Updated readme
 	- Changed conflicting language variable names for title, description and author to plugin_title, plugin_description and plugin_author.
 	- Updated PEAR packages supplied with EmailReporting
+	- Non-global categories can now also be selected as a category for a mailbox (datacompboy)
 
 May 2010 - EmailReporting-0.8.2
 	- Fixed a problem when both remove mantis and remove all replies are turned ON (obones)
