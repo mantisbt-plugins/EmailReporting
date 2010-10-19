@@ -303,11 +303,11 @@ class ERP_Mail_Parser
 			}
 			elseif ( isset( $part->headers[ 'content-disposition' ] ) && strpos( $part->headers[ 'content-disposition' ], 'filename="' ) !== FALSE )
 			{
-				$p[ 'name' ] = custom_substr( $part->headers[ 'content-disposition' ], 'filename="', '"' );
+				$p[ 'name' ] = $this->custom_substr( $part->headers[ 'content-disposition' ], 'filename="', '"' );
 			}
 			elseif ( isset( $part->headers[ 'content-type' ] ) && strpos( $part->headers[ 'content-type' ], 'name="' ) !== FALSE )
 			{
-				$p[ 'name' ] = custom_substr( $part->headers[ 'content-type' ], 'name="', '"' );
+				$p[ 'name' ] = $this->custom_substr( $part->headers[ 'content-type' ], 'name="', '"' );
 			}
 			elseif ( 'text' == $part->ctype_primary && in_array( $part->ctype_secondary, array( 'plain', 'html' ) ) && !empty( $p_alternative_name ) )
 			{
