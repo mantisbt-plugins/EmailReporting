@@ -439,11 +439,18 @@
 <?php
 						print_category_option_list( $t_value, ALL_PROJECTS );
 
-						$t_project_ids = user_get_all_accessible_projects( auth_get_current_user_id(), ALL_PROJECTS );
-						project_cache_array_rows( $t_project_ids );
-						foreach( $t_project_ids AS $t_project_id )
+						$t_all_projects = project_get_all_rows();
+						$t_projects_info = array();
+						foreach( $t_all_projects AS $t_project )
 						{
-							echo '<optgroup label="' . string_attribute( project_get_field( $t_project_id, 'name' ) ) . '">';
+							$t_projects_info[ $t_project[ 'id' ] ] = $t_project[ 'name' ];
+						}
+
+						natcasesort( $t_projects_info );
+
+						foreach( $t_projects_info AS $t_project_id => $t_project_name )
+						{
+							echo '<optgroup label="' . string_attribute( $t_project_name ) . '">';
 
 							// Need to disable inherit projects for one moment.
 							config_set_cache( 'subprojects_inherit_categories', OFF, CONFIG_TYPE_STRING );
