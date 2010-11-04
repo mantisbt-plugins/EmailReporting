@@ -1,5 +1,5 @@
 Changelog:
-Sep 2010 - EmailReporting-0.8.4
+Nov 2010 - EmailReporting-0.8.4
 	- Improved the project category list
 
 Sep 2010 - EmailReporting-0.8.3
