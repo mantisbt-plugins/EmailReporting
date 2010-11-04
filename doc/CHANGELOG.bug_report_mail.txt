@@ -1,6 +1,7 @@
 Changelog:
 Nov 2010 - EmailReporting-0.8.4
 	- Improved the project category list
+	- If no attachment filename has been found, EmailReporting will generate a name instead of rejecting the file
 
 Sep 2010 - EmailReporting-0.8.3
 	- Officially compatible with Mantis 1.2.2 and 1.2.3
