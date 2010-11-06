@@ -788,8 +788,13 @@ class ERP_mailbox_api
 	private function add_file( $p_bug_id, &$p_part )
 	{
 		# Handle the file upload
-		$t_part_name = ( ( isset( $p_part[ 'name' ] ) ) ? trim( $p_part[ 'name' ] ) : plugin_lang_get( 'plugin_title' ) . ' - missing filename - ' . md5( microtime() ) );
+		$t_part_name = ( ( isset( $p_part[ 'name' ] ) ) ? trim( $p_part[ 'name' ] ) : NULL );
 		$t_strlen_body = strlen( trim( $p_part[ 'body' ] ) );
+
+		if ( is_blank( $t_part_name ) )
+		{
+			$t_part_name = md5( microtime() ) . '.erp';
+		}
 
 		if ( !file_type_check( $t_part_name ) )
 		{
