@@ -28,7 +28,7 @@ if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailb
 	if ( $t_mailbox[ 'type' ] === 'IMAP' )
 	{
 		$t_mailbox_imap = array(
-			'basefolder'			=> ERP_prepare_directory_string( gpc_get_string( 'basefolder' ) ),
+			'basefolder'			=> ERP_prepare_directory_string( gpc_get_string( 'basefolder' ), TRUE ),
 			'createfolderstructure'	=> gpc_get_bool( 'createfolderstructure' ),
 		);
 

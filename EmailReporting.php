@@ -29,15 +29,13 @@ class EmailReportingPlugin extends MantisPlugin
 	{
 		// This function does not use ERP_prepare_directory_string
 		// It would require including config_api.php within this file
-		// I decided against that since it would make the functions available at all times and since it not necessary most of the time
-		$t_upload_tmp_dir = rtrim( rtrim( trim( str_replace( '\\', '/', ini_get( 'upload_tmp_dir' ) ) ), '/' ) );
-
-		$t_path = config_get_global( 'plugin_path' ) . plugin_get_current() . '/';
+		// I decided against that since it would make the functions available at all times and it is not necessary most of the time
+		$t_upload_tmp_dir = realpath( trim( str_replace( '\\', '/', ini_get( 'upload_tmp_dir' ) ) ) );   
 
 		return array(
 			'config_version'				=> 0,
 			'schema'						=> -1,
-			'path_erp'						=> $t_path,
+			'path_erp'						=> config_get_global( 'plugin_path' ) . plugin_get_current() . '/',
 
 			# --- mail reporting settings -----
 			# Empty default mailboxes array. This array will be used for all the mailbox
@@ -140,7 +138,7 @@ class EmailReportingPlugin extends MantisPlugin
 			'mail_secured_script'			=> ON,
 
 			# directory for saving temporary mail content
-			'mail_tmp_directory'			=> ( ( is_blank( $t_upload_tmp_dir ) ) ? '/tmp' : $t_upload_tmp_dir ),
+			'mail_tmp_directory'			=> ( ( $t_upload_tmp_dir === FALSE ) ? '/tmp' : str_replace( '\\', '/', $t_upload_tmp_dir ) ),
 
 			# Looks for priority header field
 			'mail_use_bug_priority'			=> ON,

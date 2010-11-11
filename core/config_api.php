@@ -138,9 +138,29 @@
 
 	# --------------------
 	# Process a string containing a directory location
-	function ERP_prepare_directory_string( $p_path )
+	function ERP_prepare_directory_string( $p_path, $p_imap_dir = FALSE )
 	{
-		return( rtrim( rtrim( trim( str_replace( '\\', '/', $p_path ) ), '/' ) ) );
+		$t_path = trim( str_replace( '\\', '/', $p_path ) );
+
+		// IMAP directories can not be checked with realpath and will use the old method
+		if ( $p_imap_dir )
+		{
+			return( rtrim( rtrim( $t_path, '/' ) ) );
+		}
+		else
+		{
+			$t_realpath = realpath( $t_path );
+
+			if ( $t_realpath !== FALSE )
+			{
+				return( str_replace( '\\', '/', $t_realpath ) );
+			}
+			else
+			{
+				// Path should not exist if realpath() fails. But lets return something atleast
+				return( $t_path );
+			}
+		}
 	}
 
 	# --------------------
