@@ -109,7 +109,7 @@ config page in mantis)
 or via command line interface
 */5 *   *   *   * /usr/local/bin/php /path/to/mantis/plugins/EmailReporting/scripts/bug_report_mail.php
 
-This line fetch bug reports from via POP3 or IMAP every 5 minutes. 
+This line fetches bug reports via POP3 or IMAP every 5 minutes. 
 
 Windows or similar OS:
 Via webserver (see settings because this is disabled by default, see plugin
@@ -122,7 +122,8 @@ For correct operation of the scheduled job its advised that the job and
 the webserver are operating under the same OS user account. If this is not
 possible, you should either not use the DISK storage method
 (file_upload_method) for MantisBT or you should adjust the global variable
-attachments_file_permissions with the proper rights.
+attachments_file_permissions with the proper rights. In general its possible
+to specify within the scheduled/cron job line which user should run the job.
 
 
 IMAP:
