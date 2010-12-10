@@ -23,6 +23,7 @@ if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailb
 		'auth_method'			=> gpc_get_string( 'auth_method' ),
 		'project_id'			=> gpc_get_int( 'project_id' ),
 		'global_category_id'	=> gpc_get_int( 'global_category_id' ),
+		'link_rules'			=> gpc_get_int_array( 'link_rules', array() ),
 	);
 
 	if ( $t_mailbox[ 'type' ] === 'IMAP' )

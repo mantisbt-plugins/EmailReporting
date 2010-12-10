@@ -42,6 +42,9 @@ class EmailReportingPlugin extends MantisPlugin
 			# accounts
 			'mailboxes'						=> array(),
 
+			# Empty default rules array. This array will be used for all the rules
+			'rules'							=> array(),
+
 			# Is this plugin allowed to process and create new bug reports
 			'mail_add_bug_reports'			=> ON,
 

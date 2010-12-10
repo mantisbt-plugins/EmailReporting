@@ -106,6 +106,7 @@
 			'plugin_lang_get' => array(
 				'manage_config',
 				'manage_mailbox',
+				'manage_rule',
 			),
 			'lang_get' => array(
 				'documentation_link'	=> 'view_readme',

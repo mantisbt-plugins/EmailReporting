@@ -19,6 +19,7 @@ ERP_print_menu( $t_this_page );
 <?php
 
 $GLOBALS[ 't_mailboxes' ] = plugin_config_get( 'mailboxes' );
+$t_rules = plugin_config_get( 'rules' );
 
 $f_mailbox_action = gpc_get_string( 'mailbox_action', 'add' );
 $f_select_mailbox = gpc_get_int( 'select_mailbox', -1 );
@@ -73,6 +74,7 @@ ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'mailbox_settings_issue', 'header' );
 ERP_output_config_option( 'project_id', 'dropdown_projects', -3, $t_mailbox );
 ERP_output_config_option( 'global_category_id', 'dropdown_global_categories', -3, $t_mailbox );
+ERP_output_config_option( 'link_rules', 'dropdown_descriptions_multiselect', -3, $t_mailbox, $t_rules );
 
 event_signal( 'EVENT_ERP_OUTPUT_MAILBOX_FIELDS', $f_select_mailbox );
 
@@ -96,7 +98,7 @@ $t_actions_list = array(
 );
 ERP_output_config_option( 'mailbox_action', 'radio_actions', $f_mailbox_action, $GLOBALS[ 't_mailboxes' ], $t_actions_list );
 ERP_output_config_option( 'select_mailbox', 'dropdown_descriptions', $f_select_mailbox, NULL, $GLOBALS[ 't_mailboxes' ] );
-ERP_output_config_option( 'mailboxes_disabled', 'empty' );
+ERP_output_config_option( 'disabled', 'empty' );
 
 ERP_output_config_option( 'select_mailbox', 'submit' );
 

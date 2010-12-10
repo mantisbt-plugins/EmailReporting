@@ -6,6 +6,7 @@ $s_plugin_EmailReporting_plugin_author = 'Indy and various people after him.';
 $s_plugin_EmailReporting_manage = 'Manage';
 $s_plugin_EmailReporting_manage_config = 'Manage Configuration Options';
 $s_plugin_EmailReporting_manage_mailbox = 'Manage Mailboxes';
+$s_plugin_EmailReporting_manage_rule = 'Manage Rules';
 
 $s_plugin_EmailReporting_jobsetup = 'To collect the emails from the mailboxes you need to add a scheduled job which runs a script. You can run the script from 2 locations but only option 1 will work as a scheduled job. Both perform the same tasks. See the documentation for examples on how to schedule these.';
 $s_plugin_EmailReporting_job1 = '1. ';
@@ -15,6 +16,8 @@ $s_plugin_EmailReporting_mailbox_settings = 'Mailbox settings';
 $s_plugin_EmailReporting_mailbox_settings_imap = 'Mailbox IMAP only settings';
 $s_plugin_EmailReporting_mailbox_settings_issue = 'Mailbox issue settings';
 $s_plugin_EmailReporting_problems = 'To reset a configuration option to its default value, please delete the configuration option in question from the "<a href="adm_config_report.php">Configuration Report</a>" page.';
+
+$s_plugin_EmailReporting_rule_settings = 'Rule settings';
 
 $s_plugin_EmailReporting_debug_options = 'Debug configuration options';
 $s_plugin_EmailReporting_default_texts_options = 'Default texts configuration options';
@@ -71,27 +74,31 @@ $s_plugin_EmailReporting_test_action = 'Test mailbox';
 $s_plugin_EmailReporting_select_mailbox = 'Select mailbox';
 $s_plugin_EmailReporting_update_configuration = 'Update configuration';
 
-$s_plugin_EmailReporting_enabled = 'Mailbox enabled';
-$s_plugin_EmailReporting_description = 'Mailbox description';
-$s_plugin_EmailReporting_type = 'Mailbox type';
-$s_plugin_EmailReporting_hostname = 'Mailbox hostname';
-$s_plugin_EmailReporting_port = 'Mailbox port (optional)';
-$s_plugin_EmailReporting_encryption = 'Mailbox connection encryption';
-$s_plugin_EmailReporting_username = 'Mailbox username';
-$s_plugin_EmailReporting_password = 'Mailbox password';
-$s_plugin_EmailReporting_auth_method = 'Mailbox authentication method';
-$s_plugin_EmailReporting_basefolder = 'Mailbox basefolder (optional)';
+$s_plugin_EmailReporting_enabled = 'Enabled';
+$s_plugin_EmailReporting_description = 'Description';
+$s_plugin_EmailReporting_type = 'Type';
+$s_plugin_EmailReporting_hostname = 'Hostname';
+$s_plugin_EmailReporting_port = 'TCP port (optional)';
+$s_plugin_EmailReporting_encryption = 'Connection encryption';
+$s_plugin_EmailReporting_username = 'Username';
+$s_plugin_EmailReporting_password = 'Password';
+$s_plugin_EmailReporting_auth_method = 'Authentication method';
+$s_plugin_EmailReporting_basefolder = 'Basefolder (optional)';
 $s_plugin_EmailReporting_createfolderstructure = 'Create project subfolder structure';
 $s_plugin_EmailReporting_project_id = 'Select a project';
 $s_plugin_EmailReporting_global_category_id = 'Select a category';
+$s_plugin_EmailReporting_link_rules = 'Select rules';
 
 $s_plugin_EmailReporting_mail_bug_priority_array_failure = 'The given format is not an acceptable array.';
-$s_plugin_EmailReporting_mailboxes_disabled = '* = Disabled mailbox';
+$s_plugin_EmailReporting_disabled = '* = Disabled';
 $s_plugin_EmailReporting_mbstring_unavailable = 'PHP mbstring extension unavailable';
 $s_plugin_EmailReporting_missing_reporter = 'Current mail reporter is missing. Please select a new one.';
 $s_plugin_EmailReporting_openssl_unavailable = 'PHP OpenSSL extension unavailable';
 $s_plugin_EmailReporting_test_failure = 'Operation NOT successful';
 $s_plugin_EmailReporting_unknown_setting = 'Unknown setting encountered. Setting ignored: ';
 $s_plugin_EmailReporting_zero_descriptions = 'None available';
+
+$s_plugin_EmailReporting_rules = 'Rules';
+$s_plugin_EmailReporting_select_rule = 'Select rule';
 
 ?>
