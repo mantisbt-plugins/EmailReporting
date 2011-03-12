@@ -9,7 +9,7 @@ $f_select_rule = gpc_get_int( 'select_rule' );
 
 $t_rules = plugin_config_get( 'rules' );
 
-if ( $f_rule_action === 'add' || $f_rule_action === 'copy' || ( ( $f_rule_action === 'edit' || $f_rule_action === 'test' ) && $f_select_rule >= 0 ) )
+if ( $f_rule_action === 'add' || $f_rule_action === 'copy' || ( ( $f_rule_action === 'edit' /*|| $f_rule_action === 'test'*/ ) && $f_select_rule >= 0 ) )
 {
 	$t_rule = array(
 		'enabled'				=> gpc_get_bool( 'enabled' ),
@@ -29,10 +29,10 @@ elseif ( $f_rule_action === 'delete' && $f_select_rule >= 0 )
 {
 	unset( $t_rules[ $f_select_rule ] );
 }
-elseif ( $f_rule_action === 'test' && $f_select_rule >= 0 )
+/*elseif ( $f_rule_action === 'test' && $f_select_rule >= 0 )
 {
 	# Verify rule
-/*	$t_no_redirect = TRUE;
+	$t_no_redirect = TRUE;
 
 	html_page_top( plugin_lang_get( 'plugin_title' ) );
 ?>
@@ -45,8 +45,8 @@ elseif ( $f_rule_action === 'test' && $f_select_rule >= 0 )
 ?>
 </div>
 <?php
-	html_page_bottom( __FILE__ );*/
-}
+	html_page_bottom( __FILE__ );
+}*/
 
 if( plugin_config_get( 'rules' ) != $t_rules && ( $f_rule_action === 'add' || $f_rule_action === 'copy' || ( ( $f_rule_action === 'edit' || $f_rule_action === 'delete' ) && $f_select_rule >= 0 ) ) )
 {

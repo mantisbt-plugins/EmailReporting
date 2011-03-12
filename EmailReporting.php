@@ -140,9 +140,6 @@ class EmailReportingPlugin extends MantisPlugin
 			# via a webserver?
 			'mail_secured_script'			=> ON,
 
-			# directory for saving temporary mail content
-			'mail_tmp_directory'			=> ( ( $t_upload_tmp_dir === FALSE ) ? '/tmp' : str_replace( '\\', '/', $t_upload_tmp_dir ) ),
-
 			# Looks for priority header field
 			'mail_use_bug_priority'			=> ON,
 
@@ -457,6 +454,13 @@ class EmailReportingPlugin extends MantisPlugin
 			plugin_config_set( 'mailboxes', $t_mailboxes );
 
 			plugin_config_set( 'config_version', 8 );
+		}
+
+		if ( $t_config_version <= 8 )
+		{
+			plugin_config_delete( 'mail_tmp_directory' );
+
+			plugin_config_set( 'config_version', 9 );
 		}
 	}
 

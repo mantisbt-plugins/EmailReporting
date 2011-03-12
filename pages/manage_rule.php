@@ -56,10 +56,24 @@ ERP_output_config_option( 'enabled', 'boolean', -3, $t_rule );
 ERP_output_config_option( 'description', 'string', -3, $t_rule );
 
 ERP_output_config_option( NULL, 'empty' );
-ERP_output_config_option( '', 'header' );
+ERP_output_config_option( 'rule_conditions', 'header' );
+ERP_output_config_option( 'email_subject', 'string', -3, $t_rule );
+ERP_output_config_option( 'email_from_name', 'string', -3, $t_rule );
+ERP_output_config_option( 'email_from_email', 'string', -3, $t_rule );
+ERP_output_config_option( 'email_sendto', 'string', -3, $t_rule );
+ERP_output_config_option( 'email_body', 'string', -3, $t_rule );
+ERP_output_config_option( 'email_number_of_attachments', 'integer', -3, $t_rule );
+ERP_output_config_option( 'issue_reporter', 'string', -3, $t_rule );
+ERP_output_config_option( 'email_type', 'string', -3, $t_rule ); //bugnote or new bug
+ERP_output_config_option( 'issue_project', 'string', -3, $t_rule );
+ERP_output_config_option( 'issue_category', 'string', -3, $t_rule );
+ERP_output_config_option( 'email_priority', 'string', -3, $t_rule );
 
 ERP_output_config_option( NULL, 'empty' );
-ERP_output_config_option( '', 'header' );
+ERP_output_config_option( 'rule_actions', 'header' );
+
+ERP_output_config_option( NULL, 'empty' );
+ERP_output_config_option( 'rule_exceptions', 'header' );
 
 ERP_output_config_option( $f_rule_action . '_action', 'submit' );
 
@@ -77,7 +91,7 @@ ERP_output_config_option( 'rules', 'header', 'manage_mailbox' );
 
 $t_actions_list = array(
 	0 => array( 'add' ),
-	1 => array( 'copy', 'edit', 'delete', 'test' ),
+	1 => array( 'copy', 'edit', 'delete'/*, 'test'*/ ),
 );
 ERP_output_config_option( 'rule_action', 'radio_actions', $f_rule_action, $t_rules, $t_actions_list );
 ERP_output_config_option( 'select_rule', 'dropdown_descriptions', $f_select_rule, NULL, $t_rules );

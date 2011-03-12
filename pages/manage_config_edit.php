@@ -27,7 +27,6 @@ $f_gpc = array(
 	'mail_reporter_id'				=> gpc_get_int( 'mail_reporter_id' ),
 	'mail_save_from'				=> gpc_get_bool( 'mail_save_from' ),
 	'mail_secured_script'			=> gpc_get_bool( 'mail_secured_script' ),
-	'mail_tmp_directory'			=> ERP_prepare_directory_string( gpc_get_string( 'mail_tmp_directory' ) ),
 	'mail_use_bug_priority'			=> gpc_get_bool( 'mail_use_bug_priority' ),
 	'mail_use_reporter'				=> gpc_get_bool( 'mail_use_reporter' ),
 );

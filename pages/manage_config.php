@@ -45,7 +45,6 @@ ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'runtime_options', 'header' );
 ERP_output_config_option( 'mail_fetch_max', 'integer', -2 );
 ERP_output_config_option( 'mail_delete', 'boolean', -2 );
-ERP_output_config_option( 'mail_tmp_directory', 'directory_string', -2 );
 ERP_output_config_option( 'mail_encoding', 'dropdown_mbstring_encodings', -2 );
 
 ERP_output_config_option( NULL, 'empty' );

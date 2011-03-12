@@ -18,6 +18,9 @@ $s_plugin_EmailReporting_mailbox_settings_issue = 'Mailbox issue settings';
 $s_plugin_EmailReporting_problems = 'To reset a configuration option to its default value, please delete the configuration option in question from the "<a href="adm_config_report.php">Configuration Report</a>" page.';
 
 $s_plugin_EmailReporting_rule_settings = 'Rule settings';
+$s_plugin_EmailReporting_rule_conditions = 'Select condition(s)';
+$s_plugin_EmailReporting_rule_actions = 'Select action(s)';
+$s_plugin_EmailReporting_rule_exceptions = 'Select exception(s) (if necessary)';
 
 $s_plugin_EmailReporting_debug_options = 'Debug configuration options';
 $s_plugin_EmailReporting_default_texts_options = 'Default texts configuration options';
@@ -56,7 +59,6 @@ $s_plugin_EmailReporting_mail_removed_reply_text = 'Use this text if replies hav
 $s_plugin_EmailReporting_mail_reporter_id = 'The default / fallback reporter user for issues created by email';
 $s_plugin_EmailReporting_mail_save_from = 'Write the sender of the email into the issue report';
 $s_plugin_EmailReporting_mail_secured_script = 'Block this script from running via a webserver (recommended = "Yes")';
-$s_plugin_EmailReporting_mail_tmp_directory = 'Directory for saving temporary email content';
 $s_plugin_EmailReporting_mail_use_bug_priority = 'Look for priority header field';
 $s_plugin_EmailReporting_mail_use_reporter = 'Use only default reporter user for issues created by email';
 
@@ -66,11 +68,11 @@ $s_plugin_EmailReporting_email_no_domain = 'Email address without the domain nam
 $s_plugin_EmailReporting_from_ldap = 'Get username from LDAP';
 
 $s_plugin_EmailReporting_mailboxes = 'Mailboxes';
-$s_plugin_EmailReporting_add_action = 'Add mailbox';
-$s_plugin_EmailReporting_copy_action = 'Copy mailbox';
-$s_plugin_EmailReporting_edit_action = 'Edit mailbox';
-$s_plugin_EmailReporting_delete_action = 'Delete mailbox';
-$s_plugin_EmailReporting_test_action = 'Test mailbox';
+$s_plugin_EmailReporting_add_action = 'Add';
+$s_plugin_EmailReporting_copy_action = 'Copy';
+$s_plugin_EmailReporting_edit_action = 'Edit';
+$s_plugin_EmailReporting_delete_action = 'Delete';
+$s_plugin_EmailReporting_test_action = 'Test';
 $s_plugin_EmailReporting_select_mailbox = 'Select mailbox';
 $s_plugin_EmailReporting_update_configuration = 'Update configuration';
 

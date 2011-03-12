@@ -12,14 +12,14 @@ $t_mailboxes = plugin_config_get( 'mailboxes' );
 if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailbox_action === 'edit' || $f_mailbox_action === 'test' ) && $f_select_mailbox >= 0 ) )
 {
 	$t_mailbox = array(
-		'enabled'				=> gpc_get_bool( 'enabled' ),
-		'description'			=> gpc_get_string( 'description' ),
+		'enabled'				=> gpc_get_bool( 'enabled', ON ),
+		'description'			=> gpc_get_string( 'description', '' ),
 		'type'					=> gpc_get_string( 'type' ),
-		'hostname'				=> gpc_get_string( 'hostname' ),
-		'port'					=> gpc_get_string( 'port' ),
+		'hostname'				=> gpc_get_string( 'hostname', '' ),
+		'port'					=> gpc_get_string( 'port', '' ),
 		'encryption'			=> gpc_get_string( 'encryption' ),
-		'username'				=> gpc_get_string( 'username' ),
-		'password'				=> base64_encode( gpc_get_string( 'password' ) ),
+		'username'				=> gpc_get_string( 'username', '' ),
+		'password'				=> base64_encode( gpc_get_string( 'password', '' ) ),
 		'auth_method'			=> gpc_get_string( 'auth_method' ),
 		'project_id'			=> gpc_get_int( 'project_id' ),
 		'global_category_id'	=> gpc_get_int( 'global_category_id' ),
@@ -29,7 +29,7 @@ if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailb
 	if ( $t_mailbox[ 'type' ] === 'IMAP' )
 	{
 		$t_mailbox_imap = array(
-			'basefolder'			=> ERP_prepare_directory_string( gpc_get_string( 'basefolder' ), TRUE ),
+			'basefolder'			=> ERP_prepare_directory_string( gpc_get_string( 'basefolder', '' ), TRUE ),
 			'createfolderstructure'	=> gpc_get_bool( 'createfolderstructure' ),
 		);
 

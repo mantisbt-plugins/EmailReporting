@@ -8,6 +8,7 @@ class ERP_Mail_Parser
 	private $_encoding = 'UTF-8';
 	private $_add_attachments = TRUE;
 	private $_debug = FALSE;
+	private $_memory_limit = FALSE;
 
 	private $_file;
 	private $_content;
@@ -31,6 +32,11 @@ class ERP_Mail_Parser
 		$this->_debug = $options[ 'debug' ];
 
 		$this->prepare_mb_list_encodings();
+
+		if ( $this->_debug )
+		{
+			$this->_memory_limit = ini_get( 'memory_limit' );
+		}
 	}
 	
 	private function prepare_mb_list_encodings()
@@ -347,8 +353,10 @@ class ERP_Mail_Parser
 		{
 			echo "\n" . 'Debug output memory usage' . "\n" .
 				'Location: Mail Parser - ' . $p_location . "\n" .
-				'Current memory usage: ' . ERP_formatbytes( memory_get_usage( FALSE ) ) . ' / ' . ERP_formatbytes( memory_get_peak_usage ( FALSE ) ) . ' (memory_limit: ' . ini_get( 'memory_limit' ) . ')' . "\n" .
-				'Current real memory usage: ' . ERP_formatbytes( memory_get_usage( TRUE ) ) . ' / ' . ERP_formatbytes( memory_get_peak_usage ( TRUE ) ) . ' (memory_limit: ' . ini_get( 'memory_limit' ) . ')' . "\n";
+				'Current memory usage: ' . ERP_formatbytes( memory_get_usage( FALSE ) ) . ' / ' . $this->_memory_limit . "\n" .
+				'Peak memory usage: ' . ERP_formatbytes( memory_get_peak_usage( FALSE ) ) . ' / ' . $this->_memory_limit . "\n" .
+				'Current real memory usage: ' . ERP_formatbytes( memory_get_usage( TRUE ) ) . ' / ' . $this->_memory_limit . "\n" .
+				'Peak real memory usage: ' . ERP_formatbytes( memory_get_peak_usage( TRUE ) ) . ' / ' . $this->_memory_limit . "\n";
 		}
 	}
 }

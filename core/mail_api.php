@@ -13,7 +13,7 @@
 	require_once( 'user_api.php' );
 	require_once( 'file_api.php' );
 
-	require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/custom_file_api.php' );
+	require_once( config_get_global( 'absolute_path' ) . 'api/soap/mc_file_api.php' );
 
 	require_once( 'Net/POP3.php' );
 	require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/Net/IMAP_1.0.3.php' );
@@ -58,7 +58,6 @@ class ERP_mailbox_api
 	private $_mail_removed_reply_text;
 	private $_mail_reporter_id;
 	private $_mail_save_from;
-	private $_mail_tmp_directory;
 	private $_mail_use_bug_priority;
 	private $_mail_use_reporter;
 
@@ -83,6 +82,7 @@ class ERP_mailbox_api
 	private $_default_bug_view_status;
 
 	private $_max_file_size;
+	private $_memory_limit;
 
 	# --------------------
 	# Retrieve all necessary configuration options
@@ -109,7 +109,6 @@ class ERP_mailbox_api
 		$this->_mail_removed_reply_text			= plugin_config_get( 'mail_removed_reply_text' );
 		$this->_mail_reporter_id				= plugin_config_get( 'mail_reporter_id' );
 		$this->_mail_save_from					= plugin_config_get( 'mail_save_from' );
-		$this->_mail_tmp_directory				= plugin_config_get( 'mail_tmp_directory' );
 		$this->_mail_use_bug_priority			= plugin_config_get( 'mail_use_bug_priority' );
 		$this->_mail_use_reporter				= plugin_config_get( 'mail_use_reporter' );
 
@@ -138,6 +137,11 @@ class ERP_mailbox_api
 
 		$this->_max_file_size					= (int) min( ini_get_number( 'upload_max_filesize' ), ini_get_number( 'post_max_size' ), config_get( 'max_file_size' ) );
 
+		if ( !$this->_test_only && $this->_mail_debug )
+		{
+			$this->_memory_limit = ini_get( 'memory_limit' );
+		}
+
 		// Do we need to remporarily enable emails on self actions?
 		$t_mail_email_receive_own				= plugin_config_get( 'mail_email_receive_own' );
 		if ( $t_mail_email_receive_own )
@@ -146,15 +150,7 @@ class ERP_mailbox_api
 			config_set_global( 'email_receive_own', ON );
 		}
 
-		// We need to pass this test else the api is not allowed to work
-		if ( is_dir( $this->_mail_tmp_directory ) && is_writeable( $this->_mail_tmp_directory ) )
-		{
-			$this->_functionality_enabled = TRUE;
-		}
-		else
-		{
-			$this->custom_error( 'The temporary mail directory is not writable. Please correct it in the configuration options' );
-		}
+		$this->_functionality_enabled = TRUE;
 
 		// Because of a notice level errors in core/email_api.php on line 516 in MantisBT 1.2.0 we need to fill this value
 		if ( !isset( $_SERVER[ 'REMOTE_ADDR' ] ) )
@@ -819,21 +815,7 @@ class ERP_mailbox_api
 				$t_opt_name = $t_file_number . '-';
 			}
 
-			$t_file_name = $this->_mail_tmp_directory . '/' . md5( microtime() );
-
-			file_put_contents( $t_file_name, $p_part[ 'body' ] );
-
-			ERP_custom_file_add( $p_bug_id, array(
-				'tmp_name'	=> realpath( $t_file_name ),
-				'name'		=> $t_opt_name . $t_part_name,
-				'type'		=> $p_part[ 'ctype' ],
-				'error'		=> NULL
-			), 'bug' );
-
-			if ( is_file( $t_file_name ) )
-			{
-				unlink( $t_file_name );
-			}
+			mci_file_add( $p_bug_id, $t_opt_name . $t_part_name, $p_part[ 'body' ], $p_part[ 'ctype' ], 'bug' );
 		}
 
 		return( TRUE );
@@ -1133,8 +1115,10 @@ class ERP_mailbox_api
 		{
 			$this->custom_error( 'Debug output memory usage' . "\n" .
 				'Location: Mail API - ' . $p_location . "\n" .
-				'Current memory usage: ' . ERP_formatbytes( memory_get_usage( FALSE ) ) . ' / ' . ERP_formatbytes( memory_get_peak_usage ( FALSE ) ) . ' (memory_limit: ' . ini_get( 'memory_limit' ) . ')' . "\n" .
-				'Current real memory usage: ' . ERP_formatbytes( memory_get_usage( TRUE ) ) . ' / ' . ERP_formatbytes( memory_get_peak_usage ( TRUE ) ) . ' (memory_limit: ' . ini_get( 'memory_limit' ) . ')' . "\n"
+				'Current memory usage: ' . ERP_formatbytes( memory_get_usage( FALSE ) ) . ' / ' . $this->_memory_limit . "\n" .
+				'Peak memory usage: ' . ERP_formatbytes( memory_get_peak_usage( FALSE ) ) . ' / ' . $this->_memory_limit . "\n" .
+				'Current real memory usage: ' . ERP_formatbytes( memory_get_usage( TRUE ) ) . ' / ' . $this->_memory_limit . "\n" .
+				'Peak real memory usage: ' . ERP_formatbytes( memory_get_peak_usage( TRUE ) ) . ' / ' . $this->_memory_limit . "\n"
 			);
 		}
 	}

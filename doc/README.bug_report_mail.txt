@@ -6,7 +6,7 @@ Upgrade:
 If you are performing an upgrade of your existing installation of
 EmailReporting, all you need todo (as long you have not been editing
 files yourself) is
-1. Delete EmailReporting folder fromthe plugins directory
+1. Delete EmailReporting folder from the plugins directory
 2. Extract the complete package to the /mantis/plugins/ directory.
 
 

@@ -1,7 +1,12 @@
 Changelog:
-Dec 2010 - EmailReporting-0.9.0
+Jan 2011 - EmailReporting-0.9.0-DEV
 	- New rule system added
 	- Removed "Mailbox " from mailbox setting descriptions
+	- Changed the action texts (for example "Add mailbox" to "Add")
+	- Added default values for form variables to manage_mailbox_edit
+	- Deleted setting mail_tmp_directory as it was no longer needed
+	- Replaced the custom file_add method with the mantisconnect file_add equivalent
+	- Changed the displaying of the memory usage a little bit in debug mode
 
 Nov 2010 - EmailReporting-0.8.4
 	- Improved the project category list
