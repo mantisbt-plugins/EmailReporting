@@ -52,7 +52,7 @@
  * @author     Sean Coates <sean@php.net>
  * @copyright  2003-2006 PEAR <pear-group@php.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php BSD License
- * @version    CVS: $Id: mimeDecode.php 303335 2010-09-13 23:53:53Z alan_k $
+ * @version    CVS: $Id: mimeDecode.php 305875 2010-12-01 07:17:10Z alan_k $
  * @link       http://pear.php.net/package/Mail_mime
  */
 
@@ -443,10 +443,11 @@ class Mail_mimeDecode extends PEAR
             // Unfold the input
             $input   = preg_replace("/\r?\n/", "\r\n", $input);
             //#7065 - wrapping.. with encoded stuff.. - probably not needed,
-            // wrapping just get's removed now.. this looks like it should be the correct solution.
-            //$input   = preg_replace("/=\r\n(\t| )+=/", '==', $input);
-            //$input   = preg_replace("/\r\n(\t| )+/", ' ', $input);
-            $input   = preg_replace("/\r\n(\t| )+/", '', $input);
+            // wrapping space should only get removed if the trailing item on previous line is a 
+            // encoded character
+            $input   = preg_replace("/=\r\n(\t| )+/", '=', $input);
+            $input   = preg_replace("/\r\n(\t| )+/", ' ', $input);
+            
             $headers = explode("\r\n", trim($input));
 
             foreach ($headers as $value) {
@@ -657,16 +658,17 @@ class Mail_mimeDecode extends PEAR
         if ($boundary == $bs_check) {
             $boundary = $bs_possible;
         }
+        $tmp = preg_split("/--".preg_quote($boundary, '/')."((?=\s)|--)/", $input);
 
-        $tmp = preg_split("/--".preg_quote($boundary, '/')."(\b|--)/", $input);
         $len = count($tmp) -1;
         for ($i = 1; $i < $len; $i++) {
             if (strlen(trim($tmp[$i]))) {
                 $parts[] = $tmp[$i];
             }
         }
+        
         // add the last part on if it does not end with the 'closing indicator'
-        if (!empty($tmp[$len]) && $tmp[$len][0] != '-') {
+        if (!empty($tmp[$len]) && strlen(trim($tmp[$len])) && $tmp[$len][0] != '-') {
             $parts[] = $tmp[$len];
         }
         return $parts;
