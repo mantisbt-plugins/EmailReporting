@@ -14,7 +14,7 @@ class EmailReportingPlugin extends MantisPlugin
 
 		$this->version = '0.9.0-DEV';
 		$this->requires = array(
-			'MantisCore' => '1.2',
+			'MantisCore' => '1.2.5',
 		);
 
 		$this->author = plugin_lang_get( 'plugin_author' );
