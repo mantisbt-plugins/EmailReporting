@@ -78,6 +78,13 @@ content can use up a significant amount of memory. But this means that only
 one email will be retrieved per mailbox every time bug_report_mail.php is
 executed
 
+Also make sure you set the 'max_file_size' setting for MantisBT to the maximum
+attachment size allowed. This includes not only what you want to allow but also
+what your file system or database system is able to accept. MySQL for example
+has a size limit which could break the processing of emails. I believe the
+default for MySQL is 1MB
+Reference: http://dev.mysql.com/doc/refman/5.5/en/packet-too-large.html
+
 
 Deleting emails:
 If you don't want bug_report_mail.php to delete the mails from your POP3/IMAP
