@@ -636,7 +636,18 @@ class ERP_mailbox_api
 			$t_bug_data->handler_id				= 0;
 			$t_bug_data->view_state				= $this->_default_bug_view_status;
 
-			$t_bug_data->category_id			= $this->_mailbox[ 'global_category_id' ];
+			if ( category_exists( $this->_mailbox[ 'global_category_id' ] ) )
+			{
+				$t_bug_data->category_id			= $this->_mailbox[ 'global_category_id' ];
+			}
+			else
+			{
+				$this->custom_error( 'Category not found. Please update the mailbox with a proper category.' );
+				config_set_cache( 'allow_no_category', ON, CONFIG_TYPE_STRING );
+				config_set_global( 'allow_no_category', ON );
+				$t_bug_data->category_id			= 0;
+			}
+
 			$t_bug_data->reproducibility		= $this->_default_bug_reproducibility;
 			$t_bug_data->severity				= $this->_default_bug_severity;
 			$t_bug_data->priority				= $p_email[ 'Priority' ];
