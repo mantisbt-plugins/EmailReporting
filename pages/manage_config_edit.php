@@ -25,6 +25,7 @@ $f_gpc = array(
 	'mail_remove_replies_after'		=> gpc_get_string( 'mail_remove_replies_after' ),
 	'mail_removed_reply_text'		=> gpc_get_string( 'mail_removed_reply_text' ),
 	'mail_reporter_id'				=> gpc_get_int( 'mail_reporter_id' ),
+	'mail_rule_system'				=> gpc_get_bool( 'mail_rule_system' ),
 	'mail_save_from'				=> gpc_get_bool( 'mail_save_from' ),
 	'mail_secured_script'			=> gpc_get_bool( 'mail_secured_script' ),
 	'mail_use_bug_priority'			=> gpc_get_bool( 'mail_use_bug_priority' ),

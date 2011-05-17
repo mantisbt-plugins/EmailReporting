@@ -133,6 +133,9 @@ class EmailReportingPlugin extends MantisPlugin
 			# Mail is just the default name which will be converted to a user id during installation
 			'mail_reporter_id'				=> 'Mail',
 
+			# Is the rule system enabled
+			'mail_rule_system'				=> OFF,
+
 			# Write sender of the message into the bug report
 			'mail_save_from'				=> ON,
 

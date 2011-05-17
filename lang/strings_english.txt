@@ -57,6 +57,7 @@ $s_plugin_EmailReporting_mail_remove_replies = 'Remove all replies from bugnotes
 $s_plugin_EmailReporting_mail_remove_replies_after = 'Use this text to identify the start of a reply';
 $s_plugin_EmailReporting_mail_removed_reply_text = 'Use this text if replies have been removed from the email';
 $s_plugin_EmailReporting_mail_reporter_id = 'The default / fallback reporter user for issues created by email';
+$s_plugin_EmailReporting_mail_rule_system = 'Rule system';
 $s_plugin_EmailReporting_mail_save_from = 'Write the sender of the email into the issue report';
 $s_plugin_EmailReporting_mail_secured_script = 'Block this script from running via a webserver (recommended = "Yes")';
 $s_plugin_EmailReporting_mail_use_bug_priority = 'Look for priority header field';
