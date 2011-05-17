@@ -12,6 +12,7 @@ Jan 2011 - EmailReporting-0.9.0-DEV
 	- Changed the displaying of the memory usage a little bit in debug mode
 	- Updated readme with description on proper configuration for max_file_size
 	- Fixed a problem with deleted categories connected to mailboxes (#12719)
+	- Changed plugin urls
 
 Nov 2010 - EmailReporting-0.8.4
 	- Improved the project category list
