@@ -490,7 +490,7 @@
 ?>
 	<td class="center" width="40%" colspan="2">
 <?php
-						if ( !user_exists( $t_value ) )
+						if ( !is_null( $t_value ) AND !user_exists( $t_value ) )
 						{
 							echo '<span class="negative">' . plugin_lang_get( 'missing_reporter', 'EmailReporting' ) . '</span><br />';
 						}
