@@ -14,6 +14,23 @@ ERP_print_menu( $t_this_page );
 ?>
 
 <br />
+<table align="center" class="width75" cellspacing="1">
+
+<tr>
+	<td class="left">
+<?php
+	echo '<p>' . plugin_lang_get( 'rule_conditions' ) . '<br />' . nl2br( plugin_lang_get( 'rule_conditions_help' ) ) . '</p>';
+
+	echo '<p>' . plugin_lang_get( 'rule_actions' ) . '<br />' . nl2br( plugin_lang_get( 'rule_actions_help' ) ) . '</p>';
+
+	echo '<p>' . plugin_lang_get( 'rule_exceptions' ) . '<br />' . nl2br( plugin_lang_get( 'rule_exceptions_help' ) ) . '</p>';
+?>
+	</td>
+</tr>
+
+</table>
+<br />
+
 <form action="<?php echo plugin_page( $t_this_page . '_edit' )?>" method="post">
 
 <?php
@@ -23,7 +40,10 @@ $t_rules = plugin_config_get( 'rules' );
 $f_rule_action = gpc_get_string( 'rule_action', 'add' );
 $f_select_rule = gpc_get_int( 'select_rule', -1 );
 
-$t_rule = array();
+$t_rule = array(
+	'issue_reporter' => NULL,
+	'issue_category' => -1,
+);
 
 if ( $f_rule_action !== 'add' )
 {
@@ -60,14 +80,14 @@ ERP_output_config_option( 'rule_conditions', 'header' );
 ERP_output_config_option( 'email_subject', 'string', -3, $t_rule );
 ERP_output_config_option( 'email_from_name', 'string', -3, $t_rule );
 ERP_output_config_option( 'email_from_email', 'string', -3, $t_rule );
-ERP_output_config_option( 'email_sendto', 'string', -3, $t_rule );
 ERP_output_config_option( 'email_body', 'string', -3, $t_rule );
 ERP_output_config_option( 'email_number_of_attachments', 'integer', -3, $t_rule );
-ERP_output_config_option( 'issue_reporter', 'string', -3, $t_rule );
+ERP_output_config_option( 'email_attachments_type', 'string', -3, $t_rule );
+ERP_output_config_option( 'issue_reporter', 'dropdown_list_reporters', -3, $t_rule );
 ERP_output_config_option( 'email_type', 'string', -3, $t_rule ); //bugnote or new bug
-ERP_output_config_option( 'issue_project', 'string', -3, $t_rule );
-ERP_output_config_option( 'issue_category', 'string', -3, $t_rule );
-ERP_output_config_option( 'email_priority', 'string', -3, $t_rule );
+ERP_output_config_option( 'issue_project', 'dropdown_projects', -3, $t_rule );
+ERP_output_config_option( 'issue_category', 'dropdown_global_categories', -3, $t_rule );
+ERP_output_config_option( 'issue_priority', 'dropdown_priority_list', -3, $t_rule );
 
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'rule_actions', 'header' );
@@ -91,7 +111,7 @@ ERP_output_config_option( 'rules', 'header', 'manage_mailbox' );
 
 $t_actions_list = array(
 	0 => array( 'add' ),
-	1 => array( 'copy', 'edit', 'delete'/*, 'test'*/ ),
+	1 => array( 'copy', 'edit', 'delete' ),
 );
 ERP_output_config_option( 'rule_action', 'radio_actions', $f_rule_action, $t_rules, $t_actions_list );
 ERP_output_config_option( 'select_rule', 'dropdown_descriptions', $f_select_rule, NULL, $t_rules );

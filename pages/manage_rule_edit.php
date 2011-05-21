@@ -29,24 +29,6 @@ elseif ( $f_rule_action === 'delete' && $f_select_rule >= 0 )
 {
 	unset( $t_rules[ $f_select_rule ] );
 }
-/*elseif ( $f_rule_action === 'test' && $f_select_rule >= 0 )
-{
-	# Verify rule
-	$t_no_redirect = TRUE;
-
-	html_page_top( plugin_lang_get( 'plugin_title' ) );
-?>
-<br /><div class="center">
-<?php
-	echo plugin_lang_get( 'test_failure' ) . '<br /><br />';
-	echo plugin_lang_get( 'description' ) . ': ' . $t_rule[ 'description' ] . '<br />';
-
-	print_bracket_link( plugin_page( 'manage_rules', TRUE ), lang_get( 'proceed' ) );
-?>
-</div>
-<?php
-	html_page_bottom( __FILE__ );
-}*/
 
 if( plugin_config_get( 'rules' ) != $t_rules && ( $f_rule_action === 'add' || $f_rule_action === 'copy' || ( ( $f_rule_action === 'edit' || $f_rule_action === 'delete' ) && $f_select_rule >= 0 ) ) )
 {

@@ -18,9 +18,9 @@ $s_plugin_EmailReporting_mailbox_settings_issue = 'Mailbox issue settings';
 $s_plugin_EmailReporting_problems = 'To reset a configuration option to its default value, please delete the configuration option in question from the "<a href="adm_config_report.php">Configuration Report</a>" page.';
 
 $s_plugin_EmailReporting_rule_settings = 'Rule settings';
-$s_plugin_EmailReporting_rule_conditions = 'Select condition(s)';
-$s_plugin_EmailReporting_rule_actions = 'Select action(s)';
-$s_plugin_EmailReporting_rule_exceptions = 'Select exception(s) (if necessary)';
+$s_plugin_EmailReporting_rule_conditions = 'Conditions';
+$s_plugin_EmailReporting_rule_actions = 'Actions';
+$s_plugin_EmailReporting_rule_exceptions = 'Exceptions';
 
 $s_plugin_EmailReporting_debug_options = 'Debug configuration options';
 $s_plugin_EmailReporting_default_texts_options = 'Default texts configuration options';
@@ -103,5 +103,9 @@ $s_plugin_EmailReporting_zero_descriptions = 'None available';
 
 $s_plugin_EmailReporting_rules = 'Rules';
 $s_plugin_EmailReporting_select_rule = 'Select rule';
+
+$s_plugin_EmailReporting_rule_conditions_help = '- Wildcard characters: * ?';
+$s_plugin_EmailReporting_rule_actions_help = '---';
+$s_plugin_EmailReporting_rule_exceptions_help = '---';
 
 ?>

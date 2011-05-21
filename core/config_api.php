@@ -169,7 +169,7 @@
 	function ERP_print_documentation_link( $p_a_name = '' )
 	{
 		echo plugin_lang_get( $p_a_name ) . "\n";
-		echo '<a href="' . plugin_page( 'view_documentation.php' ) . '&docu_head=' . $p_a_name . '" target=\"_info\">[?]</a>';
+		echo '<a href="' . plugin_page( 'view_documentation.php' ) . '&docu_head=' . $p_a_name . '" target=\"_blank\">[?]</a>';
 	}
 
 	# --------------------
@@ -283,6 +283,7 @@
 			case 'dropdown_mailbox_type':
 			case 'dropdown_mbstring_encodings':
 			case 'dropdown_pref_usernames':
+			case 'dropdown_priority_list':
 			case 'dropdown_projects':
 ?>
 <tr <?php echo helper_alternate_class( )?>>
@@ -600,6 +601,14 @@
 	</td>
 <?php
 
+						break;
+
+					case 'dropdown_priority_list':
+?>
+	<td class="center" width="40%" colspan="2">
+		<select name="<?php echo $t_input_name ?>"><?php print_enum_string_option_list( 'priority', config_get( 'default_bug_priority' ) ) ?></select>
+	</td>
+<?php
 						break;
 
 					case 'dropdown_projects':
