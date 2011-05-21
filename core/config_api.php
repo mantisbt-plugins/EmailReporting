@@ -164,6 +164,14 @@
 		}
 	}
 
+	# This prints the little [?] link for user help
+	# The $p_a_name is a link into the documentation.html file
+	function ERP_print_documentation_link( $p_a_name = '' )
+	{
+		echo plugin_lang_get( $p_a_name ) . "\n";
+		echo '<a href="' . plugin_page( 'view_documentation.php' ) . '&docu_head=' . $p_a_name . '" target=\"_info\">[?]</a>';
+	}
+
 	# --------------------
 	# output a configuration option
 	# radio_actions type can not be used with the special $p_def_value content (-2 and -3)
@@ -279,7 +287,7 @@
 ?>
 <tr <?php echo helper_alternate_class( )?>>
 	<td class="category" width="60%">
-		<?php echo plugin_lang_get( $p_name )?>
+		<?php echo ERP_print_documentation_link( $p_name )?>
 	</td>
 <?php
 				switch ( $p_type )

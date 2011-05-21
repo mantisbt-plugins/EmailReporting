@@ -14,6 +14,7 @@ Jan 2011 - EmailReporting-0.9.0-DEV
 	- Fixed a problem with deleted categories connected to mailboxes (#12719)
 	- Changed plugin urls
 	- Small adjustment to error handling of non-existing reporter
+	- Added documentation links to all configuration options
 
 Nov 2010 - EmailReporting-0.8.4
 	- Improved the project category list
