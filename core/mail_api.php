@@ -601,7 +601,7 @@ class ERP_mailbox_api
 			$t_description = $this->apply_mail_save_from( $p_email[ 'From' ], $t_description );
 
 			# Event integration
-			# Core mantis event already exists within bignote_add function
+			# Core mantis event already exists within bugnote_add function
 			$t_bugnote_text = event_signal( 'EVENT_ERP_BUGNOTE_DATA', $t_description, $t_bug_id );
 
 			$t_status = bug_get_field( $t_bug_id, 'status' );
