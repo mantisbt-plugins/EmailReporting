@@ -19,7 +19,7 @@
 	}
 
 	# --------------------
-	# Returns the mailbox api name. This allows other plugins to access this api though $GLOBALS[ ERP_get_mailbox_api_name() ]
+	# Returns the mailbox api name. This allows other plugins to access this api through $GLOBALS[ ERP_get_mailbox_api_name() ]
 	function ERP_get_mailbox_api_name()
 	{
 		$t_mailbox_api_index = 't_mailbox_api';
@@ -169,7 +169,7 @@
 	function ERP_print_documentation_link( $p_a_name = '' )
 	{
 		echo plugin_lang_get( $p_a_name ) . "\n";
-		echo '<a href="' . plugin_page( 'view_documentation.php' ) . '&docu_head=' . $p_a_name . '" target=\"_blank\">[?]</a>';
+		echo '<a href="' . plugin_page( 'view_documentation.php' ) . '&docu_head=' . $p_a_name . '" target="_blank">[?]</a>';
 	}
 
 	# --------------------
