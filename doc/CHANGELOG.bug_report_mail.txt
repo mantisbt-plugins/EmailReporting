@@ -15,6 +15,7 @@ Jan 2011 - EmailReporting-0.9.0-DEV
 	- Changed plugin urls
 	- Small adjustment to error handling of non-existing reporter
 	- Added documentation links to all configuration options
+	- Removed job1 and job2 from the language file
 
 Nov 2010 - EmailReporting-0.8.4
 	- Improved the project category list

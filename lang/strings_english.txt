@@ -9,8 +9,6 @@ $s_plugin_EmailReporting_manage_mailbox = 'Manage Mailboxes';
 $s_plugin_EmailReporting_manage_rule = 'Manage Rules';
 
 $s_plugin_EmailReporting_jobsetup = 'To collect the emails from the mailboxes you need to add a scheduled job which runs a script. You can run the script from 2 locations but only option 1 will work as a scheduled job. Both perform the same tasks. See the documentation for examples on how to schedule these.';
-$s_plugin_EmailReporting_job1 = '1. ';
-$s_plugin_EmailReporting_job2 = '2. ';
 
 $s_plugin_EmailReporting_mailbox_settings = 'Mailbox settings';
 $s_plugin_EmailReporting_mailbox_settings_imap = 'Mailbox IMAP only settings';
@@ -105,7 +103,5 @@ $s_plugin_EmailReporting_rules = 'Rules';
 $s_plugin_EmailReporting_select_rule = 'Select rule';
 
 $s_plugin_EmailReporting_rule_conditions_help = '- Wildcard characters: * ?';
-$s_plugin_EmailReporting_rule_actions_help = '---';
-$s_plugin_EmailReporting_rule_exceptions_help = '---';
 
 ?>
