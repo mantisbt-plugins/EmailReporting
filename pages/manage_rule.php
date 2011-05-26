@@ -72,22 +72,19 @@ ERP_output_config_option( 'select_rule', 'hidden', $f_select_rule );
 
 ERP_output_config_option( 'rule_settings', 'header', 'manage_mailbox' );
 
-ERP_output_config_option( 'enabled', 'boolean', -3, $t_rule );
-ERP_output_config_option( 'description', 'string', -3, $t_rule );
+ERP_output_config_option( 'enabled', 'boolean', $t_rule );
+ERP_output_config_option( 'description', 'string', $t_rule );
 
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'rule_conditions', 'header' );
-ERP_output_config_option( 'email_subject', 'string', -3, $t_rule );
-ERP_output_config_option( 'email_from_name', 'string', -3, $t_rule );
-ERP_output_config_option( 'email_from_email', 'string', -3, $t_rule );
-ERP_output_config_option( 'email_body', 'string', -3, $t_rule );
-ERP_output_config_option( 'email_number_of_attachments', 'integer', -3, $t_rule );
-ERP_output_config_option( 'email_attachments_type', 'string', -3, $t_rule );
-ERP_output_config_option( 'issue_reporter', 'dropdown_list_reporters', -3, $t_rule );
-ERP_output_config_option( 'email_type', 'string', -3, $t_rule ); //bugnote or new bug
-ERP_output_config_option( 'issue_project', 'dropdown_projects', -3, $t_rule );
-ERP_output_config_option( 'issue_category', 'dropdown_global_categories', -3, $t_rule );
-ERP_output_config_option( 'issue_priority', 'dropdown_priority_list', -3, $t_rule );
+ERP_output_config_option( 'issue_creation_method', 'dropdown_any', $t_rule, 'ERP_print_descriptions_option_list', array( 'emailreporting', 'mantisbt' ) );// TODO think about name and think this over whether selected mailboxes should be here or on the manage mailboxes page
+ERP_output_config_option( 'issue_bug_bugnote', 'dropdown_any', $t_rule, 'ERP_print_descriptions_option_list', array( 'note', 'issue' ) ); //TODO bugnote or new bug
+ERP_output_config_option( 'issue_reporter', 'dropdown_any', $t_rule, 'ERP_print_reporter_option_list' );
+ERP_output_config_option( 'issue_project', 'dropdown_any', $t_rule, 'ERP_print_projects_option_list' );
+ERP_output_config_option( 'issue_category', 'dropdown_any', $t_rule, 'ERP_print_global_category_option_list' );
+ERP_output_config_option( 'issue_priority', 'dropdown_any', $t_rule, 'ERP_print_priority_option_list' );
+ERP_output_config_option( 'issue_summary', 'string', $t_rule );
+ERP_output_config_option( 'issue_description', 'string', $t_rule );
 
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'rule_actions', 'header' );
@@ -113,8 +110,8 @@ $t_actions_list = array(
 	0 => array( 'add' ),
 	1 => array( 'copy', 'edit', 'delete' ),
 );
-ERP_output_config_option( 'rule_action', 'radio_actions', $f_rule_action, $t_rules, $t_actions_list );
-ERP_output_config_option( 'select_rule', 'dropdown_descriptions', $f_select_rule, NULL, $t_rules );
+ERP_output_config_option( 'rule_action', 'radio_buttons', $f_rule_action, 'ERP_print_rule_action_radio_buttons', $t_rules );
+ERP_output_config_option( 'select_rule', 'dropdown', $f_select_rule, 'ERP_print_descriptions_option_list', $t_rules );
 ERP_output_config_option( 'disabled', 'empty' );
 
 ERP_output_config_option( 'select_rule', 'submit' );

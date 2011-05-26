@@ -14,7 +14,7 @@ if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailb
 	$t_mailbox = array(
 		'enabled'				=> gpc_get_bool( 'enabled', ON ),
 		'description'			=> gpc_get_string( 'description', '' ),
-		'type'					=> gpc_get_string( 'type' ),
+		'mailbox_type'			=> gpc_get_string( 'mailbox_type' ),
 		'hostname'				=> gpc_get_string( 'hostname', '' ),
 		'port'					=> gpc_get_string( 'port', '' ),
 		'encryption'			=> gpc_get_string( 'encryption' ),
@@ -26,11 +26,11 @@ if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailb
 		'link_rules'			=> gpc_get_int_array( 'link_rules', array() ),
 	);
 
-	if ( $t_mailbox[ 'type' ] === 'IMAP' )
+	if ( $t_mailbox[ 'mailbox_type' ] === 'IMAP' )
 	{
 		$t_mailbox_imap = array(
-			'basefolder'			=> ERP_prepare_directory_string( gpc_get_string( 'basefolder', '' ), TRUE ),
-			'createfolderstructure'	=> gpc_get_bool( 'createfolderstructure' ),
+			'imap_basefolder'				=> ERP_prepare_directory_string( gpc_get_string( 'imap_basefolder', '' ), TRUE ),
+			'imap_createfolderstructure'	=> gpc_get_bool( 'imap_createfolderstructure' ),
 		);
 
 		$t_mailbox += $t_mailbox_imap;
@@ -76,7 +76,7 @@ elseif ( $f_mailbox_action === 'test' && $f_select_mailbox >= 0 )
 <?php
 		echo plugin_lang_get( 'test_failure' ) . '<br /><br />';
 		echo plugin_lang_get( 'description' ) . ': ' . $t_mailbox_api->_mailbox[ 'description' ] . '<br />';
-		echo plugin_lang_get( 'type' ) . ': ' . $t_mailbox_api->_mailbox[ 'type' ] . '<br />';
+		echo plugin_lang_get( 'mailbox_type' ) . ': ' . $t_mailbox_api->_mailbox[ 'mailbox_type' ] . '<br />';
 		echo plugin_lang_get( 'hostname' ) . ': ', $t_mailbox_api->_mailbox[ 'hostname' ] . '<br />';
 		echo plugin_lang_get( 'port' ) . ': ', $t_mailbox_api->_mailbox[ 'port' ] . '<br />';
 		echo plugin_lang_get( 'encryption' ) . ': ' . $t_mailbox_api->_mailbox[ 'encryption' ] . '<br />';
@@ -84,9 +84,9 @@ elseif ( $f_mailbox_action === 'test' && $f_select_mailbox >= 0 )
 		echo plugin_lang_get( 'password' ) . ': ******' . '<br />';
 		echo plugin_lang_get( 'auth_method' ) . ': ' . $t_mailbox_api->_mailbox[ 'auth_method' ] . '<br />';
 
-		if ( $t_mailbox_api->_mailbox[ 'type' ] === 'IMAP' )
+		if ( $t_mailbox_api->_mailbox[ 'mailbox_type' ] === 'IMAP' )
 		{
-			echo plugin_lang_get( 'basefolder' ) . ': ' . $t_mailbox_api->_mailbox[ 'basefolder' ] . '<br />';
+			echo plugin_lang_get( 'imap_basefolder' ) . ': ' . $t_mailbox_api->_mailbox[ 'imap_basefolder' ] . '<br />';
 		}
 
 		echo '<br />' . ( ( $t_is_custom_error ) ? $t_result[ 'ERROR_MESSAGE' ] : $t_result->toString() ) . '<br /><br />';

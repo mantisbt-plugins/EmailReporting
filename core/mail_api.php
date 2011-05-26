@@ -181,7 +181,7 @@ class ERP_mailbox_api
 
 				$this->show_memory_usage( 'Start process mailbox' );
 
-				$t_process_mailbox_function = 'process_' . strtolower( $this->_mailbox[ 'type' ] ) . '_mailbox';
+				$t_process_mailbox_function = 'process_' . strtolower( $this->_mailbox[ 'mailbox_type' ] ) . '_mailbox';
 
 				$this->show_memory_usage( 'Finished process mailbox' );
 
@@ -250,16 +250,23 @@ class ERP_mailbox_api
 
 			if ( $this->_test_only === FALSE && !$this->pear_error( $this->_result ) )
 			{
-				$t_numMsg = $this->check_fetch_max( $this->_mailserver->numMsg() );
-
-				for ( $i = 1; $i <= $t_numMsg; $i++ )
+				if ( project_get_field( $this->_mailbox[ 'project_id' ], 'enabled' ) == TRUE )
 				{
-					$this->process_single_email( $i );
+					$t_numMsg = $this->check_fetch_max( $this->_mailserver->numMsg() );
 
-					if ( $this->_mail_delete )
+					for ( $i = 1; $i <= $t_numMsg; $i++ )
 					{
-						$this->_mailserver->deleteMsg( $i );
+						$this->process_single_email( $i );
+
+						if ( $this->_mail_delete )
+						{
+							$this->_mailserver->deleteMsg( $i );
+						}
 					}
+				}
+				else
+				{
+					$this->custom_error( 'Project is disabled: ' . project_get_field( $this->_mailbox[ 'project_id' ], 'name' ) );
 				}
 			}
 
@@ -282,23 +289,21 @@ class ERP_mailbox_api
 			$this->mailbox_login();
 
 			// If basefolder is empty we try to select the inbox folder
-			if ( is_blank( $this->_mailbox[ 'basefolder' ] ) )
+			if ( is_blank( $this->_mailbox[ 'imap_basefolder' ] ) )
 			{
-				$this->_mailbox[ 'basefolder' ] = $this->_mailserver->getCurrentMailbox();
+				$this->_mailbox[ 'imap_basefolder' ] = $this->_mailserver->getCurrentMailbox();
 			}
 
 			if ( !$this->pear_error( $this->_result ) )
 			{
-				if ( $this->_mailserver->mailboxExist( $this->_mailbox[ 'basefolder' ] ) )
+				if ( $this->_mailserver->mailboxExist( $this->_mailbox[ 'imap_basefolder' ] ) )
 				{
 					if ( $this->_test_only === FALSE )
 					{
-						$t_createfolderstructure = $this->_mailbox[ 'createfolderstructure' ];
-
 						// There does not seem to be a viable api function which removes this plugins dependability on table column names
 						// So if a column name is changed it might cause problems if the code below depends on it.
 						// Luckily we only depend on id, name and enabled
-						if ( $t_createfolderstructure === TRUE )
+						if ( $this->_mailbox[ 'imap_createfolderstructure' ] === TRUE )
 						{
 							$t_projects = project_get_all_rows();
 							$t_hierarchydelimiter = $this->_mailserver->getHierarchyDelimiter();
@@ -312,50 +317,57 @@ class ERP_mailbox_api
 
 						foreach ( $t_projects AS $t_project )
 						{
-							if ( $t_project[ 'enabled' ] == TRUE && $this->check_fetch_max( $t_total_fetch_counter, 0, TRUE ) === FALSE )
+							if ( $t_project[ 'enabled' ] == TRUE )
 							{
-								$t_project_name = $this->cleanup_project_name( $t_project[ 'name' ] );
-
-								$t_foldername = $this->_mailbox[ 'basefolder' ] . ( ( $t_createfolderstructure ) ? $t_hierarchydelimiter . $t_project_name : NULL );
-
-								// We don't need to check twice whether the mailbox exist twice incase createfolderstructure is false
-								if ( !$t_createfolderstructure || $this->_mailserver->mailboxExist( $t_foldername ) === TRUE )
+								if ( $this->check_fetch_max( $t_total_fetch_counter, 0, TRUE ) === FALSE )
 								{
-									$this->_mailserver->selectMailbox( $t_foldername );
+									$t_project_name = $this->cleanup_project_name( $t_project[ 'name' ] );
 
-									$t_isdeleted_count = 0;
+									$t_foldername = $this->_mailbox[ 'imap_basefolder' ] . ( ( $this->_mailbox[ 'imap_createfolderstructure' ] ) ? $t_hierarchydelimiter . $t_project_name : NULL );
 
-									$t_numMsg = $this->_mailserver->numMsg();
-									if ( !$this->pear_error( $t_numMsg ) && $t_numMsg > 0 )
+									// We don't need to check twice whether the mailbox exist twice incase createfolderstructure is false
+									if ( !$this->_mailbox[ 'imap_createfolderstructure' ] || $this->_mailserver->mailboxExist( $t_foldername ) === TRUE )
 									{
-										$t_allowed_numMsg = $this->check_fetch_max( $t_numMsg, $t_total_fetch_counter );
+										$this->_mailserver->selectMailbox( $t_foldername );
 
-										for ( $i = 1; $i <= $t_numMsg; $i++ )
+										$t_isdeleted_count = 0;
+
+										$t_numMsg = $this->_mailserver->numMsg();
+										if ( !$this->pear_error( $t_numMsg ) && $t_numMsg > 0 )
 										{
-											if ( ( $i - $t_isdeleted_count ) > $t_allowed_numMsg )
-											{
-												break;
-											}
-											elseif ( $this->_mailserver->isDeleted( $i ) === TRUE )
-											{
-												$t_isdeleted_count++;
-											}
-											else
-											{
-												$this->process_single_email( $i, (int) $t_project[ 'id' ] );
+											$t_allowed_numMsg = $this->check_fetch_max( $t_numMsg, $t_total_fetch_counter );
 
-												$this->_mailserver->deleteMsg( $i );
+											for ( $i = 1; $i <= $t_numMsg; $i++ )
+											{
+												if ( ( $i - $t_isdeleted_count ) > $t_allowed_numMsg )
+												{
+													break;
+												}
+												elseif ( $this->_mailserver->isDeleted( $i ) === TRUE )
+												{
+													$t_isdeleted_count++;
+												}
+												else
+												{
+													$this->process_single_email( $i, (int) $t_project[ 'id' ] );
 
-												$t_total_fetch_counter++;
+													$this->_mailserver->deleteMsg( $i );
+
+													$t_total_fetch_counter++;
+												}
 											}
 										}
 									}
+									elseif ( $this->_mailbox[ 'imap_createfolderstructure' ] === TRUE )
+									{
+										// create this mailbox
+										$this->_mailserver->createMailbox( $t_foldername );
+									}
 								}
-								elseif ( $t_createfolderstructure === TRUE )
-								{
-									// create this mailbox
-									$this->_mailserver->createMailbox( $t_foldername );
-								}
+							}
+							else
+							{
+								$this->custom_error( 'Project is disabled: ' . $t_project[ 'name' ] );
 							}
 						}
 					}
@@ -770,7 +782,7 @@ class ERP_mailbox_api
 					}
 				}
 
-				if ( !is_null( $t_rejected_files ) )
+				if ( $t_rejected_files !== NULL )
 				{
 					$part = array(
 						'name' => 'Rejected files.txt',
@@ -888,7 +900,7 @@ class ERP_mailbox_api
 		$this->_mailbox[ 'port' ] = (int) $this->_mailbox[ 'port' ];
 		if ( $this->_mailbox[ 'port' ] <= 0 )
 		{
-			$this->_mailbox[ 'port' ] = (int) $this->_default_ports[ $this->_mailbox[ 'type' ] ][ $t_def_mailbox_port_index ];
+			$this->_mailbox[ 'port' ] = (int) $this->_default_ports[ $this->_mailbox[ 'mailbox_type' ] ][ $t_def_mailbox_port_index ];
 		}
 	}
 

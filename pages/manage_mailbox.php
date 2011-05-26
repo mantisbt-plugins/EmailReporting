@@ -55,26 +55,27 @@ ERP_output_config_option( 'select_mailbox', 'hidden', $f_select_mailbox );
 
 ERP_output_config_option( 'mailbox_settings', 'header', 'manage_config' );
 
-ERP_output_config_option( 'enabled', 'boolean', -3, $t_mailbox );
-ERP_output_config_option( 'description', 'string', -3, $t_mailbox );
-ERP_output_config_option( 'type', 'dropdown_mailbox_type', -3, $t_mailbox );
-ERP_output_config_option( 'hostname', 'string', -3, $t_mailbox );
-ERP_output_config_option( 'port', 'string', -3, $t_mailbox );
-ERP_output_config_option( 'encryption', 'dropdown_encryption', -3, $t_mailbox );
-ERP_output_config_option( 'username', 'string', -3, $t_mailbox );
-ERP_output_config_option( 'password', 'string_password', -3, $t_mailbox );
-ERP_output_config_option( 'auth_method', 'dropdown_auth_method', -3, $t_mailbox );
+ERP_output_config_option( 'enabled', 'boolean', $t_mailbox );
+ERP_output_config_option( 'description', 'string', $t_mailbox );
+ERP_output_config_option( 'mailbox_type', 'dropdown', $t_mailbox, 'ERP_print_descriptions_option_list', array( 'IMAP', 'POP3' ) );
+ERP_output_config_option( 'hostname', 'string', $t_mailbox );
+ERP_output_config_option( 'port', 'string', $t_mailbox );
+ERP_output_config_option( 'encryption', 'dropdown', $t_mailbox, 'ERP_print_encryption_option_list' );
+ERP_output_config_option( 'username', 'string', $t_mailbox );
+ERP_output_config_option( 'password', 'string_password', $t_mailbox );
+ERP_output_config_option( 'auth_method', 'dropdown', $t_mailbox, 'ERP_print_auth_method_option_list' );
 
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'mailbox_settings_imap', 'header' );
-ERP_output_config_option( 'basefolder', 'string', -3, $t_mailbox );
-ERP_output_config_option( 'createfolderstructure', 'boolean', -3, $t_mailbox );
+ERP_output_config_option( 'imap_basefolder', 'string', $t_mailbox );
+ERP_output_config_option( 'imap_createfolderstructure', 'boolean', $t_mailbox );
 
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'mailbox_settings_issue', 'header' );
-ERP_output_config_option( 'project_id', 'dropdown_projects', -3, $t_mailbox );
-ERP_output_config_option( 'global_category_id', 'dropdown_global_categories', -3, $t_mailbox );
-ERP_output_config_option( 'link_rules', 'dropdown_descriptions_multiselect', -3, $t_mailbox, $t_rules );
+ERP_output_config_option( 'project_id', 'dropdown', $t_mailbox, 'ERP_print_projects_option_list' );
+ERP_output_config_option( 'global_category_id', 'dropdown', $t_mailbox, 'ERP_print_global_category_option_list' );
+ERP_output_config_option( 'link_rules', 'dropdown_multiselect', $t_mailbox, 'ERP_print_descriptions_option_list', $t_rules );
+ERP_output_config_option( 'disabled', 'empty' );
 
 event_signal( 'EVENT_ERP_OUTPUT_MAILBOX_FIELDS', $f_select_mailbox );
 
@@ -92,12 +93,8 @@ ERP_output_config_option( $f_mailbox_action . '_action', 'submit' );
 
 ERP_output_config_option( 'mailboxes', 'header', 'manage_config' );
 
-$t_actions_list = array(
-	0 => array( 'add' ),
-	1 => array( 'copy', 'edit', 'delete', 'test' ),
-);
-ERP_output_config_option( 'mailbox_action', 'radio_actions', $f_mailbox_action, $GLOBALS[ 't_mailboxes' ], $t_actions_list );
-ERP_output_config_option( 'select_mailbox', 'dropdown_descriptions', $f_select_mailbox, NULL, $GLOBALS[ 't_mailboxes' ] );
+ERP_output_config_option( 'mailbox_action', 'radio_buttons', $f_mailbox_action, 'ERP_print_mailbox_action_radio_buttons', $GLOBALS[ 't_mailboxes' ] );
+ERP_output_config_option( 'select_mailbox', 'dropdown', $f_select_mailbox, 'ERP_print_descriptions_option_list', $GLOBALS[ 't_mailboxes' ] );
 ERP_output_config_option( 'disabled', 'empty' );
 
 ERP_output_config_option( 'select_mailbox', 'submit' );

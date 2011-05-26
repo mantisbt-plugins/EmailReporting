@@ -9,7 +9,7 @@
 	{
 		$t_mailbox = array(
 			'enabled'				=> TRUE,
-			'type'					=> 'POP3',
+			'mailbox_type'			=> 'POP3',
 			'encryption'			=> 'None',
 			'auth_method'			=> 'USER',
 			'global_category_id'	=> -1,
@@ -174,22 +174,23 @@
 
 	# --------------------
 	# output a configuration option
-	# radio_actions type can not be used with the special $p_def_value content (-2 and -3)
 	# This function is only meant to be used by the EmailReporting plugin or by other plugins within the EVENT_ERP_OUTPUT_MAILBOX_FIELDS event
-	function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, $p_variable_array = NULL, $p_options_array = NULL )
+	function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, $p_function_name = NULL, $p_function_parameter = NULL )
 	{
-		// $p_def_value has special purposes when containing the following values
-		// NULL is default value
-		// -1 reserved for normal use
-		// -2 is for settings on the manage configurations page
-		// -3 is for settings on the manage mailboxes page
-		if ( $p_def_value === -2 )
+		// $p_def_value has special purposes when it contains certain values. See below
+		if ( $p_def_value === NULL && !is_blank( $p_name ) && !in_array( $p_type, array( 'empty', 'header', 'submit' ) ) )
 		{
 			$t_value = plugin_config_get( $p_name );
 		}
-		elseif ( $p_def_value === -3 )
+		// Need to catch the instance where $p_def_value is array for dropdown_multiselect (_any)
+		elseif ( is_array( $p_def_value ) &&
+			(
+				( !in_array( $p_type, array( 'dropdown_multiselect', 'dropdown_multiselect_any' ) ) ) ||
+				( in_array( $p_type, array( 'dropdown_multiselect', 'dropdown_multiselect_any' ) ) && count( array_diff_assoc( array_values( $p_def_value ), $p_def_value ) ) !== 0 )
+			)
+		)
 		{
-			$t_value = ( ( isset( $p_variable_array[ $p_name ] ) ) ? $p_variable_array[ $p_name ] : NULL );
+			$t_value = ( ( isset( $p_def_value[ $p_name ] ) ) ? $p_def_value[ $p_name ] : NULL );
 		}
 		else
 		{
@@ -235,22 +236,18 @@
 <?php
 				break;
 
-			case 'radio_actions':
+			case 'radio_buttons':
 ?>
 <tr <?php echo helper_alternate_class( )?>>
 	<td class="center" width="100%" colspan="3">
 <?php
-				foreach ( $p_options_array AS $t_action_key => $t_actions )
+				if ( function_exists( $p_function_name ) )
 				{
-					if ( is_array( $p_variable_array ) && count( $p_variable_array ) >= $t_action_key )
-					{
-						foreach ( $t_actions AS $t_action )
-						{
-?>
-		<label><input type="radio" name="<?php echo $t_input_name ?>" value="<?php echo $t_action ?>"<?php echo ( ( $t_value === $t_action ) ? ' checked="checked"' : NULL ) ?>/><?php echo plugin_lang_get( $t_action . '_action' )?></label>
-<?php
-						}
-					}
+					$p_function_name( $t_input_name, $t_value, $p_function_parameter );
+				}
+				else
+				{
+					echo '<span class="negative">' . plugin_lang_get( 'function_not_found', 'EmailReporting' ) . ': ' . $p_function_name . '</span>';
 				}
 ?>
 	</td>
@@ -274,17 +271,10 @@
 			case 'string':
 			case 'string_multiline':
 			case 'string_password':
-			case 'dropdown_auth_method':
-			case 'dropdown_descriptions':
-			case 'dropdown_descriptions_multiselect':
-			case 'dropdown_global_categories':
-			case 'dropdown_list_reporters':
-			case 'dropdown_encryption':
-			case 'dropdown_mailbox_type':
-			case 'dropdown_mbstring_encodings':
-			case 'dropdown_pref_usernames':
-			case 'dropdown_priority_list':
-			case 'dropdown_projects':
+			case 'dropdown':
+			case 'dropdown_any':
+			case 'dropdown_multiselect':
+			case 'dropdown_multiselect_any':
 ?>
 <tr <?php echo helper_alternate_class( )?>>
 	<td class="category" width="60%">
@@ -296,10 +286,10 @@
 					case 'boolean':
 ?>
 	<td class="center" width="20%">
-		<label><input type="radio" name="<?php echo $t_input_name ?>" value="1" <?php echo ( ( ON == $t_value ) ? 'checked="checked" ' : '' )?>/><?php echo lang_get( 'yes' ) ?></label>
+		<label><input type="radio" name="<?php echo $t_input_name ?>" value="1" <?php check_checked( $t_value, ON ) ?>/><?php echo lang_get( 'yes' ) ?></label>
 	</td>
 	<td class="center" width="20%">
-		<label><input type="radio" name="<?php echo $t_input_name ?>" value="0" <?php echo ( ( !is_null($t_value) && OFF == $t_value ) ? 'checked="checked" ' : '' ) ?>/><?php echo lang_get( 'no' ) ?></label>
+		<label><input type="radio" name="<?php echo $t_input_name ?>" value="0" <?php ( ( $t_value !== NULL ) ? check_checked( $t_value, OFF ) : NULL ) ?>/><?php echo lang_get( 'no' ) ?></label>
 	</td>
 <?php
 						break;
@@ -373,250 +363,34 @@
 <?php
 						break;
 
-					case 'dropdown_auth_method':
-						require_once( 'Net/POP3.php' );
-						require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/Net/IMAPProtocol_1.0.3.php' );
-
-						$t_mailbox_connection_pop3 = new Net_POP3();
-						$t_mailbox_connection_imap = new Net_IMAPProtocol();
-
-						$t_supported_auth_methods = array_unique( array_merge( $t_mailbox_connection_pop3->supportedAuthMethods, $t_mailbox_connection_imap->supportedAuthMethods ) );
-						natcasesort( $t_supported_auth_methods );
+					case 'dropdown':
+					case 'dropdown_any':
+					case 'dropdown_multiselect':
+					case 'dropdown_multiselect_any':
 ?>
 	<td class="center" width="40%" colspan="2">
-		<select name="<?php echo $t_input_name ?>">
+		<select name="<?php echo $t_input_name . ( ( in_array( $p_type, array( 'dropdown_multiselect', 'dropdown_multiselect_any' ), TRUE ) ) ? '[]" multiple size="6' : NULL ) ?>">
 <?php
-						foreach ( $t_supported_auth_methods AS $t_supported_auth_method )
+						if ( function_exists( $p_function_name ) )
 						{
-							echo '<option' . ( ( $t_supported_auth_method === $t_value ) ? ' selected' : '' ) . '>' . $t_supported_auth_method . '</option>';
-						}
-?>
-		</select>
-	</td>
-<?php
-						unset( $t_mailbox_connection_pop3, $t_mailbox_connection_imap );
-
-						break;
-
-					case 'dropdown_descriptions':
-?>
-	<td class="center" width="40%" colspan="2">
-<?php
-						if ( is_array( $p_options_array ) && count( $p_options_array ) > 0 )
-						{
-?>
-		<select name="<?php echo $t_input_name ?>">
-<?php
-							foreach ( $p_options_array AS $t_key => $t_data )
+							if ( in_array( $p_type, array( 'dropdown_any', 'dropdown_multiselect_any' ), TRUE ) )
 							{
-								if ( !isset( $t_data[ 'enabled' ] ) )
-								{
-									$t_data[ 'enabled' ] = TRUE;
-								}
-?>
-			<option value="<?php echo $t_key ?>"<?php echo ( ( $t_value === $t_key ) ? ' selected' : NULL ) ?>><?php echo ( ( $t_data[ 'enabled' ] === FALSE ) ? '* ' : NULL ) . $t_data[ 'description' ] ?></option>
-<?php
+								echo '<option value="' . META_FILTER_ANY . '"';
+								check_selected( $t_value, META_FILTER_ANY );
+								echo '>[' . lang_get( 'any' ) . ']</option>';
 							}
-?>
-		</select>
-<?php
+
+							$p_function_name( $t_value, $p_function_parameter );
 						}
 						else
 						{
-							echo plugin_lang_get( 'zero_descriptions', 'EmailReporting' );
-						}
-?>
-	</td>
-<?php
-						break;
-
-					case 'dropdown_descriptions_multiselect':
-?>
-	<td class="center" width="40%" colspan="2">
-<?php
-						if ( is_array( $p_options_array ) && count( $p_options_array ) > 0 )
-						{
-?>
-		<select name="<?php echo $t_input_name ?>[]" multiple size="6">
-<?php
-							foreach ( $p_options_array AS $t_key => $t_data )
-							{
-								if ( !isset( $t_data[ 'enabled' ] ) )
-								{
-									$t_data[ 'enabled' ] = TRUE;
-								}
-?>
-			<option value="<?php echo $t_key ?>"<?php echo ( ( !is_null( $t_value ) && in_array( $t_key, $t_value ) ) ? ' selected' : NULL ) ?>><?php echo ( ( $t_data[ 'enabled' ] === FALSE ) ? '* ' : NULL ) . $t_data[ 'description' ] ?></option>
-<?php
-							}
-?>
-		</select>
-<?php
-						}
-						else
-						{
-							echo plugin_lang_get( 'zero_descriptions', 'EmailReporting' );
-						}
-?>
-	</td>
-<?php
-						break;
-
-					case 'dropdown_global_categories':
-?>
-	<td class="center" width="40%" colspan="2">
-		<select name="<?php echo $t_input_name ?>">
-<?php
-						print_category_option_list( $t_value, ALL_PROJECTS );
-
-						$t_all_projects = project_get_all_rows();
-						$t_projects_info = array();
-						foreach( $t_all_projects AS $t_project )
-						{
-							$t_projects_info[ $t_project[ 'id' ] ] = $t_project[ 'name' ];
-						}
-
-						natcasesort( $t_projects_info );
-
-						foreach( $t_projects_info AS $t_project_id => $t_project_name )
-						{
-							echo '<optgroup label="' . string_attribute( $t_project_name ) . '">';
-
-							// Need to disable inherit projects for one moment.
-							config_set_cache( 'subprojects_inherit_categories', OFF, CONFIG_TYPE_STRING );
-							config_set_global( 'subprojects_inherit_categories', OFF );
-
-							print_category_option_list( $t_value, $t_project_id );
-							echo '</optgroup>';
-						}
-?>
-		</select>
-	</td>
-<?php
-						break;
-
-					case 'dropdown_list_reporters':
-?>
-	<td class="center" width="40%" colspan="2">
-<?php
-						if ( !is_null( $t_value ) AND !user_exists( $t_value ) )
-						{
-							echo '<span class="negative">' . plugin_lang_get( 'missing_reporter', 'EmailReporting' ) . '</span><br />';
-						}
-?>
-		<select name="<?php echo $t_input_name ?>"><?php print_user_option_list( $t_value, ALL_PROJECTS, config_get_global( 'report_bug_threshold' ) ) ?></select>
-	</td>
-<?php
-						break;
-
-					case 'dropdown_encryption':
-?>
-	<td class="center" width="40%" colspan="2">
-		<select name="<?php echo $t_input_name ?>">
-<?php
-						if ( extension_loaded( 'openssl' ) )
-						{
-							$t_socket_transports = stream_get_transports();
-							$t_supported_encryptions = array( 'None', 'SSL', 'SSLv2', 'SSLv3', 'TLS' );
-							foreach ( $t_supported_encryptions AS $t_encryption )
-							{
-								if ( $t_encryption === 'None' || in_array( strtolower( $t_encryption ), $t_socket_transports ) )
-								{
-?>
-			<option<?php echo ( ( $t_value === $t_encryption ) ? ' selected' : NULL ) ?>><?php echo $t_encryption ?></option>
-<?php
-								}
-							}
-						}
-						else
-						{
-?>
-			<option value="None" selected class="negative"><?php echo plugin_lang_get( 'openssl_unavailable', 'EmailReporting' ) ?></option>
-<?php
-						}
-?>
-		</select>
-	</td>
-<?php
-						break;
-
-					case 'dropdown_mailbox_type':
-						$t_mailbox_types = array( 'IMAP', 'POP3' );
-?>
-	<td class="center" width="40%" colspan="2">
-		<select name="<?php echo $t_input_name ?>">
-<?php
-						foreach ( $t_mailbox_types AS $t_mailbox_type )
-						{
-							echo '<option' . ( ( $t_value === $t_mailbox_type ) ? ' selected' : '' ) . '>' . $t_mailbox_type . '</option>';
-						}
-?>
-		</select>
-	</td>
-<?php
-						break;
-
-					case 'dropdown_mbstring_encodings':
-?>
-	<td class="center" width="40%" colspan="2">
-			<select name="<?php echo $t_input_name ?>">
-<?php
-						if ( extension_loaded( 'mbstring' ) )
-						{
-							$t_list_encodings = mb_list_encodings();
-							natcasesort( $t_list_encodings );
-							foreach( $t_list_encodings AS $t_encoding )
-							{
-?>
-			<option<?php echo ( ( $t_encoding == $t_value ) ? ' selected' : '' ) ?>><?php echo $t_encoding ?></option>
-<?php
-							}
-						}
-						else
-						{
-?>
-			<option value="<?php echo $t_value ?>" selected class="negative"><?php echo plugin_lang_get( 'mbstring_unavailable', 'EmailReporting' ) ?></option>
-<?php
-						}
-?>
-			</select>
-	</td>
-<?php
-						break;
-
-					case 'dropdown_pref_usernames':
-						$t_username_options = array( 'name', 'email_address', 'email_no_domain', 'from_ldap' );
-?>
-	<td class="center" width="40%" colspan="2">
-		<select name="<?php echo $t_input_name ?>">
-<?php
-						foreach ( $t_username_options AS $t_option )
-						{
-?>
-			<option value="<?php echo $t_option ?>"<?php echo ( ( $t_option == $t_value ) ? ' selected' : '' ) ?>><?php echo plugin_lang_get( $t_option ) ?></option>
-<?php
+							echo '<option class="negative">' . plugin_lang_get( 'function_not_found', 'EmailReporting' ) . ': ' . $p_function_name . '</option>';
 						}
 ?>
 		</select>
 	</td>
 <?php
 
-						break;
-
-					case 'dropdown_priority_list':
-?>
-	<td class="center" width="40%" colspan="2">
-		<select name="<?php echo $t_input_name ?>"><?php print_enum_string_option_list( 'priority', config_get( 'default_bug_priority' ) ) ?></select>
-	</td>
-<?php
-						break;
-
-					case 'dropdown_projects':
-?>
-	<td class="center" width="40%" colspan="2">
-		<select name="<?php echo $t_input_name ?>"><?php print_project_option_list( $t_value, FALSE, NULL, FALSE ) ?></select>
-	</td>
-<?php
 						break;
 
 					default: echo '<tr><td colspan="3">' . plugin_lang_get( 'unknown_setting', 'EmailReporting' ) . $p_name . ' -> level 2</td></tr>';
@@ -627,6 +401,217 @@
 				break;
 
 			default: echo '<tr><td colspan="3">' . plugin_lang_get( 'unknown_setting', 'EmailReporting' ) . $p_name . ' -> level 1</td></tr>';
+		}
+	}
+
+	# --------------------
+	# output a option list based on an array with an index called "description"
+	function ERP_print_descriptions_option_list( $p_sel_value, $p_options_array )
+	{
+		$t_options_sorted = array();
+		foreach( $p_options_array AS $t_option_key => $t_option_array )
+		{
+			if ( !is_array( $t_option_array ) )
+			{
+				$t_option_key = $t_option_array;
+				$t_option_array = array( 'description' => plugin_lang_get( $t_option_array ) );
+			}
+
+			$t_options_sorted[ $t_option_key ] = $t_option_array[ 'description' ];
+		}
+
+		natcasesort( $t_options_sorted );
+
+		foreach ( $t_options_sorted AS $t_option_key => $t_description )
+		{
+			echo '<option value="' . $t_option_key . '"';
+			check_selected( $p_sel_value, $t_option_key );
+			echo '>' . ( ( isset( $p_options_array[ $t_option_key ][ 'enabled' ] ) && $p_options_array[ $t_option_key ][ 'enabled' ] === FALSE ) ? '* ' : NULL ) . $t_description . '</option>';
+		}
+	}
+
+	# --------------------
+	# output a option list for authentication methods for POP3 and IMAP
+	function ERP_print_auth_method_option_list( $p_sel_value )
+	{
+		require_once( 'Net/POP3.php' );
+		require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/Net/IMAPProtocol_1.0.3.php' );
+
+		$t_mailbox_connection_pop3 = new Net_POP3();
+		$t_mailbox_connection_imap = new Net_IMAPProtocol();
+
+		$t_supported_auth_methods = array_unique( array_merge( $t_mailbox_connection_pop3->supportedAuthMethods, $t_mailbox_connection_imap->supportedAuthMethods ) );
+		natcasesort( $t_supported_auth_methods );
+
+		foreach ( $t_supported_auth_methods AS $t_supported_auth_method )
+		{
+			echo '<option';
+			check_selected( $p_sel_value, $t_supported_auth_method );
+			echo '>' . $t_supported_auth_method . '</option>';
+		}
+	}
+
+	# --------------------
+	# output a option list with supported encryptions
+	function ERP_print_encryption_option_list( $p_sel_value )
+	{
+		if ( extension_loaded( 'openssl' ) )
+		{
+			$t_socket_transports = stream_get_transports();
+			$t_supported_encryptions = array( 'None', 'SSL', 'SSLv2', 'SSLv3', 'TLS' );
+			foreach ( $t_supported_encryptions AS $t_encryption )
+			{
+				if ( $t_encryption === 'None' || in_array( strtolower( $t_encryption ), $t_socket_transports ) )
+				{
+?>
+			<option<?php check_selected( $p_sel_value, $t_encryption ) ?>><?php echo $t_encryption ?></option>
+<?php
+				}
+			}
+		}
+		else
+		{
+?>
+			<option value="None" selected class="negative"><?php echo plugin_lang_get( 'openssl_unavailable', 'EmailReporting' ) ?></option>
+<?php
+		}
+	}
+
+	# --------------------
+	# output a option list with global categories available in the mantisbt system
+	function ERP_print_global_category_option_list( $p_sel_value )
+	{
+		// Need to disable inherit projects for one moment.
+		config_set_cache( 'subprojects_inherit_categories', OFF, CONFIG_TYPE_STRING );
+		config_set_global( 'subprojects_inherit_categories', OFF );
+
+		print_category_option_list( $p_sel_value, ALL_PROJECTS );
+
+		$t_all_projects = project_get_all_rows();
+		$t_projects_info = array();
+		foreach( $t_all_projects AS $t_project )
+		{
+			$t_projects_info[ $t_project[ 'id' ] ] = $t_project[ 'name' ];
+		}
+
+		natcasesort( $t_projects_info );
+
+		foreach( $t_projects_info AS $t_project_id => $t_project_name )
+		{
+			echo '<optgroup label="' . string_attribute( $t_project_name ) . '">';
+			print_category_option_list( $p_sel_value, $t_project_id );
+			echo '</optgroup>';
+		}
+	}
+
+	# --------------------
+	# output a option list with all users who have at least global reporter rights
+	function ERP_print_reporter_option_list( $p_sel_value )
+	{
+		if ( $p_sel_value !== NULL )
+		{
+			$t_user_ids = (array) $p_sel_value;
+
+			foreach ( $t_user_ids AS $t_single_user_id )
+			{
+				if ( !user_exists( $t_single_user_id ) )
+				{
+					echo '<option value="' . $t_single_user_id . '" selected class="negative">' . plugin_lang_get( 'missing_reporter', 'EmailReporting' ) . '</option>';
+				}
+			}
+		}
+
+		print_user_option_list( $p_sel_value, ALL_PROJECTS, config_get_global( 'report_bug_threshold' ) );
+	}
+
+	# --------------------
+	# output a option list with all the mbstring encodings supported
+	function ERP_print_mbstring_encoding_option_list( $p_sel_value )
+	{
+		if ( extension_loaded( 'mbstring' ) )
+		{
+			$t_list_encodings = mb_list_encodings();
+			natcasesort( $t_list_encodings );
+			foreach( $t_list_encodings AS $t_encoding )
+			{
+?>
+			<option<?php check_selected( $p_sel_value, $t_encoding ) ?>><?php echo $t_encoding ?></option>
+<?php
+			}
+		}
+		else
+		{
+?>
+			<option value="<?php echo $p_sel_value ?>" selected class="negative"><?php echo plugin_lang_get( 'mbstring_unavailable', 'EmailReporting' ) ?></option>
+<?php
+		}
+	}
+
+	# --------------------
+	# output a option list with all priorities in the MantisBT system
+	function ERP_print_priority_option_list( $p_sel_value )
+	{
+		print_enum_string_option_list( 'priority', $p_sel_value );
+	}
+
+	# --------------------
+	# output a option list with all the projects in the MantisBT system
+	# Based on MantisBT 1.2.5 function: print_project_option_list
+	function ERP_print_projects_option_list( $p_sel_value )
+	{
+		$t_all_projects = project_get_all_rows();
+
+		$t_projects_sorted = array();
+		foreach( $t_all_projects AS $t_project_key => $t_project )
+		{
+			$t_projects_sorted[ $t_project_key ] = $t_project[ 'name' ];
+		}
+
+		natcasesort( $t_projects_sorted );
+
+		foreach ( $t_projects_sorted AS $t_project_id => $t_project_name )
+		{
+			echo '<option value="' . $t_all_projects[ $t_project_id ][ 'id' ] . '"';
+			check_selected( $p_sel_value, $t_all_projects[ $t_project_id ][ 'id' ] );
+			echo '>' . ( ( $t_all_projects[ $t_project_id ][ 'enabled' ] == FALSE ) ? '* ' : NULL ) . string_attribute( $t_all_projects[ $t_project_id ][ 'name' ] ) . '</option>' . "\n";
+		}
+	}
+
+	# --------------------
+	# output a option list based on an array with an index called "description" or a variable with a string value
+	function ERP_print_mailbox_action_radio_buttons( $p_input_name, $p_sel_value, $p_variable_array )
+	{
+		$t_actions_list = array(
+			0 => array( 'add' ),
+			1 => array( 'copy', 'edit', 'delete', 'test' ),
+		);
+
+		ERP_print_action_radio_buttons( $p_input_name, $p_sel_value, $p_variable_array, $t_actions_list );
+	}
+
+	function ERP_print_rule_action_radio_buttons( $p_input_name, $p_sel_value, $p_variable_array )
+	{
+		$t_actions_list = array(
+			0 => array( 'add' ),
+			1 => array( 'copy', 'edit', 'delete' ),
+		);
+
+		ERP_print_action_radio_buttons( $p_input_name, $p_sel_value, $p_variable_array, $t_actions_list );
+	}
+
+	function ERP_print_action_radio_buttons( $p_input_name, $p_sel_value, $p_variable_array, $p_actions_list )
+	{
+		foreach ( $p_actions_list AS $t_action_key => $t_actions )
+		{
+			if ( is_array( $p_variable_array ) && count( $p_variable_array ) >= $t_action_key )
+			{
+				foreach ( $t_actions AS $t_action )
+				{
+?>
+		<label><input type="radio" name="<?php echo $p_input_name ?>" value="<?php echo $t_action ?>"<?php check_checked( $p_sel_value, $t_action ) ?>/><?php echo plugin_lang_get( $t_action . '_action' )?></label>
+<?php
+				}
+			}
 		}
 	}
 

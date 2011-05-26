@@ -465,6 +465,34 @@ class EmailReportingPlugin extends MantisPlugin
 
 			plugin_config_set( 'config_version', 9 );
 		}
+
+		if ( $t_config_version <= 9 )
+		{
+			$t_mailboxes = plugin_config_get( 'mailboxes' );
+			$t_indexes = array(
+				'type' => 'mailbox_type',
+				'basefolder' => 'imap_basefolder',
+				'createfolderstructure' => 'imap_createfolderstructure',
+			);
+
+			foreach ( $t_mailboxes AS $t_key => $t_array )
+			{
+				foreach ( $t_indexes AS $t_old_index => $t_new_index )
+				{
+					if ( isset( $t_array[ $t_old_index ] ) )
+					{
+						$t_array[ $t_new_index ] = $t_array[ $t_old_index ];
+						unset( $t_array[ $t_old_index ] );
+					}
+				}
+
+				$t_mailboxes[ $t_key ] = $t_array;
+			}
+
+			plugin_config_set( 'mailboxes', $t_mailboxes );
+
+			plugin_config_set( 'config_version', 10 );
+		}
 	}
 
 	/* 
