@@ -61,9 +61,6 @@ $s_plugin_EmailReporting_mail_secured_script = 'Block this script from running v
 $s_plugin_EmailReporting_mail_use_bug_priority = 'Look for priority header field';
 $s_plugin_EmailReporting_mail_use_reporter = 'Use only default reporter user for issues created by email';
 
-$s_plugin_EmailReporting_IMAP = 'IMAP';
-$s_plugin_EmailReporting_POP3 = 'POP3';
-
 $s_plugin_EmailReporting_emailreporting = 'EmailReporting';
 $s_plugin_EmailReporting_mantisbt = 'MantisBT';
 
@@ -112,7 +109,9 @@ $s_plugin_EmailReporting_function_not_found = 'Function not found';
 $s_plugin_EmailReporting_rules = 'Rules';
 $s_plugin_EmailReporting_select_rule = 'Select rule';
 
-$s_plugin_EmailReporting_rule_conditions_help = '- Wildcard characters: * ?
+$s_plugin_EmailReporting_rule_wildcards_help = '- Wildcard characters: * ?
 - If no wildcard characters are used an exact comparison will be applied';
+$s_plugin_EmailReporting_rule_actions_help = '- Custom fields not connected to the project of the created issue will be ignored
+- Dropdown list in custom fields should contain an empty value if you want that option in the dropdown list. Otherwise a value will always be applied when the conditions specified are met.';
 
 ?>

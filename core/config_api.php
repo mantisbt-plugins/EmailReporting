@@ -163,6 +163,34 @@
 		}
 	}
 
+	# --------------------
+	# Function does not exist yet for the plugin api
+	# Based on plugin_lang_get with lang_get_defaulted functionality
+	function ERP_plugin_lang_get_defaulted( $p_name, $p_basename = null )
+	{
+		if( $p_basename === NULL )
+		{
+			$t_basename = plugin_get_current();
+		}
+		else
+		{
+			$t_basename = $p_basename;
+		}
+
+		$t_name = 'plugin_' . $t_basename . '_' . $p_name;
+
+		$t_lang = lang_get_defaulted( $t_name );
+
+		if ( $t_name === $t_lang )
+		{
+			return( $p_name );
+		}
+		else
+		{
+			return( lang_get_defaulted( $t_name ) );
+		}
+	}
+
 	# This prints the little [?] link for user help
 	# The $p_a_name is a link into the documentation.html file
 	function ERP_print_documentation_link( $p_a_name = '' )
@@ -184,8 +212,8 @@
 		// Need to catch the instance where $p_def_value is an array for dropdown_multiselect (_any)
 		elseif ( is_array( $p_def_value ) &&
 			(
-				( !in_array( $p_type, array( 'dropdown_multiselect', 'dropdown_multiselect_any' ) ) ) ||
-				( in_array( $p_type, array( 'dropdown_multiselect', 'dropdown_multiselect_any' ) ) && 
+				( !in_array( $p_type, array( 'dropdown_multiselect', 'dropdown_multiselect_any', 'custom' ) ) ) ||
+				( in_array( $p_type, array( 'dropdown_multiselect', 'dropdown_multiselect_any', 'custom' ) ) && 
 					(
 						count( $p_def_value ) === 0 ||
 						count( array_diff_assoc( array_values( $p_def_value ), $p_def_value ) ) !== 0
@@ -263,7 +291,7 @@
 ?>
 <tr>
 	<td class="center" width="100%" colspan="3">
-		<input type="submit" class="button" value="<?php echo plugin_lang_get( $p_name ) ?>" />
+		<input <?php echo helper_get_tab_index() ?> type="submit" class="button" value="<?php echo plugin_lang_get( $p_name ) ?>" />
 	</td>
 </tr>
 <?php
@@ -282,7 +310,7 @@
 ?>
 <tr <?php echo helper_alternate_class( )?>>
 	<td class="category" width="60%">
-		<?php echo ERP_print_documentation_link( $p_name )?>
+		<?php echo ERP_print_documentation_link( $p_name ) ?>
 	</td>
 <?php
 				switch ( $p_type )
@@ -290,10 +318,10 @@
 					case 'boolean':
 ?>
 	<td class="center" width="20%">
-		<label><input type="radio" name="<?php echo $t_input_name ?>" value="1" <?php check_checked( $t_value, ON ) ?>/><?php echo lang_get( 'yes' ) ?></label>
+		<label><input <?php echo helper_get_tab_index() ?> type="radio" name="<?php echo $t_input_name ?>" value="1" <?php check_checked( $t_value, ON ) ?>/><?php echo lang_get( 'yes' ) ?></label>
 	</td>
 	<td class="center" width="20%">
-		<label><input type="radio" name="<?php echo $t_input_name ?>" value="0" <?php ( ( $t_value !== NULL ) ? check_checked( $t_value, OFF ) : NULL ) ?>/><?php echo lang_get( 'no' ) ?></label>
+		<label><input <?php echo helper_get_tab_index() ?> type="radio" name="<?php echo $t_input_name ?>" value="0" <?php ( ( $t_value !== NULL ) ? check_checked( $t_value, OFF ) : NULL ) ?>/><?php echo lang_get( 'no' ) ?></label>
 	</td>
 <?php
 						break;
@@ -325,7 +353,7 @@
 						}
 ?>
 	<td class="center" width="20%">
-		<input type="text" size="30" maxlength="200" name="<?php echo $t_input_name ?>" value="<?php echo $t_dir ?>"/>
+		<input <?php echo helper_get_tab_index() ?> type="text" size="30" maxlength="200" name="<?php echo $t_input_name ?>" value="<?php echo $t_dir ?>"/>
 	</td>
 	<td class="center" width="20%">
 		<span class="<?php echo $t_result_is_dir_color ?>"><?php echo $t_result_is_dir_text ?></span><br /><span class="<?php echo $t_result_is_writable_color ?>"><?php echo $t_result_is_writable_text ?></span>
@@ -337,7 +365,7 @@
 					case 'string':
 ?>
 	<td class="center" width="40%" colspan="2">
-		<input type="text" size="50" maxlength="100" name="<?php echo $t_input_name ?>" value="<?php echo $t_value ?>"/>
+		<input <?php echo helper_get_tab_index() ?> type="text" size="50" maxlength="100" name="<?php echo $t_input_name ?>" value="<?php echo $t_value ?>"/>
 	</td>
 <?php
 						break;
@@ -345,7 +373,7 @@
 					case 'string_multiline':
 ?>
 	<td class="center" width="40%" colspan="2">
-		<textarea cols="40" rows="6" name="<?php echo $t_input_name ?>"><?php
+		<textarea <?php echo helper_get_tab_index() ?> cols="40" rows="6" name="<?php echo $t_input_name ?>"><?php
 						if ( is_array( $t_value ) )
 						{
 							var_export( $t_value );
@@ -362,7 +390,7 @@
 					case 'string_password':
 ?>
 	<td class="center" width="40%" colspan="2">
-		<input type="password" size="50" maxlength="50" name="<?php echo $t_input_name ?>" value="<?php echo base64_decode( $t_value ) ?>"/>
+		<input <?php echo helper_get_tab_index() ?> type="password" size="50" maxlength="50" name="<?php echo $t_input_name ?>" value="<?php echo base64_decode( $t_value ) ?>"/>
 	</td>
 <?php
 						break;
@@ -373,7 +401,7 @@
 					case 'dropdown_multiselect_any':
 ?>
 	<td class="center" width="40%" colspan="2">
-		<select name="<?php echo $t_input_name . ( ( in_array( $p_type, array( 'dropdown_multiselect', 'dropdown_multiselect_any' ), TRUE ) ) ? '[]" multiple size="6' : NULL ) ?>">
+		<select <?php echo helper_get_tab_index() ?> name="<?php echo $t_input_name . ( ( in_array( $p_type, array( 'dropdown_multiselect', 'dropdown_multiselect_any' ), TRUE ) ) ? '[]" multiple size="6' : NULL ) ?>">
 <?php
 						if ( function_exists( $p_function_name ) )
 						{
@@ -404,7 +432,66 @@
 <?php
 				break;
 
+			case 'custom':
+				if ( function_exists( $p_function_name ) )
+				{
+					$p_function_name( $p_name, $t_value, $p_function_parameter );
+				}
+				else
+				{
+					echo '<option class="negative">' . plugin_lang_get( 'function_not_found', 'EmailReporting' ) . ': ' . $p_function_name . '</option>';
+				}
+
+				break;
+
 			default: echo '<tr><td colspan="3">' . plugin_lang_get( 'unknown_setting', 'EmailReporting' ) . $p_name . ' -> level 1</td></tr>';
+		}
+	}
+
+	# --------------------
+	# output all custom fields
+	function ERP_print_custom_fields( $p_name, $p_sel_value )
+	{
+		# Custom Fields
+		$t_custom_fields = custom_field_get_ids();
+		foreach( $t_custom_fields as $t_field_id )
+		{
+			$t_def = custom_field_get_definition( $t_field_id );
+?>
+<tr <?php echo helper_alternate_class( )?>>
+	<td class="category">
+		<?php echo ERP_print_documentation_link( $p_name ) . ': ' . string_display( lang_get_defaulted( $t_def[ 'name' ] ) ) ?>
+	</td>
+<?php
+			echo '<td class="center" colspan="2">';
+			ERP_print_custom_field_input( ( ( is_array( $p_sel_value ) && isset( $p_sel_value[ $t_field_id ] ) ) ? $p_sel_value[ $t_field_id ] : NULL ), $t_def );
+			echo '</td></tr>';
+		}
+	}
+
+	# --------------------
+	# output a single custom field row
+	# Based on MantisBT function print_custom_field_input
+	function ERP_print_custom_field_input( $p_sel_value, $p_field_def )
+	{
+
+		if( $p_sel_value === NULL )
+		{
+			$t_custom_field_value = custom_field_default_to_value( $p_field_def[ 'default_value' ], $p_field_def[ 'type' ] );
+		}
+		else
+		{
+			$t_custom_field_value = $p_sel_value;
+		}
+
+		global $g_custom_field_type_definition;
+		if( isset( $g_custom_field_type_definition[ $p_field_def[ 'type' ] ][ '#function_print_input' ] ) )
+		{
+			call_user_func( $g_custom_field_type_definition[ $p_field_def[ 'type' ] ][ '#function_print_input' ], $p_field_def, $t_custom_field_value );
+		}
+		else
+		{
+			trigger_error( ERROR_CUSTOM_FIELD_INVALID_DEFINITION, ERROR );
 		}
 	}
 
@@ -439,7 +526,7 @@
 			if ( !is_array( $t_option_array ) )
 			{
 				$t_option_key = $t_option_array;
-				$t_option_array = array( 'description' => plugin_lang_get( $t_option_array ) );
+				$t_option_array = array( 'description' => ERP_plugin_lang_get_defaulted( $t_option_array ) );
 			}
 
 			$t_options_sorted[ $t_option_key ] = $t_option_array[ 'description' ];
@@ -592,6 +679,26 @@
 	}
 
 	# --------------------
+	# output a option list with all users who have at least global reporter rights
+	# Based on MantisBT function print_tag_option_list
+	function ERP_print_tag_attach_option_list( $p_sel_value )
+	{
+		require_once( 'tag_api.php' );
+
+		$t_rows = tag_get_candidates_for_bug( 0 );
+
+		foreach ( $t_rows as $row )
+		{
+			$t_string = $row[ 'name' ];
+			if ( !empty( $row[ 'description' ] ) )
+			{
+				$t_string .= ' - ' . utf8_substr( $row[ 'description' ], 0, 20 );
+			}
+			echo '<option value="', $row[ 'id' ], '" title="', string_attribute( $row[ 'name' ] ), '"', check_selected( $p_sel_value, $row[ 'id' ] ), '>', string_attribute( $t_string ), '</option>';
+		}
+	}
+
+	# --------------------
 	# output a option list based on an array with an index called "description" or a variable with a string value
 	function ERP_print_mailbox_action_radio_buttons( $p_input_name, $p_sel_value, $p_variable_array )
 	{
@@ -622,7 +729,7 @@
 				foreach ( $t_actions AS $t_action )
 				{
 ?>
-		<label><input type="radio" name="<?php echo $p_input_name ?>" value="<?php echo $t_action ?>"<?php check_checked( $p_sel_value, $t_action ) ?>/><?php echo plugin_lang_get( $t_action . '_action' )?></label>
+		<label><input <?php echo helper_get_tab_index() ?> type="radio" name="<?php echo $p_input_name ?>" value="<?php echo $t_action ?>"<?php check_checked( $p_sel_value, $t_action ) ?>/><?php echo plugin_lang_get( $t_action . '_action' )?></label>
 <?php
 				}
 			}
