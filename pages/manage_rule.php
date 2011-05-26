@@ -40,10 +40,7 @@ $t_rules = plugin_config_get( 'rules' );
 $f_rule_action = gpc_get_string( 'rule_action', 'add' );
 $f_select_rule = gpc_get_int( 'select_rule', -1 );
 
-$t_rule = array(
-	'issue_reporter' => NULL,
-	'issue_category' => -1,
-);
+$t_rule = array();
 
 if ( $f_rule_action !== 'add' )
 {
@@ -78,11 +75,11 @@ ERP_output_config_option( 'description', 'string', $t_rule );
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'rule_conditions', 'header' );
 ERP_output_config_option( 'issue_creation_method', 'dropdown_any', $t_rule, 'ERP_print_descriptions_option_list', array( 'emailreporting', 'mantisbt' ) );// TODO think about name and think this over whether selected mailboxes should be here or on the manage mailboxes page
-ERP_output_config_option( 'issue_bug_bugnote', 'dropdown_any', $t_rule, 'ERP_print_descriptions_option_list', array( 'note', 'issue' ) ); //TODO bugnote or new bug
-ERP_output_config_option( 'issue_reporter', 'dropdown_any', $t_rule, 'ERP_print_reporter_option_list' );
-ERP_output_config_option( 'issue_project', 'dropdown_any', $t_rule, 'ERP_print_projects_option_list' );
-ERP_output_config_option( 'issue_category', 'dropdown_any', $t_rule, 'ERP_print_global_category_option_list' );
-ERP_output_config_option( 'issue_priority', 'dropdown_any', $t_rule, 'ERP_print_priority_option_list' );
+ERP_output_config_option( 'issue_bug_bugnote', 'dropdown_any', $t_rule, 'ERP_print_descriptions_option_list', array( 'newnote', 'newissue' ) ); //TODO bugnote or new bug
+ERP_output_config_option( 'issue_reporter', 'dropdown_multiselect_any', $t_rule, 'ERP_print_reporter_option_list' );
+ERP_output_config_option( 'issue_project', 'dropdown_multiselect_any', $t_rule, 'ERP_print_projects_option_list' );
+ERP_output_config_option( 'issue_category', 'dropdown_multiselect_any', $t_rule, 'ERP_print_global_category_option_list' );
+ERP_output_config_option( 'issue_priority', 'dropdown_multiselect_any', $t_rule, 'ERP_print_priority_option_list' );
 ERP_output_config_option( 'issue_summary', 'string', $t_rule );
 ERP_output_config_option( 'issue_description', 'string', $t_rule );
 
@@ -106,10 +103,6 @@ ERP_output_config_option( $f_rule_action . '_action', 'submit' );
 
 ERP_output_config_option( 'rules', 'header', 'manage_mailbox' );
 
-$t_actions_list = array(
-	0 => array( 'add' ),
-	1 => array( 'copy', 'edit', 'delete' ),
-);
 ERP_output_config_option( 'rule_action', 'radio_buttons', $f_rule_action, 'ERP_print_rule_action_radio_buttons', $t_rules );
 ERP_output_config_option( 'select_rule', 'dropdown', $f_select_rule, 'ERP_print_descriptions_option_list', $t_rules );
 ERP_output_config_option( 'disabled', 'empty' );

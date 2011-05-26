@@ -67,8 +67,8 @@ $s_plugin_EmailReporting_POP3 = 'POP3';
 $s_plugin_EmailReporting_emailreporting = 'EmailReporting';
 $s_plugin_EmailReporting_mantisbt = 'MantisBT';
 
-$s_plugin_EmailReporting_note = 'Note';
-$s_plugin_EmailReporting_issue = 'Issue';
+$s_plugin_EmailReporting_newnote = 'New note';
+$s_plugin_EmailReporting_newissue = 'New issue';
 
 $s_plugin_EmailReporting_name = 'Name';
 $s_plugin_EmailReporting_email_address = 'Email address';

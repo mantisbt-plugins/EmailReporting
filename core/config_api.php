@@ -12,7 +12,6 @@
 			'mailbox_type'			=> 'POP3',
 			'encryption'			=> 'None',
 			'auth_method'			=> 'USER',
-			'global_category_id'	=> -1,
 		);
 
 		return( $t_mailbox );
@@ -182,11 +181,16 @@
 		{
 			$t_value = plugin_config_get( $p_name );
 		}
-		// Need to catch the instance where $p_def_value is array for dropdown_multiselect (_any)
+		// Need to catch the instance where $p_def_value is an array for dropdown_multiselect (_any)
 		elseif ( is_array( $p_def_value ) &&
 			(
 				( !in_array( $p_type, array( 'dropdown_multiselect', 'dropdown_multiselect_any' ) ) ) ||
-				( in_array( $p_type, array( 'dropdown_multiselect', 'dropdown_multiselect_any' ) ) && count( array_diff_assoc( array_values( $p_def_value ), $p_def_value ) ) !== 0 )
+				( in_array( $p_type, array( 'dropdown_multiselect', 'dropdown_multiselect_any' ) ) && 
+					(
+						count( $p_def_value ) === 0 ||
+						count( array_diff_assoc( array_values( $p_def_value ), $p_def_value ) ) !== 0
+					)
+				)
 			)
 		)
 		{
@@ -405,6 +409,27 @@
 	}
 
 	# --------------------
+	# output a option list for authentication methods for POP3 and IMAP
+	function ERP_print_auth_method_option_list( $p_sel_value )
+	{
+		require_once( 'Net/POP3.php' );
+		require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/Net/IMAPProtocol_1.0.3.php' );
+
+		$t_mailbox_connection_pop3 = new Net_POP3();
+		$t_mailbox_connection_imap = new Net_IMAPProtocol();
+
+		$t_supported_auth_methods = array_unique( array_merge( $t_mailbox_connection_pop3->supportedAuthMethods, $t_mailbox_connection_imap->supportedAuthMethods ) );
+		natcasesort( $t_supported_auth_methods );
+
+		foreach ( $t_supported_auth_methods AS $t_supported_auth_method )
+		{
+			echo '<option';
+			check_selected( $p_sel_value, $t_supported_auth_method );
+			echo '>' . $t_supported_auth_method . '</option>';
+		}
+	}
+
+	# --------------------
 	# output a option list based on an array with an index called "description"
 	function ERP_print_descriptions_option_list( $p_sel_value, $p_options_array )
 	{
@@ -427,27 +452,6 @@
 			echo '<option value="' . $t_option_key . '"';
 			check_selected( $p_sel_value, $t_option_key );
 			echo '>' . ( ( isset( $p_options_array[ $t_option_key ][ 'enabled' ] ) && $p_options_array[ $t_option_key ][ 'enabled' ] === FALSE ) ? '* ' : NULL ) . $t_description . '</option>';
-		}
-	}
-
-	# --------------------
-	# output a option list for authentication methods for POP3 and IMAP
-	function ERP_print_auth_method_option_list( $p_sel_value )
-	{
-		require_once( 'Net/POP3.php' );
-		require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/Net/IMAPProtocol_1.0.3.php' );
-
-		$t_mailbox_connection_pop3 = new Net_POP3();
-		$t_mailbox_connection_imap = new Net_IMAPProtocol();
-
-		$t_supported_auth_methods = array_unique( array_merge( $t_mailbox_connection_pop3->supportedAuthMethods, $t_mailbox_connection_imap->supportedAuthMethods ) );
-		natcasesort( $t_supported_auth_methods );
-
-		foreach ( $t_supported_auth_methods AS $t_supported_auth_method )
-		{
-			echo '<option';
-			check_selected( $p_sel_value, $t_supported_auth_method );
-			echo '>' . $t_supported_auth_method . '</option>';
 		}
 	}
 
@@ -481,11 +485,21 @@
 	# output a option list with global categories available in the mantisbt system
 	function ERP_print_global_category_option_list( $p_sel_value )
 	{
+		// Need to disable allow_no_category for a moment
+		config_set_cache( 'allow_no_category', OFF, CONFIG_TYPE_STRING );
+		config_set_global( 'allow_no_category', OFF );
+
 		// Need to disable inherit projects for one moment.
 		config_set_cache( 'subprojects_inherit_categories', OFF, CONFIG_TYPE_STRING );
 		config_set_global( 'subprojects_inherit_categories', OFF );
 
-		print_category_option_list( $p_sel_value, ALL_PROJECTS );
+		$t_sel_value = $p_sel_value;
+		if ( $t_sel_value === NULL )
+		{
+			$t_sel_value = -1;
+		}
+
+		print_category_option_list( $t_sel_value, ALL_PROJECTS );
 
 		$t_all_projects = project_get_all_rows();
 		$t_projects_info = array();
@@ -499,29 +513,9 @@
 		foreach( $t_projects_info AS $t_project_id => $t_project_name )
 		{
 			echo '<optgroup label="' . string_attribute( $t_project_name ) . '">';
-			print_category_option_list( $p_sel_value, $t_project_id );
+			print_category_option_list( $t_sel_value, $t_project_id );
 			echo '</optgroup>';
 		}
-	}
-
-	# --------------------
-	# output a option list with all users who have at least global reporter rights
-	function ERP_print_reporter_option_list( $p_sel_value )
-	{
-		if ( $p_sel_value !== NULL )
-		{
-			$t_user_ids = (array) $p_sel_value;
-
-			foreach ( $t_user_ids AS $t_single_user_id )
-			{
-				if ( !user_exists( $t_single_user_id ) )
-				{
-					echo '<option value="' . $t_single_user_id . '" selected class="negative">' . plugin_lang_get( 'missing_reporter', 'EmailReporting' ) . '</option>';
-				}
-			}
-		}
-
-		print_user_option_list( $p_sel_value, ALL_PROJECTS, config_get_global( 'report_bug_threshold' ) );
 	}
 
 	# --------------------
@@ -575,6 +569,26 @@
 			check_selected( $p_sel_value, $t_all_projects[ $t_project_id ][ 'id' ] );
 			echo '>' . ( ( $t_all_projects[ $t_project_id ][ 'enabled' ] == FALSE ) ? '* ' : NULL ) . string_attribute( $t_all_projects[ $t_project_id ][ 'name' ] ) . '</option>' . "\n";
 		}
+	}
+
+	# --------------------
+	# output a option list with all users who have at least global reporter rights
+	function ERP_print_reporter_option_list( $p_sel_value )
+	{
+		if ( $p_sel_value !== NULL )
+		{
+			$t_user_ids = (array) $p_sel_value;
+
+			foreach ( $t_user_ids AS $t_single_user_id )
+			{
+				if ( !user_exists( $t_single_user_id ) )
+				{
+					echo '<option value="' . $t_single_user_id . '" selected class="negative">' . plugin_lang_get( 'missing_reporter', 'EmailReporting' ) . '</option>';
+				}
+			}
+		}
+
+		print_user_option_list( $p_sel_value, ALL_PROJECTS, config_get_global( 'report_bug_threshold' ) );
 	}
 
 	# --------------------
