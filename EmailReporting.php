@@ -89,7 +89,7 @@ class EmailReportingPlugin extends MantisPlugin
 			# Delete incoming mail from POP3 server
 			'mail_delete'					=> ON,
 
-			# Should users allways receive emails on actions they performed by email even though email_receive_own is OFF
+			# Should users always receive emails on actions they performed by email even though email_receive_own is OFF
 			'mail_email_receive_own'		=> OFF,
 
 			# Need to set the character encoding to which the email will be converted

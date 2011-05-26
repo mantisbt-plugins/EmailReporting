@@ -293,8 +293,8 @@ Jun 2007
 		$g_mail_default_bug_category = '%default_bug_category%';
 	- Fixed a missing variable in the function: "mail_process_all_mails"
 		$t_mail_debug was not set and would cause notice level errors and debug mode in this function wouldn't work ( ~13854 )
-	- Emails are now not allways saved to disk ( ~13854 )
-	- Made sure $t_mail['X-Mantis-Complete'] would allways be populated ( with null value if the config "mail_additional" was disabled )
+	- Emails are now not always saved to disk ( ~13854 )
+	- Made sure $t_mail['X-Mantis-Complete'] would always be populated ( with null value if the config "mail_additional" was disabled )
 	- Adding attachments to bug items now also works on Windows systems (Removed hardcoded directory part "/tmp/").
 	- The subject of an email is now also trimmed before storing it in $t_bug_data->summary. Like it is in bug_report.php
 	- Fixed problem with duplicate attachments ( ~14255 and ~14256 )

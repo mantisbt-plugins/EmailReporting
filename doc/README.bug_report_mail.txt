@@ -90,7 +90,7 @@ Deleting emails:
 If you don't want bug_report_mail.php to delete the mails from your POP3/IMAP
 server disable the setting (see plugin config page in mantis). POP3 only
 processes unread emails. IMAP on the other hand processes read and unread
-emails. Because of this IMAP will allways mark the emails as deleted after
+emails. Because of this IMAP will always mark the emails as deleted after
 they have been processed but it will neglect to perform the expunge command
 which would delete them permanently.
 
