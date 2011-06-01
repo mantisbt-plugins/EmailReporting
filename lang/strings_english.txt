@@ -109,9 +109,33 @@ $s_plugin_EmailReporting_function_not_found = 'Function not found';
 $s_plugin_EmailReporting_rules = 'Rules';
 $s_plugin_EmailReporting_select_rule = 'Select rule';
 
+$s_plugin_EmailReporting_rule_wildcards = 'Wildcards';
 $s_plugin_EmailReporting_rule_wildcards_help = '- Wildcard characters: * ?
-- If no wildcard characters are used an exact comparison will be applied';
-$s_plugin_EmailReporting_rule_actions_help = '- Custom fields not connected to the project of the created issue will be ignored
+- If wildcard characters are not used an exact comparison will be applied';
+
+$s_plugin_EmailReporting_rule_conditions_help = 'NULL';
+
+$s_plugin_EmailReporting_rule_actions_help = '- "[any]" means the action in question will be ignored
+- Custom fields not connected to the project of the created issue will be ignored
 - Dropdown list in custom fields should contain an empty value if you want that option in the dropdown list. Otherwise a value will always be applied when the conditions specified are met.';
+
+$s_plugin_EmailReporting_rule_exceptions_help = 'NULL';
+
+$s_plugin_EmailReporting_cond_issue_creation_method = 'Issue creation method';
+$s_plugin_EmailReporting_cond_mailbox = 'Apply to mailboxes';
+$s_plugin_EmailReporting_cond_issue_bug_bugnote = 'Apply to new issues and / or notes';
+$s_plugin_EmailReporting_cond_issue_reporter = 'Issue reporter';
+$s_plugin_EmailReporting_cond_issue_project = 'Issue project';
+$s_plugin_EmailReporting_cond_issue_category = 'Issue category';
+$s_plugin_EmailReporting_cond_issue_priority = 'Issue priority';
+$s_plugin_EmailReporting_cond_issue_summary = 'Issue summary';
+$s_plugin_EmailReporting_cond_issue_description = 'Issue description';
+
+$s_plugin_EmailReporting_act_issue_category = 'Update category';
+$s_plugin_EmailReporting_act_issue_tag = 'Add tags';
+$s_plugin_EmailReporting_act_issue_custom_field = 'Update custom field';
+
+$s_plugin_EmailReporting_excep_issue_summary = 'Issue summary';
+$s_plugin_EmailReporting_excep_issue_description = 'Issue description';
 
 ?>

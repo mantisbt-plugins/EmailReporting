@@ -216,7 +216,7 @@
 				( in_array( $p_type, array( 'dropdown_multiselect', 'dropdown_multiselect_any', 'custom' ) ) && 
 					(
 						count( $p_def_value ) === 0 ||
-						count( array_diff_assoc( array_values( $p_def_value ), $p_def_value ) ) !== 0
+						array_values( $p_def_value ) !== $p_def_value
 					)
 				)
 			)
@@ -537,7 +537,10 @@
 		foreach ( $t_options_sorted AS $t_option_key => $t_description )
 		{
 			echo '<option value="' . $t_option_key . '"';
-			check_selected( $p_sel_value, $t_option_key );
+			if ( ( !is_array( $p_sel_value ) && $p_sel_value !== NULL ) || ( is_array( $p_sel_value ) && !empty( $p_sel_value ) ) )
+			{
+				check_selected( $p_sel_value, $t_option_key );
+			}
 			echo '>' . ( ( isset( $p_options_array[ $t_option_key ][ 'enabled' ] ) && $p_options_array[ $t_option_key ][ 'enabled' ] === FALSE ) ? '* ' : NULL ) . $t_description . '</option>';
 		}
 	}
