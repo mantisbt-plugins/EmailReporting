@@ -187,7 +187,7 @@
 		}
 		else
 		{
-			return( lang_get_defaulted( $t_name ) );
+			return( $t_lang );
 		}
 	}
 
