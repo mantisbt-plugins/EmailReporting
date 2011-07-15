@@ -58,6 +58,7 @@ class ERP_mailbox_api
 	private $_mail_removed_reply_text;
 	private $_mail_reporter_id;
 	private $_mail_save_from;
+	private $_mail_save_subject_in_note;
 	private $_mail_use_bug_priority;
 	private $_mail_use_reporter;
 
@@ -109,6 +110,7 @@ class ERP_mailbox_api
 		$this->_mail_removed_reply_text			= plugin_config_get( 'mail_removed_reply_text' );
 		$this->_mail_reporter_id				= plugin_config_get( 'mail_reporter_id' );
 		$this->_mail_save_from					= plugin_config_get( 'mail_save_from' );
+		$this->_mail_save_subject_in_note		= plugin_config_get( 'mail_save_subject_in_note' );
 		$this->_mail_use_bug_priority			= plugin_config_get( 'mail_use_bug_priority' );
 		$this->_mail_use_reporter				= plugin_config_get( 'mail_use_reporter' );
 
@@ -610,7 +612,7 @@ class ERP_mailbox_api
 			$t_description = $p_email[ 'X-Mantis-Body' ];
 
 			$t_description = $this->identify_replies( $t_description );
-			$t_description = $this->apply_mail_save_from( $p_email[ 'From' ], $t_description );
+			$t_description = $this->add_additional_info( 'note', $p_email, $t_description );
 
 			# Event integration
 			# Core mantis event already exists within bugnote_add function
@@ -669,7 +671,7 @@ class ERP_mailbox_api
 			$t_bug_data->status					= $this->_bug_submit_status;
 			$t_bug_data->summary				= $p_email[ 'Subject' ];
 
-			$t_bug_data->description			= $this->apply_mail_save_from( $p_email[ 'From' ], $p_email[ 'X-Mantis-Body' ] );
+			$t_bug_data->description			= $this->add_additional_info( 'issue', $p_email[ 'From' ], $p_email[ 'X-Mantis-Body' ] );
 
 			$t_bug_data->steps_to_reproduce		= $this->_default_bug_steps_to_reproduce;
 			$t_bug_data->additional_information	= $this->_default_bug_additional_info;
@@ -1120,14 +1122,26 @@ class ERP_mailbox_api
 
 	# --------------------
 	# Add the save from text if enabled
-	private function apply_mail_save_from( $p_from, $p_description )
+	private function add_additional_info( $p_type, $p_email, $p_description )
 	{
+		$t_additional_info = NULL;
+
 		if ( $this->_mail_save_from )
 		{
-			return( 'Email from: ' . $p_from . "\n\n" . $p_description );
+			$t_additional_info .= 'Email from: ' . $p_email[ 'From' ] . "\n";
 		}
 
-		return( $p_description );
+		if ( $p_type === 'note' && $this->_mail_save_subject_in_note )
+		{
+			$t_additional_info .= 'Subject: ' . $p_email[ 'Subject' ] . "\n";
+		}
+
+		if ( $t_additional_info !== NULL )
+		{
+			$t_additional_info .= "\n";
+		}
+
+		return( $t_additional_info . $p_description );
 	}
 
 	# --------------------

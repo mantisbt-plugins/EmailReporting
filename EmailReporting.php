@@ -134,6 +134,9 @@ class EmailReportingPlugin extends MantisPlugin
 			# Write sender of the message into the bug report
 			'mail_save_from'				=> ON,
 
+			# Write the subject of the email in the note
+			'mail_save_subject_in_note'		=> OFF,
+
 			# Do you want to secure the EmailReporting script so that it cannot be run
 			# via a webserver?
 			'mail_secured_script'			=> ON,
