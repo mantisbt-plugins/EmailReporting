@@ -27,11 +27,6 @@ class EmailReportingPlugin extends MantisPlugin
 	 */
 	function config()
 	{
-		// This function does not use ERP_prepare_directory_string
-		// It would require including config_api.php within this file
-		// I decided against that since it would make the functions available at all times and it is not necessary most of the time
-		$t_upload_tmp_dir = realpath( trim( str_replace( '\\', '/', ini_get( 'upload_tmp_dir' ) ) ) );   
-
 		return array(
 			'config_version'				=> 0,
 			'schema'						=> -1,
