@@ -616,7 +616,7 @@ class ERP_mailbox_api
 
 			# Event integration
 			# Core mantis event already exists within bugnote_add function
-			$t_bugnote_text = event_signal( 'EVENT_ERP_BUGNOTE_DATA', $t_description, $t_bug_id );
+			$t_description = event_signal( 'EVENT_ERP_BUGNOTE_DATA', $t_description, $t_bug_id );
 
 			$t_status = bug_get_field( $t_bug_id, 'status' );
 
