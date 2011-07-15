@@ -58,6 +58,7 @@ class ERP_mailbox_api
 	private $_mail_removed_reply_text;
 	private $_mail_reporter_id;
 	private $_mail_save_from;
+	private $_mail_save_note_subject;
 	private $_mail_use_bug_priority;
 	private $_mail_use_reporter;
 
@@ -109,6 +110,7 @@ class ERP_mailbox_api
 		$this->_mail_removed_reply_text			= plugin_config_get( 'mail_removed_reply_text' );
 		$this->_mail_reporter_id				= plugin_config_get( 'mail_reporter_id' );
 		$this->_mail_save_from					= plugin_config_get( 'mail_save_from' );
+		$this->_mail_save_note_subject			= plugin_config_get( 'mail_save_note_subject');
 		$this->_mail_use_bug_priority			= plugin_config_get( 'mail_use_bug_priority' );
 		$this->_mail_use_reporter				= plugin_config_get( 'mail_use_reporter' );
 
@@ -610,8 +612,10 @@ class ERP_mailbox_api
 			$t_description = $p_email[ 'X-Mantis-Body' ];
 
 			$t_description = $this->identify_replies( $t_description );
-			$t_description = $this->apply_mail_save_from( $p_email[ 'From' ], $t_description );
+			$t_description = $this->apply_mail_save_from( $p_email[ 'From' ], $t_description );			
+			$t_description = $this->apply_mail_subject( $p_email[ 'Subject' ], $t_description );
 
+			
 			# Event integration
 			# Core mantis event already exists within bugnote_add function
 			$t_bugnote_text = event_signal( 'EVENT_ERP_BUGNOTE_DATA', $t_description, $t_bug_id );
@@ -1023,6 +1027,7 @@ class ERP_mailbox_api
 	private function mail_is_a_bugnote( $p_mail_subject )
 	{
 		$t_bug_id = $this->get_bug_id_from_subject( $p_mail_subject );
+		print("recognized t_bug_id=[".$t_bug_id."], subject=[".$p_mail_subject."]");
 
 		if ( $t_bug_id !== FALSE )
 		{
@@ -1039,7 +1044,7 @@ class ERP_mailbox_api
 	# return the bug's id from the subject
 	private function get_bug_id_from_subject( $p_mail_subject )
 	{
-		preg_match( "/\[.*?\s([0-9]{1,7}?)\]/u", $p_mail_subject, $v_matches );
+		preg_match( "/.*\[.*?(0*[0-9]{1,7}?)\s*\]/u", $p_mail_subject, $v_matches );
 
 		if ( isset( $v_matches[ 1 ] ) )
 		{
@@ -1130,6 +1135,21 @@ class ERP_mailbox_api
 		return( $p_description );
 	}
 
+	# --------------------
+	# Add the save from text if enabled
+	private function apply_mail_subject( $p_subject, $p_description )
+	{
+		if ( $this->_mail_save_note_subject )
+		{
+			return( 'Subject: ' . $p_subject . "\n" . $p_description );
+		}
+
+		return( $p_description );
+	}
+
+	
+	
+	
 	# --------------------
 	# Show memory usage in debug mode
 	private function show_memory_usage( $p_location )

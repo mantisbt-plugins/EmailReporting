@@ -51,6 +51,9 @@ class EmailReportingPlugin extends MantisPlugin
 			# Is this plugin allowed to process and add bugnotes to existing issues
 			'mail_add_bugnotes'				=> ON,
 
+			# Add email subject as the first line of a note (alctive only for notes)
+                        'mail_save_note_subject'                => OFF,
+
 			# Add complete email into the attachments
 			'mail_add_complete_email'		=> OFF,
 
@@ -493,6 +496,13 @@ class EmailReportingPlugin extends MantisPlugin
 
 			plugin_config_set( 'config_version', 10 );
 		}
+		if ( $t_config_version <= 10 )
+		{
+                        plugin_config_set( 'mail_save_note_subject', ON );
+			plugin_config_set( 'config_version', 11 );
+		}
+
+
 	}
 
 	/* 
