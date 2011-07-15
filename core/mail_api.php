@@ -1039,7 +1039,7 @@ class ERP_mailbox_api
 	# return the bug's id from the subject
 	private function get_bug_id_from_subject( $p_mail_subject )
 	{
-		preg_match( "/\[.*?\s([0-9]{1,7}?)\]/u", $p_mail_subject, $v_matches );
+		preg_match( "/\[.*?([0-9]{1,7}?)\]/u", $p_mail_subject, $v_matches );
 
 		if ( isset( $v_matches[ 1 ] ) )
 		{
