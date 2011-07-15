@@ -43,7 +43,7 @@ class EmailReportingPlugin extends MantisPlugin
 			# Is this plugin allowed to process and create new bug reports
 			'mail_add_bug_reports'			=> ON,
 
-			# Is this plugin allowed to process and add bugnotes to existing issues
+			# Is this plugin allowed to process and add notes to existing issues
 			'mail_add_bugnotes'				=> ON,
 
 			# Add complete email into the attachments
@@ -131,7 +131,7 @@ class EmailReportingPlugin extends MantisPlugin
 			# Is the rule system enabled
 			'mail_rule_system'				=> OFF,
 
-			# Write sender of the message into the bug report
+			# Write the sender of the email into the issue report/note
 			'mail_save_from'				=> ON,
 
 			# Write the subject of the email in the note

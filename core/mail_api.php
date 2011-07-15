@@ -758,7 +758,7 @@ class ERP_mailbox_api
 		}
 		else
 		{
-			// Not allowed to add bugs and not allowed / able to add bugnote. Need to stop processing
+			// Not allowed to add issues and not allowed / able to add notes. Need to stop processing
 			$this->custom_error( 'Not allowed to create a new issue. Email ignored' );
 			return;
 		}
@@ -1107,16 +1107,16 @@ class ERP_mailbox_api
 	# --------------------
 	# Fixes an empty subject and description with a predefined default text
 	#  $p_mail is passed by reference so no return value needed
-	private function fix_empty_fields( &$p_mail )
+	private function fix_empty_fields( &$p_email )
 	{
-		if ( is_blank( $p_mail[ 'Subject' ] ) )
+		if ( is_blank( $p_email[ 'Subject' ] ) )
 		{
-			$p_mail[ 'Subject' ] = $this->_mail_nosubject;
+			$p_email[ 'Subject' ] = $this->_mail_nosubject;
 		}
 
-		if ( is_blank( $p_mail[ 'X-Mantis-Body' ] ) )
+		if ( is_blank( $p_email[ 'X-Mantis-Body' ] ) )
 		{
-			$p_mail[ 'X-Mantis-Body' ] = $this->_mail_nodescription;
+			$p_email[ 'X-Mantis-Body' ] = $this->_mail_nodescription;
 		}
 	}
 

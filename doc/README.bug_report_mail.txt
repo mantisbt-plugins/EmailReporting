@@ -18,9 +18,9 @@ Net_POP3 and Net_IMAP package. Support for Outlook RTF formatted
 not fully supported
 
 
-Bugnotes:
+Notes:
 bug_report_mail is able to recognize if an email is a reply to an
-already opened bug and adds the content as a bugnote.
+already opened issue and adds the content as a note.
 
 
 Mailboxes:
@@ -199,8 +199,8 @@ names of the input form fields yourself to the following format (brackets
 included): 'plugin_content[' . plugin_get_current() . '][variable name]'
 
 Two other events are available which perform the same function as their
-core mantis counterparts. But these are only triggered when a bug report
-or bugnote is added by EmailReporting.
+core mantis counterparts. But these are only triggered when a issue report
+or note is added by EmailReporting.
 EVENT_ERP_BUGNOTE_DATA
 EVENT_ERP_REPORT_BUG_DATA
 
