@@ -1026,12 +1026,9 @@ class ERP_mailbox_api
 	{
 		$t_bug_id = $this->get_bug_id_from_subject( $p_mail_subject );
 
-		if ( $t_bug_id !== FALSE )
+		if ( $t_bug_id !== FALSE && bug_exists( $t_bug_id ) )
 		{
-			if ( bug_exists( $t_bug_id ) )
-			{
-				return( $t_bug_id );
-			}
+			return( $t_bug_id );
 		}
 
 		return( FALSE );
@@ -1041,7 +1038,7 @@ class ERP_mailbox_api
 	# return the bug's id from the subject
 	private function get_bug_id_from_subject( $p_mail_subject )
 	{
-		preg_match( "/\[(?P<project>.*?\s+|)0*(?P<id>[0-9]{1,7}?)\s?\]/u", $p_mail_subject, $v_matches );
+		preg_match( "/\[(?P<project>.+\s|)0*(?P<id>[0-9]{1,7})\]/u", $p_mail_subject, $v_matches );
 
 		if ( isset( $v_matches[ 'id' ] ) )
 		{
