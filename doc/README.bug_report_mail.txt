@@ -1,13 +1,18 @@
 Installation:
-Extract the complete package to the /mantis/plugins/ directory.
-After that you should be able to see it on the "Manage Plugins" page
+1. Extract the complete package to the /mantis/plugins/ directory.
+2. Rename the new folder to EmailReporting if necessary. If everything
+has been done correctly you should be able to find a file called
+EmailReporting.php plus some folders in the /mantis/plugins/EmailReporting/
+folder
+3. After that you should be able to see it on the "Manage Plugins" page
+with its proper version number (check this in case of an upgrade)
 
 Upgrade:
 If you are performing an upgrade of your existing installation of
 EmailReporting, all you need todo (as long you have not been editing
 files yourself) is
-1. Delete EmailReporting folder from the plugins directory
-2. Extract the complete package to the /mantis/plugins/ directory.
+1. Delete the EmailReporting folder from the plugins directory
+2. Follow the instructions above for the installation of EmailReporting
 
 
 Support:
