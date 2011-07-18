@@ -141,6 +141,9 @@ class EmailReportingPlugin extends MantisPlugin
 			# via a webserver?
 			'mail_secured_script'			=> ON,
 
+			# Which regex should be used for finding the issue id in the subject
+			'mail_subject_id_regex'			=> 'strict',
+
 			# Looks for priority header field
 			'mail_use_bug_priority'			=> ON,
 

@@ -21,7 +21,7 @@ Jan 2011 - EmailReporting-0.9.0-DEV
 	- The mailbox indexes for IMAP are now prepended with imap_
 	- Mailboxes containing disabled projects will be skipped.
 	- Mailbox project dropdown box now shows all projects
-	- Relaxed the bug id regex a bit. Now the project name is optional (based on zdroyer's work)
+	- Added a setting with which the regex can be selected for finding the issue id in the subject (based on zdroyer's work)
 	- Added option to add the subject of the email in the added note (based on zdroyer's work)
 	- Fixed the event EVENT_ERP_BUGNOTE_DATA which had no effect on the added note
 

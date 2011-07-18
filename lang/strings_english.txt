@@ -59,8 +59,13 @@ $s_plugin_EmailReporting_mail_rule_system = 'Rule system';
 $s_plugin_EmailReporting_mail_save_from = 'Write the sender of the email into the issue report/note';
 $s_plugin_EmailReporting_mail_save_subject_in_note = 'Write the subject of the email in the note';
 $s_plugin_EmailReporting_mail_secured_script = 'Block this script from running via a webserver (recommended = "Yes")';
+$s_plugin_EmailReporting_mail_subject_id_regex = 'What saerch for the issue id in the subject should be used';
 $s_plugin_EmailReporting_mail_use_bug_priority = 'Look for priority header field';
 $s_plugin_EmailReporting_mail_use_reporter = 'Use only default reporter user for issues created by email';
+
+$s_plugin_EmailReporting_strict = 'Strict';
+$s_plugin_EmailReporting_balanced = 'Balanced';
+$s_plugin_EmailReporting_relaxed = 'Relaxed';
 
 $s_plugin_EmailReporting_emailreporting = 'EmailReporting';
 $s_plugin_EmailReporting_mantisbt = 'MantisBT';

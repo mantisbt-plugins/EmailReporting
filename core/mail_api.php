@@ -59,6 +59,7 @@ class ERP_mailbox_api
 	private $_mail_reporter_id;
 	private $_mail_save_from;
 	private $_mail_save_subject_in_note;
+	private $_mail_subject_id_regex;
 	private $_mail_use_bug_priority;
 	private $_mail_use_reporter;
 
@@ -111,6 +112,7 @@ class ERP_mailbox_api
 		$this->_mail_reporter_id				= plugin_config_get( 'mail_reporter_id' );
 		$this->_mail_save_from					= plugin_config_get( 'mail_save_from' );
 		$this->_mail_save_subject_in_note		= plugin_config_get( 'mail_save_subject_in_note' );
+		$this->_mail_subject_id_regex			= plugin_config_get( 'mail_subject_id_regex' );
 		$this->_mail_use_bug_priority			= plugin_config_get( 'mail_use_bug_priority' );
 		$this->_mail_use_reporter				= plugin_config_get( 'mail_use_reporter' );
 
@@ -1038,11 +1040,29 @@ class ERP_mailbox_api
 	# return the bug's id from the subject
 	private function get_bug_id_from_subject( $p_mail_subject )
 	{
-		preg_match( "/\[(?P<project>.+\s|)0*(?P<id>[0-9]{1,7})\]/u", $p_mail_subject, $v_matches );
+		// strict is default incase the setting contains an invalid value
+		switch ( $this->_mail_subject_id_regex )
+		{
+			case 'balanced':
+				$t_subject_id_regex = "/\[(?P<project>.+\s|)(?P<id>[0-9]{1,7})\]/u";
 
+				break;
+
+			case 'relaxed':
+				$t_subject_id_regex = "/\[(?P<project>.*\s|)0*(?P<id>[0-9]{1,7})\s*\]/u";
+
+				break;
+
+			case 'strict':
+			default:
+				$t_subject_id_regex = "/\[(?P<project>.+\s)(?P<id>[0-9]{7,7})\]/u";
+		}
+
+		preg_match( $t_subject_id_regex, $p_mail_subject, $v_matches );
+		
 		if ( isset( $v_matches[ 'id' ] ) )
 		{
-			return( $v_matches[ 'id' ] );
+			return( (int) $v_matches[ 'id' ] );
 		}
 
 		return( FALSE );
