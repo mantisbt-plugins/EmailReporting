@@ -682,7 +682,7 @@
 	}
 
 	# --------------------
-	# output a option list with all users who have at least global reporter rights
+	# output a option list with the tags currently known in the Mantis system
 	# Based on MantisBT function print_tag_option_list
 	function ERP_print_tag_attach_option_list( $p_sel_value )
 	{
