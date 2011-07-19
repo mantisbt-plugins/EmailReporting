@@ -52,6 +52,7 @@ class ERP_mailbox_api
 	private $_mail_nodescription;
 	private $_mail_nosubject;
 	private $_mail_preferred_username;
+	private $_mail_preferred_realname;
 	private $_mail_remove_mantis_email;
 	private $_mail_remove_replies;
 	private $_mail_remove_replies_after;
@@ -105,6 +106,7 @@ class ERP_mailbox_api
 		$this->_mail_nodescription				= plugin_config_get( 'mail_nodescription' );
 		$this->_mail_nosubject					= plugin_config_get( 'mail_nosubject' );
 		$this->_mail_preferred_username			= plugin_config_get( 'mail_preferred_username' );
+		$this->_mail_preferred_realname			= plugin_config_get( 'mail_preferred_realname' );
 		$this->_mail_remove_mantis_email		= plugin_config_get( 'mail_remove_mantis_email' );
 		$this->_mail_remove_replies				= plugin_config_get( 'mail_remove_replies' );
 		$this->_mail_remove_replies_after		= plugin_config_get( 'mail_remove_replies_after' );
@@ -538,8 +540,17 @@ class ERP_mailbox_api
 							$t_reporter_id = user_get_id_by_email( $p_parsed_from[ 'email' ] );
 							$t_reporter_name = $t_new_reporter_name;
 
+                            switch( $this->_mail_preferred_realname ){
+								case 'name' :
 							$t_realname = $p_parsed_from[ 'name' ];
-
+									break;
+								case 'email_address':
+									$t_realname = $p_parsed_from[ 'email' ];
+									break;
+								case 'name_and_email_address':
+								default:
+									$t_realname = $p_parsed_from[ 'name' ].' ('.$p_parsed_from[ 'email' ].')';
+							}
 							if ( utf8_strlen( $t_realname ) > REALLEN )
 							{
 								$t_realname = utf8_substr( $t_realname, 0, REALLEN );
