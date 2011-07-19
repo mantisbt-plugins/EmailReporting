@@ -422,7 +422,6 @@
 		</select>
 	</td>
 <?php
-
 						break;
 
 					default: echo '<tr><td colspan="3">' . plugin_lang_get( 'unknown_setting', 'EmailReporting' ) . $p_name . ' -> level 2</td></tr>';
@@ -441,7 +440,6 @@
 				{
 					echo '<option class="negative">' . plugin_lang_get( 'function_not_found', 'EmailReporting' ) . ': ' . $p_function_name . '</option>';
 				}
-
 				break;
 
 			default: echo '<tr><td colspan="3">' . plugin_lang_get( 'unknown_setting', 'EmailReporting' ) . $p_name . ' -> level 1</td></tr>';
