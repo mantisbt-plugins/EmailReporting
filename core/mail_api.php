@@ -540,23 +540,9 @@ class ERP_mailbox_api
 							$t_reporter_id = user_get_id_by_email( $p_parsed_from[ 'email' ] );
 							$t_reporter_name = $t_new_reporter_name;
 
-                            switch( $this->_mail_preferred_realname ){
-								case 'name' :
-							$t_realname = $p_parsed_from[ 'name' ];
-									break;
-								case 'email_address':
-									$t_realname = $p_parsed_from[ 'email' ];
-									break;
-								case 'name_and_email_address':
-								default:
-									$t_realname = $p_parsed_from[ 'name' ].' ('.$p_parsed_from[ 'email' ].')';
-							}
-							if ( utf8_strlen( $t_realname ) > REALLEN )
-							{
-								$t_realname = utf8_substr( $t_realname, 0, REALLEN );
-							}
+							$t_realname = $this->prepare_realname( $p_parsed_from );
 
-							if ( user_is_realname_valid( $t_realname ) && user_is_realname_unique( $t_reporter_name, $t_realname ) )
+							if ( $t_realname !== FALSE )
 							{
 								user_set_realname( $t_reporter_id, $t_realname );
 							}
@@ -981,27 +967,32 @@ class ERP_mailbox_api
 		# I would have liked to validate the username and remove any non-allowed characters
 		# using the config user_login_valid_regex but that seems not possible and since
 		# it's a config, any mantis installation could have a different one
-		if ( $this->_mail_preferred_username === 'name' )
+		switch ( $this->_mail_preferred_username )
 		{
-			$t_username = $p_user_info[ 'name' ];
-		}
-		elseif ( $this->_mail_preferred_username === 'email_address' )
-		{
-			$t_username = $p_user_info[ 'email' ];
-		}
-		elseif ( $this->_mail_preferred_username === 'email_no_domain' )
-		{
-			if( preg_match( email_regex_simple(), $p_user_info[ 'email' ], $t_check ) )
-			{
-				$t_local = $t_check[ 1 ];
-				$t_domain = $t_check[ 2 ];
+			case 'email_address':
+				$t_username = $p_user_info[ 'email' ];
+				break;
 
-				$t_username = $t_local;
-			}
-		}
-		elseif ( $this->_login_method == LDAP && $this->_mail_preferred_username === 'from_ldap' )
-		{
-			$t_username = ERP_ldap_get_username_from_email( $p_user_info[ 'email' ] );
+			case 'email_no_domain':
+				if( preg_match( email_regex_simple(), $p_user_info[ 'email' ], $t_check ) )
+				{
+					$t_local = $t_check[ 1 ];
+					$t_domain = $t_check[ 2 ];
+
+					$t_username = $t_local;
+				}
+				break;
+
+			case 'from_ldap':
+				if ( $this->_login_method == LDAP )
+				{
+					$t_username = ERP_ldap_get_username_from_email( $p_user_info[ 'email' ] );
+				}
+				break;
+
+			case 'name':
+			default:
+				$t_username = $p_user_info[ 'name' ];
 		}
 
 		if ( utf8_strlen( $t_username ) > USERLEN )
@@ -1033,6 +1024,35 @@ class ERP_mailbox_api
 		return( FALSE );
 	}
 
+	private function prepare_realname( $p_parsed_from )
+	{
+		switch( $this->_mail_preferred_realname ){
+			case 'name' :
+				$t_realname = $p_parsed_from[ 'name' ];
+				break;
+
+			case 'email_address':
+				$t_realname = $p_parsed_from[ 'email' ];
+				break;
+
+			case 'name_and_email_address':
+			default:
+				$t_realname = $p_parsed_from[ 'name' ].' ('.$p_parsed_from[ 'email' ].')';
+		}
+
+		if ( utf8_strlen( $t_realname ) > REALLEN )
+		{
+			$t_realname = utf8_substr( $t_realname, 0, REALLEN );
+		}
+
+		if ( user_is_realname_valid( $t_realname ) && user_is_realname_unique( $t_reporter_name, $t_realname ) )
+		{
+			return( $t_realname );
+		}
+
+		return( FALSE );
+	}
+
 	# --------------------
 	# return bug_id if there is a valid mantis bug refererence in subject or return false if not found
 	private function mail_is_a_bugnote( $p_mail_subject )
@@ -1056,12 +1076,10 @@ class ERP_mailbox_api
 		{
 			case 'balanced':
 				$t_subject_id_regex = "/\[(?P<project>.+\s|)(?P<id>[0-9]{1,7})\]/u";
-
 				break;
 
 			case 'relaxed':
 				$t_subject_id_regex = "/\[(?P<project>.*\s|)0*(?P<id>[0-9]{1,7})\s*\]/u";
-
 				break;
 
 			case 'strict':
