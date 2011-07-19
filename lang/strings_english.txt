@@ -50,6 +50,7 @@ $s_plugin_EmailReporting_mail_nodescription = 'Use this text if no description i
 $s_plugin_EmailReporting_mail_nosubject = 'Use this text if no subject is found in the email';
 $s_plugin_EmailReporting_mail_parse_html = 'Parse HTML emails';
 $s_plugin_EmailReporting_mail_preferred_username = 'Preferred username for new user creations';
+$s_plugin_EmailReporting_mail_preferred_realname = 'Preferred realname for new user creations';
 $s_plugin_EmailReporting_mail_remove_mantis_email = 'Remove MantisBT notification emails from replies.';
 $s_plugin_EmailReporting_mail_remove_replies = 'Remove all replies from notes';
 $s_plugin_EmailReporting_mail_remove_replies_after = 'Use this text to identify the start of a reply';
@@ -77,6 +78,7 @@ $s_plugin_EmailReporting_name = 'Name';
 $s_plugin_EmailReporting_email_address = 'Email address';
 $s_plugin_EmailReporting_email_no_domain = 'Email address without the domain name';
 $s_plugin_EmailReporting_from_ldap = 'Get username from LDAP';
+$s_plugin_EmailReporting_name_and_email_address = 'Name and the email address in brackets';
 
 $s_plugin_EmailReporting_mailboxes = 'Mailboxes';
 $s_plugin_EmailReporting_add_action = 'Add';
