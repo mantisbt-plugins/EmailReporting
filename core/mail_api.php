@@ -1138,7 +1138,7 @@ class ERP_mailbox_api
 	}
 
 	# --------------------
-	# Add the save from text if enabled
+	# Add additional info if enabled
 	private function add_additional_info( $p_type, $p_email, $p_description )
 	{
 		$t_additional_info = NULL;
