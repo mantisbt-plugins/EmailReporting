@@ -20,6 +20,7 @@ $f_gpc = array(
 	'mail_nosubject'				=> gpc_get_string( 'mail_nosubject' ),
 	'mail_parse_html'				=> gpc_get_bool( 'mail_parse_html' ),
 	'mail_preferred_username'		=> gpc_get_string( 'mail_preferred_username' ),
+    'mail_preferred_realname'       => gpc_get_string( 'mail_preferred_realname' ),
 	'mail_remove_mantis_email'		=> gpc_get_bool( 'mail_remove_mantis_email' ),
 	'mail_remove_replies'			=> gpc_get_bool( 'mail_remove_replies' ),
 	'mail_remove_replies_after'		=> gpc_get_string( 'mail_remove_replies_after' ),
@@ -29,7 +30,7 @@ $f_gpc = array(
 	'mail_save_from'				=> gpc_get_bool( 'mail_save_from' ),
 	'mail_save_subject_in_note'		=> gpc_get_bool( 'mail_save_subject_in_note' ),
 	'mail_secured_script'			=> gpc_get_bool( 'mail_secured_script' ),
-	'mail_subject_id_regex'			=> gpc_get_bool( 'mail_subject_id_regex' ),
+	'mail_subject_id_regex'			=> gpc_get_string( 'mail_subject_id_regex' ),
 	'mail_use_bug_priority'			=> gpc_get_bool( 'mail_use_bug_priority' ),
 	'mail_use_reporter'				=> gpc_get_bool( 'mail_use_reporter' ),
 );

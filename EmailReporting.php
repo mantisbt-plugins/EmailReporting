@@ -111,6 +111,9 @@ class EmailReportingPlugin extends MantisPlugin
 			# Preferred username for new username creations
 			'mail_preferred_username'		=> 'name',
 
+			# Preferred username for new username creations
+			'mail_preferred_realname'		=> 'name_and_email_address',
+
 			# Try to identify the original mantis email and remove it from the description
 			'mail_remove_mantis_email'		=> ON,
 
