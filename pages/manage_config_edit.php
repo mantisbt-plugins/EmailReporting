@@ -30,7 +30,7 @@ $f_gpc = array(
 	'mail_save_from'				=> gpc_get_bool( 'mail_save_from' ),
 	'mail_save_subject_in_note'		=> gpc_get_bool( 'mail_save_subject_in_note' ),
 	'mail_secured_script'			=> gpc_get_bool( 'mail_secured_script' ),
-	'mail_subject_id_regex'			=> gpc_get_bool( 'mail_subject_id_regex' ),
+	'mail_subject_id_regex'			=> gpc_get_string( 'mail_subject_id_regex' ),
 	'mail_use_bug_priority'			=> gpc_get_bool( 'mail_use_bug_priority' ),
 	'mail_use_reporter'				=> gpc_get_bool( 'mail_use_reporter' ),
 );
