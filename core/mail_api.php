@@ -944,11 +944,11 @@ class ERP_mailbox_api
 	# return the mailadress from the mail's 'From'
 	private function parse_address( $p_from_address )
 	{
-		if ( preg_match( "/(.*?)<(.*?)>/", $p_from_address, $matches ) )
+		if ( preg_match( "/(?P<name>.*)<(?P<email>\S+@\S+)>$/u", trim( $p_from_address ), $matches ) )
 		{
 			$v_from_address = array(
-				'name'	=> trim( $matches[ 1 ], '"\' ' ),
-				'email'	=> trim( $matches[ 2 ] ),
+				'name'	=> trim( $matches[ 'name' ], '"\' ' ),
+				'email'	=> trim( $matches[ 'email' ] ),
 				'From'	=> $p_from_address,
 			);
 		}

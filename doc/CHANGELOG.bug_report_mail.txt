@@ -27,6 +27,7 @@ Jan 2011 - EmailReporting-0.9.0-DEV
 	- Updated README with better explanation on how to install and upgrade EmailReporting
 	- Added an option to set the realname for new user creations (zdroyer)
 	- Added a fix for a safemode error
+	- The regex that searches for the name and email address in the from part of the email has been improved
 
 Nov 2010 - EmailReporting-0.8.4
 	- Improved the project category list
