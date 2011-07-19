@@ -673,7 +673,7 @@ class ERP_mailbox_api
 			$t_bug_data->status					= $this->_bug_submit_status;
 			$t_bug_data->summary				= $p_email[ 'Subject' ];
 
-			$t_bug_data->description			= $this->add_additional_info( 'issue', $p_email[ 'From' ], $p_email[ 'X-Mantis-Body' ] );
+			$t_bug_data->description			= $this->add_additional_info( 'issue', $p_email, $p_email[ 'X-Mantis-Body' ] );
 
 			$t_bug_data->steps_to_reproduce		= $this->_default_bug_steps_to_reproduce;
 			$t_bug_data->additional_information	= $this->_default_bug_additional_info;
