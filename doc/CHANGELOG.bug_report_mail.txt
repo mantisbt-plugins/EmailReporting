@@ -26,6 +26,7 @@ Jan 2011 - EmailReporting-0.9.0-DEV
 	- Fixed the event EVENT_ERP_BUGNOTE_DATA which had no effect on the added note
 	- Updated README with better explanation on how to install and upgrade EmailReporting
 	- Added an option to set the realname for new user creations (zdroyer)
+	- Added a fix for a safemode error
 
 Nov 2010 - EmailReporting-0.8.4
 	- Improved the project category list
