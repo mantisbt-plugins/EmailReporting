@@ -540,7 +540,7 @@ class ERP_mailbox_api
 							$t_reporter_id = user_get_id_by_email( $p_parsed_from[ 'email' ] );
 							$t_reporter_name = $t_new_reporter_name;
 
-							$t_realname = $this->prepare_realname( $p_parsed_from );
+							$t_realname = $this->prepare_realname( $p_parsed_from, $t_reporter_name );
 
 							if ( $t_realname !== FALSE )
 							{
@@ -1024,7 +1024,7 @@ class ERP_mailbox_api
 		return( FALSE );
 	}
 
-	private function prepare_realname( $p_parsed_from )
+	private function prepare_realname( $p_parsed_from, $p_reporter_name )
 	{
 		switch( $this->_mail_preferred_realname ){
 			case 'name' :
@@ -1045,7 +1045,7 @@ class ERP_mailbox_api
 			$t_realname = utf8_substr( $t_realname, 0, REALLEN );
 		}
 
-		if ( user_is_realname_valid( $t_realname ) && user_is_realname_unique( $t_reporter_name, $t_realname ) )
+		if ( user_is_realname_valid( $t_realname ) && user_is_realname_unique( $p_reporter_name, $t_realname ) )
 		{
 			return( $t_realname );
 		}
