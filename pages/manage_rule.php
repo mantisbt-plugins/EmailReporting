@@ -76,7 +76,7 @@ ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'rule_conditions', 'header' );
 ERP_output_config_option( 'cond_issue_creation_method', 'dropdown_any', $t_rule, 'ERP_print_descriptions_option_list', array( 'emailreporting', 'mantisbt' ) );// TODO think about name and think this over whether selected mailboxes should be here or on the manage mailboxes page
 ERP_output_config_option( 'cond_mailbox', 'dropdown_multiselect_any', $t_rule, 'ERP_print_descriptions_option_list', plugin_config_get( 'mailboxes' ) );
-ERP_output_config_option( 'cond_issue_bug_bugnote', 'dropdown_any', $t_rule, 'ERP_print_descriptions_option_list', array( 'newnote', 'newissue' ) ); //TODO bugnote or new bug
+ERP_output_config_option( 'cond_issue_issue_issuenote', 'dropdown_any', $t_rule, 'ERP_print_descriptions_option_list', array( 'newnote', 'newissue' ) ); //TODO note or new issue
 ERP_output_config_option( 'cond_issue_reporter', 'dropdown_multiselect_any', $t_rule, 'ERP_print_reporter_option_list' );
 ERP_output_config_option( 'cond_issue_project', 'dropdown_multiselect_any', $t_rule, 'ERP_print_projects_option_list' );
 ERP_output_config_option( 'cond_issue_category', 'dropdown_multiselect_any', $t_rule, 'ERP_print_global_category_option_list' );

@@ -27,8 +27,9 @@ $f_gpc = array(
 	'mail_reporter_id'				=> gpc_get_int( 'mail_reporter_id' ),
 	'mail_rule_system'				=> gpc_get_bool( 'mail_rule_system' ),
 	'mail_save_from'				=> gpc_get_bool( 'mail_save_from' ),
-	'mail_save_note_subject'		=> gpc_get_bool( 'mail_save_note_subject'),
+	'mail_save_subject_in_note'		=> gpc_get_bool( 'mail_save_subject_in_note' ),
 	'mail_secured_script'			=> gpc_get_bool( 'mail_secured_script' ),
+	'mail_subject_id_regex'			=> gpc_get_bool( 'mail_subject_id_regex' ),
 	'mail_use_bug_priority'			=> gpc_get_bool( 'mail_use_bug_priority' ),
 	'mail_use_reporter'				=> gpc_get_bool( 'mail_use_reporter' ),
 );

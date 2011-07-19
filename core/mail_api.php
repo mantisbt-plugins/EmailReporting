@@ -58,7 +58,8 @@ class ERP_mailbox_api
 	private $_mail_removed_reply_text;
 	private $_mail_reporter_id;
 	private $_mail_save_from;
-	private $_mail_save_note_subject;
+	private $_mail_save_subject_in_note;
+	private $_mail_subject_id_regex;
 	private $_mail_use_bug_priority;
 	private $_mail_use_reporter;
 
@@ -110,7 +111,8 @@ class ERP_mailbox_api
 		$this->_mail_removed_reply_text			= plugin_config_get( 'mail_removed_reply_text' );
 		$this->_mail_reporter_id				= plugin_config_get( 'mail_reporter_id' );
 		$this->_mail_save_from					= plugin_config_get( 'mail_save_from' );
-		$this->_mail_save_note_subject			= plugin_config_get( 'mail_save_note_subject');
+		$this->_mail_save_subject_in_note		= plugin_config_get( 'mail_save_subject_in_note' );
+		$this->_mail_subject_id_regex			= plugin_config_get( 'mail_subject_id_regex' );
 		$this->_mail_use_bug_priority			= plugin_config_get( 'mail_use_bug_priority' );
 		$this->_mail_use_reporter				= plugin_config_get( 'mail_use_reporter' );
 
@@ -612,13 +614,11 @@ class ERP_mailbox_api
 			$t_description = $p_email[ 'X-Mantis-Body' ];
 
 			$t_description = $this->identify_replies( $t_description );
-			$t_description = $this->apply_mail_save_from( $p_email[ 'From' ], $t_description );			
-			$t_description = $this->apply_mail_subject( $p_email[ 'Subject' ], $t_description );
+			$t_description = $this->add_additional_info( 'note', $p_email, $t_description );
 
-			
 			# Event integration
 			# Core mantis event already exists within bugnote_add function
-			$t_bugnote_text = event_signal( 'EVENT_ERP_BUGNOTE_DATA', $t_description, $t_bug_id );
+			$t_description = event_signal( 'EVENT_ERP_BUGNOTE_DATA', $t_description, $t_bug_id );
 
 			$t_status = bug_get_field( $t_bug_id, 'status' );
 
@@ -673,7 +673,7 @@ class ERP_mailbox_api
 			$t_bug_data->status					= $this->_bug_submit_status;
 			$t_bug_data->summary				= $p_email[ 'Subject' ];
 
-			$t_bug_data->description			= $this->apply_mail_save_from( $p_email[ 'From' ], $p_email[ 'X-Mantis-Body' ] );
+			$t_bug_data->description			= $this->add_additional_info( 'issue', $p_email[ 'From' ], $p_email[ 'X-Mantis-Body' ] );
 
 			$t_bug_data->steps_to_reproduce		= $this->_default_bug_steps_to_reproduce;
 			$t_bug_data->additional_information	= $this->_default_bug_additional_info;
@@ -760,7 +760,7 @@ class ERP_mailbox_api
 		}
 		else
 		{
-			// Not allowed to add bugs and not allowed / able to add bugnote. Need to stop processing
+			// Not allowed to add issues and not allowed / able to add notes. Need to stop processing
 			$this->custom_error( 'Not allowed to create a new issue. Email ignored' );
 			return;
 		}
@@ -1027,14 +1027,10 @@ class ERP_mailbox_api
 	private function mail_is_a_bugnote( $p_mail_subject )
 	{
 		$t_bug_id = $this->get_bug_id_from_subject( $p_mail_subject );
-		print("recognized t_bug_id=[".$t_bug_id."], subject=[".$p_mail_subject."]");
 
-		if ( $t_bug_id !== FALSE )
+		if ( $t_bug_id !== FALSE && bug_exists( $t_bug_id ) )
 		{
-			if ( bug_exists( $t_bug_id ) )
-			{
-				return( $t_bug_id );
-			}
+			return( $t_bug_id );
 		}
 
 		return( FALSE );
@@ -1044,11 +1040,29 @@ class ERP_mailbox_api
 	# return the bug's id from the subject
 	private function get_bug_id_from_subject( $p_mail_subject )
 	{
-		preg_match( "/.*\[.*?(0*[0-9]{1,7}?)\s*\]/u", $p_mail_subject, $v_matches );
-
-		if ( isset( $v_matches[ 1 ] ) )
+		// strict is default incase the setting contains an invalid value
+		switch ( $this->_mail_subject_id_regex )
 		{
-			return( $v_matches[ 1 ] );
+			case 'balanced':
+				$t_subject_id_regex = "/\[(?P<project>.+\s|)(?P<id>[0-9]{1,7})\]/u";
+
+				break;
+
+			case 'relaxed':
+				$t_subject_id_regex = "/\[(?P<project>.*\s|)0*(?P<id>[0-9]{1,7})\s*\]/u";
+
+				break;
+
+			case 'strict':
+			default:
+				$t_subject_id_regex = "/\[(?P<project>.+\s)(?P<id>[0-9]{7,7})\]/u";
+		}
+
+		preg_match( $t_subject_id_regex, $p_mail_subject, $v_matches );
+		
+		if ( isset( $v_matches[ 'id' ] ) )
+		{
+			return( (int) $v_matches[ 'id' ] );
 		}
 
 		return( FALSE );
@@ -1110,46 +1124,43 @@ class ERP_mailbox_api
 	# --------------------
 	# Fixes an empty subject and description with a predefined default text
 	#  $p_mail is passed by reference so no return value needed
-	private function fix_empty_fields( &$p_mail )
+	private function fix_empty_fields( &$p_email )
 	{
-		if ( is_blank( $p_mail[ 'Subject' ] ) )
+		if ( is_blank( $p_email[ 'Subject' ] ) )
 		{
-			$p_mail[ 'Subject' ] = $this->_mail_nosubject;
+			$p_email[ 'Subject' ] = $this->_mail_nosubject;
 		}
 
-		if ( is_blank( $p_mail[ 'X-Mantis-Body' ] ) )
+		if ( is_blank( $p_email[ 'X-Mantis-Body' ] ) )
 		{
-			$p_mail[ 'X-Mantis-Body' ] = $this->_mail_nodescription;
+			$p_email[ 'X-Mantis-Body' ] = $this->_mail_nodescription;
 		}
 	}
 
 	# --------------------
 	# Add the save from text if enabled
-	private function apply_mail_save_from( $p_from, $p_description )
+	private function add_additional_info( $p_type, $p_email, $p_description )
 	{
+		$t_additional_info = NULL;
+
 		if ( $this->_mail_save_from )
 		{
-			return( 'Email from: ' . $p_from . "\n\n" . $p_description );
+			$t_additional_info .= 'Email from: ' . $p_email[ 'From' ] . "\n";
 		}
 
-		return( $p_description );
-	}
-
-	# --------------------
-	# Add the save from text if enabled
-	private function apply_mail_subject( $p_subject, $p_description )
-	{
-		if ( $this->_mail_save_note_subject )
+		if ( $p_type === 'note' && $this->_mail_save_subject_in_note )
 		{
-			return( 'Subject: ' . $p_subject . "\n" . $p_description );
+			$t_additional_info .= 'Subject: ' . $p_email[ 'Subject' ] . "\n";
 		}
 
-		return( $p_description );
+		if ( $t_additional_info !== NULL )
+		{
+			$t_additional_info .= "\n";
+		}
+
+		return( $t_additional_info . $p_description );
 	}
 
-	
-	
-	
 	# --------------------
 	# Show memory usage in debug mode
 	private function show_memory_usage( $p_location )

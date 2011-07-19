@@ -27,11 +27,6 @@ class EmailReportingPlugin extends MantisPlugin
 	 */
 	function config()
 	{
-		// This function does not use ERP_prepare_directory_string
-		// It would require including config_api.php within this file
-		// I decided against that since it would make the functions available at all times and it is not necessary most of the time
-		$t_upload_tmp_dir = realpath( trim( str_replace( '\\', '/', ini_get( 'upload_tmp_dir' ) ) ) );   
-
 		return array(
 			'config_version'				=> 0,
 			'schema'						=> -1,
@@ -48,7 +43,7 @@ class EmailReportingPlugin extends MantisPlugin
 			# Is this plugin allowed to process and create new bug reports
 			'mail_add_bug_reports'			=> ON,
 
-			# Is this plugin allowed to process and add bugnotes to existing issues
+			# Is this plugin allowed to process and add notes to existing issues
 			'mail_add_bugnotes'				=> ON,
 
 			# Add email subject as the first line of a note (alctive only for notes)
@@ -139,12 +134,18 @@ class EmailReportingPlugin extends MantisPlugin
 			# Is the rule system enabled
 			'mail_rule_system'				=> OFF,
 
-			# Write sender of the message into the bug report
+			# Write the sender of the email into the issue report/note
 			'mail_save_from'				=> ON,
+
+			# Write the subject of the email in the note
+			'mail_save_subject_in_note'		=> OFF,
 
 			# Do you want to secure the EmailReporting script so that it cannot be run
 			# via a webserver?
 			'mail_secured_script'			=> ON,
+
+			# Which regex should be used for finding the issue id in the subject
+			'mail_subject_id_regex'			=> 'strict',
 
 			# Looks for priority header field
 			'mail_use_bug_priority'			=> ON,

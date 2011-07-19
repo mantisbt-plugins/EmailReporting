@@ -35,8 +35,7 @@ $s_plugin_EmailReporting_directory_writable = 'Directory writable';
 $s_plugin_EmailReporting_directory_unwritable = 'Warning: directory not writable';
 
 $s_plugin_EmailReporting_mail_add_bug_reports = 'Create new issues';
-$s_plugin_EmailReporting_mail_add_bugnotes = 'Add bugnotes';
-$s_plugin_EmailReporting_mail_save_note_subject = 'Write the email subject as the first line of the bugnote (only if [Add bugnotes]=Yes)';
+$s_plugin_EmailReporting_mail_add_bugnotes = 'Add notes';
 $s_plugin_EmailReporting_mail_add_complete_email = 'Add the complete email into the attachments';
 $s_plugin_EmailReporting_mail_auto_signup = 'Signup new users automatically (possible security risk!, see documentation)';
 $s_plugin_EmailReporting_mail_bug_priority = 'Classify bug priorities';
@@ -52,15 +51,21 @@ $s_plugin_EmailReporting_mail_nosubject = 'Use this text if no subject is found 
 $s_plugin_EmailReporting_mail_parse_html = 'Parse HTML emails';
 $s_plugin_EmailReporting_mail_preferred_username = 'Preferred username for new user creations';
 $s_plugin_EmailReporting_mail_remove_mantis_email = 'Remove MantisBT notification emails from replies.';
-$s_plugin_EmailReporting_mail_remove_replies = 'Remove all replies from bugnotes';
+$s_plugin_EmailReporting_mail_remove_replies = 'Remove all replies from notes';
 $s_plugin_EmailReporting_mail_remove_replies_after = 'Use this text to identify the start of a reply';
 $s_plugin_EmailReporting_mail_removed_reply_text = 'Use this text if replies have been removed from the email';
 $s_plugin_EmailReporting_mail_reporter_id = 'The default / fallback reporter user for issues created by email';
 $s_plugin_EmailReporting_mail_rule_system = 'Rule system';
-$s_plugin_EmailReporting_mail_save_from = 'Write the sender of the email into the issue/bugnote';
+$s_plugin_EmailReporting_mail_save_from = 'Write the sender of the email into the issue report/note';
+$s_plugin_EmailReporting_mail_save_subject_in_note = 'Write the subject of the email in the note';
 $s_plugin_EmailReporting_mail_secured_script = 'Block this script from running via a webserver (recommended = "Yes")';
+$s_plugin_EmailReporting_mail_subject_id_regex = 'What saerch for the issue id in the subject should be used';
 $s_plugin_EmailReporting_mail_use_bug_priority = 'Look for priority header field';
 $s_plugin_EmailReporting_mail_use_reporter = 'Use only default reporter user for issues created by email';
+
+$s_plugin_EmailReporting_strict = 'Strict';
+$s_plugin_EmailReporting_balanced = 'Balanced';
+$s_plugin_EmailReporting_relaxed = 'Relaxed';
 
 $s_plugin_EmailReporting_emailreporting = 'EmailReporting';
 $s_plugin_EmailReporting_mantisbt = 'MantisBT';
@@ -124,7 +129,7 @@ $s_plugin_EmailReporting_rule_exceptions_help = 'NULL';
 
 $s_plugin_EmailReporting_cond_issue_creation_method = 'Issue creation method';
 $s_plugin_EmailReporting_cond_mailbox = 'Apply to mailboxes';
-$s_plugin_EmailReporting_cond_issue_bug_bugnote = 'Apply to new issues and / or notes';
+$s_plugin_EmailReporting_cond_issue_issue_issuenote = 'Apply to new issues and / or notes';
 $s_plugin_EmailReporting_cond_issue_reporter = 'Issue reporter';
 $s_plugin_EmailReporting_cond_issue_project = 'Issue project';
 $s_plugin_EmailReporting_cond_issue_category = 'Issue category';

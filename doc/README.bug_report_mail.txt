@@ -1,13 +1,18 @@
 Installation:
-Extract the complete package to the /mantis/plugins/ directory.
-After that you should be able to see it on the "Manage Plugins" page
+1. Extract the complete package to the /mantis/plugins/ directory.
+2. Rename the new folder to EmailReporting if necessary. If everything
+has been done correctly you should be able to find a file called
+EmailReporting.php plus some folders in the /mantis/plugins/EmailReporting/
+folder
+3. After that you should be able to see it on the "Manage Plugins" page
+with its proper version number (check this in case of an upgrade)
 
 Upgrade:
 If you are performing an upgrade of your existing installation of
 EmailReporting, all you need todo (as long you have not been editing
 files yourself) is
-1. Delete EmailReporting folder from the plugins directory
-2. Extract the complete package to the /mantis/plugins/ directory.
+1. Delete the EmailReporting folder from the plugins directory
+2. Follow the instructions above for the installation of EmailReporting
 
 
 Support:
@@ -18,9 +23,9 @@ Net_POP3 and Net_IMAP package. Support for Outlook RTF formatted
 not fully supported
 
 
-Bugnotes:
+Notes:
 bug_report_mail is able to recognize if an email is a reply to an
-already opened bug and adds the content as a bugnote.
+already opened issue and adds the content as a note.
 
 
 Mailboxes:
@@ -199,8 +204,8 @@ names of the input form fields yourself to the following format (brackets
 included): 'plugin_content[' . plugin_get_current() . '][variable name]'
 
 Two other events are available which perform the same function as their
-core mantis counterparts. But these are only triggered when a bug report
-or bugnote is added by EmailReporting.
+core mantis counterparts. But these are only triggered when a issue report
+or note is added by EmailReporting.
 EVENT_ERP_BUGNOTE_DATA
 EVENT_ERP_REPORT_BUG_DATA
 
