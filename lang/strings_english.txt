@@ -75,10 +75,10 @@ $s_plugin_EmailReporting_newnote = 'New note';
 $s_plugin_EmailReporting_newissue = 'New issue';
 
 $s_plugin_EmailReporting_name = 'Name';
+$s_plugin_EmailReporting_full_from = 'Full "From" address';
 $s_plugin_EmailReporting_email_address = 'Email address';
 $s_plugin_EmailReporting_email_no_domain = 'Email address without the domain name';
-$s_plugin_EmailReporting_from_ldap = 'Get username from LDAP';
-$s_plugin_EmailReporting_name_and_email_address = 'Name and the email address in brackets';
+$s_plugin_EmailReporting_from_ldap = 'From LDAP';
 
 $s_plugin_EmailReporting_mailboxes = 'Mailboxes';
 $s_plugin_EmailReporting_add_action = 'Add';

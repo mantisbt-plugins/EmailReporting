@@ -54,8 +54,7 @@ ERP_output_config_option( 'mail_fallback_mail_reporter', 'boolean' );
 ERP_output_config_option( 'mail_reporter_id', 'dropdown', NULL, 'ERP_print_reporter_option_list' );
 ERP_output_config_option( 'mail_auto_signup', 'boolean' );
 ERP_output_config_option( 'mail_preferred_username', 'dropdown', NULL, 'ERP_print_descriptions_option_list', array( 'name', 'email_address', 'email_no_domain', 'from_ldap' ) );
-ERP_output_config_option( 'mail_preferred_realname',  'dropdown', NULL, 'ERP_print_descriptions_option_list', array( 'name', 'email_address', 'name_and_email_address' ) );
-
+ERP_output_config_option( 'mail_preferred_realname', 'dropdown', NULL, 'ERP_print_descriptions_option_list', array( 'name', 'email_address', 'email_no_domain', 'from_ldap', 'full_from' ) );
 
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'feature_options', 'header' );

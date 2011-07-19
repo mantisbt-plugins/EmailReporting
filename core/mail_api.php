@@ -72,6 +72,7 @@ class ERP_mailbox_api
 	private $_validate_email;
 	private $_login_method;
 	private $_use_ldap_email;
+	private $_ldap_realname_field;
 
 	private $_bug_submit_status;
 	private $_default_bug_additional_info;
@@ -129,6 +130,7 @@ class ERP_mailbox_api
 		$this->_validate_email					= config_get( 'validate_email' );
 		$this->_login_method					= config_get( 'login_method' );
 		$this->_use_ldap_email					= config_get( 'use_ldap_email' );
+		$this->_ldap_realname_field				= config_get( 'ldap_realname_field' );
 
 		$this->_bug_submit_status				= config_get( 'bug_submit_status' );
 		$this->_default_bug_additional_info		= config_get( 'default_bug_additional_info' );
@@ -947,6 +949,7 @@ class ERP_mailbox_api
 			$v_from_address = array(
 				'name'	=> trim( $matches[ 1 ], '"\' ' ),
 				'email'	=> trim( $matches[ 2 ] ),
+				'From'	=> $p_from_address,
 			);
 		}
 		else
@@ -954,6 +957,7 @@ class ERP_mailbox_api
 			$v_from_address = array(
 				'name'	=> '',
 				'email'	=> $p_from_address,
+				'From'	=> $p_from_address,
 			);
 		}
 
@@ -1024,20 +1028,34 @@ class ERP_mailbox_api
 		return( FALSE );
 	}
 
-	private function prepare_realname( $p_parsed_from, $p_reporter_name )
+	private function prepare_realname( $p_user_info, $p_username )
 	{
 		switch( $this->_mail_preferred_realname ){
-			case 'name' :
-				$t_realname = $p_parsed_from[ 'name' ];
-				break;
-
 			case 'email_address':
-				$t_realname = $p_parsed_from[ 'email' ];
+				$t_realname = $p_user_info[ 'email' ];
 				break;
 
-			case 'name_and_email_address':
+			case 'email_no_domain':
+				if( preg_match( email_regex_simple(), $p_user_info[ 'email' ], $t_check ) )
+				{
+					$t_local = $t_check[ 1 ];
+					$t_domain = $t_check[ 2 ];
+
+					$t_realname = $t_local;
+				}
+				break;
+
+			case 'from_ldap':
+				$t_realname = ldap_get_field_from_username( $p_username, $this->_ldap_realname_field );
+				break;
+
+			case 'full_from':
+				$t_realname = $p_user_info[ 'From' ];
+				break;
+
+			case 'name':
 			default:
-				$t_realname = $p_parsed_from[ 'name' ].' ('.$p_parsed_from[ 'email' ].')';
+				$t_realname = $p_user_info[ 'name' ];
 		}
 
 		if ( utf8_strlen( $t_realname ) > REALLEN )
@@ -1045,7 +1063,7 @@ class ERP_mailbox_api
 			$t_realname = utf8_substr( $t_realname, 0, REALLEN );
 		}
 
-		if ( user_is_realname_valid( $t_realname ) && user_is_realname_unique( $p_reporter_name, $t_realname ) )
+		if ( user_is_realname_valid( $t_realname ) && user_is_realname_unique( $p_username, $t_realname ) )
 		{
 			return( $t_realname );
 		}
