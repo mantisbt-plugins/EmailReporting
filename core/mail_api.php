@@ -388,6 +388,8 @@ class ERP_mailbox_api
 
 			// Rolf Kleef: explicit expunge to remove deleted messages, disconnect() gives an error...
 			// EmailReporting 0.7.0: Corrected IMAPProtocol_1.0.3.php on line 704. disconnect() works again
+			// EmailReporting 0.9.0: Improved IMAPProtocol_1.0.3.php in function _retrParsedResponse and function cmdLogout. disconnect() works again
+			// for specific changes see the IMAPProtocol_1.0.3.php and search for EmailReporting
 			//$t_mailbox->expunge();
 
 			// mail_delete decides whether to perform the expunge command before closing the connection
