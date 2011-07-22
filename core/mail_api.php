@@ -182,7 +182,7 @@ class ERP_mailbox_api
 			{
 				$this->prepare_mailbox_hostname();
 
-				if ( $this->_mail_debug )
+				if ( !$this->_test_only && $this->_mail_debug )
 				{
 					var_dump( $this->_mailbox );
 				}
