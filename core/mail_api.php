@@ -1050,7 +1050,7 @@ class ERP_mailbox_api
 				break;
 
 			case 'full_from':
-				$t_realname = htmlspecialchars($p_user_info[ 'From' ]);
+				$t_realname = str_replace( array( '<', '>' ), array( '(', ')' ), $p_user_info[ 'From' ] );
 				break;
 
 			case 'name':
