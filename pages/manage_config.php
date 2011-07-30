@@ -31,6 +31,46 @@ ERP_print_menu( $t_this_page );
 </table>
 <br />
 
+<?php
+	$t_job_users = plugin_config_get( 'job_users' );
+	$t_username = ERP_get_current_os_user();
+	$t_file_upload_method = config_get( 'file_upload_method' );
+	if ( count( array_diff( $t_job_users, array( $t_username ) ) ) > 0 && $t_file_upload_method == DISK )
+	{
+?>
+<table align="center" class="width75" cellspacing="1">
+
+<tr>
+	<td class="left">
+<?php
+		echo plugin_lang_get( 'job_users' ) . $t_username . '<hr />';
+?>
+		<table align="center" class="width50" cellspacing="1">
+			<tr>
+				<th class="left">SAPI <a href="http://www.php.net/php_sapi_name">[?]</a></th>
+				<th class="left">Username</th>
+			</tr>
+<?php
+		foreach( $t_job_users AS $t_key => $t_array )
+		{
+?>
+			<tr>
+				<td class="left"><?php echo $t_key ?></td>
+				<td class="left"><?php echo $t_array ?></td>
+			</tr>
+<?php
+		}
+?>
+		</table>
+	</td>
+</tr>
+
+</table>
+<br />
+<?php
+	}
+?>
+
 <form action="<?php echo plugin_page( $t_this_page . '_edit' )?>" method="post">
 <table align="center" class="width75" cellspacing="1">
 
