@@ -180,20 +180,28 @@ class ERP_mailbox_api
 		{
 			if ( $this->_mailbox[ 'enabled' ] )
 			{
-				$this->prepare_mailbox_hostname();
-
-				if ( !$this->_test_only && $this->_mail_debug )
+				// Check whether EmailReporting supports the mailbox type. The check is based on available default ports
+				if ( isset( $this->_default_ports[ $this->_mailbox[ 'mailbox_type' ] ] ) )
 				{
-					var_dump( $this->_mailbox );
+					$this->prepare_mailbox_hostname();
+
+					if ( !$this->_test_only && $this->_mail_debug )
+					{
+						var_dump( $this->_mailbox );
+					}
+
+					$this->show_memory_usage( 'Start process mailbox' );
+
+					$t_process_mailbox_function = 'process_' . strtolower( $this->_mailbox[ 'mailbox_type' ] ) . '_mailbox';
+
+					$this->show_memory_usage( 'Finished process mailbox' );
+
+					$this->$t_process_mailbox_function();
 				}
-
-				$this->show_memory_usage( 'Start process mailbox' );
-
-				$t_process_mailbox_function = 'process_' . strtolower( $this->_mailbox[ 'mailbox_type' ] ) . '_mailbox';
-
-				$this->show_memory_usage( 'Finished process mailbox' );
-
-				$this->$t_process_mailbox_function();
+				else
+				{
+					$this->custom_error( 'Unknown mailbox type' );
+				}
 			}
 			else
 			{
