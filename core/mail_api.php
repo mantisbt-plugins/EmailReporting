@@ -1009,9 +1009,9 @@ class ERP_mailbox_api
 				$t_username = $p_user_info[ 'name' ];
 		}
 
-		if ( utf8_strlen( $t_username ) > USERLEN )
+		if ( utf8_strlen( $t_username ) > DB_FIELD_SIZE_USERNAME )
 		{
-			$t_username = utf8_substr( $t_username, 0, USERLEN );
+			$t_username = utf8_substr( $t_username, 0, DB_FIELD_SIZE_USERNAME );
 		}
 
 		if ( user_is_name_valid( $t_username ) && user_is_name_unique( $t_username ) )
@@ -1023,9 +1023,9 @@ class ERP_mailbox_api
 		$t_username = strtolower( str_replace( array( '@', '.', '-' ), '_', $p_user_info[ 'email' ] ) );
 		$t_rand = '_' . mt_rand( 1000, 99999 );
 
-		if ( utf8_strlen( $t_username . $t_rand ) > USERLEN )
+		if ( utf8_strlen( $t_username . $t_rand ) > DB_FIELD_SIZE_USERNAME )
 		{
-			$t_username = utf8_substr( $t_username, 0, ( USERLEN - strlen( $t_rand ) ) );
+			$t_username = utf8_substr( $t_username, 0, ( DB_FIELD_SIZE_USERNAME - strlen( $t_rand ) ) );
 		}
 
 		$t_username = $t_username . $t_rand;
@@ -1068,9 +1068,9 @@ class ERP_mailbox_api
 				$t_realname = $p_user_info[ 'name' ];
 		}
 
-		if ( utf8_strlen( $t_realname ) > REALLEN )
+		if ( utf8_strlen( $t_realname ) > DB_FIELD_SIZE_REALNAME )
 		{
-			$t_realname = utf8_substr( $t_realname, 0, REALLEN );
+			$t_realname = utf8_substr( $t_realname, 0, DB_FIELD_SIZE_REALNAME );
 		}
 
 		if ( user_is_realname_valid( $t_realname ) && user_is_realname_unique( $p_username, $t_realname ) )
