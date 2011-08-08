@@ -180,9 +180,12 @@ class ERP_mailbox_api
 		{
 			if ( $this->_mailbox[ 'enabled' ] )
 			{
+				// Check whether EmailReporting supports the mailbox type. The check is based on available default ports
+				if ( isset( $this->_default_ports[ $this->_mailbox[ 'mailbox_type' ] ] ) )
+				{
 				$this->prepare_mailbox_hostname();
 
-				if ( $this->_mail_debug )
+					if ( !$this->_test_only && $this->_mail_debug )
 				{
 					var_dump( $this->_mailbox );
 				}
@@ -194,6 +197,11 @@ class ERP_mailbox_api
 				$this->show_memory_usage( 'Finished process mailbox' );
 
 				$this->$t_process_mailbox_function();
+			}
+			else
+			{
+					$this->custom_error( 'Unknown mailbox type' );
+				}
 			}
 			else
 			{
@@ -388,6 +396,8 @@ class ERP_mailbox_api
 
 			// Rolf Kleef: explicit expunge to remove deleted messages, disconnect() gives an error...
 			// EmailReporting 0.7.0: Corrected IMAPProtocol_1.0.3.php on line 704. disconnect() works again
+			// EmailReporting 0.9.0: Improved IMAPProtocol_1.0.3.php in function _retrParsedResponse and function cmdLogout. disconnect() works again
+			// for specific changes see the IMAPProtocol_1.0.3.php and search for EmailReporting
 			//$t_mailbox->expunge();
 
 			// mail_delete decides whether to perform the expunge command before closing the connection
@@ -519,8 +529,8 @@ class ERP_mailbox_api
 				{
 					$t_reporter_id = user_get_id_by_name( $t_username );
 				} else {
-                                       $t_reporter_id = user_get_id_by_email( $p_parsed_from[ 'email' ] );
-                                }
+                    $t_reporter_id = user_get_id_by_email( $p_parsed_from[ 'email' ] );
+                }
 			}
 			else
 			{
@@ -1001,9 +1011,9 @@ class ERP_mailbox_api
 				$t_username = $p_user_info[ 'name' ];
 		}
 
-		if ( utf8_strlen( $t_username ) > USERLEN )
+		if ( utf8_strlen( $t_username ) > DB_FIELD_SIZE_USERNAME )
 		{
-			$t_username = utf8_substr( $t_username, 0, USERLEN );
+			$t_username = utf8_substr( $t_username, 0, DB_FIELD_SIZE_USERNAME );
 		}
 
 		if ( user_is_name_valid( $t_username ) && user_is_name_unique( $t_username ) )
@@ -1015,9 +1025,9 @@ class ERP_mailbox_api
 		$t_username = strtolower( str_replace( array( '@', '.', '-' ), '_', $p_user_info[ 'email' ] ) );
 		$t_rand = '_' . mt_rand( 1000, 99999 );
 
-		if ( utf8_strlen( $t_username . $t_rand ) > USERLEN )
+		if ( utf8_strlen( $t_username . $t_rand ) > DB_FIELD_SIZE_USERNAME )
 		{
-			$t_username = utf8_substr( $t_username, 0, ( USERLEN - strlen( $t_rand ) ) );
+			$t_username = utf8_substr( $t_username, 0, ( DB_FIELD_SIZE_USERNAME - strlen( $t_rand ) ) );
 		}
 
 		$t_username = $t_username . $t_rand;
@@ -1060,9 +1070,9 @@ class ERP_mailbox_api
 				$t_realname = $p_user_info[ 'name' ];
 		}
 
-		if ( utf8_strlen( $t_realname ) > REALLEN )
+		if ( utf8_strlen( $t_realname ) > DB_FIELD_SIZE_REALNAME )
 		{
-			$t_realname = utf8_substr( $t_realname, 0, REALLEN );
+			$t_realname = utf8_substr( $t_realname, 0, DB_FIELD_SIZE_REALNAME );
 		}
 
 		if ( user_is_realname_valid( $t_realname ) && user_is_realname_unique( $p_username, $t_realname ) )

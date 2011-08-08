@@ -191,6 +191,22 @@
 		}
 	}
 
+
+	# --------------------
+	# Return the username of the OS user account thats currently running this script
+	function ERP_get_current_os_user()
+	{
+		if ( function_exists( 'posix_getpwuid' ) && function_exists( 'posix_geteuid' ) )
+		{
+			$t_userinfo = posix_getpwuid( posix_geteuid() );
+			return( $t_userinfo[ 'name' ] );
+		}
+		else
+		{
+			return( get_current_user() );
+		}
+	}
+
 	# This prints the little [?] link for user help
 	# The $p_a_name is a link into the documentation.html file
 	function ERP_print_documentation_link( $p_a_name = '' )

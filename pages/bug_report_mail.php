@@ -28,6 +28,15 @@
 		config_set_global( 'path', $t_mail_mantisbt_url_fix );
 	}
 
+	// Register the user that is currently running this script
+	$t_job_users = plugin_config_get( 'job_users' );
+	$t_username = ERP_get_current_os_user();
+	if ( !isset( $t_job_users[ php_sapi_name() ] ) || $t_job_users[ php_sapi_name() ] !== $t_username )
+	{
+		$t_job_users[ php_sapi_name() ] = $t_username;
+		plugin_config_set( 'job_users', $t_job_users );
+	}
+
 	$t_mailbox_api_index = ERP_get_mailbox_api_name();
 
 	$GLOBALS[ $t_mailbox_api_index ] = new ERP_mailbox_api;

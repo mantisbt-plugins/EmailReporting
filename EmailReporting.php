@@ -14,7 +14,7 @@ class EmailReportingPlugin extends MantisPlugin
 
 		$this->version = '0.9.0-DEV';
 		$this->requires = array(
-			'MantisCore' => '1.2.5',
+			'MantisCore' => '1.2.6',
 		);
 
 		$this->author = plugin_lang_get( 'plugin_author' );
@@ -31,6 +31,7 @@ class EmailReportingPlugin extends MantisPlugin
 			'config_version'				=> 0,
 			'schema'						=> -1,
 			'path_erp'						=> config_get_global( 'plugin_path' ) . plugin_get_current() . '/',
+			'job_users'						=> array(),
 
 			# --- mail reporting settings -----
 			# Empty default mailboxes array. This array will be used for all the mailbox

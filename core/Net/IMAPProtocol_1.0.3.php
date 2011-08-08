@@ -682,7 +682,7 @@ class Net_IMAPProtocol {
      * @access public
      * @since  1.0
      * 
-     * Custom change for EmailReporting on line 704 so that logout will work again
+     * EmailReporting: Fixed problem with the return value so that logout will work again. Based on the cmdLogout function in Net_IMAP 1.1.0
      */
     function cmdLogout()
     {
@@ -690,24 +690,14 @@ class Net_IMAPProtocol {
             return new PEAR_Error( 'not connected!' );
         }
 
-        $cmdid = $this->_getCmdId();
-        if ( PEAR::isError( $error = $this->_putCMD( $cmdid , 'LOGOUT' ) ) ) {
-            return $error;
-        }
-        if ( PEAR::isError($args = $this->_getRawResponse() ) ) {
+        if (PEAR::isError($args = $this->_genericCommand('LOGOUT'))) {
             return $args;
         }
-        if (PEAR::isError( $this->_socket->disconnect() ) ) {
+        if (PEAR::isError($this->_socket->disconnect())) {
             return new PEAR_Error('socket disconnect failed');
         }
 
-        return ( ( !is_string( $args ) ) ? $args : array(
-            	'RESPONSE' => array(
-            		'CODE' => 'OK',
-            		'STR_CODE' => $args
-            	)
-            )
-        );
+        return $args;
 
         // not for now
         //return $this->_genericImapResponseParser($args,$cmdid);
@@ -2477,6 +2467,7 @@ class Net_IMAPProtocol {
 
 
 
+    /* EmailReporting: Changed $command to $token as it causes and error on logout */
     function _retrParsedResponse( &$str , $token, $previousToken = null)
     {
 
@@ -2715,7 +2706,8 @@ class Net_IMAPProtocol {
         */
 
             $str_line = rtrim( substr( $this->_getToEOL( $str , false ) , 1 ) );
-            $result_array[] = array( "COMMAND"=>$command , "EXT"=> $str_line );
+            /* EmailReporting: Changed $command to $token as it causes and error on logout */
+            $result_array[] = array( "COMMAND"=>$token , "EXT"=> $str_line );
             return $result_array;
             break;
 
