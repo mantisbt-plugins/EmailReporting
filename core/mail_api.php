@@ -520,17 +520,20 @@ class ERP_mailbox_api
 		}
 		else
 		{
+			$t_reporter_id = FALSE;
+
 			// Try to get the reporting users id
 			if ( $this->_login_method == LDAP && $this->_use_ldap_email )
 			{
 				$t_username = ERP_ldap_get_username_from_email( $p_parsed_from[ 'email' ] );
 
-				if ( user_is_name_valid( $t_username ) )
+				if ( $t_username !== NULL && user_is_name_valid( $t_username ) )
 				{
 					$t_reporter_id = user_get_id_by_name( $t_username );
 				}
 			}
-			else
+
+			if ( !$t_reporter_id )
 			{
 				$t_reporter_id = user_get_id_by_email( $p_parsed_from[ 'email' ] );
 			}
@@ -563,17 +566,12 @@ class ERP_mailbox_api
 
 					if ( !$t_reporter_id )
 					{
-						$this->custom_error( 'Failed to create user based on: ' . implode( ' - ', $p_parsed_from ) );
+						$this->custom_error( 'Failed to create user based on: ' . $p_parsed_from[ 'From' ] );
 					}
 				}
-
-				if ( !$t_reporter_id && $this->_mail_fallback_mail_reporter )
-				{
-					// Fall back to the default mail_reporter
-					$t_reporter_id = $this->_mail_reporter_id;
-				}
 			}
-			elseif ( !user_is_enabled( $t_reporter_id ) && $this->_mail_fallback_mail_reporter )
+
+			if ( ( !$t_reporter_id || !user_is_enabled( $t_reporter_id ) ) && $this->_mail_fallback_mail_reporter )
 			{
 				// Fall back to the default mail_reporter
 				$t_reporter_id = $this->_mail_reporter_id;

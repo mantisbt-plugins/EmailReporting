@@ -1,7 +1,7 @@
 Changelog:
 Jan 2011 - EmailReporting-0.9.0-DEV
 	- Minimum requirement for EmailReporting is now MantisBT 1.2.6
-	- Officially compatible with MantisBT 1.2.5
+	- Officially compatible with MantisBT 1.2.6
 	- Updated pear packages (Fixes issue ~28437)
 	- New rule system added
 	- Removed "Mailbox " from mailbox setting descriptions
@@ -33,6 +33,7 @@ Jan 2011 - EmailReporting-0.9.0-DEV
 	- Check added to see if the mailbox type is valid
 	- Added a check that shows a warning in the configuration page if their might be a problem with the user account thats running the scheduled job
 	- USERLEN and REALLEN renamed to DB_FIELD_SIZE_USERNAME and DB_FIELD_SIZE_REALNAME
+	- Improved the finding of the reporting user
 
 Nov 2010 - EmailReporting-0.8.4
 	- Improved the project category list
