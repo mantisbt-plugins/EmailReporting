@@ -528,6 +528,8 @@ class ERP_mailbox_api
 				if ( user_is_name_valid( $t_username ) )
 				{
 					$t_reporter_id = user_get_id_by_name( $t_username );
+				} else {
+					$t_reporter_id = user_get_id_by_email( $p_parsed_from[ 'email' ] );
 				}
 			}
 			else
