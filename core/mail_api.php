@@ -69,6 +69,7 @@ class ERP_mailbox_api
 	private $_allow_file_upload;
 	private $_bug_resolved_status_threshold;
 	private $_email_separator1;
+	private $_display_bug_padding;
 	private $_validate_email;
 	private $_login_method;
 	private $_use_ldap_email;
@@ -127,6 +128,7 @@ class ERP_mailbox_api
 		$this->_allow_file_upload				= config_get( 'allow_file_upload' );
 		$this->_bug_resolved_status_threshold	= config_get( 'bug_resolved_status_threshold' );
 		$this->_email_separator1				= config_get( 'email_separator1' );
+		$this->_display_bug_padding				= config_get( 'display_bug_padding' );
 		$this->_validate_email					= config_get( 'validate_email' );
 		$this->_login_method					= config_get( 'login_method' );
 		$this->_use_ldap_email					= config_get( 'use_ldap_email' );
@@ -1101,16 +1103,16 @@ class ERP_mailbox_api
 		switch ( $this->_mail_subject_id_regex )
 		{
 			case 'balanced':
-				$t_subject_id_regex = "/\[(?P<project>.+\s|)(?P<id>[0-9]{1,7})\]/u";
+				$t_subject_id_regex = "/\[(?P<project>.+\s|)(?P<id>[0-9]{1," . $this->_display_bug_padding . "})\]/u";
 				break;
 
 			case 'relaxed':
-				$t_subject_id_regex = "/\[(?P<project>.*\s|)0*(?P<id>[0-9]{1,7})\s*\]/u";
+				$t_subject_id_regex = "/\[(?P<project>.*\s|)0*(?P<id>[0-9]{1," . $this->_display_bug_padding . "})\s*\]/u";
 				break;
 
 			case 'strict':
 			default:
-				$t_subject_id_regex = "/\[(?P<project>.+\s)(?P<id>[0-9]{7,7})\]/u";
+				$t_subject_id_regex = "/\[(?P<project>.+\s)(?P<id>[0-9]{" . $this->_display_bug_padding . "," . $this->_display_bug_padding . "})\]/u";
 		}
 
 		preg_match( $t_subject_id_regex, $p_mail_subject, $v_matches );
