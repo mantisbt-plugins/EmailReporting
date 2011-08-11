@@ -69,7 +69,6 @@ class ERP_mailbox_api
 	private $_allow_file_upload;
 	private $_bug_resolved_status_threshold;
 	private $_email_separator1;
-	private $_display_bug_padding;
 	private $_validate_email;
 	private $_login_method;
 	private $_use_ldap_email;
@@ -128,7 +127,6 @@ class ERP_mailbox_api
 		$this->_allow_file_upload				= config_get( 'allow_file_upload' );
 		$this->_bug_resolved_status_threshold	= config_get( 'bug_resolved_status_threshold' );
 		$this->_email_separator1				= config_get( 'email_separator1' );
-		$this->_display_bug_padding				= config_get( 'display_bug_padding' );
 		$this->_validate_email					= config_get( 'validate_email' );
 		$this->_login_method					= config_get( 'login_method' );
 		$this->_use_ldap_email					= config_get( 'use_ldap_email' );
