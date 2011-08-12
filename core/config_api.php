@@ -257,6 +257,8 @@
 			$t_input_name = $p_name;
 		}
 
+		$t_input_name = string_attribute( $t_input_name );
+
 		switch ( $p_type )
 		{
 			case 'empty':
@@ -282,7 +284,7 @@
 
 			case 'hidden':
 ?>
-<input type="hidden" name="<?php echo $t_input_name ?>" value="<?php echo $t_value ?>"/>
+<input type="hidden" name="<?php echo $t_input_name ?>" value="<?php echo string_attribute( $t_value ) ?>"/>
 <?php
 				break;
 
@@ -371,7 +373,7 @@
 						}
 ?>
 	<td class="center" width="20%">
-		<input <?php echo helper_get_tab_index() ?> type="text" size="30" maxlength="200" name="<?php echo $t_input_name ?>" value="<?php echo $t_dir ?>"/>
+		<input <?php echo helper_get_tab_index() ?> type="text" size="30" maxlength="200" name="<?php echo $t_input_name ?>" value="<?php echo string_attribute( $t_dir ) ?>"/>
 	</td>
 	<td class="center" width="20%">
 		<span class="<?php echo $t_result_is_dir_color ?>"><?php echo $t_result_is_dir_text ?></span><br /><span class="<?php echo $t_result_is_writable_color ?>"><?php echo $t_result_is_writable_text ?></span>
@@ -383,7 +385,7 @@
 					case 'string':
 ?>
 	<td class="center" width="40%" colspan="2">
-		<input <?php echo helper_get_tab_index() ?> type="text" size="50" maxlength="100" name="<?php echo $t_input_name ?>" value="<?php echo $t_value ?>"/>
+		<input <?php echo helper_get_tab_index() ?> type="text" size="50" maxlength="100" name="<?php echo $t_input_name ?>" value="<?php echo string_attribute( $t_value ) ?>"/>
 	</td>
 <?php
 						break;
@@ -394,11 +396,11 @@
 		<textarea <?php echo helper_get_tab_index() ?> cols="40" rows="6" name="<?php echo $t_input_name ?>"><?php
 						if ( is_array( $t_value ) )
 						{
-							var_export( $t_value );
+							echo string_textarea( var_export( $t_value, TRUE ) );
 						}
 						else
 						{
-							echo $t_value;
+							echo string_textarea( $t_value );
 						}
 ?></textarea>
 	</td>
@@ -408,7 +410,7 @@
 					case 'string_password':
 ?>
 	<td class="center" width="40%" colspan="2">
-		<input <?php echo helper_get_tab_index() ?> type="password" size="50" maxlength="50" name="<?php echo $t_input_name ?>" value="<?php echo base64_decode( $t_value ) ?>"/>
+		<input <?php echo helper_get_tab_index() ?> type="password" size="50" maxlength="50" name="<?php echo $t_input_name ?>" value="<?php echo string_attribute( base64_decode( $t_value ) ) ?>"/>
 	</td>
 <?php
 						break;
@@ -528,7 +530,7 @@
 		{
 			echo '<option';
 			check_selected( $p_sel_value, $t_supported_auth_method );
-			echo '>' . $t_supported_auth_method . '</option>';
+			echo '>' . string_attribute( $t_supported_auth_method ) . '</option>';
 		}
 	}
 
@@ -552,12 +554,12 @@
 
 		foreach ( $t_options_sorted AS $t_option_key => $t_description )
 		{
-			echo '<option value="' . $t_option_key . '"';
+			echo '<option value="' . string_attribute( $t_option_key ) . '"';
 			if ( ( !is_array( $p_sel_value ) && $p_sel_value !== NULL ) || ( is_array( $p_sel_value ) && !empty( $p_sel_value ) ) )
 			{
 				check_selected( $p_sel_value, $t_option_key );
 			}
-			echo '>' . ( ( isset( $p_options_array[ $t_option_key ][ 'enabled' ] ) && $p_options_array[ $t_option_key ][ 'enabled' ] === FALSE ) ? '* ' : NULL ) . $t_description . '</option>';
+			echo '>' . ( ( isset( $p_options_array[ $t_option_key ][ 'enabled' ] ) && $p_options_array[ $t_option_key ][ 'enabled' ] === FALSE ) ? '* ' : NULL ) . string_attribute( $t_description ) . '</option>';
 		}
 	}
 
@@ -574,7 +576,7 @@
 				if ( $t_encryption === 'None' || in_array( strtolower( $t_encryption ), $t_socket_transports ) )
 				{
 ?>
-			<option<?php check_selected( $p_sel_value, $t_encryption ) ?>><?php echo $t_encryption ?></option>
+			<option<?php check_selected( $p_sel_value, $t_encryption ) ?>><?php echo string_attribute( $t_encryption ) ?></option>
 <?php
 				}
 			}
@@ -635,7 +637,7 @@
 			foreach( $t_list_encodings AS $t_encoding )
 			{
 ?>
-			<option<?php check_selected( $p_sel_value, $t_encoding ) ?>><?php echo $t_encoding ?></option>
+			<option<?php check_selected( $p_sel_value, $t_encoding ) ?>><?php echo string_attribute( $t_encoding ) ?></option>
 <?php
 			}
 		}
@@ -748,7 +750,7 @@
 				foreach ( $t_actions AS $t_action )
 				{
 ?>
-		<label><input <?php echo helper_get_tab_index() ?> type="radio" name="<?php echo $p_input_name ?>" value="<?php echo $t_action ?>"<?php check_checked( $p_sel_value, $t_action ) ?>/><?php echo plugin_lang_get( $t_action . '_action' )?></label>
+		<label><input <?php echo helper_get_tab_index() ?> type="radio" name="<?php echo $p_input_name ?>" value="<?php echo string_attribute( $t_action ) ?>"<?php check_checked( $p_sel_value, $t_action ) ?>/><?php echo plugin_lang_get( $t_action . '_action' )?></label>
 <?php
 				}
 			}
