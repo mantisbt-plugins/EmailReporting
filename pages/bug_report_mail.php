@@ -17,6 +17,11 @@
 		exit( 1 );
 	}
 
+	if ( php_sapi_name() !== 'cli' )
+	{
+		echo '<pre>';
+	}
+
 	require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/mail_api.php' );
 	require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/config_api.php' );
 
@@ -53,6 +58,11 @@
 	}
 
 	echo "\n\n" . 'Done checking all mailboxes' . "\n";
+
+	if ( php_sapi_name() !== 'cli' )
+	{
+		echo '</pre>';
+	}
 
 	exit( 0 );
 ?>

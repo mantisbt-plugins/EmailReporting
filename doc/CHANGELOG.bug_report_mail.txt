@@ -35,6 +35,7 @@ Jan 2011 - EmailReporting-0.9.0-DEV
 	- USERLEN and REALLEN renamed to DB_FIELD_SIZE_USERNAME and DB_FIELD_SIZE_REALNAME
 	- Improved the finding of the reporting user
 	- Fixed issue with form fields when certain html characters were used
+	- Added html pre tags to make the bug_report_mail output better readable if viewed by a web browser
 
 Nov 2010 - EmailReporting-0.8.4
 	- Improved the project category list
