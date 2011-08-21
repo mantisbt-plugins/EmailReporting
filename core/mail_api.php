@@ -276,7 +276,9 @@ class ERP_mailbox_api
 
 						if ( $this->_mail_delete )
 						{
-							$this->_mailserver->deleteMsg( $i );
+							$this->_result = $this->_mailserver->deleteMsg( $i );
+
+							$this->pear_error( $this->_result );
 						}
 					}
 				}
@@ -367,7 +369,9 @@ class ERP_mailbox_api
 												{
 													$this->process_single_email( $i, (int) $t_project[ 'id' ] );
 
-													$this->_mailserver->deleteMsg( $i );
+													$this->_result = $this->_mailserver->deleteMsg( $i );
+
+													$this->pear_error( $this->_result );
 
 													$t_total_fetch_counter++;
 												}
