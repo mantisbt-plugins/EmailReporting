@@ -17,6 +17,12 @@
 		exit( 1 );
 	}
 
+	ini_set( 'memory_limit', -1 );
+	if ( ini_get( 'safe_mode' ) == 0 )
+	{
+		set_time_limit( 0 );
+	}
+
 	if ( php_sapi_name() !== 'cli' )
 	{
 		echo '<pre>';
@@ -45,12 +51,6 @@
 	$t_mailbox_api_index = ERP_get_mailbox_api_name();
 
 	$GLOBALS[ $t_mailbox_api_index ] = new ERP_mailbox_api;
-
-	ini_set( 'memory_limit', -1 );
-	if ( ini_get( 'safe_mode' ) == 0 )
-	{
-		set_time_limit( 0 );
-	}
 
 	foreach ( $GLOBALS[ 't_mailboxes' ] as $t_mailbox )
 	{

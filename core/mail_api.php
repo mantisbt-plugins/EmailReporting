@@ -806,6 +806,7 @@ class ERP_mailbox_api
 					);
 
 					$t_reject_rejected_files = $this->add_file( $t_bug_id, $part );
+
 					if ( $t_reject_rejected_files !== TRUE )
 					{
 						$part[ 'body' ] .= $t_reject_rejected_files;
