@@ -233,9 +233,9 @@ class ERP_mailbox_api
 
 								$t_process_mailbox_function = 'process_' . strtolower( $this->_mailbox[ 'mailbox_type' ] ) . '_mailbox';
 
-								$this->show_memory_usage( 'Finished process mailbox' );
-
 								$this->$t_process_mailbox_function();
+
+								$this->show_memory_usage( 'Finished process mailbox' );
 							}
 						}
 						else
