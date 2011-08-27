@@ -67,6 +67,7 @@ class ERP_mailbox_api
 	private $_mp_options = array();
 
 	private $_allow_file_upload;
+	private $_file_upload_method;
 	private $_bug_resolved_status_threshold;
 	private $_email_separator1;
 	private $_validate_email;
@@ -125,6 +126,7 @@ class ERP_mailbox_api
 		$this->_mp_options[ 'parse_html' ]		= plugin_config_get( 'mail_parse_html' );
 
 		$this->_allow_file_upload				= config_get( 'allow_file_upload' );
+		$this->_file_upload_method				= config_get( 'file_upload_method' );
 		$this->_bug_resolved_status_threshold	= config_get( 'bug_resolved_status_threshold' );
 		$this->_email_separator1				= config_get( 'email_separator1' );
 		$this->_validate_email					= config_get( 'validate_email' );
@@ -183,20 +185,68 @@ class ERP_mailbox_api
 				// Check whether EmailReporting supports the mailbox type. The check is based on available default ports
 				if ( isset( $this->_default_ports[ $this->_mailbox[ 'mailbox_type' ] ] ) )
 				{
-					$this->prepare_mailbox_hostname();
-
-					if ( !$this->_test_only && $this->_mail_debug )
+					if ( project_exists( $this->_mailbox[ 'project_id' ] ) )
 					{
-						var_dump( $this->_mailbox );
+						if ( category_exists( $this->_mailbox[ 'global_category_id' ] ) )
+						{
+							$t_upload_folder_passed = TRUE;
+
+							if ( $this->_allow_file_upload && $this->_file_upload_method == DISK )
+							{
+								$t_upload_folder_passed = FALSE;
+
+								$t_file_path = project_get_field( $this->_mailbox[ 'project_id' ], 'file_path' );
+								if( $t_file_path == '' )
+								{
+									$t_file_path = config_get( 'absolute_path_default_upload_folder' );
+								}
+
+								$t_file_path = ERP_prepare_directory_string( $t_file_path, TRUE );
+								$t_real_file_path = ERP_prepare_directory_string( $t_file_path );
+
+								if( !file_exists( $t_file_path ) || !is_dir( $t_file_path ) || !is_writable( $t_file_path ) || !is_readable( $t_file_path ) )
+								{
+									$this->custom_error( 'Upload folder is not writable: ' . $t_file_path . "\n" );
+								}
+								elseif ( strcasecmp( $t_real_file_path, $t_file_path ) !== 0 )
+								{
+									$this->custom_error( 'Upload folder is not an absolute path' . "\n" .
+										'Upload folder: ' . $t_file_path . "\n" .
+										'Absolute path: ' . $t_real_file_path . "\n" );
+								}
+								else
+								{
+									$t_upload_folder_passed = TRUE;
+								}
+							}
+
+							if ( $t_upload_folder_passed )
+							{
+								$this->prepare_mailbox_hostname();
+
+								if ( !$this->_test_only && $this->_mail_debug )
+								{
+									var_dump( $this->_mailbox );
+								}
+
+								$this->show_memory_usage( 'Start process mailbox' );
+
+								$t_process_mailbox_function = 'process_' . strtolower( $this->_mailbox[ 'mailbox_type' ] ) . '_mailbox';
+
+								$this->show_memory_usage( 'Finished process mailbox' );
+
+								$this->$t_process_mailbox_function();
+							}
+						}
+						else
+						{
+							$this->custom_error( 'Category does not exist' );
+						}
 					}
-
-					$this->show_memory_usage( 'Start process mailbox' );
-
-					$t_process_mailbox_function = 'process_' . strtolower( $this->_mailbox[ 'mailbox_type' ] ) . '_mailbox';
-
-					$this->show_memory_usage( 'Finished process mailbox' );
-
-					$this->$t_process_mailbox_function();
+					else
+					{
+						$this->custom_error( 'Project does not exist' );
+					}
 				}
 				else
 				{
@@ -663,18 +713,7 @@ class ERP_mailbox_api
 			$t_bug_data->handler_id				= 0;
 			$t_bug_data->view_state				= $this->_default_bug_view_status;
 
-			if ( category_exists( $this->_mailbox[ 'global_category_id' ] ) )
-			{
-				$t_bug_data->category_id			= $this->_mailbox[ 'global_category_id' ];
-			}
-			else
-			{
-				$this->custom_error( 'Category not found. Please update the mailbox with a proper category.' );
-				config_set_cache( 'allow_no_category', ON, CONFIG_TYPE_STRING );
-				config_set_global( 'allow_no_category', ON );
-				$t_bug_data->category_id			= 0;
-			}
-
+			$t_bug_data->category_id			= $this->_mailbox[ 'global_category_id' ];
 			$t_bug_data->reproducibility		= $this->_default_bug_reproducibility;
 			$t_bug_data->severity				= $this->_default_bug_severity;
 			$t_bug_data->priority				= $p_email[ 'Priority' ];
@@ -778,6 +817,8 @@ class ERP_mailbox_api
 
 		$this->custom_error( 'Reporter: ' . $p_email[ 'Reporter_id' ] . ' - ' . $p_email[ 'From_parsed' ][ 'email' ] . ' --> Issue ID: #' . $t_bug_id );
 
+		$this->show_memory_usage( 'Finished add bug' );
+
 		$this->show_memory_usage( 'Start processing attachments' );
 
 		# Add files
@@ -787,7 +828,7 @@ class ERP_mailbox_api
 			{
 				$t_rejected_files = NULL;
 
-				foreach ( $p_email[ 'X-Mantis-Parts' ] as $part )
+				while ( $part = array_shift( $p_email[ 'X-Mantis-Parts' ] ) )
 				{
 					$t_file_rejected = $this->add_file( $t_bug_id, $part );
 
@@ -815,7 +856,9 @@ class ERP_mailbox_api
 				}
 			}
 		}
-	}
+
+		$this->show_memory_usage( 'Finished processing attachments' );
+}
 
 	# --------------------
 	# Very dirty: Adds a file to a bug.
@@ -824,7 +867,7 @@ class ERP_mailbox_api
 	{
 		# Handle the file upload
 		$t_part_name = ( ( isset( $p_part[ 'name' ] ) ) ? trim( $p_part[ 'name' ] ) : NULL );
-		$t_strlen_body = strlen( trim( $p_part[ 'body' ] ) );
+		$t_strlen_body = strlen( $p_part[ 'body' ] );
 
 		if ( is_blank( $t_part_name ) )
 		{
@@ -835,9 +878,9 @@ class ERP_mailbox_api
 		{
 			return( $t_part_name . ' = filetype not allowed' . "\n" );
 		}
-		elseif ( 0 == $t_strlen_body )
+		elseif ( 0 === $t_strlen_body )
 		{
-			return( $t_part_name . ' = attachment size is zero (' . $t_strlen_body . ' / ' . $this->_max_file_size . ')' . "\n" );
+			return( $t_part_name . ' = attachment size is zero (0 / ' . $this->_max_file_size . ')' . "\n" );
 		}
 		elseif ( $t_strlen_body > $this->_max_file_size )
 		{

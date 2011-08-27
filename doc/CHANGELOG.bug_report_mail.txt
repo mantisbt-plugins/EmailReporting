@@ -38,6 +38,12 @@ Jan 2011 - EmailReporting-0.9.0-DEV
 	- Added html pre tags to make the bug_report_mail output better readable if viewed by a web browser
 	- Added extra error handling incase deletion of email fails
 	- Adjusted the moment memory limit and time limit limitations are removed
+	- Added an extra check to see if the upload directory for attachments exists
+	- Optimized memory usage a tiny bit during the handling of attachments
+	- Added check to see if the project for the selected mailbox exists
+	- Check to see if the category exists for the selected mailbox has been moved
+	- Added some extra events for showing memory usage in debug mode
+	- Small improvements to the error handling of attachments
 
 Nov 2010 - EmailReporting-0.8.4
 	- Improved the project category list
