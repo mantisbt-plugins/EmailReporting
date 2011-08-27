@@ -48,6 +48,8 @@
 		plugin_config_set( 'job_users', $t_job_users );
 	}
 
+	echo 'Start checking all mailboxes: ' . date('l jS \of F Y H:i:s') . "\n\n";
+
 	$t_mailbox_api_index = ERP_get_mailbox_api_name();
 
 	$GLOBALS[ $t_mailbox_api_index ] = new ERP_mailbox_api;

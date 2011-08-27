@@ -44,6 +44,7 @@ Jan 2011 - EmailReporting-0.9.0-DEV
 	- Check to see if the category exists for the selected mailbox has been moved
 	- Added some extra events for showing memory usage in debug mode
 	- Small improvements to the error handling of attachments
+	- bug_report_mail will now output the date and time before checking the mailboxes
 
 Nov 2010 - EmailReporting-0.8.4
 	- Improved the project category list
