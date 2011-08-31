@@ -259,6 +259,8 @@
 
 		$t_input_name = string_attribute( $t_input_name );
 
+		$t_function_name = 'ERP_custom_function_' . $p_function_name;
+
 		switch ( $p_type )
 		{
 			case 'empty':
@@ -293,13 +295,13 @@
 <tr <?php echo helper_alternate_class( )?>>
 	<td class="center" width="100%" colspan="3">
 <?php
-				if ( function_exists( $p_function_name ) )
+				if ( function_exists( $t_function_name ) )
 				{
-					$p_function_name( $t_input_name, $t_value, $p_function_parameter );
+					$t_function_name( $t_input_name, $t_value, $p_function_parameter );
 				}
 				else
 				{
-					echo '<span class="negative">' . plugin_lang_get( 'function_not_found', 'EmailReporting' ) . ': ' . $p_function_name . '</span>';
+					echo '<span class="negative">' . plugin_lang_get( 'function_not_found', 'EmailReporting' ) . ': ' . $t_function_name . '</span>';
 				}
 ?>
 	</td>
@@ -423,7 +425,7 @@
 	<td class="center" width="40%" colspan="2">
 		<select <?php echo helper_get_tab_index() ?> name="<?php echo $t_input_name . ( ( in_array( $p_type, array( 'dropdown_multiselect', 'dropdown_multiselect_any' ), TRUE ) ) ? '[]" multiple size="6' : NULL ) ?>">
 <?php
-						if ( function_exists( $p_function_name ) )
+						if ( function_exists( $t_function_name ) )
 						{
 							if ( in_array( $p_type, array( 'dropdown_any', 'dropdown_multiselect_any' ), TRUE ) )
 							{
@@ -432,11 +434,11 @@
 								echo '>[' . lang_get( 'any' ) . ']</option>';
 							}
 
-							$p_function_name( $t_value, $p_function_parameter );
+							$t_function_name( $t_value, $p_function_parameter );
 						}
 						else
 						{
-							echo '<option class="negative">' . plugin_lang_get( 'function_not_found', 'EmailReporting' ) . ': ' . $p_function_name . '</option>';
+							echo '<option class="negative">' . plugin_lang_get( 'function_not_found', 'EmailReporting' ) . ': ' . $t_function_name . '</option>';
 						}
 ?>
 		</select>
@@ -452,13 +454,13 @@
 				break;
 
 			case 'custom':
-				if ( function_exists( $p_function_name ) )
+				if ( function_exists( $t_function_name ) )
 				{
-					$p_function_name( $p_name, $t_value, $p_function_parameter );
+					$t_function_name( $p_name, $t_value, $p_function_parameter );
 				}
 				else
 				{
-					echo '<option class="negative">' . plugin_lang_get( 'function_not_found', 'EmailReporting' ) . ': ' . $p_function_name . '</option>';
+					echo '<option class="negative">' . plugin_lang_get( 'function_not_found', 'EmailReporting' ) . ': ' . $t_function_name . '</option>';
 				}
 				break;
 
@@ -468,7 +470,7 @@
 
 	# --------------------
 	# output all custom fields
-	function ERP_print_custom_fields( $p_name, $p_sel_value )
+	function ERP_custom_function_print_custom_fields( $p_name, $p_sel_value )
 	{
 		# Custom Fields
 		$t_custom_fields = custom_field_get_ids();
@@ -515,7 +517,7 @@
 
 	# --------------------
 	# output a option list for authentication methods for POP3 and IMAP
-	function ERP_print_auth_method_option_list( $p_sel_value )
+	function ERP_custom_function_print_auth_method_option_list( $p_sel_value )
 	{
 		require_once( 'Net/POP3.php' );
 		require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/Net/IMAPProtocol_1.0.3.php' );
@@ -536,7 +538,7 @@
 
 	# --------------------
 	# output a option list based on an array with an index called "description"
-	function ERP_print_descriptions_option_list( $p_sel_value, $p_options_array )
+	function ERP_custom_function_print_descriptions_option_list( $p_sel_value, $p_options_array )
 	{
 		$t_options_sorted = array();
 		foreach( $p_options_array AS $t_option_key => $t_option_array )
@@ -565,7 +567,7 @@
 
 	# --------------------
 	# output a option list with supported encryptions
-	function ERP_print_encryption_option_list( $p_sel_value )
+	function ERP_custom_function_print_encryption_option_list( $p_sel_value )
 	{
 		if ( extension_loaded( 'openssl' ) )
 		{
@@ -591,7 +593,7 @@
 
 	# --------------------
 	# output a option list with global categories available in the mantisbt system
-	function ERP_print_global_category_option_list( $p_sel_value )
+	function ERP_custom_function_print_global_category_option_list( $p_sel_value )
 	{
 		// Need to disable allow_no_category for a moment
 		config_set_cache( 'allow_no_category', OFF, CONFIG_TYPE_STRING );
@@ -628,7 +630,7 @@
 
 	# --------------------
 	# output a option list with all the mbstring encodings supported
-	function ERP_print_mbstring_encoding_option_list( $p_sel_value )
+	function ERP_custom_function_print_mbstring_encoding_option_list( $p_sel_value )
 	{
 		if ( extension_loaded( 'mbstring' ) )
 		{
@@ -651,7 +653,7 @@
 
 	# --------------------
 	# output a option list with all priorities in the MantisBT system
-	function ERP_print_priority_option_list( $p_sel_value )
+	function ERP_custom_function_print_priority_option_list( $p_sel_value )
 	{
 		print_enum_string_option_list( 'priority', $p_sel_value );
 	}
@@ -659,7 +661,7 @@
 	# --------------------
 	# output a option list with all the projects in the MantisBT system
 	# Based on MantisBT 1.2.5 function: print_project_option_list
-	function ERP_print_projects_option_list( $p_sel_value )
+	function ERP_custom_function_print_projects_option_list( $p_sel_value )
 	{
 		$t_all_projects = project_get_all_rows();
 
@@ -681,7 +683,7 @@
 
 	# --------------------
 	# output a option list with all users who have at least global reporter rights
-	function ERP_print_reporter_option_list( $p_sel_value )
+	function ERP_custom_function_print_reporter_option_list( $p_sel_value )
 	{
 		if ( $p_sel_value !== NULL )
 		{
@@ -702,7 +704,7 @@
 	# --------------------
 	# output a option list with the tags currently known in the Mantis system
 	# Based on MantisBT function print_tag_option_list
-	function ERP_print_tag_attach_option_list( $p_sel_value )
+	function ERP_custom_function_print_tag_attach_option_list( $p_sel_value )
 	{
 		require_once( 'tag_api.php' );
 
@@ -721,7 +723,7 @@
 
 	# --------------------
 	# output a option list based on an array with an index called "description" or a variable with a string value
-	function ERP_print_mailbox_action_radio_buttons( $p_input_name, $p_sel_value, $p_variable_array )
+	function ERP_custom_function_print_mailbox_action_radio_buttons( $p_input_name, $p_sel_value, $p_variable_array )
 	{
 		$t_actions_list = array(
 			0 => array( 'add' ),
@@ -731,7 +733,7 @@
 		ERP_print_action_radio_buttons( $p_input_name, $p_sel_value, $p_variable_array, $t_actions_list );
 	}
 
-	function ERP_print_rule_action_radio_buttons( $p_input_name, $p_sel_value, $p_variable_array )
+	function ERP_custom_function_print_rule_action_radio_buttons( $p_input_name, $p_sel_value, $p_variable_array )
 	{
 		$t_actions_list = array(
 			0 => array( 'add' ),

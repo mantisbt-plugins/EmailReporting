@@ -85,16 +85,16 @@ ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'runtime_options', 'header' );
 ERP_output_config_option( 'mail_fetch_max', 'integer' );
 ERP_output_config_option( 'mail_delete', 'boolean' );
-ERP_output_config_option( 'mail_encoding', 'dropdown', NULL, 'ERP_print_mbstring_encoding_option_list' );
+ERP_output_config_option( 'mail_encoding', 'dropdown', NULL, 'print_mbstring_encoding_option_list' );
 
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'reporter_options', 'header' );
 ERP_output_config_option( 'mail_use_reporter', 'boolean' );
 ERP_output_config_option( 'mail_fallback_mail_reporter', 'boolean' );
-ERP_output_config_option( 'mail_reporter_id', 'dropdown', NULL, 'ERP_print_reporter_option_list' );
+ERP_output_config_option( 'mail_reporter_id', 'dropdown', NULL, 'print_reporter_option_list' );
 ERP_output_config_option( 'mail_auto_signup', 'boolean' );
-ERP_output_config_option( 'mail_preferred_username', 'dropdown', NULL, 'ERP_print_descriptions_option_list', array( 'name', 'email_address', 'email_no_domain', 'from_ldap' ) );
-ERP_output_config_option( 'mail_preferred_realname', 'dropdown', NULL, 'ERP_print_descriptions_option_list', array( 'name', 'email_address', 'email_no_domain', 'from_ldap', 'full_from' ) );
+ERP_output_config_option( 'mail_preferred_username', 'dropdown', NULL, 'print_descriptions_option_list', array( 'name', 'email_address', 'email_no_domain', 'from_ldap' ) );
+ERP_output_config_option( 'mail_preferred_realname', 'dropdown', NULL, 'print_descriptions_option_list', array( 'name', 'email_address', 'email_no_domain', 'from_ldap', 'full_from' ) );
 
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'feature_options', 'header' );
@@ -107,7 +107,7 @@ ERP_output_config_option( 'mail_remove_replies', 'boolean' );
 ERP_output_config_option( 'mail_email_receive_own', 'boolean' );
 ERP_output_config_option( 'mail_save_from', 'boolean' );
 ERP_output_config_option( 'mail_save_subject_in_note', 'boolean' );
-ERP_output_config_option( 'mail_subject_id_regex', 'dropdown', NULL, 'ERP_print_descriptions_option_list', array( 'strict', 'balanced', 'relaxed' ) );
+ERP_output_config_option( 'mail_subject_id_regex', 'dropdown', NULL, 'print_descriptions_option_list', array( 'strict', 'balanced', 'relaxed' ) );
 
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'priority_feature_options', 'header' );
