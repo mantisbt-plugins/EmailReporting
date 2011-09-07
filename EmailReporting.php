@@ -507,7 +507,7 @@ class EmailReportingPlugin extends MantisPlugin
 	 */
 	function ERP_check_mantisbt_url( )
 	{
-		if ( php_sapi_name() !== 'cli' )
+		if ( !isset( $GLOBALS[ 't_dir_emailreporting_adjust' ] ) )
 		{
 			$t_path						= config_get_global( 'path' );
 			$t_mail_mantisbt_url_fix	= plugin_config_get( 'mail_mantisbt_url_fix', '' );

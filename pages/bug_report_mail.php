@@ -34,7 +34,7 @@
 	$GLOBALS[ 't_mailboxes' ] = plugin_config_get( 'mailboxes' );
 
 	$t_mail_mantisbt_url_fix = plugin_config_get( 'mail_mantisbt_url_fix', '' );
-	if ( php_sapi_name() === 'cli' && !is_blank( $t_mail_mantisbt_url_fix ) )
+	if ( isset( $GLOBALS[ 't_dir_emailreporting_adjust' ] ) && !is_blank( $t_mail_mantisbt_url_fix ) )
 	{
 		config_set_global( 'path', $t_mail_mantisbt_url_fix );
 	}
