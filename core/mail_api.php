@@ -1149,16 +1149,16 @@ class ERP_mailbox_api
 		switch ( $this->_mail_subject_id_regex )
 		{
 			case 'balanced':
-				$t_subject_id_regex = "/\[(?P<project>.+\s|)0*(?P<id>[0-9]+)\]/u";
+				$t_subject_id_regex = "/\[(?P<project>[^\]]+\s|)0*(?P<id>[0-9]+)\]/u";
 				break;
 
 			case 'relaxed':
-				$t_subject_id_regex = "/\[(?P<project>.*\s|)0*(?P<id>[0-9]+)\s*\]/u";
+				$t_subject_id_regex = "/\[(?P<project>[^\]]*\s|)0*(?P<id>[0-9]+)\s*\]/u";
 				break;
 
 			case 'strict':
 			default:
-				$t_subject_id_regex = "/\[(?P<project>.+\s)0*(?P<id>[0-9]+)\]/u";
+				$t_subject_id_regex = "/\[(?P<project>[^\]]+\s)0*(?P<id>[0-9]+)\]/u";
 		}
 
 		preg_match( $t_subject_id_regex, $p_mail_subject, $v_matches );
