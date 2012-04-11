@@ -186,7 +186,7 @@ class EmailReportingPlugin extends MantisPlugin
 			$t_password = auth_generate_random_password( $t_seed );
 
 			# create the user
-			$t_result_user_create = user_create( $t_username, $t_password, $t_email, REPORTER, FALSE, TRUE, 'Mail Reporter' );
+			$t_result_user_create = user_create( $t_username, $t_password, $t_email, REPORTER, FALSE, TRUE, 'Mail Reporter', plugin_lang_get( 'plugin_title' ) );
 
 			# Save these after the user has been created successfully
 			if ( $t_result_user_create )
