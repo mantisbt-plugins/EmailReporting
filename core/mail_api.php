@@ -20,7 +20,6 @@
 
 	require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/config_api.php' );
 	require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/Mail/Parser.php' );
-	require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/Mail/simple_html_dom.php');
 
 class ERP_mailbox_api
 {
