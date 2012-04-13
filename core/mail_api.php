@@ -638,16 +638,28 @@ class ERP_mailbox_api
 				$t_reporter_name = user_get_field( $t_reporter_id, 'username' );
 			}
 
-			auth_attempt_script_login( $t_reporter_name );
+			$t_result = auth_attempt_script_login( $t_reporter_name );
 
-			return( (int) $t_reporter_id );
-		}
-		else
-		{
-			$this->custom_error( 'Could not get a valid reporter. Email will be ignored' );
+			# last attempt for fallback
+			if ( $t_result === FALSE && $this->_mail_fallback_mail_reporter && $t_reporter_id != $this->_mail_reporter_id && user_is_enabled( $this->_mail_reporter_id ) )
+			{
+				$t_reporter_id = $this->_mail_reporter_id;
+				$t_reporter_name = user_get_field( $t_reporter_id, 'username' );
+				$t_result = auth_attempt_script_login( $t_reporter_name );
+			}
 
-			return( FALSE );
+			if ( $t_result === TRUE )
+			{
+				user_update_last_visit( $t_reporter_id );
+
+				return( (int) $t_reporter_id );
+			}
 		}
+
+		// Normally this function does not get here unless all else failed
+		$this->custom_error( 'Could not get a valid reporter. Email will be ignored' );
+
+		return( FALSE );
 	}
 
 	# --------------------
