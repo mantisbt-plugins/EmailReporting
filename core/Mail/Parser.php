@@ -91,7 +91,7 @@ class ERP_Mail_Parser
 		$params['include_bodies'] = TRUE;
 		$params['decode_bodies'] = TRUE;
 		$params['decode_headers'] = TRUE;
-		$params['rfc_822bodies'] = TRUE;
+		$params['rfc_822bodies'] = FALSE;
 
 		$this->show_memory_usage( 'Start decode' );
 
@@ -253,24 +253,24 @@ class ERP_Mail_Parser
 				$t_stop_part = TRUE;
 			}
 
-			$this->setContentType( $parts[$i]->ctype_primary, $parts[ $i ]->ctype_secondary );
-
-			if ( isset( $parts[ $i ]->headers[ 'content-transfer-encoding' ] ) )
-			{
-				$this->setTransferEncoding( $parts[ $i ]->headers[ 'content-transfer-encoding' ] );
-			}
-
-			if ( isset( $parts[$i]->ctype_parameters[ 'charset' ] ) )
-			{
-				$this->setCharset( $parts[$i]->ctype_parameters[ 'charset' ] );
-			}
-
 			if ( $attachment === TRUE )
 			{
 				$this->addPart( $parts[ $i ], $p_attached_email_subject );
 			}
 			else
 			{
+				$this->setContentType( $parts[$i]->ctype_primary, $parts[ $i ]->ctype_secondary );
+
+				if ( isset( $parts[ $i ]->headers[ 'content-transfer-encoding' ] ) )
+				{
+					$this->setTransferEncoding( $parts[ $i ]->headers[ 'content-transfer-encoding' ] );
+				}
+
+				if ( isset( $parts[$i]->ctype_parameters[ 'charset' ] ) )
+				{
+					$this->setCharset( $parts[$i]->ctype_parameters[ 'charset' ] );
+				}
+
 				$this->setBody( $parts[ $i ]->body );
 			}
 
