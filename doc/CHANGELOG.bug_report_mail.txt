@@ -52,6 +52,7 @@ Jan 2011 - EmailReporting-0.9.0-DEV
 	- User last visit date will be updated if they use EmailReporting to create notes and issues
 	- Improved memory usage during parsing of emails
 	- Updated simple_html_dom to 1.5
+	- Some small enhancements to pear_error handling
 
 Nov 2010 - EmailReporting-0.8.4
 	- Improved the project category list

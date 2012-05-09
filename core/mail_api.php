@@ -264,13 +264,13 @@ class ERP_mailbox_api
 	# --------------------
 	# Show pear error when pear operation failed
 	#  return a boolean for whether the mailbox has failed
-	private function pear_error( &$p_pear )
+	private function pear_error( $p_location, &$p_pear )
 	{
 		if ( PEAR::isError( $p_pear ) )
 		{
 			if ( !$this->_test_only )
 			{
-				echo "\n\n" . 'Mailbox: ' . $this->_mailbox[ 'description' ] . "\n" . $p_pear->toString() . "\n";
+				echo "\n\n" . 'Mailbox: ' . $this->_mailbox[ 'description' ] . "\n" . 'Location: ' . $p_location . "\n" . $p_pear->toString() . "\n";
 			}
 
 			return( TRUE );
@@ -313,21 +313,25 @@ class ERP_mailbox_api
 		{
 			$this->mailbox_login();
 
-			if ( $this->_test_only === FALSE && !$this->pear_error( $this->_result ) )
+			if ( $this->_test_only === FALSE && !$this->pear_error( 'Attempt login', $this->_result ) )
 			{
 				if ( project_get_field( $this->_mailbox[ 'project_id' ], 'enabled' ) == TRUE )
 				{
-					$t_numMsg = $this->check_fetch_max( $this->_mailserver->numMsg() );
-
-					for ( $i = 1; $i <= $t_numMsg; $i++ )
+					$t_numMsg = $this->_mailserver->numMsg();
+					if ( !$this->pear_error( 'Retrieve number of messages', $t_numMsg ) )
 					{
-						$this->process_single_email( $i );
+						$t_numMsg = $this->check_fetch_max( $t_numMsg );
 
-						if ( $this->_mail_delete )
+						for ( $i = 1; $i <= $t_numMsg; $i++ )
 						{
-							$this->_result = $this->_mailserver->deleteMsg( $i );
-
-							$this->pear_error( $this->_result );
+							$this->process_single_email( $i );
+	
+							if ( $this->_mail_delete )
+							{
+								$this->_result = $this->_mailserver->deleteMsg( $i );
+	
+								$this->pear_error( 'Attempt delete email', $this->_result );
+							}
 						}
 					}
 				}
@@ -355,14 +359,14 @@ class ERP_mailbox_api
 		{
 			$this->mailbox_login();
 
-			// If basefolder is empty we try to select the inbox folder
-			if ( is_blank( $this->_mailbox[ 'imap_basefolder' ] ) )
+			if ( !$this->pear_error( 'Attempt login', $this->_result ) )
 			{
-				$this->_mailbox[ 'imap_basefolder' ] = $this->_mailserver->getCurrentMailbox();
-			}
+				// If basefolder is empty we try to select the inbox folder
+				if ( is_blank( $this->_mailbox[ 'imap_basefolder' ] ) )
+				{
+					$this->_mailbox[ 'imap_basefolder' ] = $this->_mailserver->getCurrentMailbox();
+				}
 
-			if ( !$this->pear_error( $this->_result ) )
-			{
 				if ( $this->_mailserver->mailboxExist( $this->_mailbox[ 'imap_basefolder' ] ) )
 				{
 					if ( $this->_test_only === FALSE )
@@ -400,7 +404,7 @@ class ERP_mailbox_api
 										$t_isdeleted_count = 0;
 
 										$t_numMsg = $this->_mailserver->numMsg();
-										if ( !$this->pear_error( $t_numMsg ) && $t_numMsg > 0 )
+										if ( !$this->pear_error( 'Retrieve number of messages', $t_numMsg ) && $t_numMsg > 0 )
 										{
 											$t_allowed_numMsg = $this->check_fetch_max( $t_numMsg, $t_total_fetch_counter );
 
@@ -420,7 +424,7 @@ class ERP_mailbox_api
 
 													$this->_result = $this->_mailserver->deleteMsg( $i );
 
-													$this->pear_error( $this->_result );
+													$this->pear_error( 'Attempt delete email', $this->_result );
 
 													$t_total_fetch_counter++;
 												}
