@@ -118,6 +118,7 @@ class ERP_mailbox_api
 		$this->_mail_subject_id_regex			= plugin_config_get( 'mail_subject_id_regex' );
 		$this->_mail_use_bug_priority			= plugin_config_get( 'mail_use_bug_priority' );
 		$this->_mail_use_reporter				= plugin_config_get( 'mail_use_reporter' );
+		$this->_mail_strip_signature			= plugin_config_get( 'mail_strip_signature' );
 
 		$this->_mp_options[ 'add_attachments' ]	= config_get( 'allow_file_upload' );
 		$this->_mp_options[ 'debug' ]			= $this->_mail_debug;
@@ -690,6 +691,11 @@ class ERP_mailbox_api
 			$t_description = $p_email[ 'X-Mantis-Body' ];
 
 			$t_description = $this->identify_replies( $t_description );
+
+            if ( ON == $this->_mail_strip_signature ) 
+            {
+                $t_description = $this->strip_signature( $t_description );
+            }
 			$t_description = $this->add_additional_info( 'note', $p_email, $t_description );
 
 			# Event integration
@@ -738,6 +744,10 @@ class ERP_mailbox_api
 			$t_bug_data->status					= $this->_bug_submit_status;
 			$t_bug_data->summary				= $p_email[ 'Subject' ];
 
+            if ( ON == $this->_mail_strip_signature ) 
+            { 
+                $p_email[ 'X-Mantis-Body' ] = $this->strip_signature( $p_email[ 'X-Mantis-Body' ] );
+            }
 			$t_bug_data->description			= $this->add_additional_info( 'issue', $p_email, $p_email[ 'X-Mantis-Body' ] );
 
 			$t_bug_data->steps_to_reproduce		= $this->_default_bug_steps_to_reproduce;
@@ -1294,6 +1304,17 @@ class ERP_mailbox_api
 			);
 		}
 	}
+
+    /* Strip signature from the mail body. Only removes the last --
+    */
+    private function strip_signature($p_description)
+    {
+        $t_parts = preg_split('/((?:\r|\n||\n\r)--\s*(?:\r|\n||\n\r))/', $p_description, -1, PREG_SPLIT_DELIM_CAPTURE);
+        array_pop($t_parts);
+        array_pop($t_parts);
+        $p_description = implode('', $t_parts);
+        return $p_description;
+    }
 }
 
 	# --------------------

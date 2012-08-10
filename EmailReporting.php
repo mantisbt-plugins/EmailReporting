@@ -155,6 +155,10 @@ class EmailReportingPlugin extends MantisPlugin
 			# ON = mail uses the reporter account in the setting below
 			# OFF = it identifies the reporter using the email address of the sender
 			'mail_use_reporter'				=> ON,
+    
+            #Removes the signature that are delimited by --
+            #Experimental feature
+			'mail_strip_signature'				=> OFF,
 		);
 	} 
 

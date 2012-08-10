@@ -64,6 +64,7 @@ $s_plugin_EmailReporting_mail_secured_script = 'Block this script from running v
 $s_plugin_EmailReporting_mail_subject_id_regex = 'What kind of search should be used to find the issue id in the subject';
 $s_plugin_EmailReporting_mail_use_bug_priority = 'Look for priority header field';
 $s_plugin_EmailReporting_mail_use_reporter = 'Use only default reporter user for issues created by email';
+$s_plugin_EmailReporting_mail_strip_signature = 'Strip signature delimited by "--" from email body (Experimental)';
 
 $s_plugin_EmailReporting_strict = 'Strict';
 $s_plugin_EmailReporting_balanced = 'Balanced';
