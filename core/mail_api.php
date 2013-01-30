@@ -1153,7 +1153,48 @@ class ERP_mailbox_api
 			return( $t_bug_id );
 		}
 
+		$t_bug_id = $this->get_bug_id_from_subject_text( $p_mail_subject );
+
+		if ( $t_bug_id != 0)
+		{
+		    return( $t_bug_id );
+		}
+
 		return( FALSE );
+	}
+
+	/**
+	 * Find a bug id based on email subject being 'equal' to the summary text
+	 * When multiple bugs match, the "earliest in workflow, then most recent" one is taken:
+	 * a "new" issue goes before a "confirmed" issue
+	 *
+	 * @param string $p_mail_subject  The summary of the issue to retrieve.
+	 * @return integer  The id of the issue with the given summary, 0 if there is no such issue.
+	 */
+	function get_bug_id_from_subject_text( $p_mail_subject ) {
+        preg_match('/^([Rr]e: ?)*(.*)/', $p_mail_subject, $match);
+        $t_mail_subject = $match[2];
+
+	    $t_bug_table = db_get_table( 'mantis_bug_table' );
+
+	    $query = "SELECT id
+	    FROM $t_bug_table
+	    WHERE summary LIKE " . db_param() .
+	    "ORDER BY status, last_updated DESC";
+
+	    $result = db_query_bound( $query, Array( $t_mail_subject ), 1 );
+
+	    if( db_num_rows( $result ) == 0 ) {
+	        return 0;
+	    } else {
+    	    while(( $row = db_fetch_array( $result ) ) !== false ) {
+        	    $t_issue_id = (int) $row['id'];
+        	    return $t_issue_id;
+    	    }
+
+			// no issue found that belongs to a project that the user has read access to.
+			return 0;
+		}
 	}
 
 	# --------------------
