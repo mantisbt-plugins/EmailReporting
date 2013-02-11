@@ -1180,7 +1180,8 @@ class ERP_mailbox_api
 	    $query = "SELECT id
 	    FROM $t_bug_table
 	    WHERE summary LIKE " . db_param() .
-	    "ORDER BY status, last_updated DESC";
+	    " AND status < " . config_get('bug_readonly_status_threshold') .
+	    " ORDER BY status, last_updated DESC";
 
 	    $result = db_query_bound( $query, Array( $t_mail_subject ), 1 );
 
