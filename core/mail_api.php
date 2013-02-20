@@ -59,7 +59,9 @@ class ERP_mailbox_api
 	private $_mail_reporter_id;
 	private $_mail_save_from;
 	private $_mail_save_subject_in_note;
+	private $_mail_subject_remove_re_fwd;
 	private $_mail_subject_id_regex;
+	private $_mail_subject_summary_match;
 	private $_mail_use_bug_priority;
 	private $_mail_use_reporter;
 
@@ -115,7 +117,9 @@ class ERP_mailbox_api
 		$this->_mail_reporter_id				= plugin_config_get( 'mail_reporter_id' );
 		$this->_mail_save_from					= plugin_config_get( 'mail_save_from' );
 		$this->_mail_save_subject_in_note		= plugin_config_get( 'mail_save_subject_in_note' );
+		$this->_mail_subject_remove_re_fwd		= plugin_config_get( 'mail_subject_remove_re_fwd' );
 		$this->_mail_subject_id_regex			= plugin_config_get( 'mail_subject_id_regex' );
+		$this->_mail_subject_summary_match		= plugin_config_get( 'mail_subject_summary_match' );
 		$this->_mail_use_bug_priority			= plugin_config_get( 'mail_use_bug_priority' );
 		$this->_mail_use_reporter				= plugin_config_get( 'mail_use_reporter' );
 
@@ -325,11 +329,11 @@ class ERP_mailbox_api
 						for ( $i = 1; $i <= $t_numMsg; $i++ )
 						{
 							$this->process_single_email( $i );
-	
+
 							if ( $this->_mail_delete )
 							{
 								$this->_result = $this->_mailserver->deleteMsg( $i );
-	
+
 								$this->pear_error( 'Attempt delete email', $this->_result );
 							}
 						}
@@ -534,7 +538,12 @@ class ERP_mailbox_api
 		$t_email[ 'From_parsed' ] = $this->parse_address( $t_email[ 'From' ] );
 		$t_email[ 'Reporter_id' ] = $this->get_user( $t_email[ 'From_parsed' ] );
 
-		$t_email[ 'Subject' ] = trim( $t_mp->subject() );
+		$t_subject = trim( $t_mp->subject() );
+		if ( $this->_mail_subject_remove_re_fwd )
+		{
+			$t_subject = $this->cleanup_subject( $t_subject );
+		}
+		$t_email[ 'Subject' ] = $t_subject;
 
 		$t_email[ 'X-Mantis-Body' ] = trim( $t_mp->body() );
 
@@ -957,6 +966,16 @@ class ERP_mailbox_api
 	}
 
 	# --------------------
+	# return a subject line without leading re: and fwd: occurrences
+	private function cleanup_subject( $p_subject )
+	{
+		preg_match( '/^((?:re|fwd): *)*(.*)/i', trim( $p_subject ), $t_match );
+		$t_subject = $t_match[2];
+
+		return $t_subject;
+	}
+
+	# --------------------
 	# return the hostname parsed into a hostname + port
 	private function prepare_mailbox_hostname()
 	{
@@ -1153,6 +1172,45 @@ class ERP_mailbox_api
 			return( $t_bug_id );
 		}
 
+		if ( $this->_mail_subject_summary_match )
+		{
+			$t_bug_id = $this->get_bug_id_from_subject_text( $p_mail_subject );
+			if ( $t_bug_id !== FALSE )
+			{
+				return( $t_bug_id );
+			}
+		}
+
+		return( FALSE );
+	}
+
+	/**
+	 * Find a bug id based on email subject being 'equal' to the summary text
+	 * When multiple bugs match, the "earliest in workflow, then most recent" one is taken:
+	 * a "new" issue goes before a "confirmed" issue
+	 *
+	 * @param string $p_mail_subject  The summary of the issue to retrieve.
+	 * @return integer  The id of the issue with the given summary, 0 if there is no such issue.
+	 */
+	private function get_bug_id_from_subject_text( $p_mail_subject )
+	{
+		$t_bug_table = db_get_table( 'mantis_bug_table' );
+
+		$query = "SELECT id
+		FROM $t_bug_table
+		WHERE summary LIKE " . db_param() .
+		" AND status < " . config_get('bug_readonly_status_threshold') .
+		" ORDER BY status, last_updated DESC";
+
+		$result = db_query_bound( $query, Array( $p_mail_subject ), 1 );
+
+		if( db_num_rows( $result ) > 0 ) {
+			while(( $row = db_fetch_array( $result ) ) !== false ) {
+				$t_issue_id = (int) $row['id'];
+				return $t_issue_id;
+			}
+		}
+
 		return( FALSE );
 	}
 
@@ -1177,7 +1235,7 @@ class ERP_mailbox_api
 		}
 
 		preg_match( $t_subject_id_regex, $p_mail_subject, $v_matches );
-		
+
 		if ( isset( $v_matches[ 'id' ] ) )
 		{
 			return( (int) $v_matches[ 'id' ] );
@@ -1185,7 +1243,7 @@ class ERP_mailbox_api
 
 		return( FALSE );
 	}
-	
+
 	# --------------------
 	# Saves the complete email to file
 	# Only works in debug mode
@@ -1357,7 +1415,7 @@ class ERP_mailbox_api
 			log_event( LOG_LDAP, "ldap_get_entries() returned false." );
 			return null;
 		}
-	
+
 		# Free results / unbind
 		log_event( LOG_LDAP, "Unbinding from LDAP server" );
 		ldap_free_result( $t_sr );

@@ -107,7 +107,9 @@ ERP_output_config_option( 'mail_remove_replies', 'boolean' );
 ERP_output_config_option( 'mail_email_receive_own', 'boolean' );
 ERP_output_config_option( 'mail_save_from', 'boolean' );
 ERP_output_config_option( 'mail_save_subject_in_note', 'boolean' );
+ERP_output_config_option( 'mail_subject_remove_re_fwd', 'boolean' );
 ERP_output_config_option( 'mail_subject_id_regex', 'dropdown', NULL, 'print_descriptions_option_list', array( 'strict', 'balanced', 'relaxed' ) );
+ERP_output_config_option( 'mail_subject_summary_match', 'boolean' );
 
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'priority_feature_options', 'header' );
