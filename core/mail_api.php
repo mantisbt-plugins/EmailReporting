@@ -534,7 +534,9 @@ class ERP_mailbox_api
 		$t_email[ 'From_parsed' ] = $this->parse_address( $t_email[ 'From' ] );
 		$t_email[ 'Reporter_id' ] = $this->get_user( $t_email[ 'From_parsed' ] );
 
-		$t_email[ 'Subject' ] = trim( $t_mp->subject() );
+		//
+		preg_match('/^((?:re|fwd): *)*(.*)/i', trim( $t_mp->subject() ), $match);
+		$t_email[ 'Subject' ] = $match[2];
 
 		$t_email[ 'X-Mantis-Body' ] = trim( $t_mp->body() );
 
@@ -1171,10 +1173,8 @@ class ERP_mailbox_api
 	 * @param string $p_mail_subject  The summary of the issue to retrieve.
 	 * @return integer  The id of the issue with the given summary, 0 if there is no such issue.
 	 */
-	function get_bug_id_from_subject_text( $p_mail_subject ) {
-        preg_match('/^([Rr]e: ?)*(.*)/', $p_mail_subject, $match);
-        $t_mail_subject = $match[2];
-
+	private function get_bug_id_from_subject_text( $p_mail_subject )
+	{
 	    $t_bug_table = db_get_table( 'mantis_bug_table' );
 
 	    $query = "SELECT id
@@ -1183,7 +1183,7 @@ class ERP_mailbox_api
 	    " AND status < " . config_get('bug_readonly_status_threshold') .
 	    " ORDER BY status, last_updated DESC";
 
-	    $result = db_query_bound( $query, Array( $t_mail_subject ), 1 );
+	    $result = db_query_bound( $query, Array( $p_mail_subject ), 1 );
 
 	    if( db_num_rows( $result ) == 0 ) {
 	        return 0;
