@@ -1175,11 +1175,10 @@ class ERP_mailbox_api
 		if ( $this->_mail_subject_summary_match )
 		{
 			$t_bug_id = $this->get_bug_id_from_subject_text( $p_mail_subject );
-		}
-
-		if ( $t_bug_id != 0)
-		{
-			return( $t_bug_id );
+			if ( $t_bug_id !== FALSE )
+			{
+				return( $t_bug_id );
+			}
 		}
 
 		return( FALSE );
@@ -1205,17 +1204,14 @@ class ERP_mailbox_api
 
 		$result = db_query_bound( $query, Array( $p_mail_subject ), 1 );
 
-		if( db_num_rows( $result ) == 0 ) {
-			return 0;
-		} else {
+		if( db_num_rows( $result ) > 0 ) {
 			while(( $row = db_fetch_array( $result ) ) !== false ) {
-			$t_issue_id = (int) $row['id'];
-			return $t_issue_id;
+				$t_issue_id = (int) $row['id'];
+				return $t_issue_id;
 			}
-
-			// no issue found that belongs to a project that the user has read access to.
-			return 0;
 		}
+
+		return( FALSE );
 	}
 
 	# --------------------
