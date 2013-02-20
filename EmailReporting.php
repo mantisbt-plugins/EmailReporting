@@ -5,7 +5,7 @@ class EmailReportingPlugin extends MantisPlugin
 {
 	/**
 	 *  A method that populates the plugin information and minimum requirements.
-	 */ 
+	 */
 	function register()
 	{
 		$this->name = plugin_lang_get( 'plugin_title' );
@@ -91,7 +91,7 @@ class EmailReportingPlugin extends MantisPlugin
 			# Need to set the character encoding to which the email will be converted
 			# This should be the same as the character encoding used in the database system used for mantis
 			# values should be acceptable to the following function: http://www.php.net/mb_convert_encoding
-			'mail_encoding'					=> 'UTF-8', 
+			'mail_encoding'					=> 'UTF-8',
 
 			# Enable fallback to mail reporter
 			'mail_fallback_mail_reporter'	=> ON,
@@ -101,10 +101,10 @@ class EmailReportingPlugin extends MantisPlugin
 			'mail_fetch_max'				=> 1,
 
 			# Use the following text when the description is missing from the email
-			'mail_nodescription'			=> 'No description found', 
+			'mail_nodescription'			=> 'No description found',
 
 			# Use the following text when the subject is missing from the email
-			'mail_nosubject'				=> 'No subject found', 
+			'mail_nosubject'				=> 'No subject found',
 
 			# Parse HTML mails
 			'mail_parse_html'				=> ON,
@@ -141,12 +141,18 @@ class EmailReportingPlugin extends MantisPlugin
 			# Write the subject of the email in the note
 			'mail_save_subject_in_note'		=> OFF,
 
+			# Remove leading re: and fwd: occurrences from the subject before using it as issue summary
+			'mail_subject_remove_re_fwd'	=> OFF,
+
 			# Do you want to secure the EmailReporting script so that it cannot be run
 			# via a webserver?
 			'mail_secured_script'			=> ON,
 
 			# Which regex should be used for finding the issue id in the subject
 			'mail_subject_id_regex'			=> 'strict',
+
+			# If no issue id is found, try to match the subject to an issue summary
+			'mail_subject_summary_match'	=> OFF,
 
 			# Looks for priority header field
 			'mail_use_bug_priority'			=> ON,
@@ -156,7 +162,7 @@ class EmailReportingPlugin extends MantisPlugin
 			# OFF = it identifies the reporter using the email address of the sender
 			'mail_use_reporter'				=> ON,
 		);
-	} 
+	}
 
 	/**
 	 * EmailReporting installation function.
@@ -262,7 +268,7 @@ class EmailReportingPlugin extends MantisPlugin
 		return array( '<a href="' . plugin_page( 'manage_mailbox' ) . '">' . plugin_lang_get( 'manage' ) . ' ' . plugin_lang_get( 'plugin_title' ) . '</a>', );
 	}
 
-	/* 
+	/*
 	 * This function will run when the mantis core is ready
 	 */
 	function ERP_core_ready( )
@@ -272,10 +278,10 @@ class EmailReportingPlugin extends MantisPlugin
 		$this->ERP_check_mantisbt_url( );
 	}
 
-	/* 
+	/*
 	 * Since schema is not used anymore some corrections need to be applied
 	 * Schema will be completely reset by this just once
-	 * 
+	 *
 	 * The second part updates various configuration options and performs some cleaning
 	 * Further updates to the configuration options follow below
 	 *
@@ -500,7 +506,7 @@ class EmailReportingPlugin extends MantisPlugin
 		}
 	}
 
-	/* 
+	/*
 	 * Prepare mantisbt variable for use while bug_report_mail is running
 	 * This variable fixes the problem where when EmailReporting sends emails
 	 * that the url in the emails is incorrect
