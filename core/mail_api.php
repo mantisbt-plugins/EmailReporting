@@ -329,11 +329,11 @@ class ERP_mailbox_api
 						for ( $i = 1; $i <= $t_numMsg; $i++ )
 						{
 							$this->process_single_email( $i );
-	
+
 							if ( $this->_mail_delete )
 							{
 								$this->_result = $this->_mailserver->deleteMsg( $i );
-	
+
 								$this->pear_error( 'Attempt delete email', $this->_result );
 							}
 						}
@@ -969,8 +969,7 @@ class ERP_mailbox_api
 	# return a subject line without leading re: and fwd: occurrences
 	private function cleanup_subject( $p_subject )
 	{
-		$t_subject = trim( $p_subject );
-		preg_match( '/^((?:re|fwd): *)*(.*)/i', trim( $t_subject ), $t_match );
+		preg_match( '/^((?:re|fwd): *)*(.*)/i', trim( $p_subject ), $t_match );
 		$t_subject = $t_match[2];
 
 		return $t_subject;
@@ -1240,7 +1239,7 @@ class ERP_mailbox_api
 		}
 
 		preg_match( $t_subject_id_regex, $p_mail_subject, $v_matches );
-		
+
 		if ( isset( $v_matches[ 'id' ] ) )
 		{
 			return( (int) $v_matches[ 'id' ] );
@@ -1248,7 +1247,7 @@ class ERP_mailbox_api
 
 		return( FALSE );
 	}
-	
+
 	# --------------------
 	# Saves the complete email to file
 	# Only works in debug mode
@@ -1420,7 +1419,7 @@ class ERP_mailbox_api
 			log_event( LOG_LDAP, "ldap_get_entries() returned false." );
 			return null;
 		}
-	
+
 		# Free results / unbind
 		log_event( LOG_LDAP, "Unbinding from LDAP server" );
 		ldap_free_result( $t_sr );
