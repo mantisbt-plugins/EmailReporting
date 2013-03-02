@@ -16,7 +16,7 @@
 	require_once( config_get_global( 'absolute_path' ) . 'api/soap/mc_file_api.php' );
 
 	require_once( 'Net/POP3.php' );
-	require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/Net/IMAP_1.0.3.php' );
+	require_once( 'Net/IMAP.php' );
 
 	require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/config_api.php' );
 	require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/Mail/Parser.php' );
@@ -396,7 +396,7 @@ class ERP_mailbox_api
 
 									$t_foldername = $this->_mailbox[ 'imap_basefolder' ] . ( ( $this->_mailbox[ 'imap_createfolderstructure' ] ) ? $t_hierarchydelimiter . $t_project_name : NULL );
 
-									// We don't need to check twice whether the mailbox exist twice incase createfolderstructure is false
+									// We don't need to check twice whether the mailbox exist incase createfolderstructure is false
 									if ( !$this->_mailbox[ 'imap_createfolderstructure' ] || $this->_mailserver->mailboxExist( $t_foldername ) === TRUE )
 									{
 										$this->_mailserver->selectMailbox( $t_foldername );
