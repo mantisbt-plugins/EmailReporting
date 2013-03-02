@@ -49,7 +49,23 @@ if ( $f_mailbox_action !== 'add' )
 ERP_output_config_option( 'mailbox_action', 'hidden', $f_mailbox_action );
 ERP_output_config_option( 'select_mailbox', 'hidden', $f_select_mailbox );
 
+if ( $f_mailbox_action === 'complete_test' )
+{
 ?>
+<table align="center" class="width75" cellspacing="1">
+
+<tr>
+	<td class="left">
+		<?php echo nl2br( plugin_lang_get( 'complete_test_action_note' ) ) ?>
+	</td>
+</tr>
+
+</table>
+<br />
+<?php
+}
+?>
+
 <table align="center" class="width50 nowrap" cellspacing="1">
 <?php
 

@@ -740,7 +740,7 @@
 	{
 		$t_actions_list = array(
 			0 => array( 'add' ),
-			1 => array( 'copy', 'edit', 'delete', 'test' ),
+			1 => array( 'copy', 'edit', 'delete', 'test', 'complete_test' ),
 		);
 
 		ERP_print_action_radio_buttons( $p_input_name, $p_sel_value, $p_variable_array, $t_actions_list );

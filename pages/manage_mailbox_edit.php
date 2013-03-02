@@ -9,7 +9,7 @@ $f_select_mailbox = gpc_get_int( 'select_mailbox' );
 
 $t_mailboxes = plugin_config_get( 'mailboxes' );
 
-if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailbox_action === 'edit' || $f_mailbox_action === 'test' ) && $f_select_mailbox >= 0 ) )
+if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailbox_action === 'edit' || $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test' ) && $f_select_mailbox >= 0 ) )
 {
 	$t_mailbox = array(
 		'enabled'				=> gpc_get_bool( 'enabled', ON ),
@@ -56,21 +56,26 @@ elseif ( $f_mailbox_action === 'delete' && $f_select_mailbox >= 0 )
 {
 	unset( $t_mailboxes[ $f_select_mailbox ] );
 }
-elseif ( $f_mailbox_action === 'test' && $f_select_mailbox >= 0 )
+elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test' ) && $f_select_mailbox >= 0 )
 {
 	# Verify mailbox - from Recmail by Cas Nuy
 	require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/mail_api.php' );
 
-	$t_mailbox_api = new ERP_mailbox_api( TRUE );
+	$t_mailbox_api = new ERP_mailbox_api( ( ( $f_mailbox_action === 'complete_test' ) ? FALSE : TRUE ) );
+	echo '<pre>';
 	$t_result = $t_mailbox_api->process_mailbox( $t_mailbox );
+	echo '</pre>';
 
-	$t_is_custom_error = ( is_array( $t_result ) && isset( $t_result[ 'ERROR_TYPE' ] ) && $t_result[ 'ERROR_TYPE' ] === 'NON-PEAR-ERROR' );
+	$t_is_custom_error = ( ( is_array( $t_result ) && isset( $t_result[ 'ERROR_TYPE' ] ) && $t_result[ 'ERROR_TYPE' ] === 'NON-PEAR-ERROR' ) || ( is_bool( $t_result ) && $t_result === FALSE ) );
 
 	if ( $t_is_custom_error || PEAR::isError( $t_result ) )
 	{
 		$t_no_redirect = TRUE;
 
-		html_page_top( plugin_lang_get( 'plugin_title' ) );
+		if ( $f_mailbox_action !== 'complete_test' )
+		{
+			html_page_top( plugin_lang_get( 'plugin_title' ) );
+		}
 ?>
 <br /><div class="center">
 <?php
@@ -89,13 +94,16 @@ elseif ( $f_mailbox_action === 'test' && $f_select_mailbox >= 0 )
 			echo plugin_lang_get( 'imap_basefolder' ) . ': ' . $t_mailbox_api->_mailbox[ 'imap_basefolder' ] . '<br />';
 		}
 
-		echo '<br />' . ( ( $t_is_custom_error ) ? nl2br( $t_result[ 'ERROR_MESSAGE' ] ) : $t_result->toString() ) . '<br /><br />';
+		echo '<br />' . ( ( is_array( $t_is_custom_error ) ) ? nl2br( $t_result[ 'ERROR_MESSAGE' ] ) : ( ( PEAR::isError( $t_result ) ) ? $t_result->toString() : 'UNKNOWN ERROR' ) ) . '<br /><br />';
 
 		print_bracket_link( plugin_page( 'manage_mailbox', TRUE ), lang_get( 'proceed' ) );
 ?>
 </div>
 <?php
-		html_page_bottom( __FILE__ );
+		if ( $f_mailbox_action !== 'complete_test' )
+		{
+			html_page_bottom( __FILE__ );
+		}
 	}
 }
 
