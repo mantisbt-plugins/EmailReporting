@@ -56,6 +56,7 @@ Jan 2011 - EmailReporting-0.9.0-DEV
 	- Added option to test a single mailbox completely
 	- Added pear IMAP plugin 1.1.2 (1.1.0 had bugs and would not work with EmailReporting)
 	- Removed customized pear IMAP 1.0.3 from EmailReporting
+	- The maximum fetched emails now works per scheduled job execution instead of per mailbox per execution of the scheduled job. This is to save memory
 
 Nov 2010 - EmailReporting-0.8.4
 	- Improved the project category list

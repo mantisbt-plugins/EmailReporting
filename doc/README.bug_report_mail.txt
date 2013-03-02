@@ -80,8 +80,7 @@ the complete mails will be saved to this directory.
 Fetching of emails:
 Its advisable to keep the mail fetch max at 1 since the parsing of mime 
 content can use up a significant amount of memory. But this means that only
-one email will be retrieved per mailbox every time bug_report_mail.php is
-executed
+one email will be retrieved every time bug_report_mail.php is executed
 
 Also make sure you set the 'max_file_size' setting for MantisBT to the maximum
 attachment size allowed. This includes not only what you want to allow but also
