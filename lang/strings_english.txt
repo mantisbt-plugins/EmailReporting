@@ -74,6 +74,7 @@ $s_plugin_EmailReporting_mantisbt = 'MantisBT';
 
 $s_plugin_EmailReporting_newnote = 'New note';
 $s_plugin_EmailReporting_newissue = 'New issue';
+$s_plugin_EmailReporting_newattachment = 'New attachment';
 
 $s_plugin_EmailReporting_name = 'Name';
 $s_plugin_EmailReporting_full_from = 'Full "From" address';
@@ -91,6 +92,7 @@ $s_plugin_EmailReporting_select_mailbox = 'Select mailbox';
 $s_plugin_EmailReporting_update_configuration = 'Update configuration';
 
 $s_plugin_EmailReporting_enabled = 'Enabled';
+$s_plugin_EmailReporting_disabled = 'Disabled';
 $s_plugin_EmailReporting_description = 'Description';
 $s_plugin_EmailReporting_mailbox_type = 'Mailbox type';
 $s_plugin_EmailReporting_hostname = 'Hostname';
@@ -106,7 +108,7 @@ $s_plugin_EmailReporting_global_category_id = 'Select a category';
 $s_plugin_EmailReporting_link_rules = 'Select rules';
 
 $s_plugin_EmailReporting_mail_bug_priority_array_failure = 'The given format is not an acceptable array.';
-$s_plugin_EmailReporting_disabled = 'Disabled';
+$s_plugin_EmailReporting_recorddisabled = '* = Disabled';
 $s_plugin_EmailReporting_mbstring_unavailable = 'PHP mbstring extension unavailable';
 $s_plugin_EmailReporting_missing_reporter = 'Current mail reporter is missing. Please select a new one.';
 $s_plugin_EmailReporting_openssl_unavailable = 'PHP OpenSSL extension unavailable';
