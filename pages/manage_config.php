@@ -100,7 +100,7 @@ ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'feature_options', 'header' );
 ERP_output_config_option( 'mail_add_bug_reports', 'boolean' );
 ERP_output_config_option( 'mail_add_bugnotes', 'boolean' );
-ERP_output_config_option( 'mail_rule_system', 'boolean' );
+ERP_output_config_option( 'mail_rule_system', 'disabled' ); //disabled as the rule system is not ready for use
 ERP_output_config_option( 'mail_parse_html', 'boolean' );
 ERP_output_config_option( 'mail_remove_mantis_email', 'boolean' );
 ERP_output_config_option( 'mail_remove_replies', 'boolean' );

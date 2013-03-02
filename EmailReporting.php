@@ -498,6 +498,13 @@ class EmailReportingPlugin extends MantisPlugin
 
 			plugin_config_set( 'config_version', 10 );
 		}
+
+		if ( $t_config_version <= 10 )
+		{
+			plugin_config_delete( 'mail_rule_system' );
+
+			plugin_config_set( 'config_version', 11 );
+		}
 	}
 
 	/* 

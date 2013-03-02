@@ -105,13 +105,17 @@
 			'plugin_lang_get' => array(
 				'manage_config',
 				'manage_mailbox',
-				'manage_rule',
 			),
 			'lang_get' => array(
 				'documentation_link'	=> 'view_readme',
 				'changelog_link'		=> 'view_changelog',
 			),
 		);
+
+		if ( plugin_config_get( 'mail_rule_system' ) == TRUE )
+		{
+			$t_pages[ 'plugin_lang_get' ] = array_merge( $t_pages[ 'plugin_lang_get' ], array( 'manage_rule' ) );
+		}
 
 		if( access_has_global_level( config_get( 'manage_plugin_threshold' ) ) )
 		{
@@ -321,6 +325,7 @@
 
 			case 'boolean':
 			case 'directory_string':
+			case 'disabled':
 			case 'integer':
 			case 'string':
 			case 'string_multiline':
@@ -379,6 +384,14 @@
 	</td>
 	<td class="center" width="20%">
 		<span class="<?php echo $t_result_is_dir_color ?>"><?php echo $t_result_is_dir_text ?></span><br /><span class="<?php echo $t_result_is_writable_color ?>"><?php echo $t_result_is_writable_text ?></span>
+	</td>
+<?php
+						break;
+
+					case 'disabled':
+?>
+	<td class="center" width="40%" colspan="2">
+		<?php echo plugin_lang_get( 'disabled' ) ?>
 	</td>
 <?php
 						break;
