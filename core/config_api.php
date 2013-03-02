@@ -533,7 +533,7 @@
 	function ERP_custom_function_print_auth_method_option_list( $p_sel_value )
 	{
 		require_once( 'Net/POP3.php' );
-		require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/Net/IMAPProtocol_1.0.3.php' );
+		require_once( 'Net/IMAPProtocol.php' );
 
 		$t_mailbox_connection_pop3 = new Net_POP3();
 		$t_mailbox_connection_imap = new Net_IMAPProtocol();
