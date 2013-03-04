@@ -392,6 +392,9 @@
 ?>
 	<td class="center" width="40%" colspan="2">
 		<?php echo plugin_lang_get( 'disabled' ) ?>
+<?php
+						ERP_output_config_option( $t_input_name, 'hidden', $t_value );
+?>
 	</td>
 <?php
 						break;
