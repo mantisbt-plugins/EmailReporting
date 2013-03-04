@@ -114,6 +114,7 @@ $s_plugin_EmailReporting_mbstring_unavailable = 'PHP mbstring extension unavaila
 $s_plugin_EmailReporting_missing_reporter = 'Current mail reporter is missing. Please select a new one.';
 $s_plugin_EmailReporting_openssl_unavailable = 'PHP OpenSSL extension unavailable';
 $s_plugin_EmailReporting_test_failure = 'Operation NOT successful';
+$s_plugin_EmailReporting_test_success = 'Operation successful';
 $s_plugin_EmailReporting_unknown_setting = 'Unknown setting encountered. Setting ignored: ';
 $s_plugin_EmailReporting_zero_records = 'None available';
 $s_plugin_EmailReporting_function_not_found = 'Function not found';

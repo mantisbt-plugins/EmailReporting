@@ -61,14 +61,16 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 	# Verify mailbox - from Recmail by Cas Nuy
 	require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/mail_api.php' );
 
-	$t_mailbox_api = new ERP_mailbox_api( ( ( $f_mailbox_action === 'complete_test' ) ? FALSE : TRUE ) );
+	$t_mail_debug = plugin_config_get( 'mail_debug' );
+
 	echo '<pre>';
+	$t_mailbox_api = new ERP_mailbox_api( ( ( $f_mailbox_action === 'complete_test' ) ? FALSE : TRUE ) );
 	$t_result = $t_mailbox_api->process_mailbox( $t_mailbox );
 	echo '</pre>';
 
 	$t_is_custom_error = ( ( is_array( $t_result ) && isset( $t_result[ 'ERROR_TYPE' ] ) && $t_result[ 'ERROR_TYPE' ] === 'NON-PEAR-ERROR' ) || ( is_bool( $t_result ) && $t_result === FALSE ) );
 
-	if ( $t_is_custom_error || PEAR::isError( $t_result ) )
+	if ( $t_is_custom_error || PEAR::isError( $t_result ) || ( $f_mailbox_action === 'complete_test' && $t_mail_debug ) )
 	{
 		$t_no_redirect = TRUE;
 
@@ -79,7 +81,8 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 ?>
 <br /><div class="center">
 <?php
-		echo plugin_lang_get( 'test_failure' ) . '<br /><br />';
+		echo plugin_lang_get( ( ( $t_is_custom_error || PEAR::isError( $t_result ) ) ? 'test_failure' : 'test_success' ) ) . '<br /><br />';
+		
 		echo plugin_lang_get( 'description' ) . ': ' . $t_mailbox_api->_mailbox[ 'description' ] . '<br />';
 		echo plugin_lang_get( 'mailbox_type' ) . ': ' . $t_mailbox_api->_mailbox[ 'mailbox_type' ] . '<br />';
 		echo plugin_lang_get( 'hostname' ) . ': ', $t_mailbox_api->_mailbox[ 'hostname' ] . '<br />';
@@ -94,7 +97,7 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 			echo plugin_lang_get( 'imap_basefolder' ) . ': ' . $t_mailbox_api->_mailbox[ 'imap_basefolder' ] . '<br />';
 		}
 
-		echo '<br />' . ( ( is_array( $t_is_custom_error ) ) ? nl2br( $t_result[ 'ERROR_MESSAGE' ] ) : ( ( PEAR::isError( $t_result ) ) ? $t_result->toString() : 'UNKNOWN ERROR' ) ) . '<br /><br />';
+		echo '<br />' . ( ( $t_is_custom_error ) ? nl2br( $t_result[ 'ERROR_MESSAGE' ] ) : ( ( PEAR::isError( $t_result ) ) ? $t_result->toString() : NULL ) ) . '<br /><br />';
 
 		print_bracket_link( plugin_page( 'manage_mailbox', TRUE ), lang_get( 'proceed' ) );
 ?>
