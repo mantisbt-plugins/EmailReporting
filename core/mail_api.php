@@ -47,6 +47,7 @@ class ERP_mailbox_api
 	private $_mail_bug_priority;
 	private $_mail_debug;
 	private $_mail_debug_directory;
+	private $_mail_debug_show_memory_usage;
 	private $_mail_delete;
 	private $_mail_fallback_mail_reporter;
 	private $_mail_fetch_max;
@@ -103,6 +104,7 @@ class ERP_mailbox_api
 		$this->_mail_bug_priority				= plugin_config_get( 'mail_bug_priority' );
 		$this->_mail_debug						= plugin_config_get( 'mail_debug' );
 		$this->_mail_debug_directory			= plugin_config_get( 'mail_debug_directory' );
+		$this->_mail_debug_show_memory_usage	= plugin_config_get( 'mail_debug_show_memory_usage' );
 		$this->_mail_delete						= plugin_config_get( 'mail_delete' );
 		$this->_mail_fallback_mail_reporter		= plugin_config_get( 'mail_fallback_mail_reporter' );
 		$this->_mail_fetch_max					= plugin_config_get( 'mail_fetch_max' );
@@ -123,6 +125,7 @@ class ERP_mailbox_api
 
 		$this->_mp_options[ 'add_attachments' ]	= config_get( 'allow_file_upload' );
 		$this->_mp_options[ 'debug' ]			= $this->_mail_debug;
+		$this->_mp_options[ 'show_mem_usage' ]	= $this->_mail_debug_show_memory_usage;
 		$this->_mp_options[ 'encoding' ]		= plugin_config_get( 'mail_encoding' );
 		$this->_mp_options[ 'parse_html' ]		= plugin_config_get( 'mail_parse_html' );
 
@@ -153,7 +156,7 @@ class ERP_mailbox_api
 			$this->_memory_limit = ini_get( 'memory_limit' );
 		}
 
-		// Do we need to remporarily enable emails on self actions?
+		// Do we need to temporarily enable emails on a users own actions?
 		$t_mail_email_receive_own				= plugin_config_get( 'mail_email_receive_own' );
 		if ( $t_mail_email_receive_own )
 		{
@@ -163,7 +166,7 @@ class ERP_mailbox_api
 
 		$this->_functionality_enabled = TRUE;
 
-		// Because of a notice level errors in core/email_api.php on line 516 in MantisBT 1.2.0 we need to fill this value
+		// Because of a notice level error in core/email_api.php on line 516 in MantisBT 1.2.0 we need to fill this value
 		if ( !isset( $_SERVER[ 'REMOTE_ADDR' ] ) )
 		{
 			$_SERVER[ 'REMOTE_ADDR' ] = '127.0.0.1';
@@ -411,7 +414,7 @@ class ERP_mailbox_api
 										$t_numMsg = $this->_mailserver->numMsg();
 										if ( !$this->pear_error( 'Retrieve number of messages', $t_numMsg ) )
 										{
-											// check_fetch_max not performed here as $p_numMsg could contain emails marked as deleted.
+											// check_fetch_max not performed here as $t_numMsg could contain emails marked as deleted.
 											for ( $i = 1; $i <= $t_numMsg; $i++ )
 											{
 												if ( $this->check_fetch_max() === TRUE )
@@ -481,9 +484,11 @@ class ERP_mailbox_api
 	{
 		$this->show_memory_usage( 'Start process single email' );
 
-		$this->_mails_fetched++;
-
 		$t_msg = $this->_mailserver->getMsg( $p_i );
+
+		$this->show_memory_usage( 'Single email retrieved from mailbox' );
+
+		$this->_mails_fetched++;
 
 		$this->save_message_to_file( $t_msg );
 
@@ -505,7 +510,7 @@ class ERP_mailbox_api
 			}
 			else
 			{
-				$this->custom_error( 'From email address rejected by email_is_valid function based on: ' . $t_email[ 'From' ] );
+				$this->custom_error( 'From email address rejected by email_is_valid function based on: ' . $t_email[ 'From_parsed' ][ 'From' ] );
 			}
 		}
 
@@ -522,16 +527,20 @@ class ERP_mailbox_api
 
 		$t_mp->setInputString( $p_msg );
 
-		// We can only empty msg if we don't need it anymore
-		if ( !$this->_mail_add_complete_email )
+		if ( $this->_mail_add_complete_email )
 		{
-			$p_msg = NULL;
+			$t_part = array(
+				'name' => 'Complete email.txt',
+				'ctype' => 'text/plain',
+				'body' => $p_msg,
+			);
 		}
+
+		$p_msg = NULL;
 
 		$t_mp->parse();
 
-		$t_email[ 'From' ] = $t_mp->from();
-		$t_email[ 'From_parsed' ] = $this->parse_address( $t_email[ 'From' ] );
+		$t_email[ 'From_parsed' ] = $this->parse_address( trim( $t_mp->from() ) );
 		$t_email[ 'Reporter_id' ] = $this->get_user( $t_email[ 'From_parsed' ] );
 
 		$t_email[ 'Subject' ] = trim( $t_mp->subject() );
@@ -542,8 +551,7 @@ class ERP_mailbox_api
 
 		if ( $this->_mail_use_bug_priority )
 		{
-			$t_priority = strtolower( $t_mp->priority() );
-			$t_email[ 'Priority' ] = $this->_mail_bug_priority[ $t_priority ];
+			$t_email[ 'Priority' ] = $this->_mail_bug_priority[ strtolower( $t_mp->priority() ) ];
 		}
 		else
 		{
@@ -552,13 +560,9 @@ class ERP_mailbox_api
 
 		if ( $this->_mail_add_complete_email )
 		{
-			$t_part = array(
-				'name' => 'Complete email.txt',
-				'ctype' => 'text/plain',
-				'body' => $p_msg,
-			);
-
 			$t_email[ 'X-Mantis-Parts' ][] = $t_part;
+
+			unset( $t_part );
 		}
 
 		$this->show_memory_usage( 'Finished Mail Parser' );
@@ -843,9 +847,9 @@ class ERP_mailbox_api
 			{
 				$t_rejected_files = NULL;
 
-				while ( $part = array_shift( $p_email[ 'X-Mantis-Parts' ] ) )
+				while ( $t_part = array_shift( $p_email[ 'X-Mantis-Parts' ] ) )
 				{
-					$t_file_rejected = $this->add_file( $t_bug_id, $part );
+					$t_file_rejected = $this->add_file( $t_bug_id, $t_part );
 
 					if ( $t_file_rejected !== TRUE )
 					{
@@ -855,18 +859,18 @@ class ERP_mailbox_api
 
 				if ( $t_rejected_files !== NULL )
 				{
-					$part = array(
+					$t_part = array(
 						'name' => 'Rejected files.txt',
 						'ctype' => 'text/plain',
 						'body' => 'List of rejected files' . "\n\n" . $t_rejected_files,
 					);
 
-					$t_reject_rejected_files = $this->add_file( $t_bug_id, $part );
+					$t_reject_rejected_files = $this->add_file( $t_bug_id, $t_part );
 
 					if ( $t_reject_rejected_files !== TRUE )
 					{
-						$part[ 'body' ] .= $t_reject_rejected_files;
-						$this->custom_error( 'Failed to add "' . $part[ 'name' ] . '" to the issue. See below for all errors.' . "\n" . $part[ 'body' ] );
+						$t_part[ 'body' ] .= $t_reject_rejected_files;
+						$this->custom_error( 'Failed to add "' . $t_part[ 'name' ] . '" to the issue. See below for all errors.' . "\n" . $t_part[ 'body' ] );
 					}
 				}
 			}
@@ -1015,7 +1019,7 @@ class ERP_mailbox_api
 	# return the mailadress from the mail's 'From'
 	private function parse_address( $p_from_address )
 	{
-		if ( preg_match( "/(?P<name>.*)<(?P<email>\S+@\S+)>$/u", trim( $p_from_address ), $matches ) )
+		if ( preg_match( "/(?P<name>.*)<(?P<email>\S+@\S+)>$/u", $p_from_address, $matches ) )
 		{
 			$v_from_address = array(
 				'name'	=> trim( $matches[ 'name' ], '"\' ' ),
@@ -1193,18 +1197,8 @@ class ERP_mailbox_api
 	{
 		if ( $this->_mail_debug && is_dir( $this->_mail_debug_directory ) && is_writeable( $this->_mail_debug_directory ) )
 		{
-			$t_end_file_name = time() . '_' . md5( microtime() );
-
-			if ( is_array( $p_msg ) )
-			{
-				$t_file_name = $this->_mail_debug_directory . '/parsed_email_' . $t_end_file_name;
-				file_put_contents( $t_file_name, print_r( $p_msg, TRUE ) );
-			}
-			else
-			{
-				$t_file_name = $this->_mail_debug_directory . '/rawmsg_' . $t_end_file_name;
-				file_put_contents( $t_file_name, $p_msg );
-			}
+			$t_file_name = $this->_mail_debug_directory . ( ( is_array( $p_msg ) ) ? '/parsed_email' : '/rawmsg' ) . '_' . time() . '_' . md5( microtime() );
+			file_put_contents( $t_file_name, ( ( is_array( $p_msg ) ) ? print_r( $p_msg, TRUE ) : $p_msg ) );
 		}
 	}
 
@@ -1257,13 +1251,13 @@ class ERP_mailbox_api
 
 	# --------------------
 	# Add additional info if enabled
-	private function add_additional_info( $p_type, $p_email, $p_description )
+	private function add_additional_info( $p_type, &$p_email, $p_description )
 	{
 		$t_additional_info = NULL;
 
 		if ( $this->_mail_save_from )
 		{
-			$t_additional_info .= 'Email from: ' . $p_email[ 'From' ] . "\n";
+			$t_additional_info .= 'Email from: ' . $p_email[ 'From_parsed' ][ 'From' ] . "\n";
 		}
 
 		if ( $p_type === 'note' && $this->_mail_save_subject_in_note )
@@ -1283,7 +1277,7 @@ class ERP_mailbox_api
 	# Show memory usage in debug mode
 	private function show_memory_usage( $p_location )
 	{
-		if ( !$this->_test_only && $this->_mail_debug )
+		if ( !$this->_test_only && $this->_mail_debug && $this->_mail_debug_show_memory_usage )
 		{
 			$this->custom_error( 'Debug output memory usage' . "\n" .
 				'Location: Mail API - ' . $p_location . "\n" .
@@ -1319,41 +1313,47 @@ class ERP_mailbox_api
 	 * @todo Implement caching by retrieving all needed information in one query.
 	 * @todo Implement logging to LDAP queries same way like DB queries.
 	 *
-	 * @param string $p_email The email address.
+	 * @param string $p_email_address The email address.
 	 * @return string The username or null if not found.
 	 *
-	 * Based on ldap_get_field_from_username from MantisBT 1.2.1
+	 * Based on ldap_get_field_from_username from MantisBT 1.2.14
 	 */
-	function ERP_ldap_get_username_from_email( $p_email ) {
+	function ERP_ldap_get_username_from_email( $p_email_address ) {
+		$t_email_field = 'mail';
+
 		$t_ldap_organization    = config_get( 'ldap_organization' );
 		$t_ldap_root_dn         = config_get( 'ldap_root_dn' );
 		$t_ldap_uid_field		= config_get( 'ldap_uid_field' );
 
-		$c_email = ldap_escape_string( $p_email );
+		$c_email_address = ldap_escape_string( $p_email_address );
+
+		log_event( LOG_LDAP, "Retrieving field '$t_ldap_uid_field' for '$p_email_address'" );
 
 		# Bind
 		log_event( LOG_LDAP, "Binding to LDAP server" );
-		$t_ds = ldap_connect_bind();
+		$t_ds = @ldap_connect_bind();
 		if ( $t_ds === false ) {
-			log_event( LOG_LDAP, "ldap_connect_bind() returned false." );
+			ldap_log_error( $t_ds );
 			return null;
 		}
 
 		# Search
-		$t_search_filter        = "(&$t_ldap_organization(mail=$c_email))";
-		$t_search_attrs         = array( $t_ldap_uid_field, 'mail', 'dn' );
+		$t_search_filter        = "(&$t_ldap_organization($t_email_field=$c_email_address))";
+		$t_search_attrs         = array( $t_ldap_uid_field, $t_email_field, 'dn' );
 
 		log_event( LOG_LDAP, "Searching for $t_search_filter" );
-		$t_sr = ldap_search( $t_ds, $t_ldap_root_dn, $t_search_filter, $t_search_attrs );
+		$t_sr = @ldap_search( $t_ds, $t_ldap_root_dn, $t_search_filter, $t_search_attrs );
 		if ( $t_sr === false ) {
+			ldap_log_error( $t_ds );
 			ldap_unbind( $t_ds );
-			log_event( LOG_LDAP, "ldap_search() returned false." );
+			log_event( LOG_LDAP, "ldap search failed" );
 			return null;
 		}
 
 		# Get results
 		$t_info = ldap_get_entries( $t_ds, $t_sr );
 		if ( $t_info === false ) {
+			ldap_log_error( $t_ds );
 			log_event( LOG_LDAP, "ldap_get_entries() returned false." );
 			return null;
 		}
@@ -1364,13 +1364,19 @@ class ERP_mailbox_api
 		ldap_unbind( $t_ds );
 
 		# If no matches, return null.
-		if ( count( $t_info ) == 0 ) {
+		if ( $t_info['count'] == 0 ) {
 			log_event( LOG_LDAP, "No matches found." );
 			return null;
 		}
 
-		$t_value = $t_info[0][ strtolower( $t_ldap_uid_field ) ][0];
-		log_event( LOG_LDAP, "Found value '{$t_value}' for field '{$p_field}'." );
+		# Make sure the requested field exists
+		if( is_array($t_info[0]) && array_key_exists( strtolower( $t_ldap_uid_field ), $t_info[0] ) ) {
+			$t_value = $t_info[0][ strtolower( $t_ldap_uid_field ) ][0];
+			log_event( LOG_LDAP, "Found value '{$t_value}' for field '{$t_ldap_uid_field}'." );
+		} else {
+			log_event( LOG_LDAP, "WARNING: field '$t_ldap_uid_field' does not exist" );
+			return null;
+		}
 
 		return $t_value;
 	}

@@ -9,6 +9,7 @@ class ERP_Mail_Parser
 	private $_encoding = 'UTF-8';
 	private $_add_attachments = TRUE;
 	private $_debug = FALSE;
+	private $_show_mem_usage = FALSE;
 	private $_memory_limit = FALSE;
 
 	private $_file;
@@ -31,6 +32,7 @@ class ERP_Mail_Parser
 		$this->_encoding = $options[ 'encoding' ];
 		$this->_add_attachments = $options[ 'add_attachments' ];
 		$this->_debug = $options[ 'debug' ];
+		$this->_show_mem_usage = $options[ 'show_mem_usage' ];
 
 		$this->prepare_mb_list_encodings();
 
@@ -350,7 +352,7 @@ class ERP_Mail_Parser
 	# Show memory usage in debug mode
 	private function show_memory_usage( $p_location )
 	{
-		if ( $this->_debug )
+		if ( $this->_debug && $this->_show_mem_usage )
 		{
 			echo "\n" . 'Debug output memory usage' . "\n" .
 				'Location: Mail Parser - ' . $p_location . "\n" .

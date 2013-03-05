@@ -11,6 +11,7 @@ $f_gpc = array(
 	'mail_auto_signup'				=> gpc_get_int( 'mail_auto_signup' ),
 	'mail_debug'					=> gpc_get_int( 'mail_debug' ),
 	'mail_debug_directory'			=> ERP_prepare_directory_string( gpc_get_string( 'mail_debug_directory' ) ),
+	'mail_debug_show_memory_usage'	=> gpc_get_int( 'mail_debug_show_memory_usage' ),
 	'mail_delete'					=> gpc_get_int( 'mail_delete' ),
 	'mail_email_receive_own'		=> gpc_get_int( 'mail_email_receive_own' ),
 	'mail_encoding'					=> gpc_get_string( 'mail_encoding' ),

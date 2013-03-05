@@ -82,6 +82,10 @@ class EmailReportingPlugin extends MantisPlugin
 			# Save mail contents to this directory if debug mode is ON
 			'mail_debug_directory'			=> '/tmp/mantis',
 
+			# Used for debugging the system.
+			# Shows the memory usage in different stages of the debugging process
+			'mail_debug_show_memory_usage'	=> OFF,
+
 			# Delete incoming mail from POP3 server
 			'mail_delete'					=> ON,
 

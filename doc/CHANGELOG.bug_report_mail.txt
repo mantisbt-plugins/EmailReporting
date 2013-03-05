@@ -59,6 +59,9 @@ Jan 2011 - EmailReporting-0.9.0-DEV
 	- The maximum fetched emails now works per scheduled job execution instead of per mailbox per execution of the scheduled job. This is to save memory
 	- gpc_get_bool replaced with gpc_get_int in manage_config_edit.php as gpc_get_bool might cause blank values to be stored instead of FALSE or 0
 	- mail_email_receive_own was using gpc_get_string which should have been gpc_get_int
+	- Fixed notice level error in ERP_ldap_get_username_from_email
+	- ERP_ldap_get_username_from_email rebased on ldap_get_field_from_username as there have been some minor changes to the function
+	- Added a new setting with which the showing of memory usage can be enabled or disabled during debug mode
 
 Nov 2010 - EmailReporting-0.8.4
 	- Improved the project category list
