@@ -92,11 +92,6 @@ class EmailReportingPlugin extends MantisPlugin
 			# Should users always receive emails on actions they performed by email even though email_receive_own is OFF
 			'mail_email_receive_own'		=> OFF,
 
-			# Need to set the character encoding to which the email will be converted
-			# This should be the same as the character encoding used in the database system used for mantis
-			# values should be acceptable to the following function: http://www.php.net/mb_convert_encoding
-			'mail_encoding'					=> 'UTF-8', 
-
 			# Enable fallback to mail reporter
 			'mail_fallback_mail_reporter'	=> ON,
 
@@ -113,10 +108,10 @@ class EmailReportingPlugin extends MantisPlugin
 			# Parse HTML mails
 			'mail_parse_html'				=> ON,
 
-			# Preferred username for new username creations
+			# Preferred username for new user creations
 			'mail_preferred_username'		=> 'name',
 
-			# Preferred username for new username creations
+			# Preferred realname for new user creations
 			'mail_preferred_realname'		=> 'name',
 
 			# Try to identify the original mantis email and remove it from the description
@@ -360,6 +355,10 @@ class EmailReportingPlugin extends MantisPlugin
 		if ( $t_config_version <= 3 )
 		{
 			$t_mailboxes = plugin_config_get( 'mailboxes' );
+			$t_indexes = array(
+				'mailbox_project' => 'mailbox_project_id',
+				'mailbox_global_category' => 'mailbox_global_category_id',
+			);
 
 			foreach ( $t_mailboxes AS $t_key => $t_value )
 			{
@@ -378,18 +377,13 @@ class EmailReportingPlugin extends MantisPlugin
 					$t_value[ 'mailbox_hostname' ] = $t_hostname;
 				}
 
-				# Correct index mailbox_project --> mailbox_project_id
-				if ( isset( $t_value[ 'mailbox_project' ] ) )
+				foreach ( $t_indexes AS $t_old_index => $t_new_index )
 				{
-					$t_value[ 'mailbox_project_id' ] = $t_value[ 'mailbox_project' ];
-					unset( $t_value[ 'mailbox_project' ] );
-				}
-
-				# Correct index mailbox_global_category --> mailbox_global_category_id
-				if ( isset( $t_value[ 'mailbox_global_category' ] ) )
-				{
-					$t_value[ 'mailbox_global_category_id' ] = $t_value[ 'mailbox_global_category' ];
-					unset( $t_value[ 'mailbox_global_category' ] );
+					if ( isset( $t_value[ $t_old_index ] ) )
+					{
+						$t_value[ $t_new_index ] = $t_value[ $t_old_index ];
+						unset( $t_value[ $t_old_index ] );
+					}
 				}
 
 				$t_mailboxes[ $t_key ] = $t_value;
@@ -508,6 +502,36 @@ class EmailReportingPlugin extends MantisPlugin
 			plugin_config_delete( 'mail_rule_system' );
 
 			plugin_config_set( 'config_version', 11 );
+		}
+
+		if ( $t_config_version <= 11 )
+		{
+			$t_mailboxes = plugin_config_get( 'mailboxes' );
+			$t_indexes = array(
+				'username' => 'erp_username',
+				'password' => 'erp_password',
+			);
+
+			foreach ( $t_mailboxes AS $t_key => $t_array )
+			{
+				foreach ( $t_indexes AS $t_old_index => $t_new_index )
+				{
+					if ( isset( $t_array[ $t_old_index ] ) )
+					{
+						$t_array[ $t_new_index ] = $t_array[ $t_old_index ];
+						unset( $t_array[ $t_old_index ] );
+					}
+				}
+
+				$t_mailboxes[ $t_key ] = $t_array;
+			}
+
+			plugin_config_set( 'mailboxes', $t_mailboxes );
+
+			plugin_config_delete( 'rules' );
+			plugin_config_delete( 'mail_encoding' );
+
+			plugin_config_set( 'config_version', 12 );
 		}
 	}
 

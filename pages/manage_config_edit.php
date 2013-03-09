@@ -14,7 +14,6 @@ $f_gpc = array(
 	'mail_debug_show_memory_usage'	=> gpc_get_int( 'mail_debug_show_memory_usage' ),
 	'mail_delete'					=> gpc_get_int( 'mail_delete' ),
 	'mail_email_receive_own'		=> gpc_get_int( 'mail_email_receive_own' ),
-	'mail_encoding'					=> gpc_get_string( 'mail_encoding' ),
 	'mail_fallback_mail_reporter'	=> gpc_get_int( 'mail_fallback_mail_reporter' ),
 	'mail_fetch_max'				=> gpc_get_int( 'mail_fetch_max' ),
 	'mail_nodescription'			=> gpc_get_string( 'mail_nodescription' ),

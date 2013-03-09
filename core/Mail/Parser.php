@@ -17,9 +17,9 @@ class ERP_Mail_Parser
 
 	private $_from;
 	private $_subject;
-	private $_charset = 'auto';
+	private $_def_charset = 'auto';
+	private $_fallback_charset = 'ASCII';
 	private $_priority;
-	private $_transferencoding;
 	private $_body;
 	private $_parts = array();
 	private $_ctype = array();
@@ -29,7 +29,6 @@ class ERP_Mail_Parser
 	public function __construct( $options )
 	{
 		$this->_parse_html = $options[ 'parse_html' ];
-		$this->_encoding = $options[ 'encoding' ];
 		$this->_add_attachments = $options[ 'add_attachments' ];
 		$this->_debug = $options[ 'debug' ];
 		$this->_show_mem_usage = $options[ 'show_mem_usage' ];
@@ -46,12 +45,36 @@ class ERP_Mail_Parser
 	{
 		if ( extension_loaded( 'mbstring' ) )
 		{
+			$this->_encoding = mb_internal_encoding();
+
 			$t_charset_list = mb_list_encodings();
 
 			$r_charset_list = array();
-			foreach ( $t_charset_list AS $value )
+			foreach ( $t_charset_list AS $t_value )
 			{
-				$r_charset_list[ $value ] = strtolower( $value );
+				$r_charset_list[ strtolower( $t_value ) ] = $t_value;
+			}
+
+			// If this function does not exist (pre PHP 5.3.0) then we will just add US-ASCII as it is possibly used by emails
+			if ( function_exists( 'mb_encoding_aliases' ) )
+			{
+				$t_encoding_aliases = array();
+				foreach ( $t_charset_list AS $t_value )
+				{
+					$t_encoding_aliases = array_merge( $t_encoding_aliases, mb_encoding_aliases( $t_value ) );
+				}
+
+				foreach ( $t_encoding_aliases AS $t_value )
+				{
+					if ( !isset( $r_charset_list[ strtolower( $t_value ) ] ) )
+					{
+						$r_charset_list[ strtolower( $t_value ) ] = $t_value;
+					}
+				}
+			}
+			else
+			{
+				$r_charset_list[ strtolower( 'US-ASCII' ) ] = 'ASCII';
 			}
 
 			$this->_mb_list_encodings = $r_charset_list;
@@ -70,14 +93,56 @@ class ERP_Mail_Parser
 		$this->_content = file_get_contents( $this->_file );
 	}
 
-	private function process_encoding( $encode )
+	private function process_body_encoding( $encode, $charset )
 	{
-		if ( extension_loaded( 'mbstring' ) && $this->_encoding !== $this->_charset )
+		if ( extension_loaded( 'mbstring' ) )
 		{
-			$encode = mb_convert_encoding( $encode, $this->_encoding, $this->_charset );
+			if ( $charset === NULL || $charset === 'auto' || !isset( $this->_mb_list_encodings[ strtolower( $charset ) ] ) )
+			{
+				$charset = mb_detect_encoding( $encode, $this->_def_charset );
+			}
+
+			if ( $charset === FALSE )
+			{
+				$charset = $this->_fallback_charset;
+				echo "\n" . 'Message: Charset detection failed on: ' . $encode . "\n";
+			}
+
+			if ( $this->_encoding !== $charset )
+			{
+				$t_encode = mb_convert_encoding( $encode, $this->_encoding, $charset );
+
+				if ( $t_encode !== FALSE )
+				{
+					return( $t_encode );
+				}
+			}
 		}
 
 		return( $encode );
+	}
+
+	private function process_header_encoding( $encode )
+	{
+		if ( extension_loaded( 'mbstring' ) )
+		{
+			$encode = mb_decode_mimeheader( $encode );
+		}
+
+		$decoder = new Mail_mimeDecode( NULL );
+		$t_encode = $decoder->_decodeHeader( $encode );
+
+		if ( extension_loaded( 'mbstring' ) )
+		{
+			if ( $t_encode !== $encode )
+			{
+				// Since Mail_mimeDecode::_decodeHeader modified the string there are apparently encodings which are not supported by mbstring
+				// Destroying invalid characters and possibly valid utf8 characters
+				$t_encode = $this->process_body_encoding( $t_encode, $this->_fallback_charset );
+			}
+		}
+
+		return( $t_encode );
 	}
 
 	public function parse()
@@ -92,7 +157,7 @@ class ERP_Mail_Parser
 
 		$params['include_bodies'] = TRUE;
 		$params['decode_bodies'] = TRUE;
-		$params['decode_headers'] = TRUE;
+		$params['decode_headers'] = FALSE;
 		$params['rfc_822bodies'] = FALSE;
 
 		$this->show_memory_usage( 'Start decode' );
@@ -104,13 +169,6 @@ class ERP_Mail_Parser
 		$this->show_memory_usage( 'Start parse structure' );
 
 		$this->parseStructure( $structure );
-
-		if ( extension_loaded( 'mbstring' ) )
-		{
-			$this->_from = $this->process_encoding( $this->_from );
-			$this->_subject = $this->process_encoding( $this->_subject );
-			$this->_body = $this->process_encoding( $this->_body );
-		}
 	}
 
 	public function from()
@@ -138,30 +196,25 @@ class ERP_Mail_Parser
 		return( $this->_parts );
 	}
 
-	private function parseStructure( $structure )
+	private function parseStructure( &$structure )
 	{
 		$this->setFrom( $structure->headers['from'] );
 		$this->setSubject( $structure->headers['subject'] );
-		$this->setContentType( $structure->ctype_primary, $structure->ctype_secondary );
-
-		if ( isset( $structure->ctype_parameters[ 'charset' ] ) )
-		{
-			$this->setCharset( $structure->ctype_parameters[ 'charset' ] );
-		}
 
  		if ( isset( $structure->headers['x-priority'] ) )
  		{
 			$this->setPriority( $structure->headers['x-priority'] );
 		}
 
-		if ( isset( $structure->headers['content-transfer-encoding'] ) )
+		$t_body_charset = NULL;
+		if ( isset( $structure->ctype_parameters[ 'charset' ] ) )
 		{
-			$this->setTransferEncoding( $structure->headers['content-transfer-encoding'] );
+			$t_body_charset = $structure->ctype_parameters[ 'charset' ];
 		}
 
 		if ( isset( $structure->body ) )
 		{
-			$this->setBody( $structure->body );
+			$this->setBody( $structure->body, $structure->ctype_primary, $structure->ctype_secondary, $t_body_charset );
 		}
 
 		if ( isset( $structure->parts ) )
@@ -172,21 +225,12 @@ class ERP_Mail_Parser
 
 	private function setFrom( $from )
 	{
-		$this->_from = $from;
+		$this->_from = $this->process_header_encoding( $from );
 	}
 
 	private function setSubject( $subject )
 	{
-		$this->_subject = $subject;
-	}
-
-	private function setCharset( $charset )
-	{
-		if ( extension_loaded( 'mbstring' ) && $this->_charset === 'auto' )
-		{
-			$t_arraysearch_result = array_search( strtolower( $charset ), $this->_mb_list_encodings, TRUE );
-			$this->_charset = ( ( $t_arraysearch_result !== FALSE ) ? $t_arraysearch_result : 'auto' );
-		}
+		$this->_subject = $this->process_header_encoding( $subject );
 	}
 
 	private function setPriority( $priority )
@@ -194,23 +238,22 @@ class ERP_Mail_Parser
 		$this->_priority = $priority;
 	}
 
-	private function setTransferEncoding( $transferencoding )
-	{
-		$this->_transferencoding = $transferencoding;
-	}
-	
 	private function setContentType( $primary, $secondary )
 	{
 		$this->_ctype['primary'] = $primary;
 		$this->_ctype['secondary'] = $secondary;
 	}
 
-	private function setBody( $body )
+	private function setBody( $body, $ctype_primary, $ctype_secondary, $charset )
 	{
 		if ( is_blank( $body ) || !is_blank( $this->_body ) )
 		{
 			return;
 		}
+
+		$this->setContentType( $ctype_primary, $ctype_secondary );
+
+		$body = $this->process_body_encoding( $body, $charset );
 
 		if ( 'text' === $this->_ctype['primary'] &&	'plain' === $this->_ctype['secondary'] )
 		{
@@ -261,19 +304,13 @@ class ERP_Mail_Parser
 			}
 			else
 			{
-				$this->setContentType( $parts[$i]->ctype_primary, $parts[ $i ]->ctype_secondary );
-
-				if ( isset( $parts[ $i ]->headers[ 'content-transfer-encoding' ] ) )
+				$t_body_charset = NULL;
+				if ( isset( $parts[ $i ]->ctype_parameters[ 'charset' ] ) )
 				{
-					$this->setTransferEncoding( $parts[ $i ]->headers[ 'content-transfer-encoding' ] );
+					$t_body_charset = $parts[ $i ]->ctype_parameters[ 'charset' ];
 				}
 
-				if ( isset( $parts[$i]->ctype_parameters[ 'charset' ] ) )
-				{
-					$this->setCharset( $parts[$i]->ctype_parameters[ 'charset' ] );
-				}
-
-				$this->setBody( $parts[ $i ]->body );
+				$this->setBody( $parts[ $i ]->body, $parts[ $i ]->ctype_primary, $parts[ $i ]->ctype_secondary, $t_body_charset );
 			}
 
 			if ( $t_stop_part === TRUE )
@@ -290,7 +327,7 @@ class ERP_Mail_Parser
 			{
 				$this->setParts( $parts[ $i ]->parts, $attachment, $p_attached_email_subject );
 			}
-			elseif ( 'message' == $parts[ $i ]->ctype_primary && $parts[ $i ]->ctype_secondary === 'rfc822' )
+			elseif ( $this->_add_attachments && 'message' == $parts[ $i ]->ctype_primary && $parts[ $i ]->ctype_secondary === 'rfc822' )
 			{
 				$this->setParts( $parts[ $i ]->parts, TRUE );
 			}
@@ -327,12 +364,7 @@ class ERP_Mail_Parser
 
 			if ( extension_loaded( 'mbstring' ) && !empty( $p[ 'name' ] ) )
 			{
-				if ( isset( $part->ctype_parameters[ 'charset' ] ) )
-				{
-					$this->setCharset( $part->ctype_parameters[ 'charset' ] );
-				}
-
-				$p[ 'name' ] = $this->process_encoding( $p[ 'name' ] );
+				$p[ 'name' ] = $this->process_header_encoding( $p[ 'name' ] );
 			}
 
 			$this->_parts[] = $p;

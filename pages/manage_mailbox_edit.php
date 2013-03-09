@@ -18,8 +18,8 @@ if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailb
 		'hostname'				=> gpc_get_string( 'hostname', '' ),
 		'port'					=> gpc_get_string( 'port', '' ),
 		'encryption'			=> gpc_get_string( 'encryption' ),
-		'username'				=> gpc_get_string( 'username', '' ),
-		'password'				=> base64_encode( gpc_get_string( 'password', '' ) ),
+		'erp_username'			=> gpc_get_string( 'erp_username', '' ),
+		'erp_password'			=> base64_encode( gpc_get_string( 'erp_password', '' ) ),
 		'auth_method'			=> gpc_get_string( 'auth_method' ),
 		'project_id'			=> gpc_get_int( 'project_id' ),
 		'global_category_id'	=> gpc_get_int( 'global_category_id' ),
@@ -88,8 +88,8 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 		echo plugin_lang_get( 'hostname' ) . ': ', $t_mailbox_api->_mailbox[ 'hostname' ] . '<br />';
 		echo plugin_lang_get( 'port' ) . ': ', $t_mailbox_api->_mailbox[ 'port' ] . '<br />';
 		echo plugin_lang_get( 'encryption' ) . ': ' . $t_mailbox_api->_mailbox[ 'encryption' ] . '<br />';
-		echo plugin_lang_get( 'username' ) . ': ' . $t_mailbox_api->_mailbox[ 'username' ] . '<br />';
-		echo plugin_lang_get( 'password' ) . ': ******' . '<br />';
+		echo plugin_lang_get( 'erp_username' ) . ': ' . $t_mailbox_api->_mailbox[ 'erp_username' ] . '<br />';
+		echo plugin_lang_get( 'erp_password' ) . ': ******' . '<br />';
 		echo plugin_lang_get( 'auth_method' ) . ': ' . $t_mailbox_api->_mailbox[ 'auth_method' ] . '<br />';
 
 		if ( $t_mailbox_api->_mailbox[ 'mailbox_type' ] === 'IMAP' )

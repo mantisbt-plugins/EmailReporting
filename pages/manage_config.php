@@ -32,6 +32,24 @@ ERP_print_menu( $t_this_page );
 <br />
 
 <?php
+	if ( !extension_loaded( 'mbstring' ) )
+	{
+?>
+<table align="center" class="width50" cellspacing="1">
+
+<tr>
+	<td class="left">
+<?php
+		echo plugin_lang_get( 'mbstring_unavailable' );
+?>
+	</td>
+</tr>
+
+</table>
+<br />
+<?php
+	}
+
 	$t_job_users = plugin_config_get( 'job_users' );
 	$t_username = ERP_get_current_os_user();
 	$t_file_upload_method = config_get( 'file_upload_method' );
@@ -85,7 +103,6 @@ ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'runtime_options', 'header' );
 ERP_output_config_option( 'mail_fetch_max', 'integer' );
 ERP_output_config_option( 'mail_delete', 'boolean' );
-ERP_output_config_option( 'mail_encoding', 'dropdown', NULL, 'print_mbstring_encoding_option_list' );
 
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'reporter_options', 'header' );

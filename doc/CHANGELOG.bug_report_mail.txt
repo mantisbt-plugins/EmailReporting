@@ -62,6 +62,12 @@ Jan 2011 - EmailReporting-0.9.0-DEV
 	- Fixed notice level error in ERP_ldap_get_username_from_email
 	- ERP_ldap_get_username_from_email rebased on ldap_get_field_from_username as there have been some minor changes to the function
 	- Added a new setting with which the showing of memory usage can be enabled or disabled during debug mode
+	- username and password variable names have been prepended with erp_ to avoid problems with reauthentication
+	- ERP_output_config_option will now return an error when username or password variable names are used
+	- Fixed charset conversion not working as it should for the "From" and "Subject" part of emails
+	- Increased mbstring supported charsets by adding all aliases using mb_encoding_aliases
+	- mail_encoding configuration option has been deleted as it was no longer necessary and could only cause miss configurations
+	- Added a warning that EmailReporting could have problems if the mbstring extension is not available
 
 Nov 2010 - EmailReporting-0.8.4
 	- Improved the project category list

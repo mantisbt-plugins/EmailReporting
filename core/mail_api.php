@@ -126,7 +126,6 @@ class ERP_mailbox_api
 		$this->_mp_options[ 'add_attachments' ]	= config_get( 'allow_file_upload' );
 		$this->_mp_options[ 'debug' ]			= $this->_mail_debug;
 		$this->_mp_options[ 'show_mem_usage' ]	= $this->_mail_debug_show_memory_usage;
-		$this->_mp_options[ 'encoding' ]		= plugin_config_get( 'mail_encoding' );
 		$this->_mp_options[ 'parse_html' ]		= plugin_config_get( 'mail_parse_html' );
 
 		$this->_allow_file_upload				= config_get( 'allow_file_upload' );
@@ -471,8 +470,8 @@ class ERP_mailbox_api
 	# Perform the login to the mailbox
 	private function mailbox_login()
 	{
-		$t_mailbox_username = $this->_mailbox[ 'username' ];
-		$t_mailbox_password = base64_decode( $this->_mailbox[ 'password' ] );
+		$t_mailbox_username = $this->_mailbox[ 'erp_username' ];
+		$t_mailbox_password = base64_decode( $this->_mailbox[ 'erp_password' ] );
 		$t_mailbox_auth_method = $this->_mailbox[ 'auth_method' ];
 
 		$this->_result = $this->_mailserver->login( $t_mailbox_username, $t_mailbox_password, $t_mailbox_auth_method );
@@ -1198,7 +1197,7 @@ class ERP_mailbox_api
 		if ( $this->_mail_debug && is_dir( $this->_mail_debug_directory ) && is_writeable( $this->_mail_debug_directory ) )
 		{
 			$t_file_name = $this->_mail_debug_directory . ( ( is_array( $p_msg ) ) ? '/parsed_email' : '/rawmsg' ) . '_' . time() . '_' . md5( microtime() );
-			file_put_contents( $t_file_name, ( ( is_array( $p_msg ) ) ? print_r( $p_msg, TRUE ) : $p_msg ) );
+			file_put_contents( $t_file_name, ( ( is_array( $p_msg ) ) ? var_export( $p_msg, TRUE ) : $p_msg ) );
 		}
 	}
 

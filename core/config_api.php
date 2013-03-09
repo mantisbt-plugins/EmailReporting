@@ -263,6 +263,11 @@
 
 		$t_input_name = string_attribute( $t_input_name );
 
+		if ( strcasecmp( $t_input_name, 'username' ) === 0 || strcasecmp( $t_input_name, 'password' ) === 0 )
+		{
+			trigger_error( plugin_lang_get( 'input_name_not_allowed' ), ERROR );
+		}
+
 		$t_function_name = 'ERP_custom_function_' . $p_function_name;
 
 		switch ( $p_type )
@@ -641,29 +646,6 @@
 			echo '<optgroup label="' . string_attribute( $t_project_name ) . '">';
 			print_category_option_list( $t_sel_value, $t_project_id );
 			echo '</optgroup>';
-		}
-	}
-
-	# --------------------
-	# output a option list with all the mbstring encodings supported
-	function ERP_custom_function_print_mbstring_encoding_option_list( $p_sel_value )
-	{
-		if ( extension_loaded( 'mbstring' ) )
-		{
-			$t_list_encodings = mb_list_encodings();
-			natcasesort( $t_list_encodings );
-			foreach( $t_list_encodings AS $t_encoding )
-			{
-?>
-			<option<?php check_selected( $p_sel_value, $t_encoding ) ?>><?php echo string_attribute( $t_encoding ) ?></option>
-<?php
-			}
-		}
-		else
-		{
-?>
-			<option value="<?php echo $p_sel_value ?>" selected class="negative"><?php echo plugin_lang_get( 'mbstring_unavailable', 'EmailReporting' ) ?></option>
-<?php
 		}
 	}
 

@@ -45,7 +45,6 @@ $s_plugin_EmailReporting_mail_debug_directory = 'Save email contents to this dir
 $s_plugin_EmailReporting_mail_debug_show_memory_usage = 'Show the memory usage in different stages of the email processing process';
 $s_plugin_EmailReporting_mail_delete = 'Delete processed email from the mailbox';
 $s_plugin_EmailReporting_mail_email_receive_own = 'Should users receive emails for their own actions (N/A if email_receive_own = ON)';
-$s_plugin_EmailReporting_mail_encoding = 'Convert email to this charset (Should be the same as the database charset)';
 $s_plugin_EmailReporting_mail_fallback_mail_reporter = 'Enable fallback to default reporter';
 $s_plugin_EmailReporting_mail_fetch_max = 'Maximum fetched emails per execution of the scheduled job (see documentation)';
 $s_plugin_EmailReporting_mail_nodescription = 'Use this text if no description is found in the email';
@@ -100,8 +99,8 @@ $s_plugin_EmailReporting_mailbox_type = 'Mailbox type';
 $s_plugin_EmailReporting_hostname = 'Hostname';
 $s_plugin_EmailReporting_port = 'TCP port (optional)';
 $s_plugin_EmailReporting_encryption = 'Connection encryption';
-$s_plugin_EmailReporting_username = 'Username';
-$s_plugin_EmailReporting_password = 'Password';
+$s_plugin_EmailReporting_erp_username = 'Username';
+$s_plugin_EmailReporting_erp_password = 'Password';
 $s_plugin_EmailReporting_auth_method = 'Authentication method';
 $s_plugin_EmailReporting_imap_basefolder = 'Basefolder (optional)';
 $s_plugin_EmailReporting_imap_createfolderstructure = 'Create project subfolder structure';
@@ -111,7 +110,7 @@ $s_plugin_EmailReporting_link_rules = 'Select rules';
 
 $s_plugin_EmailReporting_mail_bug_priority_array_failure = 'The given format is not an acceptable array.';
 $s_plugin_EmailReporting_recorddisabled = '* = Disabled';
-$s_plugin_EmailReporting_mbstring_unavailable = 'PHP mbstring extension unavailable';
+$s_plugin_EmailReporting_mbstring_unavailable = '<span class="negative">Warning</span>: PHP mbstring extension unavailable. This might cause problems with received emails.';
 $s_plugin_EmailReporting_missing_reporter = 'Current mail reporter is missing. Please select a new one.';
 $s_plugin_EmailReporting_openssl_unavailable = 'PHP OpenSSL extension unavailable';
 $s_plugin_EmailReporting_test_failure = 'Operation NOT successful';
@@ -119,6 +118,7 @@ $s_plugin_EmailReporting_test_success = 'Operation successful';
 $s_plugin_EmailReporting_unknown_setting = 'Unknown setting encountered. Setting ignored: ';
 $s_plugin_EmailReporting_zero_records = 'None available';
 $s_plugin_EmailReporting_function_not_found = 'Function not found';
+$s_plugin_EmailReporting_input_name_not_allowed = 'The selected variable name is not allowed as it could cause conflits in certain situations';
 $s_plugin_EmailReporting_complete_test_action_note = '<span class="negative">Warning</span>: This will test a single mailbox as completely as possible unlike "Test" which will only perform the tasks that do not change anything.
 
 There are still minor differences compared to the scheduled job (bug_report_mail.php). For example one of the differences could be the useraccount that runs the job.
