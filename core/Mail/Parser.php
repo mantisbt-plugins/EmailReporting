@@ -26,6 +26,23 @@ class ERP_Mail_Parser
 
 	private $_mb_list_encodings = array();
 
+	/**
+	* Based on horde-3.3.13 function _mbstringCharset
+	*
+	* Workaround charsets that don't work with mbstring functions.
+	*
+	* @access private
+	*/
+		/* mbstring functions do not handle the 'ks_c_5601-1987' &
+		* 'ks_c_5601-1989' charsets. However, these charsets are used, for
+		* example, by various versions of Outlook to send Korean characters.
+		* Use UHC (CP949) encoding instead. See, e.g.,
+		* http://lists.w3.org/Archives/Public/ietf-charsets/2001AprJun/0030.html */
+	private $_mbstring_unsupportedcharsets = array(
+			'ks_c_5601-1987' => 'UHC',
+			'ks_c_5601-1989' => 'UHC'
+	);
+
 	public function __construct( $options )
 	{
 		$this->_parse_html = $options[ 'parse_html' ];
@@ -77,7 +94,7 @@ class ERP_Mail_Parser
 				$r_charset_list[ strtolower( 'US-ASCII' ) ] = 'ASCII';
 			}
 
-			$this->_mb_list_encodings = $r_charset_list;
+			$this->_mb_list_encodings = $r_charset_list + $this->_mbstring_unsupportedcharsets;
 		}
 	}
 
@@ -110,7 +127,7 @@ class ERP_Mail_Parser
 
 			if ( $this->_encoding !== $charset )
 			{
-				$t_encode = mb_convert_encoding( $encode, $this->_encoding, $charset );
+				$t_encode = mb_convert_encoding( $encode, $this->_encoding, $this->_mb_list_encodings[ strtolower( $charset ) ] );
 
 				if ( $t_encode !== FALSE )
 				{
@@ -126,6 +143,11 @@ class ERP_Mail_Parser
 	{
 		if ( extension_loaded( 'mbstring' ) )
 		{
+			foreach ( $this->_mbstring_unsupportedcharsets AS $t_key => $t_value )
+			{
+				$encode = str_replace( '=?' . $t_key . '?', '=?' . $t_value . '?', $encode );
+			}
+
 			$encode = mb_decode_mimeheader( $encode );
 		}
 
