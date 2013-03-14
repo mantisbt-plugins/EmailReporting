@@ -221,6 +221,15 @@
 		echo '<a href="http://www.mantisbt.org/wiki/doku.php/mantisbt:emailreporting#' . $t_a_name . '" target="_blank">[?]</a>';
 	}
 
+	# This overwrites a specific configuration option for the current request
+	function ERP_set_temporary_overwrite( $p_config_name, $p_value )
+	{
+		global $g_cache_bypass_lookup;
+
+		$g_cache_bypass_lookup[ $p_config_name ] = TRUE;
+		config_set_global( $p_config_name, $p_value );
+	}
+
 	# --------------------
 	# output a configuration option
 	# This function is only meant to be used by the EmailReporting plugin or by other plugins within the EVENT_ERP_OUTPUT_MAILBOX_FIELDS event
@@ -617,12 +626,10 @@
 	function ERP_custom_function_print_global_category_option_list( $p_sel_value )
 	{
 		// Need to disable allow_no_category for a moment
-		config_set_cache( 'allow_no_category', OFF, CONFIG_TYPE_STRING );
-		config_set_global( 'allow_no_category', OFF );
+		ERP_set_temporary_overwrite( 'allow_no_category', OFF );
 
 		// Need to disable inherit projects for one moment.
-		config_set_cache( 'subprojects_inherit_categories', OFF, CONFIG_TYPE_STRING );
-		config_set_global( 'subprojects_inherit_categories', OFF );
+		ERP_set_temporary_overwrite( 'subprojects_inherit_categories', OFF );
 
 		$t_sel_value = $p_sel_value;
 		if ( $t_sel_value === NULL )

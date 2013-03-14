@@ -169,9 +169,11 @@ class EmailReportingPlugin extends MantisPlugin
 
 		if ( $t_mail_reporter_id === 'Mail' )
 		{
+			// The plugin variable path_erp is not yet available. So path_erp cannot be used here
+			require_once( config_get_global( 'plugin_path' ) . 'EmailReporting' . '/' . 'core/config_api.php' );
+
 			# We need to allow blank emails for a sec
-			config_set_cache( 'allow_blank_email', ON, CONFIG_TYPE_STRING );
-			config_set_global( 'allow_blank_email', ON );
+			ERP_set_temporary_overwrite( 'allow_blank_email', ON );
 
 			$t_rand = mt_rand( 1000, 99999 );
 
@@ -305,9 +307,10 @@ class EmailReportingPlugin extends MantisPlugin
 
 					if ( $t_user_email === 'nomail' )
 					{
+						require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/config_api.php' );
+
 						# We need to allow blank emails for a sec
-						config_set_cache( 'allow_blank_email', ON, CONFIG_TYPE_STRING );
-						config_set_global( 'allow_blank_email', ON );
+						ERP_set_temporary_overwrite( 'allow_blank_email', ON );
 
 						user_set_email( $t_user_id, '' );
 					}

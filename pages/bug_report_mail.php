@@ -36,7 +36,7 @@
 	$t_mail_mantisbt_url_fix = plugin_config_get( 'mail_mantisbt_url_fix', '' );
 	if ( isset( $GLOBALS[ 't_dir_emailreporting_adjust' ] ) && !is_blank( $t_mail_mantisbt_url_fix ) )
 	{
-		config_set_global( 'path', $t_mail_mantisbt_url_fix );
+		ERP_set_temporary_overwrite( 'path', $t_mail_mantisbt_url_fix );
 	}
 
 	// Register the user that is currently running this script

@@ -159,8 +159,7 @@ class ERP_mailbox_api
 		$t_mail_email_receive_own				= plugin_config_get( 'mail_email_receive_own' );
 		if ( $t_mail_email_receive_own )
 		{
-			config_set_cache( 'email_receive_own', ON, CONFIG_TYPE_STRING );
-			config_set_global( 'email_receive_own', ON );
+			ERP_set_temporary_overwrite( 'email_receive_own', ON );
 		}
 
 		$this->_functionality_enabled = TRUE;
@@ -721,6 +720,9 @@ class ERP_mailbox_api
 
 			$this->fix_empty_fields( $p_email );
 
+			$t_project_id = ( ( $p_overwrite_project_id === FALSE ) ? $this->_mailbox[ 'project_id' ] : $p_overwrite_project_id );
+			ERP_set_temporary_overwrite( 'project_override', $t_project_id );
+
 			$t_bug_data = new BugData;
 			$t_bug_data->build					= '';
 			$t_bug_data->platform				= '';
@@ -747,9 +749,12 @@ class ERP_mailbox_api
 			$t_bug_data->additional_information	= $this->_default_bug_additional_info;
 			$t_bug_data->due_date				= date_get_null();
 
-			$t_bug_data->project_id				= ( ( $p_overwrite_project_id === FALSE ) ? $this->_mailbox[ 'project_id' ] : $p_overwrite_project_id );
+			$t_bug_data->project_id				= $t_project_id;
 
 			$t_bug_data->reporter_id			= $p_email[ 'Reporter_id' ];
+
+			// This function might do stuff that EmailReporting cannot handle. Disabled
+			//helper_call_custom_function( 'issue_create_validate', array( $t_bug_data ) );
 
 			// @TODO@ Disabled for now but possibly needed for other future features
 			# Validate the custom fields before adding the bug.
