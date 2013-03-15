@@ -61,8 +61,6 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 	# Verify mailbox - from Recmail by Cas Nuy
 	require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/mail_api.php' );
 
-	$t_mail_debug = plugin_config_get( 'mail_debug' );
-
 	echo '<pre>';
 	$t_mailbox_api = new ERP_mailbox_api( ( ( $f_mailbox_action === 'complete_test' ) ? FALSE : TRUE ) );
 	$t_result = $t_mailbox_api->process_mailbox( $t_mailbox );
@@ -70,14 +68,11 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 
 	$t_is_custom_error = ( ( is_array( $t_result ) && isset( $t_result[ 'ERROR_TYPE' ] ) && $t_result[ 'ERROR_TYPE' ] === 'NON-PEAR-ERROR' ) || ( is_bool( $t_result ) && $t_result === FALSE ) );
 
-	if ( $t_is_custom_error || PEAR::isError( $t_result ) || ( $f_mailbox_action === 'complete_test' && $t_mail_debug ) )
+	if ( $t_is_custom_error || PEAR::isError( $t_result ) || $f_mailbox_action === 'complete_test' )
 	{
 		$t_no_redirect = TRUE;
 
-		if ( $f_mailbox_action !== 'complete_test' )
-		{
-			html_page_top( plugin_lang_get( 'plugin_title' ) );
-		}
+		html_page_top( plugin_lang_get( 'plugin_title' ) );
 ?>
 <br /><div class="center">
 <?php
@@ -103,10 +98,7 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 ?>
 </div>
 <?php
-		if ( $f_mailbox_action !== 'complete_test' )
-		{
-			html_page_bottom( __FILE__ );
-		}
+		html_page_bottom( __FILE__ );
 	}
 }
 
