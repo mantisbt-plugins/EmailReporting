@@ -214,6 +214,7 @@ possible fields you added with the EVENT_ERP_OUTPUT_MAILBOX_FIELDS event
 
 
 Included PEAR packages within this distribution are:
+Auth_SASL
 Mail_mimeDecode
 Net_POP3
 Net_IMAP
