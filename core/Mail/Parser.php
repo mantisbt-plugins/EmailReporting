@@ -32,15 +32,16 @@ class ERP_Mail_Parser
 	* Workaround charsets that don't work with mbstring functions.
 	*
 	* @access private
-	*/
-		/* mbstring functions do not handle the 'ks_c_5601-1987' &
-		* 'ks_c_5601-1989' charsets. However, these charsets are used, for
-		* example, by various versions of Outlook to send Korean characters.
-		* Use UHC (CP949) encoding instead. See, e.g.,
-		* http://lists.w3.org/Archives/Public/ietf-charsets/2001AprJun/0030.html */
+	*
+	* mbstring functions do not handle the 'ks_c_5601-1987' &
+	* 'ks_c_5601-1989' charsets. However, these charsets are used, for
+	* example, by various versions of Outlook to send Korean characters.
+	* Use UHC (CP949) encoding instead. See, e.g.,
+	* http://lists.w3.org/Archives/Public/ietf-charsets/2001AprJun/0030.html */
 	private $_mbstring_unsupportedcharsets = array(
 			'ks_c_5601-1987' => 'UHC',
-			'ks_c_5601-1989' => 'UHC'
+			'ks_c_5601-1989' => 'UHC',
+			'us-ascii' => 'ASCII',
 	);
 
 	public function __construct( $options )
@@ -72,7 +73,7 @@ class ERP_Mail_Parser
 				$r_charset_list[ strtolower( $t_value ) ] = $t_value;
 			}
 
-			// If this function does not exist (pre PHP 5.3.0) then we will just add US-ASCII as it is possibly used by emails
+			// This function does not exist in version older then PHP 5.3.0
 			if ( function_exists( 'mb_encoding_aliases' ) )
 			{
 				$t_encoding_aliases = array();
@@ -88,10 +89,6 @@ class ERP_Mail_Parser
 						$r_charset_list[ strtolower( $t_value ) ] = $t_value;
 					}
 				}
-			}
-			else
-			{
-				$r_charset_list[ strtolower( 'US-ASCII' ) ] = 'ASCII';
 			}
 
 			$this->_mb_list_encodings = $r_charset_list + $this->_mbstring_unsupportedcharsets;
@@ -139,15 +136,10 @@ class ERP_Mail_Parser
 		return( $encode );
 	}
 
-	private function process_header_encoding( $encode )
+	private function process_header_encoding( $encode, $check_unsupported = TRUE )
 	{
 		if ( extension_loaded( 'mbstring' ) )
 		{
-			foreach ( $this->_mbstring_unsupportedcharsets AS $t_key => $t_value )
-			{
-				$encode = str_replace( '=?' . $t_key . '?', '=?' . $t_value . '?', $encode );
-			}
-
 			$encode = mb_decode_mimeheader( $encode );
 		}
 
@@ -159,8 +151,29 @@ class ERP_Mail_Parser
 			if ( $t_encode !== $encode )
 			{
 				// Since Mail_mimeDecode::_decodeHeader modified the string there are apparently encodings which are not supported by mbstring
-				// Destroying invalid characters and possibly valid utf8 characters
-				$t_encode = $this->process_body_encoding( $t_encode, $this->_fallback_charset );
+				if ( $check_unsupported === TRUE )
+				{
+					// Lets try changing the unsupported charsets and process the string again
+					foreach ( $this->_mbstring_unsupportedcharsets AS $t_key => $t_value )
+					{
+						$t_encode_modifed = str_replace( '=?' . $t_key . '?', '=?' . $t_value . '?', $encode );
+					}
+
+					if ( $t_encode_modifed !== $encode )
+					{
+						$t_encode = $this->process_header_encoding( $t_encode_modifed, FALSE );
+					}
+					else
+					{
+						$check_unsupported = FALSE;
+					}
+				}
+
+				if ( $check_unsupported === FALSE )
+				{
+					// Destroying invalid characters and possibly valid utf8 characters
+					$t_encode = $this->process_body_encoding( $t_encode, $this->_fallback_charset );
+				}
 			}
 		}
 
