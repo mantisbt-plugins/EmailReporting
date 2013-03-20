@@ -334,9 +334,9 @@ class ERP_mailbox_api
 
 						for ( $i = 1; $i <= $t_numMsg; $i++ )
 						{
-							$this->process_single_email( $i );
+							$t_result = $this->process_single_email( $i );
 	
-							if ( $this->_mail_delete )
+							if ( $this->_mail_delete && $t_result )
 							{
 								$this->_result = $this->_mailserver->deleteMsg( $i );
 	
@@ -425,11 +425,14 @@ class ERP_mailbox_api
 												}
 												else
 												{
-													$this->process_single_email( $i, (int) $t_project[ 'id' ] );
+													$t_result = $this->process_single_email( $i, (int) $t_project[ 'id' ] );
 
-													$this->_result = $this->_mailserver->deleteMsg( $i );
+													if ( $t_result === TRUE )
+													{
+														$this->_result = $this->_mailserver->deleteMsg( $i );
 
-													$this->pear_error( 'Attempt delete email', $this->_result );
+														$this->pear_error( 'Attempt delete email', $this->_result );
+													}
 												}
 											}
 										}
@@ -478,17 +481,25 @@ class ERP_mailbox_api
 
 	# --------------------
 	# Process a single email from either a pop3 or imap mailbox
+	# Returns true or false based on succesfull email retrieval from the mailbox
 	private function process_single_email( $p_i, $p_overwrite_project_id = FALSE )
 	{
 		$this->show_memory_usage( 'Start process single email' );
 
-		$t_msg = $this->_mailserver->getMsg( $p_i );
+		$t_msg = $this->getMsg( $p_i );
+
+		if ( empty( $t_msg ) )
+		{
+			$this->custom_error( 'Retrieved message was empty. Either an invalid message ID was passed or there is a problem with one of the required PEAR packages' );
+
+			return( FALSE );
+		}
 
 		$this->show_memory_usage( 'Single email retrieved from mailbox' );
 
 		$this->_mails_fetched++;
 
-		$this->save_message_to_file( $t_msg );
+		$this->save_message_to_file( 'raw_msg', $t_msg );
 
 		$t_email = $this->parse_content( $t_msg );
 
@@ -496,7 +507,7 @@ class ERP_mailbox_api
 
 		$this->show_memory_usage( 'Parsed single email' );
 
-		$this->save_message_to_file( $t_email );
+		$this->save_message_to_file( 'parsed_msg', $t_email );
 
 		// Only continue if we have a valid Reporter to work with
 		if ( $t_email[ 'Reporter_id' ] !== FALSE )
@@ -513,6 +524,33 @@ class ERP_mailbox_api
 		}
 
 		$this->show_memory_usage( 'Finished process single email' );
+
+		return( TRUE );
+	}
+
+	# --------------------
+	# Return a single raw email
+	# Handles a workaround for problems with Net_IMAP 1.1.0 and 1.1.2
+	private function getMsg( $p_msg_id )
+	{
+		if ( $this->_mailbox[ 'mailbox_type' ] === 'IMAP' )
+		{
+			// Net_IMAP 1.1.0 and 1.1.2 seems to have a somewhat broken getMsg function.
+			$t_msg = $this->_mailserver->getMessages( $p_msg_id, TRUE );
+
+			if ( is_array( $t_msg ) && count( $t_msg ) === 1 )
+			{
+				$t_msg = $t_msg[ key( $t_msg ) ];
+			}
+		}
+		else
+		{
+			$t_msg = $this->_mailserver->getMsg( $p_msg_id );
+		}
+
+		$this->pear_error( 'Retrieve raw message', $t_msg );
+
+		return( $t_msg );
 	}
 
 	# --------------------
@@ -1197,11 +1235,11 @@ class ERP_mailbox_api
 	# --------------------
 	# Saves the complete email to file
 	# Only works in debug mode
-	private function save_message_to_file( &$p_msg )
+	private function save_message_to_file( $message_type, &$p_msg )
 	{
 		if ( $this->_mail_debug && is_dir( $this->_mail_debug_directory ) && is_writeable( $this->_mail_debug_directory ) )
 		{
-			$t_file_name = $this->_mail_debug_directory . ( ( is_array( $p_msg ) ) ? '/parsed_email' : '/rawmsg' ) . '_' . time() . '_' . md5( microtime() );
+			$t_file_name = $this->_mail_debug_directory . $message_type . '_' . time() . '_' . md5( microtime() );
 			file_put_contents( $t_file_name, ( ( is_array( $p_msg ) ) ? var_export( $p_msg, TRUE ) : $p_msg ) );
 		}
 	}
