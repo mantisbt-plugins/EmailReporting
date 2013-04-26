@@ -140,6 +140,22 @@ class ERP_Mail_Parser
 	{
 		if ( extension_loaded( 'mbstring' ) )
 		{
+			// mb_decode_mimeheader leaves underscores where there should be spaces incase of quoted printable mimeheaders. Applying workaround.
+			$apply_workaround = FALSE;
+			while ( preg_match( "/(=\?([^?]+)\?(q|b)\?([^?]*)\?=)/i", $encode, $matches ) )
+			{
+//				$encoded  = $matches[1];
+//				$charset  = $matches[2];
+				$encoding = $matches[3];
+//				$text     = $matches[4];
+
+				if ( strtolower( $encoding ) === 'q' )
+				{
+					$apply_workaround = TRUE;
+					break;
+				}
+			}
+
 			$encode = mb_decode_mimeheader( $encode );
 		}
 
@@ -174,6 +190,10 @@ class ERP_Mail_Parser
 					// Destroying invalid characters and possibly valid utf8 characters
 					$t_encode = $this->process_body_encoding( $t_encode, $this->_fallback_charset );
 				}
+			}
+			elseif ( $apply_workaround === TRUE )
+			{
+				$t_encode = str_replace( '_', ' ', $t_encode );
 			}
 		}
 
