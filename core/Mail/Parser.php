@@ -31,6 +31,8 @@ class ERP_Mail_Parser
 	*
 	* Workaround charsets that don't work with mbstring functions.
 	*
+	* The keys in this array should be lowercase
+	*
 	* @access private
 	*
 	* mbstring functions do not handle the 'ks_c_5601-1987' &
@@ -136,64 +138,60 @@ class ERP_Mail_Parser
 		return( $encode );
 	}
 
-	private function process_header_encoding( $encode, $check_unsupported = TRUE )
+	private function process_header_encoding( $encode )
 	{
+		$use_fallback = FALSE;
 		if ( extension_loaded( 'mbstring' ) )
 		{
-			// mb_decode_mimeheader leaves underscores where there should be spaces incase of quoted printable mimeheaders. Applying workaround.
-			$apply_workaround = FALSE;
-			while ( preg_match( "/(=\?([^?]+)\?(q|b)\?([^?]*)\?=)/i", $encode, $matches ) )
+			$t_encode = $encode;
+			// Code based on mimedecode function _decodeHeader
+			$encoded_words_regex = "/(=\?([^?]+)\?(q|b)\?([^?]*)\?=)/i";
+			while ( preg_match( $encoded_words_regex, $t_encode, $matches ) )
 			{
-//				$encoded  = $matches[1];
-//				$charset  = $matches[2];
+				$encoded  = $matches[1];
+				$charset  = $matches[2];
 				$encoding = $matches[3];
-//				$text     = $matches[4];
+				$text     = $matches[4];
 
+				// Process unsupported fallback charsets
+				if ( isset( $this->_mb_list_encodings[ strtolower( $charset ) ] ) && isset( $this->_mbstring_unsupportedcharsets[ strtolower( $charset ) ] ) && $this->_mb_list_encodings[ strtolower( $charset ) ] === $this->_mbstring_unsupportedcharsets[ strtolower( $charset ) ] )
+				{
+					$charset = $this->_mb_list_encodings[ strtolower( $charset ) ];
+				}
+
+				// Process unsupported charsets
+				if ( !isset( $this->_mb_list_encodings[ strtolower( $charset ) ] ) )
+				{
+					$charset = $this->_fallback_charset;
+				}
+
+				// mb_decode_mimeheader leaves underscores where there should be spaces incase of quoted-printable mimeheaders. Applying workaround.
 				if ( strtolower( $encoding ) === 'q' )
 				{
-					$apply_workaround = TRUE;
-					break;
+					$text = str_replace( '_', ' ', $text );
 				}
+
+				$encode_part = mb_decode_mimeheader( '=?' . $charset . '?' . $encoding . '?' . $text . '?=' );
+
+				$t_encode = str_replace( $encoded, $encode_part, $t_encode );
 			}
 
-			$encode = mb_decode_mimeheader( $encode );
+			// If any encoded-words are left then mb_decode_mimeheader did not work as intended. Performing fallback
+			if ( preg_match( $encoded_words_regex, $t_encode ) )
+			{
+				$use_fallback = TRUE;
+			}
 		}
 
-		$decoder = new Mail_mimeDecode( NULL );
-		$t_encode = $decoder->_decodeHeader( $encode );
-
-		if ( extension_loaded( 'mbstring' ) )
+		if ( !extension_loaded( 'mbstring' ) || $use_fallback === TRUE )
 		{
-			if ( $t_encode !== $encode )
-			{
-				// Since Mail_mimeDecode::_decodeHeader modified the string there are apparently encodings which are not supported by mbstring
-				if ( $check_unsupported === TRUE )
-				{
-					// Lets try changing the unsupported charsets and process the string again
-					foreach ( $this->_mbstring_unsupportedcharsets AS $t_key => $t_value )
-					{
-						$t_encode_modifed = str_replace( '=?' . $t_key . '?', '=?' . $t_value . '?', $encode );
-					}
+			$decoder = new Mail_mimeDecode( NULL );
+			$t_encode = $decoder->_decodeHeader( $encode );
 
-					if ( $t_encode_modifed !== $encode )
-					{
-						$t_encode = $this->process_header_encoding( $t_encode_modifed, FALSE );
-					}
-					else
-					{
-						$check_unsupported = FALSE;
-					}
-				}
-
-				if ( $check_unsupported === FALSE )
-				{
-					// Destroying invalid characters and possibly valid utf8 characters
-					$t_encode = $this->process_body_encoding( $t_encode, $this->_fallback_charset );
-				}
-			}
-			elseif ( $apply_workaround === TRUE )
+			if ( extension_loaded( 'mbstring' ) )
 			{
-				$t_encode = str_replace( '_', ' ', $t_encode );
+				// Destroying invalid characters and possibly valid utf8 characters
+				$t_encode = $this->process_body_encoding( $t_encode, $this->_fallback_charset );
 			}
 		}
 
