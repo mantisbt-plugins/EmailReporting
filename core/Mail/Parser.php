@@ -162,6 +162,7 @@ class ERP_Mail_Parser
 				// Process unsupported charsets
 				if ( !isset( $this->_mb_list_encodings[ strtolower( $charset ) ] ) )
 				{
+					echo "\n" . 'Message: Charset not supported: ' . $charset . "\n";
 					$charset = $this->_fallback_charset;
 				}
 
@@ -188,9 +189,9 @@ class ERP_Mail_Parser
 			$decoder = new Mail_mimeDecode( NULL );
 			$t_encode = $decoder->_decodeHeader( $encode );
 
-			if ( extension_loaded( 'mbstring' ) )
+			if ( extension_loaded( 'mbstring' ) && $use_fallback === TRUE )
 			{
-				// Destroying invalid characters and possibly valid utf8 characters
+				// Destroying invalid characters and possibly valid utf8 characters incase of a fallback situation
 				$t_encode = $this->process_body_encoding( $t_encode, $this->_fallback_charset );
 			}
 		}
