@@ -72,7 +72,6 @@ class ERP_mailbox_api
 	private $_file_upload_method;
 	private $_bug_resolved_status_threshold;
 	private $_email_separator1;
-	private $_validate_email;
 	private $_login_method;
 	private $_use_ldap_email;
 	private $_ldap_realname_field;
@@ -132,7 +131,6 @@ class ERP_mailbox_api
 		$this->_file_upload_method				= config_get( 'file_upload_method' );
 		$this->_bug_resolved_status_threshold	= config_get( 'bug_resolved_status_threshold' );
 		$this->_email_separator1				= config_get( 'email_separator1' );
-		$this->_validate_email					= config_get( 'validate_email' );
 		$this->_login_method					= config_get( 'login_method' );
 		$this->_use_ldap_email					= config_get( 'use_ldap_email' );
 		$this->_ldap_realname_field				= config_get( 'ldap_realname_field' );
@@ -1034,30 +1032,16 @@ class ERP_mailbox_api
 	# Validate the email address
 	private function validate_email_address( $p_email_address )
 	{
-		if ( $this->_validate_email )
+		// Lets see if the email address is valid and maybe we already have a cached result
+		if ( isset( $this->_validated_email_list[ $p_email_address ] ) )
 		{
-			// Lets see if the email address is valid and maybe we already have a cached result
-			if ( isset( $this->_validated_email_list[ $p_email_address ] ) )
-			{
-				$t_valid = $this->_validated_email_list[ $p_email_address ];
-			}
-			else
-			{
-				if ( email_is_valid( $p_email_address ) )
-				{
-					$t_valid = TRUE;
-				}
-				else
-				{
-					$t_valid = FALSE;
-				}
-
-				$this->_validated_email_list[ $p_email_address ] = $t_valid;
-			}
+			$t_valid = $this->_validated_email_list[ $p_email_address ];
 		}
 		else
 		{
-			$t_valid = TRUE;
+			$t_valid = email_is_valid( $p_email_address );
+
+			$this->_validated_email_list[ $p_email_address ] = $t_valid;
 		}
 
 		return( $t_valid );
