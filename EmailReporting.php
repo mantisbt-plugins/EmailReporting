@@ -126,7 +126,7 @@ class EmailReportingPlugin extends MantisPlugin
 			# Use the following text when part of the email has been removed
 			'mail_removed_reply_text'		=> '[EmailReporting -> Removed part identified as reply]',
 
-			# The account's name for mail reporting
+			# The account's id for mail reporting
 			# Also used for fallback if a user is not found in database
 			# Mail is just the default name which will be converted to a user id during installation
 			'mail_reporter_id'				=> 'Mail',
@@ -195,8 +195,6 @@ class EmailReportingPlugin extends MantisPlugin
 				$t_user_id = user_get_id_by_name( $t_username );
 
 				plugin_config_set( 'mail_reporter_id', $t_user_id );
-
-				plugin_config_set( 'config_version', 8 );
 			}
 
 			return( $t_result_user_create );
@@ -280,8 +278,9 @@ class EmailReportingPlugin extends MantisPlugin
 	 * The second part updates various configuration options and performs some cleaning
 	 * Further updates to the configuration options follow below
 	 *
-	 * Make sure that if you change anything to the config_version value that you
-	 * also change the update the value in install
+	 * Make sure that it is no problem if a user would delete the variable config_version
+	 * as it would cause all the patches below to be executed all over again.
+	 * New installations will have all of these patches executed as well.
 	 */
 	function ERP_update_check( )
 	{
@@ -289,16 +288,10 @@ class EmailReportingPlugin extends MantisPlugin
 
 		if ( $t_config_version === 0 )
 		{
-			$t_reset_schema = plugin_config_get( 'reset_schema', 0 );
+			$t_username = plugin_config_get( 'mail_reporter', '' );
 
-			if ( $t_reset_schema === 1 )
+			if ( strlen( $t_username ) > 0 )
 			{
-				plugin_config_delete( 'reset_schema' );
-			}
-			else
-			{
-				$t_username = plugin_config_get( 'mail_reporter' );
-
 				$t_user_id = user_get_id_by_name( $t_username );
 
 				if ( $t_user_id !== FALSE )
@@ -315,27 +308,28 @@ class EmailReportingPlugin extends MantisPlugin
 						user_set_email( $t_user_id, '' );
 					}
 				}
+			}
 
+			$t_schema = plugin_config_get( 'schema' );
+			if ( $t_schema !== -1 )
+			{
 				plugin_config_set( 'schema', -1 );
 			}
+
+			plugin_config_delete( 'reset_schema' );
 
 			plugin_config_set( 'config_version', 1 );
 		}
 
 		if ( $t_config_version <= 1 )
 		{
-			$t_mail_debug_directory	= plugin_config_get( 'mail_debug_directory' );
-			$t_mail_directory		= plugin_config_get( 'mail_directory', $t_mail_debug_directory );
+			$t_mail_reporter		= plugin_config_get( 'mail_reporter', '' );
 
-			$t_mail_reporter		= plugin_config_get( 'mail_reporter' );
-
-			if ( $t_mail_directory !== $t_mail_debug_directory )
+			if ( strlen( $t_mail_reporter ) > 0 )
 			{
-				plugin_config_set( 'mail_debug_directory', $t_mail_directory );
+				$t_mail_reporter_id = user_get_id_by_name( $t_mail_reporter );
+				plugin_config_set( 'mail_reporter_id', $t_mail_reporter_id );
 			}
-
-			$t_mail_reporter_id = user_get_id_by_name( $t_mail_reporter );
-			plugin_config_set( 'mail_reporter_id', $t_mail_reporter_id );
 
 			plugin_config_delete( 'mail_directory' );
 			plugin_config_delete( 'mail_reporter' );
@@ -357,39 +351,41 @@ class EmailReportingPlugin extends MantisPlugin
 
 		if ( $t_config_version <= 3 )
 		{
-			$t_mailboxes = plugin_config_get( 'mailboxes' );
+			$t_mailboxes = plugin_config_get( 'mailboxes', array() );
 			$t_indexes = array(
 				'mailbox_project' => 'mailbox_project_id',
 				'mailbox_global_category' => 'mailbox_global_category_id',
 			);
 
-			foreach ( $t_mailboxes AS $t_key => $t_value )
+			foreach ( $t_mailboxes AS $t_key => $t_array )
 			{
-				# Correct the hostname if it is stored in an older format
-				$t_hostname = $t_value[ 'mailbox_hostname' ];
-
-				if ( !is_array( $t_hostname ) )
+				if ( isset( $t_array[ 'mailbox_hostname' ] ) )
 				{
-					$t_hostname = explode( ':', $t_hostname, 2 );
+					# Correct the hostname if it is stored in an older format
+					$t_hostname = $t_array[ 'mailbox_hostname' ];
 
-					$t_hostname = array(
-						'hostname'	=> $t_hostname[ 0 ],
-						'port'		=> ( ( isset( $t_hostname[ 1 ] ) ) ? $t_hostname[ 1 ] : '' ),
-					);
-
-					$t_value[ 'mailbox_hostname' ] = $t_hostname;
-				}
-
-				foreach ( $t_indexes AS $t_old_index => $t_new_index )
-				{
-					if ( isset( $t_value[ $t_old_index ] ) )
+					if ( !is_array( $t_hostname ) )
 					{
-						$t_value[ $t_new_index ] = $t_value[ $t_old_index ];
-						unset( $t_value[ $t_old_index ] );
+						// ipv6 also uses : so we need to work around that
+						if ( substr_count( $t_hostname, ':' ) === 1 )
+						{
+							$t_hostname = explode( ':', $t_hostname, 2 );
+						}
+						else
+						{
+							$t_hostname = array( $t_hostname );
+						}
+
+						$t_hostname = array(
+							'hostname'	=> $t_hostname[ 0 ],
+							'port'		=> ( ( isset( $t_hostname[ 1 ] ) ) ? $t_hostname[ 1 ] : '' ),
+						);
+
+						$t_array[ 'mailbox_hostname' ] = $t_hostname;
 					}
 				}
 
-				$t_mailboxes[ $t_key ] = $t_value;
+				$t_mailboxes[ $t_key ] = $this->ERP_update_indexes( $t_array, $t_indexes );
 			}
 
 			plugin_config_set( 'mailboxes', $t_mailboxes );
@@ -399,10 +395,10 @@ class EmailReportingPlugin extends MantisPlugin
 
 		if ( $t_config_version <= 4 )
 		{
-			$t_mail_remove_mantis_email	= plugin_config_get( 'mail_remove_mantis_email' );
+			$t_mail_remove_mantis_email	= plugin_config_get( 'mail_remove_mantis_email', -1 );
 			$t_mail_identify_reply		= plugin_config_get( 'mail_identify_reply', $t_mail_remove_mantis_email );
 
-			if ( $t_mail_identify_reply !== $t_mail_remove_mantis_email )
+			if ( $t_mail_remove_mantis_email !== -1 && $t_mail_identify_reply !== $t_mail_remove_mantis_email )
 			{
 				plugin_config_set( 'mail_remove_mantis_email', $t_mail_identify_reply );
 			}
@@ -421,21 +417,25 @@ class EmailReportingPlugin extends MantisPlugin
 
 		if ( $t_config_version <= 6 )
 		{
-			$t_mailboxes = plugin_config_get( 'mailboxes' );
+			$t_mailboxes = plugin_config_get( 'mailboxes', array() );
+			$t_indexes = array(
+				'mailbox_enabled' => 'enabled',
+				'mailbox_description' => 'description',
+				'mailbox_type' => 'type',
+				'mailbox_hostname' => 'hostname',
+				'mailbox_encryption' => 'encryption',
+				'mailbox_username' => 'username',
+				'mailbox_password' => 'password',
+				'mailbox_auth_method' => 'auth_method',
+				'mailbox_project_id' => 'project_id',
+				'mailbox_global_category_id' => 'global_category_id',
+				'mailbox_basefolder' => 'basefolder',
+				'mailbox_createfolderstructure' => 'createfolderstructure',
+			);
 
 			foreach ( $t_mailboxes AS $t_key => $t_array )
 			{
-				foreach ( $t_array AS $t_index => $t_value )
-				{
-					if ( substr( $t_index, 0, 8 ) === 'mailbox_' )
-					{
-						$t_new_index = substr( $t_index, 8 );
-						$t_array[ $t_new_index ] = $t_value;
-						unset( $t_array[ $t_index ] );
-					}
-				}
-
-				$t_mailboxes[ $t_key ] = $t_array;
+				$t_mailboxes[ $t_key ] = $this->ERP_update_indexes( $t_array, $t_indexes );
 			}
 
 			plugin_config_set( 'mailboxes', $t_mailboxes );
@@ -445,19 +445,22 @@ class EmailReportingPlugin extends MantisPlugin
 
 		if ( $t_config_version <= 7 )
 		{
-			$t_mailboxes = plugin_config_get( 'mailboxes' );
+			$t_mailboxes = plugin_config_get( 'mailboxes', array() );
 
-			foreach ( $t_mailboxes AS $t_key => $t_value )
+			foreach ( $t_mailboxes AS $t_key => $t_array )
 			{
-				$t_hostname = $t_value[ 'hostname' ];
-
-				if ( is_array( $t_hostname ) )
+				if ( isset( $t_array[ 'hostname' ] ) )
 				{
-					$t_value[ 'hostname' ] = $t_hostname[ 'hostname' ];
-					$t_value[ 'port' ] = $t_hostname[ 'port' ];
-				}
+					$t_hostname = $t_array[ 'hostname' ];
 
-				$t_mailboxes[ $t_key ] = $t_value;
+					if ( is_array( $t_hostname ) )
+					{
+						$t_array[ 'hostname' ] = $t_hostname[ 'hostname' ];
+						$t_array[ 'port' ] = $t_hostname[ 'port' ];
+					}
+
+					$t_mailboxes[ $t_key ] = $t_array;
+				}
 			}
 
 			plugin_config_set( 'mailboxes', $t_mailboxes );
@@ -474,7 +477,7 @@ class EmailReportingPlugin extends MantisPlugin
 
 		if ( $t_config_version <= 9 )
 		{
-			$t_mailboxes = plugin_config_get( 'mailboxes' );
+			$t_mailboxes = plugin_config_get( 'mailboxes', array() );
 			$t_indexes = array(
 				'type' => 'mailbox_type',
 				'basefolder' => 'imap_basefolder',
@@ -483,16 +486,7 @@ class EmailReportingPlugin extends MantisPlugin
 
 			foreach ( $t_mailboxes AS $t_key => $t_array )
 			{
-				foreach ( $t_indexes AS $t_old_index => $t_new_index )
-				{
-					if ( isset( $t_array[ $t_old_index ] ) )
-					{
-						$t_array[ $t_new_index ] = $t_array[ $t_old_index ];
-						unset( $t_array[ $t_old_index ] );
-					}
-				}
-
-				$t_mailboxes[ $t_key ] = $t_array;
+				$t_mailboxes[ $t_key ] = $this->ERP_update_indexes( $t_array, $t_indexes );
 			}
 
 			plugin_config_set( 'mailboxes', $t_mailboxes );
@@ -509,7 +503,7 @@ class EmailReportingPlugin extends MantisPlugin
 
 		if ( $t_config_version <= 11 )
 		{
-			$t_mailboxes = plugin_config_get( 'mailboxes' );
+			$t_mailboxes = plugin_config_get( 'mailboxes', array() );
 			$t_indexes = array(
 				'username' => 'erp_username',
 				'password' => 'erp_password',
@@ -517,16 +511,7 @@ class EmailReportingPlugin extends MantisPlugin
 
 			foreach ( $t_mailboxes AS $t_key => $t_array )
 			{
-				foreach ( $t_indexes AS $t_old_index => $t_new_index )
-				{
-					if ( isset( $t_array[ $t_old_index ] ) )
-					{
-						$t_array[ $t_new_index ] = $t_array[ $t_old_index ];
-						unset( $t_array[ $t_old_index ] );
-					}
-				}
-
-				$t_mailboxes[ $t_key ] = $t_array;
+				$t_mailboxes[ $t_key ] = $this->ERP_update_indexes( $t_array, $t_indexes );
 			}
 
 			plugin_config_set( 'mailboxes', $t_mailboxes );
@@ -536,6 +521,25 @@ class EmailReportingPlugin extends MantisPlugin
 
 			plugin_config_set( 'config_version', 12 );
 		}
+	}
+
+	/* 
+	 * Modifies indexes in an array based on given array
+	 */
+	function ERP_update_indexes( $p_array, $p_indexes )
+	{
+		$t_array = $p_array;
+
+		foreach ( $p_indexes AS $t_old_index => $t_new_index )
+		{
+			if ( isset( $t_array[ $t_old_index ] ) )
+			{
+				$t_array[ $t_new_index ] = $t_array[ $t_old_index ];
+				unset( $t_array[ $t_old_index ] );
+			}
+		}
+
+		return( $t_array );
 	}
 
 	/* 
