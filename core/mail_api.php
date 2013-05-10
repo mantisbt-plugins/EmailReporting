@@ -1109,6 +1109,7 @@ class ERP_mailbox_api
 		$t_username_validated = $this->validate_username( $t_username );
 
 		if ( $t_username_validated === FALSE )
+		{
 			// fallback username
 			$t_username = strtolower( str_replace( array( '@', '.', '-' ), '_', $p_user_info[ 'email' ] ) );
 			$t_rand = '_' . mt_rand( 1000, 99999 );

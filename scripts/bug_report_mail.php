@@ -1,5 +1,5 @@
 <?php
-$GLOBALS[ 't_dir_emailreporting_adjust' ] = dirname( __FILE__ ) . DIRECTORY_SEPARATOR '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
+$GLOBALS[ 't_dir_emailreporting_adjust' ] = dirname( __FILE__ ) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
 require_once( $GLOBALS[ 't_dir_emailreporting_adjust' ] . 'core.php' );
 
 $t_tmp_plugin_page = plugin_page( 'bug_report_mail', TRUE, 'EmailReporting' );
