@@ -112,6 +112,7 @@ ERP_output_config_option( 'mail_reporter_id', 'dropdown', NULL, 'print_reporter_
 ERP_output_config_option( 'mail_auto_signup', 'boolean' );
 ERP_output_config_option( 'mail_preferred_username', 'dropdown', NULL, 'print_descriptions_option_list', array( 'name', 'email_address', 'email_no_domain', 'from_ldap' ) );
 ERP_output_config_option( 'mail_preferred_realname', 'dropdown', NULL, 'print_descriptions_option_list', array( 'name', 'email_address', 'email_no_domain', 'from_ldap', 'full_from' ) );
+ERP_output_config_option( 'mail_disposable_email_checker', 'boolean' );
 
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'feature_options', 'header' );

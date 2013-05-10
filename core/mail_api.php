@@ -49,6 +49,7 @@ class ERP_mailbox_api
 	private $_mail_debug_directory;
 	private $_mail_debug_show_memory_usage;
 	private $_mail_delete;
+	private $_mail_disposable_email_checker;
 	private $_mail_fallback_mail_reporter;
 	private $_mail_fetch_max;
 	private $_mail_nodescription;
@@ -74,7 +75,6 @@ class ERP_mailbox_api
 	private $_email_separator1;
 	private $_login_method;
 	private $_use_ldap_email;
-	private $_ldap_realname_field;
 
 	private $_bug_submit_status;
 	private $_default_bug_additional_info;
@@ -105,6 +105,7 @@ class ERP_mailbox_api
 		$this->_mail_debug_directory			= plugin_config_get( 'mail_debug_directory' );
 		$this->_mail_debug_show_memory_usage	= plugin_config_get( 'mail_debug_show_memory_usage' );
 		$this->_mail_delete						= plugin_config_get( 'mail_delete' );
+		$this->_mail_disposable_email_checker	= plugin_config_get( 'mail_disposable_email_checker' );
 		$this->_mail_fallback_mail_reporter		= plugin_config_get( 'mail_fallback_mail_reporter' );
 		$this->_mail_fetch_max					= plugin_config_get( 'mail_fetch_max' );
 		$this->_mail_nodescription				= plugin_config_get( 'mail_nodescription' );
@@ -133,7 +134,6 @@ class ERP_mailbox_api
 		$this->_email_separator1				= config_get( 'email_separator1' );
 		$this->_login_method					= config_get( 'login_method' );
 		$this->_use_ldap_email					= config_get( 'use_ldap_email' );
-		$this->_ldap_realname_field				= config_get( 'ldap_realname_field' );
 
 		$this->_bug_submit_status				= config_get( 'bug_submit_status' );
 		$this->_default_bug_additional_info		= config_get( 'default_bug_additional_info' );
@@ -646,7 +646,7 @@ class ERP_mailbox_api
 					// So, we have to sign up a new user...
 					$t_new_reporter_name = $this->prepare_username( $p_parsed_from );
 
-					if ( $t_new_reporter_name !== FALSE && email_is_valid( $p_parsed_from[ 'email' ] ) )
+					if ( $t_new_reporter_name !== FALSE && $this->validate_email_address( $p_parsed_from[ 'email' ] ) )
 					{
 						if( user_signup( $t_new_reporter_name, $p_parsed_from[ 'email' ] ) )
 						{
@@ -773,14 +773,14 @@ class ERP_mailbox_api
 			$t_bug_data->version				= '';
 			$t_bug_data->profile_id				= 0;
 			$t_bug_data->handler_id				= 0;
-			$t_bug_data->view_state				= $this->_default_bug_view_status;
+			$t_bug_data->view_state				= (int) $this->_default_bug_view_status;
 
-			$t_bug_data->category_id			= $this->_mailbox[ 'global_category_id' ];
-			$t_bug_data->reproducibility		= $this->_default_bug_reproducibility;
-			$t_bug_data->severity				= $this->_default_bug_severity;
-			$t_bug_data->priority				= $p_email[ 'Priority' ];
-			$t_bug_data->projection				= $this->_default_bug_projection;
-			$t_bug_data->eta					= $this->_default_bug_eta;
+			$t_bug_data->category_id			= (int) $this->_mailbox[ 'global_category_id' ];
+			$t_bug_data->reproducibility		= (int) $this->_default_bug_reproducibility;
+			$t_bug_data->severity				= (int) $this->_default_bug_severity;
+			$t_bug_data->priority				= (int) $p_email[ 'Priority' ];
+			$t_bug_data->projection				= (int) $this->_default_bug_projection;
+			$t_bug_data->eta					= (int) $this->_default_bug_eta;
 			$t_bug_data->resolution				= $this->_default_bug_resolution;
 			$t_bug_data->status					= $this->_bug_submit_status;
 			$t_bug_data->summary				= $p_email[ 'Subject' ];
@@ -1039,7 +1039,7 @@ class ERP_mailbox_api
 		}
 		else
 		{
-			$t_valid = email_is_valid( $p_email_address );
+			$t_valid = ( email_is_valid( $p_email_address ) && ( $this->_mail_disposable_email_checker === OFF || !email_is_disposable( $p_email_address ) ) );
 
 			$this->_validated_email_list[ $p_email_address ] = $t_valid;
 		}
@@ -1072,7 +1072,7 @@ class ERP_mailbox_api
 	}
 
 	# --------------------
-	# return the a valid username from an email address
+	# return a valid username from an email address
 	private function prepare_username( $p_user_info )
 	{
 		# I would have liked to validate the username and remove any non-allowed characters
@@ -1106,23 +1106,28 @@ class ERP_mailbox_api
 				$t_username = $p_user_info[ 'name' ];
 		}
 
-		if ( utf8_strlen( $t_username ) > DB_FIELD_SIZE_USERNAME )
-		{
-			$t_username = utf8_substr( $t_username, 0, DB_FIELD_SIZE_USERNAME );
+		$t_username_validated = $this->validate_username( $t_username );
+
+		if ( $t_username_validated === FALSE )
+			// fallback username
+			$t_username = strtolower( str_replace( array( '@', '.', '-' ), '_', $p_user_info[ 'email' ] ) );
+			$t_rand = '_' . mt_rand( 1000, 99999 );
+	
+			$t_username_validated = $this->validate_username( $t_username, $t_rand );
 		}
+		
+		return( $t_username_validated );
+	}
 
-		if ( user_is_name_valid( $t_username ) && user_is_name_unique( $t_username ) )
+	# --------------------
+	# Validates and truncates the username
+	private function validate_username( $p_username, $p_rand = '' )
+	{
+		$t_username = $p_username;
+
+		if ( utf8_strlen( $t_username . $p_rand ) > DB_FIELD_SIZE_USERNAME )
 		{
-			return( $t_username );
-		}
-
-		// fallback username
-		$t_username = strtolower( str_replace( array( '@', '.', '-' ), '_', $p_user_info[ 'email' ] ) );
-		$t_rand = '_' . mt_rand( 1000, 99999 );
-
-		if ( utf8_strlen( $t_username . $t_rand ) > DB_FIELD_SIZE_USERNAME )
-		{
-			$t_username = utf8_substr( $t_username, 0, ( DB_FIELD_SIZE_USERNAME - strlen( $t_rand ) ) );
+			$t_username = utf8_substr( $t_username, 0, ( DB_FIELD_SIZE_USERNAME - strlen( $p_rand ) ) );
 		}
 
 		$t_username = $t_username . $t_rand;
@@ -1135,6 +1140,8 @@ class ERP_mailbox_api
 		return( FALSE );
 	}
 
+	# --------------------
+	# return a valid realname from an email address
 	private function prepare_realname( $p_user_info, $p_username )
 	{
 		switch( $this->_mail_preferred_realname ){
@@ -1153,7 +1160,7 @@ class ERP_mailbox_api
 				break;
 
 			case 'from_ldap':
-				$t_realname = ldap_get_field_from_username( $p_username, $this->_ldap_realname_field );
+				$t_realname = ldap_realname_from_username( $p_username );
 				break;
 
 			case 'full_from':
@@ -1164,6 +1171,8 @@ class ERP_mailbox_api
 			default:
 				$t_realname = $p_user_info[ 'name' ];
 		}
+
+		$t_realname = string_normalize( $t_realname );
 
 		if ( utf8_strlen( $t_realname ) > DB_FIELD_SIZE_REALNAME )
 		{

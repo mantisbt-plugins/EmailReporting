@@ -30,7 +30,7 @@ class EmailReportingPlugin extends MantisPlugin
 		return array(
 			'config_version'				=> 0,
 			'schema'						=> -1,
-			'path_erp'						=> config_get_global( 'plugin_path' ) . plugin_get_current() . '/',
+			'path_erp'						=> config_get_global( 'plugin_path' ) . plugin_get_current() . DIRECTORY_SEPARATOR,
 			'job_users'						=> array(),
 
 			# --- mail reporting settings -----
@@ -57,22 +57,22 @@ class EmailReportingPlugin extends MantisPlugin
 
 			# Classify bug priorities
 			'mail_bug_priority'				=> array(
-				'5 (lowest)'	=> 10,
-				'4 (low)'		=> 20,
-				'3 (normal)'	=> 30,
-				'2 (high)'		=> 40,
-				'1 (highest)'	=> 50,
-				'5'		=> 20,
-				'4'		=> 20,
-				'3'		=> 30,
-				'2'		=> 40,
-				'1'		=> 50,
-				'0'		=> 10,
-				'low'			=> 20,
-				'normal'		=> 30,
-				'high'			=> 40,
-				''		=> 30,
-				'?'		=> 30
+				'5 (lowest)'	=> '10',
+				'4 (low)'		=> '20',
+				'3 (normal)'	=> '30',
+				'2 (high)'		=> '40',
+				'1 (highest)'	=> '50',
+				5		=> '20',
+				4		=> '20',
+				3		=> '30',
+				2		=> '40',
+				1		=> '50',
+				0		=> '10',
+				'low'			=> '20',
+				'normal'		=> '30',
+				'high'			=> '40',
+				''		=> '30',
+				'?'		=> '30'
 			),
 
 			# Used for debugging the system.
@@ -88,6 +88,9 @@ class EmailReportingPlugin extends MantisPlugin
 
 			# Delete incoming mail from POP3 server
 			'mail_delete'					=> ON,
+
+			# MantisBT always has the disposble email checker enabled. We needed an option to disable this in EmailReporting
+			'mail_disposable_email_checker'	=> ON,
 
 			# Should users always receive emails on actions they performed by email even though email_receive_own is OFF
 			'mail_email_receive_own'		=> OFF,
@@ -170,7 +173,7 @@ class EmailReportingPlugin extends MantisPlugin
 		if ( $t_mail_reporter_id === 'Mail' )
 		{
 			// The plugin variable path_erp is not yet available. So path_erp cannot be used here
-			require_once( config_get_global( 'plugin_path' ) . 'EmailReporting' . '/' . 'core/config_api.php' );
+			require_once( config_get_global( 'plugin_path' ) . plugin_get_current() . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'config_api.php' );
 
 			# We need to allow blank emails for a sec
 			ERP_set_temporary_overwrite( 'allow_blank_email', ON );

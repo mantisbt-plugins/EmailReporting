@@ -13,6 +13,7 @@ $f_gpc = array(
 	'mail_debug_directory'			=> ERP_prepare_directory_string( gpc_get_string( 'mail_debug_directory' ) ),
 	'mail_debug_show_memory_usage'	=> gpc_get_int( 'mail_debug_show_memory_usage' ),
 	'mail_delete'					=> gpc_get_int( 'mail_delete' ),
+	'mail_disposable_email_checker'	=> gpc_get_int( 'mail_disposable_email_checker' ),
 	'mail_email_receive_own'		=> gpc_get_int( 'mail_email_receive_own' ),
 	'mail_fallback_mail_reporter'	=> gpc_get_int( 'mail_fallback_mail_reporter' ),
 	'mail_fetch_max'				=> gpc_get_int( 'mail_fetch_max' ),
@@ -39,16 +40,17 @@ $f_mail_bug_priority				= gpc_get_string( 'mail_bug_priority' );
 
 foreach ( $f_gpc AS $t_key => $t_value )
 {
-	if( plugin_config_get( $t_key ) != $t_value )
+	if( plugin_config_get( $t_key ) !== $t_value )
 	{
 		plugin_config_set( $t_key, $t_value );
 	}
 }
 
-$t_mail_bug_priority = @eval( 'return ' . $f_mail_bug_priority . ';' );
+$t_mail_bug_priority = process_complex_value( $f_mail_bug_priority );
 if( is_array( $t_mail_bug_priority ) )
 {
-	if ( plugin_config_get( 'mail_bug_priority' ) != $t_mail_bug_priority )	{
+	if ( plugin_config_get( 'mail_bug_priority' ) !== $t_mail_bug_priority )
+	{
 		plugin_config_set( 'mail_bug_priority', $t_mail_bug_priority );
 	}
 }

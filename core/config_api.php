@@ -230,6 +230,114 @@
 		config_set_global( $p_config_name, $p_value );
 	}
 
+	/**
+	 * Copy of the function in /adm_config_set.php (MantisBT 1.2.15)
+	 * See http://www.mantisbt.org/bugs/view.php?id=15832
+	 */
+	/**
+	 * Helper function to recursively process complex types
+	 * We support the following kind of variables here:
+	 * 1. constant values (like the ON/OFF switches): they are defined as constants mapping to numeric values
+	 * 2. simple arrays with the form: array( a, b, c, d )
+	 * 3. associative arrays with the form: array( a=>1, b=>2, c=>3, d=>4 )
+	 * 4. multi-dimensional arrays
+	 * commas and '=>' within strings are handled
+	 *
+	 * @param string $p_value Complex value to process
+	 * @return parsed variable
+	 */
+if ( !function_exists( 'process_complex_value' ) )
+{
+	function process_complex_value( $p_value, $p_trimquotes = false ) {
+		static $s_regex_array = null;
+		static $s_regex_string = null;
+		static $s_regex_element = null;
+
+		$t_value = trim( $p_value );
+
+		# Parsing regex initialization
+		if( is_null( $s_regex_array ) ) {
+			$s_regex_array = '^array[\s]*\((.*)\)$';
+			$s_regex_string =
+				# unquoted string (word)
+				'[\w]+' . '|' .
+				# single-quoted string
+				"'(?:[^'\\\\]|\\\\.)*'" . '|' .
+				# double-quoted string
+				'"(?:[^"\\\\]|\\\\.)*"';
+			# The following complex regex will parse individual array elements,
+			# taking into consideration sub-arrays, associative arrays and single,
+			# double and un-quoted strings
+			# @TODO dregad reverse pattern logic for sub-array to avoid match on array(xxx)=>array(xxx)
+			$s_regex_element = '('
+				# Main sub-pattern - match one of
+				. '(' .
+						# sub-array: ungreedy, no-case match ignoring nested parenthesis
+						'(?:(?iU:array\s*(?:\\((?:(?>[^()]+)|(?1))*\\))))' . '|' .
+						$s_regex_string
+				. ')'
+				# Optional pattern for associative array, back-referencing the
+				# above main pattern
+				. '(?:\s*=>\s*(?2))?' .
+				')';
+		}
+
+		if( preg_match( "/$s_regex_array/s", $t_value, $t_match ) === 1 ) {
+			# It's an array - process each element
+			$t_processed = array();
+
+			if( preg_match_all( "/$s_regex_element/", $t_match[1], $t_elements ) ) {
+				foreach( $t_elements[0] as $key => $element ) {
+					if( !trim( $element ) ) {
+						# Empty element - skip it
+						continue;
+					}
+					# Check if element is associative array
+					preg_match_all( "/($s_regex_string)\s*=>\s*(.*)/", $element, $t_split );
+					if( !empty( $t_split[0] ) ) {
+						# associative array
+						$t_new_key = constant_replace( trim( $t_split[1][0], " \t\n\r\0\x0B\"'" ) );
+						$t_new_value = process_complex_value( $t_split[2][0], true );
+						$t_processed[$t_new_key] = $t_new_value;
+					} else {
+						# regular array
+						$t_new_value = process_complex_value( $element );
+						$t_processed[$key] = $t_new_value;
+					}
+				}
+			}
+			return $t_processed;
+		} else {
+			# Scalar value
+			if( $p_trimquotes ) {
+				$t_value = trim( $t_value, " \t\n\r\0\x0B\"'" );
+			}
+			return constant_replace( $t_value );
+		}
+	}
+}
+
+	/**
+	 * Copy of the function in /adm_config_set.php (MantisBT 1.2.15)
+	 * See http://www.mantisbt.org/bugs/view.php?id=15832
+	 */
+	/**
+	 * Check if the passed string is a constant and returns its value
+	 * if yes, or the string itself if not
+	 * @param $p_name string to check
+	 * @return mixed|string value of constant $p_name, or $p_name itself
+	 */
+if ( !function_exists( 'constant_replace' ) )
+{
+	function constant_replace( $p_name ) {
+		if( is_string( $p_name ) && defined( $p_name ) ) {
+			# we have a constant
+			return constant( $p_name );
+		}
+		return $p_name;
+	}
+}
+
 	# --------------------
 	# output a configuration option
 	# This function is only meant to be used by the EmailReporting plugin or by other plugins within the EVENT_ERP_OUTPUT_MAILBOX_FIELDS event
