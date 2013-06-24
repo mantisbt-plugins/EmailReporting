@@ -76,17 +76,6 @@ class ERP_mailbox_api
 	private $_login_method;
 	private $_use_ldap_email;
 
-	private $_bug_submit_status;
-	private $_default_bug_additional_info;
-	private $_default_bug_eta;
-	private $_default_bug_priority;
-	private $_default_bug_projection;
-	private $_default_bug_reproducibility;
-	private $_default_bug_resolution;
-	private $_default_bug_severity;
-	private $_default_bug_steps_to_reproduce;
-	private $_default_bug_view_status;
-
 	private $_max_file_size;
 	private $_memory_limit;
 
@@ -134,17 +123,6 @@ class ERP_mailbox_api
 		$this->_email_separator1				= config_get( 'email_separator1' );
 		$this->_login_method					= config_get( 'login_method' );
 		$this->_use_ldap_email					= config_get( 'use_ldap_email' );
-
-		$this->_bug_submit_status				= config_get( 'bug_submit_status' );
-		$this->_default_bug_additional_info		= config_get( 'default_bug_additional_info' );
-		$this->_default_bug_eta					= config_get( 'default_bug_eta' );
-		$this->_default_bug_priority			= config_get( 'default_bug_priority' );
-		$this->_default_bug_projection			= config_get( 'default_bug_projection' );
-		$this->_default_bug_reproducibility		= config_get( 'default_bug_reproducibility', 10 );
-		$this->_default_bug_resolution			= config_get( 'default_bug_resolution' );
-		$this->_default_bug_severity			= config_get( 'default_bug_severity', 50 );
-		$this->_default_bug_steps_to_reproduce	= config_get( 'default_bug_steps_to_reproduce' );
-		$this->_default_bug_view_status			= config_get( 'default_bug_view_status' );
 
 		$this->_max_file_size					= (int) min( ini_get_number( 'upload_max_filesize' ), ini_get_number( 'post_max_size' ), config_get( 'max_file_size' ) );
 
@@ -595,7 +573,7 @@ class ERP_mailbox_api
 		}
 		else
 		{
-			$t_email[ 'Priority' ] = $this->_default_bug_priority;
+			$t_email[ 'Priority' ] = config_get( 'default_bug_priority' );
 		}
 
 		if ( $this->_mail_add_complete_email )
@@ -773,22 +751,22 @@ class ERP_mailbox_api
 			$t_bug_data->version				= '';
 			$t_bug_data->profile_id				= 0;
 			$t_bug_data->handler_id				= 0;
-			$t_bug_data->view_state				= (int) $this->_default_bug_view_status;
+			$t_bug_data->view_state				= (int) config_get( 'default_bug_view_status' );
 
 			$t_bug_data->category_id			= (int) $this->_mailbox[ 'global_category_id' ];
-			$t_bug_data->reproducibility		= (int) $this->_default_bug_reproducibility;
-			$t_bug_data->severity				= (int) $this->_default_bug_severity;
+			$t_bug_data->reproducibility		= (int) config_get( 'default_bug_reproducibility' );
+			$t_bug_data->severity				= (int) config_get( 'default_bug_severity' );
 			$t_bug_data->priority				= (int) $p_email[ 'Priority' ];
-			$t_bug_data->projection				= (int) $this->_default_bug_projection;
-			$t_bug_data->eta					= (int) $this->_default_bug_eta;
-			$t_bug_data->resolution				= $this->_default_bug_resolution;
-			$t_bug_data->status					= $this->_bug_submit_status;
+			$t_bug_data->projection				= (int) config_get( 'default_bug_projection' );
+			$t_bug_data->eta					= (int) config_get( 'default_bug_eta' );
+			$t_bug_data->resolution				= config_get( 'default_bug_resolution' );
+			$t_bug_data->status					= config_get( 'bug_submit_status' );
 			$t_bug_data->summary				= $p_email[ 'Subject' ];
 
 			$t_bug_data->description			= $this->add_additional_info( 'issue', $p_email, $p_email[ 'X-Mantis-Body' ] );
 
-			$t_bug_data->steps_to_reproduce		= $this->_default_bug_steps_to_reproduce;
-			$t_bug_data->additional_information	= $this->_default_bug_additional_info;
+			$t_bug_data->steps_to_reproduce		= config_get( 'default_bug_steps_to_reproduce' );
+			$t_bug_data->additional_information	= config_get( 'default_bug_additional_info' );
 			$t_bug_data->due_date				= date_get_null();
 
 			$t_bug_data->project_id				= $t_project_id;
