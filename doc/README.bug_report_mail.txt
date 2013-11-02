@@ -36,10 +36,10 @@ mailboxes form.
 
 Mail Reporters:
 There are two ways to receive mail with bug_report_mail:
-The secure (and default) way is to use a standard reporting user (see 
+The secure (and default) way is to use a standard reporting user (see
 plugin config page in mantis)
 
-The other way is to signup new user accounts automatically. (see plugin 
+The other way is to signup new user accounts automatically. (see plugin
 config page in mantis)
 Now, bug_report_mail will look for a user with a mail address identical
 to the from email address. If no user is found, then a new account will
@@ -58,7 +58,7 @@ Mail_mimeDecode package and enable the setting (see plugin config page
 in mantis)
 
 As can be seen in the "Sep 2009" changelog, this plugin now has a maximum
-size for attachments received by email. This however still requires 
+size for attachments received by email. This however still requires
 significant time for processing because of the mime decoding
 
 
@@ -67,10 +67,10 @@ For parsing HTML mails enable the setting (see plugin config page in mantis)
 
 
 Debug mode:
-For debugging controls there is a switch to add the complete email to the 
+For debugging controls there is a switch to add the complete email to the
 bug as an attachment (see plugin config page in mantis)
 
-If you like to see what bug_report_mail.php is doing, enable debug 
+If you like to see what bug_report_mail.php is doing, enable debug
 mode (see plugin config page in mantis)
 
 If debug mail directory is a valid directory and also writeable,
@@ -78,7 +78,7 @@ the complete mails will be saved to this directory.
 
 
 Fetching of emails:
-Its advisable to keep the mail fetch max at 1 since the parsing of mime 
+Its advisable to keep the mail fetch max at 1 since the parsing of mime
 content can use up a significant amount of memory. But this means that only
 one email will be retrieved every time bug_report_mail.php is executed
 
@@ -101,12 +101,12 @@ which would delete them permanently.
 
 Authenthication methods:
 With the auth method you may set the AUTH method for your POP3/IMAP server.
-Default is 'USER', but 'DIGEST-MD5','CRAM-MD5','LOGIN','PLAIN','APOP' 
+Default is 'USER', but 'DIGEST-MD5','CRAM-MD5','LOGIN','PLAIN','APOP'
 are also possible
 
 
 Priority of emails:
-For using the priority of the mails for the bug priority, enable the 
+For using the priority of the mails for the bug priority, enable the
 setting (see plugin config page in mantis)
 
 
@@ -120,7 +120,7 @@ config page in mantis)
 or via command line interface
 */5 *   *   *   * /usr/local/bin/php /path/to/mantis/plugins/EmailReporting/scripts/bug_report_mail.php
 
-This line fetches bug reports via POP3 or IMAP every 5 minutes. 
+This line fetches bug reports via POP3 or IMAP every 5 minutes.
 
 Windows or similar OS:
 Via webserver (see settings because this is disabled by default, see plugin
@@ -166,7 +166,7 @@ Inbox folder by default.
 
 
 IMAP folder names
-The very free format of project names needed to be mapped to a bit more 
+The very free format of project names needed to be mapped to a bit more
 restricted format for IMAP folder names. We took these steps, and it might
 lead to name collisions or folder names that are a tiny bit different from
 their project name counterparts (but we haven't had problems in practice).

@@ -60,7 +60,7 @@ class ERP_Mail_Parser
 			$this->_memory_limit = ini_get( 'memory_limit' );
 		}
 	}
-	
+
 	private function prepare_mb_list_encodings()
 	{
 		if ( extension_loaded( 'mbstring' ) )
@@ -340,7 +340,7 @@ class ERP_Mail_Parser
 			if (
 				count( $parts ) === 2 && !isset( $parts[ $i ]->parts ) && !isset( $parts[ $i+1 ]->parts ) &&
 				'text' === strtolower( $parts[ $i+1 ]->ctype_primary ) &&
-				in_array( strtolower( $parts[ $i+1 ]->ctype_secondary ), array( 'plain', 'html' ) ) && 
+				in_array( strtolower( $parts[ $i+1 ]->ctype_secondary ), array( 'plain', 'html' ) ) &&
 				strtolower( $parts[ $i ]->ctype_secondary ) !== strtolower( $parts[ $i+1 ]->ctype_secondary )
 			)
 			{
@@ -391,7 +391,7 @@ class ERP_Mail_Parser
 			}
 		}
 	}
-	
+
 	private function addPart( &$part, $p_alternative_name = NULL )
 	{
 		if ( $this->_add_attachments )

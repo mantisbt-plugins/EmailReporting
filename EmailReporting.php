@@ -5,7 +5,7 @@ class EmailReportingPlugin extends MantisPlugin
 {
 	/**
 	 *  A method that populates the plugin information and minimum requirements.
-	 */ 
+	 */
 	function register()
 	{
 		$this->name = plugin_lang_get( 'plugin_title' );
@@ -103,10 +103,10 @@ class EmailReportingPlugin extends MantisPlugin
 			'mail_fetch_max'				=> 1,
 
 			# Use the following text when the description is missing from the email
-			'mail_nodescription'			=> 'No description found', 
+			'mail_nodescription'			=> 'No description found',
 
 			# Use the following text when the subject is missing from the email
-			'mail_nosubject'				=> 'No subject found', 
+			'mail_nosubject'				=> 'No subject found',
 
 			# Parse HTML mails
 			'mail_parse_html'				=> ON,
@@ -164,7 +164,7 @@ class EmailReportingPlugin extends MantisPlugin
 			# OFF = it identifies the reporter using the email address of the sender
 			'mail_use_reporter'				=> ON,
 		);
-	} 
+	}
 
 	/**
 	 * EmailReporting installation function.
@@ -270,7 +270,7 @@ class EmailReportingPlugin extends MantisPlugin
 		return array( '<a href="' . plugin_page( 'manage_mailbox' ) . '">' . plugin_lang_get( 'manage' ) . ' ' . plugin_lang_get( 'plugin_title' ) . '</a>', );
 	}
 
-	/* 
+	/*
 	 * This function will run when the mantis core is ready
 	 */
 	function ERP_core_ready( )
@@ -280,10 +280,10 @@ class EmailReportingPlugin extends MantisPlugin
 		$this->ERP_check_mantisbt_url( );
 	}
 
-	/* 
+	/*
 	 * Since schema is not used anymore some corrections need to be applied
 	 * Schema will be completely reset by this just once
-	 * 
+	 *
 	 * The second part updates various configuration options and performs some cleaning
 	 * Further updates to the configuration options follow below
 	 *
@@ -532,7 +532,7 @@ class EmailReportingPlugin extends MantisPlugin
 		}
 	}
 
-	/* 
+	/*
 	 * Modifies indexes in an array based on given array
 	 */
 	function ERP_update_indexes( $p_array, $p_indexes )
@@ -551,7 +551,7 @@ class EmailReportingPlugin extends MantisPlugin
 		return( $t_array );
 	}
 
-	/* 
+	/*
 	 * Prepare mantisbt variable for use while bug_report_mail is running
 	 * This variable fixes the problem where when EmailReporting sends emails
 	 * that the url in the emails is incorrect

@@ -352,7 +352,7 @@ if ( !function_exists( 'constant_replace' ) )
 		elseif ( is_array( $p_def_value ) &&
 			(
 				( !in_array( $p_type, array( 'dropdown_multiselect', 'dropdown_multiselect_any', 'custom' ) ) ) ||
-				( in_array( $p_type, array( 'dropdown_multiselect', 'dropdown_multiselect_any', 'custom' ) ) && 
+				( in_array( $p_type, array( 'dropdown_multiselect', 'dropdown_multiselect_any', 'custom' ) ) &&
 					(
 						count( $p_def_value ) === 0 ||
 						array_values( $p_def_value ) !== $p_def_value

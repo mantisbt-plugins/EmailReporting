@@ -18,7 +18,7 @@ ERP_print_menu( $t_this_page );
 require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'doc/CHANGELOG.bug_report_mail.txt' );
 ?>
 </pre>
-	
+
 <?php
 html_page_bottom( __FILE__ );
 ?>

@@ -119,7 +119,7 @@ ERP_output_config_option( 'select_rule', 'submit' );
 ?>
 </table>
 <form>
-	
+
 <?php
 html_page_bottom( __FILE__ );
 ?>

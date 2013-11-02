@@ -316,11 +316,11 @@ class ERP_mailbox_api
 						for ( $i = 1; $i <= $t_numMsg; $i++ )
 						{
 							$t_emailresult = $this->process_single_email( $i );
-	
+
 							if ( $this->_mail_delete && $t_emailresult )
 							{
 								$t_deleteresult = $this->_mailserver->deleteMsg( $i );
-	
+
 								$this->pear_error( 'Attempt delete email', $t_deleteresult );
 							}
 						}
@@ -1096,10 +1096,10 @@ class ERP_mailbox_api
 			// fallback username
 			$t_username = strtolower( str_replace( array( '@', '.', '-' ), '_', $p_user_info[ 'email' ] ) );
 			$t_rand = '_' . mt_rand( 1000, 99999 );
-	
+
 			$t_username_validated = $this->validate_username( $t_username, $t_rand );
 		}
-		
+
 		return( $t_username_validated );
 	}
 
@@ -1206,7 +1206,7 @@ class ERP_mailbox_api
 		}
 
 		preg_match( $t_subject_id_regex, $p_mail_subject, $v_matches );
-		
+
 		if ( isset( $v_matches[ 'id' ] ) )
 		{
 			return( (int) $v_matches[ 'id' ] );
@@ -1214,7 +1214,7 @@ class ERP_mailbox_api
 
 		return( FALSE );
 	}
-	
+
 	# --------------------
 	# Saves the complete email to file
 	# Only works in debug mode
@@ -1307,7 +1307,7 @@ class ERP_mailbox_api
 		if ( $this->_mail_strip_signature && strlen( trim( $this->_mail_strip_signature_delim ) ) > 1 )
 		{
 			$t_parts = preg_split( '/((?:\r|\n||\n\r)' . $this->_mail_strip_signature_delim . '\s*(?:\r|\n||\n\r))/', $t_description, -1, PREG_SPLIT_DELIM_CAPTURE );
-			
+
 			if ( count( $t_parts ) > 2 ) // String should not start with the delimiter so that why we need at least 3 parts
 			{
 				array_pop( $t_parts );
@@ -1402,7 +1402,7 @@ class ERP_mailbox_api
 			log_event( LOG_LDAP, "ldap_get_entries() returned false." );
 			return null;
 		}
-	
+
 		# Free results / unbind
 		log_event( LOG_LDAP, "Unbinding from LDAP server" );
 		ldap_free_result( $t_sr );

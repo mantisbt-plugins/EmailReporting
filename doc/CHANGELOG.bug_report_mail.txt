@@ -227,7 +227,7 @@ Feb 2010 v3 - EmailReporting-0.7.7
 	- Separated README and CHANGELOG (libregeek)
 
 Feb 2010 v2 - EmailReporting-0.7.6
-	- If the incoming email address is present in database then update the corresponding user_id in mail_get_user(). This is true even if 'mail_use_reporter' is set (libregeek). 
+	- If the incoming email address is present in database then update the corresponding user_id in mail_get_user(). This is true even if 'mail_use_reporter' is set (libregeek).
 
 Feb 2010 - EmailReporting-0.7.5
 	- Configuration parameter to specify regular expressions for incoming email address (libregeek).
