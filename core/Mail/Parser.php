@@ -294,8 +294,8 @@ class ERP_Mail_Parser
 
 	private function setContentType( $primary, $secondary )
 	{
-		$this->_ctype['primary'] = $primary;
-		$this->_ctype['secondary'] = $secondary;
+		$this->_ctype['primary'] = strtolower( $primary );
+		$this->_ctype['secondary'] = strtolower( $secondary );
 	}
 
 	private function setBody( $body, $ctype_primary, $ctype_secondary, $charset )
@@ -331,7 +331,7 @@ class ERP_Mail_Parser
 			$p_attached_email_subject = $parts[ $i ]->headers[ 'subject' ];
 		}
 
-		if ( 'text' === $parts[ $i ]->ctype_primary && in_array( $parts[ $i ]->ctype_secondary, array( 'plain', 'html' ) ) )
+		if ( 'text' === strtolower( $parts[ $i ]->ctype_primary ) && in_array( strtolower( $parts[ $i ]->ctype_secondary ), array( 'plain', 'html' ) ) )
 		{
 			$t_stop_part = FALSE;
 
@@ -339,12 +339,12 @@ class ERP_Mail_Parser
 			// It must only have 2 parts. Most likely one is text/html and one is text/plain
 			if (
 				count( $parts ) === 2 && !isset( $parts[ $i ]->parts ) && !isset( $parts[ $i+1 ]->parts ) &&
-				'text' === $parts[ $i+1 ]->ctype_primary &&
-				in_array( $parts[ $i+1 ]->ctype_secondary, array( 'plain', 'html' ) ) && 
-				$parts[ $i ]->ctype_secondary !== $parts[ $i+1 ]->ctype_secondary
+				'text' === strtolower( $parts[ $i+1 ]->ctype_primary ) &&
+				in_array( strtolower( $parts[ $i+1 ]->ctype_secondary ), array( 'plain', 'html' ) ) && 
+				strtolower( $parts[ $i ]->ctype_secondary ) !== strtolower( $parts[ $i+1 ]->ctype_secondary )
 			)
 			{
-				if ( $parts[ $i ]->ctype_secondary !== 'plain' )
+				if ( strtolower( $parts[ $i ]->ctype_secondary ) !== 'plain' )
 				{
 					$i++;
 				}
@@ -377,11 +377,11 @@ class ERP_Mail_Parser
 
 		for ( $i; $i < count( $parts ); $i++ )
 		{
-			if ( 'multipart' == $parts[ $i ]->ctype_primary )
+			if ( 'multipart' === strtolower( $parts[ $i ]->ctype_primary ) )
 			{
 				$this->setParts( $parts[ $i ]->parts, $attachment, $p_attached_email_subject );
 			}
-			elseif ( $this->_add_attachments && 'message' == $parts[ $i ]->ctype_primary && $parts[ $i ]->ctype_secondary === 'rfc822' )
+			elseif ( $this->_add_attachments && 'message' === strtolower( $parts[ $i ]->ctype_primary ) && strtolower( $parts[ $i ]->ctype_secondary ) === 'rfc822' )
 			{
 				$this->setParts( $parts[ $i ]->parts, TRUE );
 			}
@@ -409,9 +409,9 @@ class ERP_Mail_Parser
 			{
 				$p[ 'name' ] = $this->custom_substr( $part->headers[ 'content-type' ], 'name="', '"' );
 			}
-			elseif ( 'text' == $part->ctype_primary && in_array( $part->ctype_secondary, array( 'plain', 'html' ) ) && !empty( $p_alternative_name ) )
+			elseif ( 'text' == strtolower( $part->ctype_primary ) && in_array( strtolower( $part->ctype_secondary ), array( 'plain', 'html' ) ) && !empty( $p_alternative_name ) )
 			{
-				$p[ 'name' ] = $p_alternative_name . ( ( $part->ctype_secondary === 'plain' ) ? '.txt' : '.html' );
+				$p[ 'name' ] = $p_alternative_name . ( ( strtolower( $part->ctype_secondary ) === 'plain' ) ? '.txt' : '.html' );
 			}
 
 			$p[ 'body' ] = $part->body;
