@@ -29,7 +29,7 @@ class ERP_mailbox_api
 	public $_mailbox = array( 'description' => 'INITIALIZATION PHASE' );
 
 	private $_mailserver = NULL;
-	private $_result = FALSE;
+	private $_result = TRUE;
 
 	private $_default_ports = array(
 		'POP3' => array( 'normal' => 110, 'encrypted' => 995 ),
@@ -254,6 +254,8 @@ class ERP_mailbox_api
 	{
 		if ( PEAR::isError( $p_pear ) )
 		{
+			$this->_result = &$p_pear;
+
 			if ( !$this->_test_only )
 			{
 				echo "\n\n" . 'Mailbox: ' . $this->_mailbox[ 'description' ] . "\n" . 'Location: ' . $p_location . "\n" . $p_pear->toString() . "\n";
@@ -270,18 +272,19 @@ class ERP_mailbox_api
 	# --------------------
 	# Show non-pear error
 	#  set $this->result to an array with the error or show it
-	private function custom_error( $p_error_text )
+	private function custom_error( $p_error_text, $p_is_error = TRUE )
 	{
 		$t_error_text = 'Message: ' . $p_error_text . "\n";
 
-		if ( $this->_test_only )
+		if ( $p_is_error === TRUE )
 		{
 			$this->_result = array(
 				'ERROR_TYPE'	=> 'NON-PEAR-ERROR',
 				'ERROR_MESSAGE'	=> $t_error_text,
 			);
 		}
-		else
+
+		if ( !$this->_test_only )
 		{
 			echo "\n\n" . 'Mailbox: ' . $this->_mailbox[ 'description' ] . "\n" . $t_error_text;
 		}
@@ -293,13 +296,13 @@ class ERP_mailbox_api
 	{
 		$this->_mailserver = new Net_POP3();
 
-		$this->_result = $this->_mailserver->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ] );
+		$t_connectresult = $this->_mailserver->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ] );
 
-		if ( $this->_result === TRUE )
+		if ( $t_connectresult === TRUE )
 		{
-			$this->mailbox_login();
+			$t_loginresult = $this->mailbox_login();
 
-			if ( $this->_test_only === FALSE && !$this->pear_error( 'Attempt login', $this->_result ) )
+			if ( $this->_test_only === FALSE && !$this->pear_error( 'Attempt login', $t_loginresult ) )
 			{
 				if ( project_get_field( $this->_mailbox[ 'project_id' ], 'enabled' ) == TRUE )
 				{
@@ -310,13 +313,13 @@ class ERP_mailbox_api
 
 						for ( $i = 1; $i <= $t_numMsg; $i++ )
 						{
-							$t_result = $this->process_single_email( $i );
+							$t_emailresult = $this->process_single_email( $i );
 	
-							if ( $this->_mail_delete && $t_result )
+							if ( $this->_mail_delete && $t_emailresult )
 							{
-								$this->_result = $this->_mailserver->deleteMsg( $i );
+								$t_deleteresult = $this->_mailserver->deleteMsg( $i );
 	
-								$this->pear_error( 'Attempt delete email', $this->_result );
+								$this->pear_error( 'Attempt delete email', $t_deleteresult );
 							}
 						}
 					}
@@ -343,9 +346,9 @@ class ERP_mailbox_api
 
 		if ( $this->_mailserver->_connected === TRUE )
 		{
-			$this->mailbox_login();
+			$t_loginresult = $this->mailbox_login();
 
-			if ( !$this->pear_error( 'Attempt login', $this->_result ) )
+			if ( !$this->pear_error( 'Attempt login', $t_loginresult ) )
 			{
 				// If basefolder is empty we try to select the inbox folder
 				if ( is_blank( $this->_mailbox[ 'imap_basefolder' ] ) )
@@ -386,6 +389,7 @@ class ERP_mailbox_api
 										$this->_mailserver->selectMailbox( $t_foldername );
 
 										$t_numMsg = $this->_mailserver->numMsg();
+
 										if ( !$this->pear_error( 'Retrieve number of messages', $t_numMsg ) )
 										{
 											// check_fetch_max not performed here as $t_numMsg could contain emails marked as deleted.
@@ -401,13 +405,13 @@ class ERP_mailbox_api
 												}
 												else
 												{
-													$t_result = $this->process_single_email( $i, (int) $t_project[ 'id' ] );
+													$t_emailresult = $this->process_single_email( $i, (int) $t_project[ 'id' ] );
 
-													if ( $t_result === TRUE )
+													if ( $t_emailresult === TRUE )
 													{
-														$this->_result = $this->_mailserver->deleteMsg( $i );
+														$t_deleteresult = $this->_mailserver->deleteMsg( $i );
 
-														$this->pear_error( 'Attempt delete email', $this->_result );
+														$this->pear_error( 'Attempt delete email', $t_deleteresult );
 													}
 												}
 											}
@@ -452,7 +456,7 @@ class ERP_mailbox_api
 		$t_mailbox_password = base64_decode( $this->_mailbox[ 'erp_password' ] );
 		$t_mailbox_auth_method = $this->_mailbox[ 'auth_method' ];
 
-		$this->_result = $this->_mailserver->login( $t_mailbox_username, $t_mailbox_password, $t_mailbox_auth_method );
+		return( $this->_mailserver->login( $t_mailbox_username, $t_mailbox_password, $t_mailbox_auth_method ) );
 	}
 
 	# --------------------
@@ -471,10 +475,7 @@ class ERP_mailbox_api
 				$this->custom_error( 'Retrieved message was empty. Either an invalid message ID was passed or there is a problem with one of the required PEAR packages' );
 			}
 
-			if ( $this->pear_error( 'Retrieve raw message', $t_msg ) )
-			{
-				$this->_result = $t_msg;
-			}
+			$this->pear_error( 'Retrieve raw message', $t_msg );
 
 			return( FALSE );
 		}
@@ -664,17 +665,17 @@ class ERP_mailbox_api
 				$t_reporter_name = user_get_field( $t_reporter_id, 'username' );
 			}
 
-			$t_result = auth_attempt_script_login( $t_reporter_name );
+			$t_authattemptresult = auth_attempt_script_login( $t_reporter_name );
 
 			# last attempt for fallback
-			if ( $t_result === FALSE && $this->_mail_fallback_mail_reporter && $t_reporter_id != $this->_mail_reporter_id && user_is_enabled( $this->_mail_reporter_id ) )
+			if ( $t_authattemptresult === FALSE && $this->_mail_fallback_mail_reporter && $t_reporter_id != $this->_mail_reporter_id && user_is_enabled( $this->_mail_reporter_id ) )
 			{
 				$t_reporter_id = $this->_mail_reporter_id;
 				$t_reporter_name = user_get_field( $t_reporter_id, 'username' );
-				$t_result = auth_attempt_script_login( $t_reporter_name );
+				$t_authattemptresult = auth_attempt_script_login( $t_reporter_name );
 			}
 
-			if ( $t_result === TRUE )
+			if ( $t_authattemptresult === TRUE )
 			{
 				user_update_last_visit( $t_reporter_id );
 
@@ -858,7 +859,7 @@ class ERP_mailbox_api
 			return;
 		}
 
-		$this->custom_error( 'Reporter: ' . $p_email[ 'Reporter_id' ] . ' - ' . $p_email[ 'From_parsed' ][ 'email' ] . ' --> Issue ID: #' . $t_bug_id );
+		$this->custom_error( 'Reporter: ' . $p_email[ 'Reporter_id' ] . ' - ' . $p_email[ 'From_parsed' ][ 'email' ] . ' --> Issue ID: #' . $t_bug_id, FALSE );
 
 		$this->show_memory_usage( 'Finished add bug' );
 
@@ -1299,13 +1300,12 @@ class ERP_mailbox_api
 	{
 		if ( !$this->_test_only && $this->_mail_debug && $this->_mail_debug_show_memory_usage )
 		{
-			$this->custom_error( 'Debug output memory usage' . "\n" .
+			echo 'Debug output memory usage' . "\n" .
 				'Location: Mail API - ' . $p_location . "\n" .
 				'Current memory usage: ' . ERP_formatbytes( memory_get_usage( FALSE ) ) . ' / ' . $this->_memory_limit . "\n" .
 				'Peak memory usage: ' . ERP_formatbytes( memory_get_peak_usage( FALSE ) ) . ' / ' . $this->_memory_limit . "\n" .
 				'Current real memory usage: ' . ERP_formatbytes( memory_get_usage( TRUE ) ) . ' / ' . $this->_memory_limit . "\n" .
-				'Peak real memory usage: ' . ERP_formatbytes( memory_get_peak_usage( TRUE ) ) . ' / ' . $this->_memory_limit . "\n"
-			);
+				'Peak real memory usage: ' . ERP_formatbytes( memory_get_peak_usage( TRUE ) ) . ' / ' . $this->_memory_limit . "\n";
 		}
 	}
 }

@@ -440,7 +440,7 @@ class ERP_Mail_Parser
 	{
 		if ( $this->_debug && $this->_show_mem_usage )
 		{
-			echo "\n" . 'Debug output memory usage' . "\n" .
+			echo 'Debug output memory usage' . "\n" .
 				'Location: Mail Parser - ' . $p_location . "\n" .
 				'Current memory usage: ' . ERP_formatbytes( memory_get_usage( FALSE ) ) . ' / ' . $this->_memory_limit . "\n" .
 				'Peak memory usage: ' . ERP_formatbytes( memory_get_peak_usage( FALSE ) ) . ' / ' . $this->_memory_limit . "\n" .
