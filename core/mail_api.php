@@ -73,7 +73,6 @@ class ERP_mailbox_api
 
 	private $_allow_file_upload;
 	private $_file_upload_method;
-	private $_bug_resolved_status_threshold;
 	private $_email_separator1;
 	private $_login_method;
 	private $_use_ldap_email;
@@ -123,7 +122,6 @@ class ERP_mailbox_api
 
 		$this->_allow_file_upload				= config_get( 'allow_file_upload' );
 		$this->_file_upload_method				= config_get( 'file_upload_method' );
-		$this->_bug_resolved_status_threshold	= config_get( 'bug_resolved_status_threshold' );
 		$this->_email_separator1				= config_get( 'email_separator1' );
 		$this->_login_method					= config_get( 'login_method' );
 		$this->_use_ldap_email					= config_get( 'use_ldap_email' );
@@ -724,9 +722,7 @@ class ERP_mailbox_api
 			# Core mantis event already exists within bugnote_add function
 			$t_description = event_signal( 'EVENT_ERP_BUGNOTE_DATA', $t_description, $t_bug_id );
 
-			$t_status = bug_get_field( $t_bug_id, 'status' );
-
-			if ( $this->_bug_resolved_status_threshold <= $t_status )
+			if ( bug_is_resolved( $t_bug_id ) )
 			{
 				# Reopen issue and add a bug note
 				bug_reopen( $t_bug_id, $t_description );

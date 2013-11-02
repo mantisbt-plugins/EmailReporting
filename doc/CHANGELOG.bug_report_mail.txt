@@ -82,6 +82,7 @@ Jan 2011 - EmailReporting-0.9.0-DEV
 	- Moved several default issue configuration options from _construct to add_bug function to accommodate project specific configuration options
 	- Improved general error handling methods
 	- Added strip_signature option (based on work from manilal)
+	- Changed bug re-open logic (based on work from rolfkleef)
 
 Nov 2010 - EmailReporting-0.8.4
 	- Improved the project category list
