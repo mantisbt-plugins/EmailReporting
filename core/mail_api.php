@@ -63,8 +63,8 @@ class ERP_mailbox_api
 	private $_mail_reporter_id;
 	private $_mail_save_from;
 	private $_mail_save_subject_in_note;
-	private $_mail_strip_signature
-	private $_mail_strip_signature_delim
+	private $_mail_strip_signature;
+	private $_mail_strip_signature_delim;
 	private $_mail_subject_id_regex;
 	private $_mail_use_bug_priority;
 	private $_mail_use_reporter;
