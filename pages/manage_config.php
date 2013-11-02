@@ -133,6 +133,11 @@ ERP_output_config_option( 'mail_use_bug_priority', 'boolean' );
 ERP_output_config_option( 'mail_bug_priority', 'string_multiline' );
 
 ERP_output_config_option( NULL, 'empty' );
+ERP_output_config_option( 'strip_signature_feature_options', 'header' );
+ERP_output_config_option( 'mail_strip_signature', 'boolean' );
+ERP_output_config_option( 'mail_strip_signature_delim', 'string' );
+
+ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'default_texts_options', 'header' );
 ERP_output_config_option( 'mail_nosubject', 'string' );
 ERP_output_config_option( 'mail_nodescription', 'string' );

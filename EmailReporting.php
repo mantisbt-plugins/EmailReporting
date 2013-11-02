@@ -147,6 +147,12 @@ class EmailReportingPlugin extends MantisPlugin
 			# via a webserver?
 			'mail_secured_script'			=> ON,
 
+			#Removes the signature that are delimited by mail_strip_signature_delim
+			'mail_strip_signature'			=> OFF,
+
+			#Removes the signature that are delimited by --
+			'mail_strip_signature_delim'	=> '--',
+
 			# Which regex should be used for finding the issue id in the subject
 			'mail_subject_id_regex'			=> 'strict',
 

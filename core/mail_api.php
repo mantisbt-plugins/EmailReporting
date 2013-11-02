@@ -63,6 +63,8 @@ class ERP_mailbox_api
 	private $_mail_reporter_id;
 	private $_mail_save_from;
 	private $_mail_save_subject_in_note;
+	private $_mail_strip_signature
+	private $_mail_strip_signature_delim
 	private $_mail_subject_id_regex;
 	private $_mail_use_bug_priority;
 	private $_mail_use_reporter;
@@ -108,6 +110,8 @@ class ERP_mailbox_api
 		$this->_mail_reporter_id				= plugin_config_get( 'mail_reporter_id' );
 		$this->_mail_save_from					= plugin_config_get( 'mail_save_from' );
 		$this->_mail_save_subject_in_note		= plugin_config_get( 'mail_save_subject_in_note' );
+		$this->_mail_strip_signature			= plugin_config_get( 'mail_strip_signature' );
+		$this->_mail_strip_signature_delim		= plugin_config_get( 'mail_strip_signature_delim' );
 		$this->_mail_subject_id_regex			= plugin_config_get( 'mail_subject_id_regex' );
 		$this->_mail_use_bug_priority			= plugin_config_get( 'mail_use_bug_priority' );
 		$this->_mail_use_reporter				= plugin_config_get( 'mail_use_reporter' );
@@ -713,6 +717,7 @@ class ERP_mailbox_api
 			$t_description = $p_email[ 'X-Mantis-Body' ];
 
 			$t_description = $this->identify_replies( $t_description );
+			$t_description = $this->strip_signature( $t_description );
 			$t_description = $this->add_additional_info( 'note', $p_email, $t_description );
 
 			# Event integration
@@ -764,7 +769,10 @@ class ERP_mailbox_api
 			$t_bug_data->status					= config_get( 'bug_submit_status' );
 			$t_bug_data->summary				= $p_email[ 'Subject' ];
 
-			$t_bug_data->description			= $this->add_additional_info( 'issue', $p_email, $p_email[ 'X-Mantis-Body' ] );
+			$t_description = $p_email[ 'X-Mantis-Body' ];
+			$t_description = $this->strip_signature( $t_description );
+			$t_description = $this->add_additional_info( 'issue', $p_email, $t_description );
+			$t_bug_data->description			= $t_description;
 
 			$t_bug_data->steps_to_reproduce		= config_get( 'default_bug_steps_to_reproduce' );
 			$t_bug_data->additional_information	= config_get( 'default_bug_additional_info' );
@@ -1292,6 +1300,27 @@ class ERP_mailbox_api
 		}
 
 		return( $t_additional_info . $p_description );
+	}
+
+	# --------------------
+	# Strip signature from the mail body. Only removes the last part set by the delimiter
+	private function strip_signature( $p_description )
+	{
+		$t_description = $p_description;
+
+		if ( $this->_mail_strip_signature && strlen( trim( $this->_mail_strip_signature_delim ) ) > 1 )
+		{
+			$t_parts = preg_split( '/((?:\r|\n||\n\r)' . $this->_mail_strip_signature_delim . '\s*(?:\r|\n||\n\r))/', $t_description, -1, PREG_SPLIT_DELIM_CAPTURE );
+			
+			if ( count( $t_parts ) > 2 ) // String should not start with the delimiter so that why we need at least 3 parts
+			{
+				array_pop( $t_parts );
+				array_pop( $t_parts );
+				$t_description = implode( '', $t_parts );
+			}
+		}
+
+		return( $t_description );
 	}
 
 	# --------------------
