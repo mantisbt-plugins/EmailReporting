@@ -21,6 +21,7 @@ $s_plugin_EmailReporting_rule_conditions = 'Conditions';
 $s_plugin_EmailReporting_rule_actions = 'Actions';
 $s_plugin_EmailReporting_rule_exceptions = 'Exceptions';
 
+$s_plugin_EmailReporting_attachment_feature_options = 'Attachments configuration options';
 $s_plugin_EmailReporting_debug_options = 'Debug configuration options';
 $s_plugin_EmailReporting_default_texts_options = 'Default texts configuration options';
 $s_plugin_EmailReporting_feature_options = 'Feature configuration options';
@@ -40,6 +41,8 @@ $s_plugin_EmailReporting_mail_add_bug_reports = 'Create new issues';
 $s_plugin_EmailReporting_mail_add_bugnotes = 'Add notes';
 $s_plugin_EmailReporting_mail_add_complete_email = 'Add the complete email into the attachments';
 $s_plugin_EmailReporting_mail_auto_signup = 'Signup new users automatically (possible security risk!, see documentation)';
+$s_plugin_EmailReporting_mail_block_attachments_md5 = 'Block attachments matching these MD5 hashes';
+$s_plugin_EmailReporting_mail_block_attachments_logging = 'Log blocked attachments in the "Rejected files" list';
 $s_plugin_EmailReporting_mail_bug_priority = 'Classify bug priorities';
 $s_plugin_EmailReporting_mail_debug = 'Debug mode';
 $s_plugin_EmailReporting_mail_debug_directory = 'Save email contents to this directory if debug mode is activated';

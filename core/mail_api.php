@@ -44,6 +44,8 @@ class ERP_mailbox_api
 	private $_mail_add_bugnotes;
 	private $_mail_add_complete_email;
 	private $_mail_auto_signup;
+	private $_mail_block_attachments_md5;
+	private $_mail_block_attachments_logging;
 	private $_mail_bug_priority;
 	private $_mail_debug;
 	private $_mail_debug_directory;
@@ -90,6 +92,8 @@ class ERP_mailbox_api
 		$this->_mail_add_bugnotes				= plugin_config_get( 'mail_add_bugnotes' );
 		$this->_mail_add_complete_email			= plugin_config_get( 'mail_add_complete_email' );
 		$this->_mail_auto_signup				= plugin_config_get( 'mail_auto_signup' );
+		$this->_mail_block_attachments_md5		= plugin_config_get( 'mail_block_attachments_md5' );
+		$this->_mail_block_attachments_logging	= plugin_config_get( 'mail_block_attachments_logging' );
 		$this->_mail_bug_priority				= plugin_config_get( 'mail_bug_priority' );
 		$this->_mail_debug						= plugin_config_get( 'mail_debug' );
 		$this->_mail_debug_directory			= plugin_config_get( 'mail_debug_directory' );
@@ -922,6 +926,8 @@ class ERP_mailbox_api
 			$t_part_name = md5( microtime() ) . '.erp';
 		}
 
+		$t_body_md5 = ( ( !empty( $this->_mail_block_attachments_md5 ) ) ? md5( $p_part[ 'body' ] ) : NULL );
+
 		if ( !file_type_check( $t_part_name ) )
 		{
 			return( $t_part_name . ' = filetype not allowed' . "\n" );
@@ -933,6 +939,17 @@ class ERP_mailbox_api
 		elseif ( $t_strlen_body > $this->_max_file_size )
 		{
 			return( $t_part_name . ' = attachment size exceeds maximum allowed file size (' . $t_strlen_body . ' / ' . $this->_max_file_size . ')' . "\n" );
+		}
+		elseif ( in_array( $t_body_md5, $this->_mail_block_attachments_md5, TRUE ) )
+		{
+			if ( $this->_mail_block_attachments_logging )
+			{
+				return( $t_part_name . ' = attachment refused as it matched the md5 on the attachment blocklist (' . $t_body_md5 . ')' . "\n" );
+			}
+			else
+			{
+				return( TRUE );
+			}
 		}
 		else
 		{

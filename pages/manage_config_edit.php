@@ -9,6 +9,8 @@ $f_gpc = array(
 	'mail_add_bugnotes'				=> gpc_get_int( 'mail_add_bugnotes' ),
 	'mail_add_complete_email'		=> gpc_get_int( 'mail_add_complete_email' ),
 	'mail_auto_signup'				=> gpc_get_int( 'mail_auto_signup' ),
+	'mail_block_attachments_md5'	=> array_map( 'strtolower', array_filter( array_map( 'trim', explode( "\n", str_replace( array( "\r\n", "\r" ), "\n", gpc_get_string( 'mail_block_attachments_md5' ) ) ) ) ) ),
+	'mail_block_attachments_logging'=> gpc_get_int( 'mail_block_attachments_logging' ),
 	'mail_debug'					=> gpc_get_int( 'mail_debug' ),
 	'mail_debug_directory'			=> ERP_prepare_directory_string( gpc_get_string( 'mail_debug_directory' ) ),
 	'mail_debug_show_memory_usage'	=> gpc_get_int( 'mail_debug_show_memory_usage' ),
@@ -38,7 +40,7 @@ $f_gpc = array(
 	'mail_use_reporter'				=> gpc_get_int( 'mail_use_reporter' ),
 );
 
-$f_mail_bug_priority				= gpc_get_string( 'mail_bug_priority' );
+$f_mail_bug_priority				= 'array (' . "\n" . gpc_get_string( 'mail_bug_priority' ) . "\n" . ')';
 
 foreach ( $f_gpc AS $t_key => $t_value )
 {

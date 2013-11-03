@@ -55,6 +55,12 @@ class EmailReportingPlugin extends MantisPlugin
 			# fallback to the mail_reporter account above
 			'mail_auto_signup'				=> OFF,
 
+			# List of md5 hashes of attachments which will be blocked.
+			'mail_block_attachments_md5'	=> array(),
+
+			# Log blocked attachments in the rejected files list
+			'mail_block_attachments_logging'=> ON,
+
 			# Classify bug priorities
 			'mail_bug_priority'				=> array(
 				'5 (lowest)'	=> '10',
@@ -72,7 +78,7 @@ class EmailReportingPlugin extends MantisPlugin
 				'normal'		=> '30',
 				'high'			=> '40',
 				''		=> '30',
-				'?'		=> '30'
+				'?'		=> '30',
 			),
 
 			# Used for debugging the system.

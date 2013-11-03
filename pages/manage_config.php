@@ -130,7 +130,12 @@ ERP_output_config_option( 'mail_subject_id_regex', 'dropdown', NULL, 'print_desc
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'priority_feature_options', 'header' );
 ERP_output_config_option( 'mail_use_bug_priority', 'boolean' );
-ERP_output_config_option( 'mail_bug_priority', 'string_multiline' );
+ERP_output_config_option( 'mail_bug_priority', 'string_multiline_array' );
+
+ERP_output_config_option( NULL, 'empty' );
+ERP_output_config_option( 'attachment_feature_options', 'header' );
+ERP_output_config_option( 'mail_block_attachments_md5', 'string_multiline' );
+ERP_output_config_option( 'mail_block_attachments_logging', 'boolean' );
 
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'strip_signature_feature_options', 'header' );

@@ -451,6 +451,7 @@ if ( !function_exists( 'constant_replace' ) )
 			case 'integer':
 			case 'string':
 			case 'string_multiline':
+			case 'string_multiline_array':
 			case 'string_password':
 			case 'dropdown':
 			case 'dropdown_any':
@@ -531,12 +532,25 @@ if ( !function_exists( 'constant_replace' ) )
 						break;
 
 					case 'string_multiline':
+					case 'string_multiline_array':
 ?>
 	<td class="center" width="40%" colspan="2">
 		<textarea <?php echo helper_get_tab_index() ?> cols="40" rows="6" name="<?php echo $t_input_name ?>"><?php
 						if ( is_array( $t_value ) )
 						{
-							echo string_textarea( var_export( $t_value, TRUE ) );
+							if ( $p_type === 'string_multiline_array' )
+							{
+								$t_string_array = var_export( $t_value, TRUE );
+								$t_string_array = array_map( 'trim', explode( "\n", $t_string_array ) );
+								array_shift( $t_string_array );
+								array_pop( $t_string_array );
+								$t_string_array = implode( "\n", $t_string_array );
+							}
+							else
+							{
+								$t_string_array = implode( "\n", $t_value );
+							}
+							echo string_textarea( $t_string_array );
 						}
 						else
 						{
