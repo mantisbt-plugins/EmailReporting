@@ -344,15 +344,15 @@ if ( !function_exists( 'constant_replace' ) )
 	function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, $p_function_name = NULL, $p_function_parameter = NULL )
 	{
 		// $p_def_value has special purposes when it contains certain values. See below
-		if ( $p_def_value === NULL && !is_blank( $p_name ) && !in_array( $p_type, array( 'empty', 'header', 'submit' ) ) )
+		if ( $p_def_value === NULL && !is_blank( $p_name ) && !in_array( $p_type, array( 'empty', 'header', 'submit' ), TRUE ) )
 		{
 			$t_value = plugin_config_get( $p_name );
 		}
 		// Need to catch the instance where $p_def_value is an array for dropdown_multiselect (_any)
 		elseif ( is_array( $p_def_value ) &&
 			(
-				( !in_array( $p_type, array( 'dropdown_multiselect', 'dropdown_multiselect_any', 'custom' ) ) ) ||
-				( in_array( $p_type, array( 'dropdown_multiselect', 'dropdown_multiselect_any', 'custom' ) ) &&
+				( !in_array( $p_type, array( 'dropdown_multiselect', 'dropdown_multiselect_any', 'custom' ), TRUE ) ) ||
+				( in_array( $p_type, array( 'dropdown_multiselect', 'dropdown_multiselect_any', 'custom' ), TRUE ) &&
 					(
 						count( $p_def_value ) === 0 ||
 						array_values( $p_def_value ) !== $p_def_value
@@ -727,7 +727,7 @@ if ( !function_exists( 'constant_replace' ) )
 			$t_supported_encryptions = array( 'None', 'SSL', 'SSLv2', 'SSLv3', 'TLS' );
 			foreach ( $t_supported_encryptions AS $t_encryption )
 			{
-				if ( $t_encryption === 'None' || in_array( strtolower( $t_encryption ), $t_socket_transports ) )
+				if ( $t_encryption === 'None' || in_array( strtolower( $t_encryption ), $t_socket_transports, TRUE ) )
 				{
 ?>
 			<option<?php check_selected( $p_sel_value, $t_encryption ) ?>><?php echo string_attribute( $t_encryption ) ?></option>

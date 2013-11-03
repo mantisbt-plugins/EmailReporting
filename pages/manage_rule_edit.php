@@ -27,7 +27,7 @@ if ( $f_rule_action === 'add' || $f_rule_action === 'copy' || ( ( $f_rule_action
 
 		# Only update the field if it would have been display for editing
 		if( !( ( !$f_update_mode && $t_def['require_' . $t_custom_status_label] ) ||
-						( !$f_update_mode && $t_def['display_' . $t_custom_status_label] && in_array( $t_custom_status_label, array( "resolved", "closed" ) ) ) ||
+						( !$f_update_mode && $t_def['display_' . $t_custom_status_label] && in_array( $t_custom_status_label, array( "resolved", "closed" ), TRUE ) ) ||
 						( $f_update_mode && $t_def['display_update'] ) ||
 						( $f_update_mode && $t_def['require_update'] ) ) ) {
 			continue;

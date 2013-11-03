@@ -331,7 +331,7 @@ class ERP_Mail_Parser
 			$p_attached_email_subject = $parts[ $i ]->headers[ 'subject' ];
 		}
 
-		if ( 'text' === strtolower( $parts[ $i ]->ctype_primary ) && in_array( strtolower( $parts[ $i ]->ctype_secondary ), array( 'plain', 'html' ) ) )
+		if ( 'text' === strtolower( $parts[ $i ]->ctype_primary ) && in_array( strtolower( $parts[ $i ]->ctype_secondary ), array( 'plain', 'html' ), TRUE ) )
 		{
 			$t_stop_part = FALSE;
 
@@ -340,7 +340,7 @@ class ERP_Mail_Parser
 			if (
 				count( $parts ) === 2 && !isset( $parts[ $i ]->parts ) && !isset( $parts[ $i+1 ]->parts ) &&
 				'text' === strtolower( $parts[ $i+1 ]->ctype_primary ) &&
-				in_array( strtolower( $parts[ $i+1 ]->ctype_secondary ), array( 'plain', 'html' ) ) &&
+				in_array( strtolower( $parts[ $i+1 ]->ctype_secondary ), array( 'plain', 'html' ), TRUE ) &&
 				strtolower( $parts[ $i ]->ctype_secondary ) !== strtolower( $parts[ $i+1 ]->ctype_secondary )
 			)
 			{
@@ -409,7 +409,7 @@ class ERP_Mail_Parser
 			{
 				$p[ 'name' ] = $this->custom_substr( $part->headers[ 'content-type' ], 'name="', '"' );
 			}
-			elseif ( 'text' == strtolower( $part->ctype_primary ) && in_array( strtolower( $part->ctype_secondary ), array( 'plain', 'html' ) ) && !empty( $p_alternative_name ) )
+			elseif ( 'text' == strtolower( $part->ctype_primary ) && in_array( strtolower( $part->ctype_secondary ), array( 'plain', 'html' ), TRUE ) && !empty( $p_alternative_name ) )
 			{
 				$p[ 'name' ] = $p_alternative_name . ( ( strtolower( $part->ctype_secondary ) === 'plain' ) ? '.txt' : '.html' );
 			}
