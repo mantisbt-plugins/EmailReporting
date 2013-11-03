@@ -90,8 +90,8 @@ ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'mailbox_settings_issue', 'header' );
 ERP_output_config_option( 'project_id', 'dropdown', $t_mailbox, 'print_projects_option_list' );
 ERP_output_config_option( 'global_category_id', 'dropdown', $t_mailbox, 'print_global_category_option_list' );
-ERP_output_config_option( 'link_rules', 'dropdown_multiselect', $t_mailbox, 'print_descriptions_option_list', $t_rules );
-ERP_output_config_option( 'recorddisabled', 'empty' );
+//ERP_output_config_option( 'link_rules', 'dropdown_multiselect', $t_mailbox, 'print_descriptions_option_list', $t_rules ); // Should we use this here or from the rules page?
+//ERP_output_config_option( 'recorddisabled', 'empty' );
 
 event_signal( 'EVENT_ERP_OUTPUT_MAILBOX_FIELDS', $f_select_mailbox );
 
