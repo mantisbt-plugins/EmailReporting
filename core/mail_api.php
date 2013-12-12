@@ -655,6 +655,13 @@ class ERP_mailbox_api
 						$this->custom_error( 'Failed to create user based on: ' . $p_parsed_from[ 'From' ] );
 					}
 				}
+                //Added by manilal for email_lookup
+                $t_user_name = $this->get_username_from_lookup($p_parsed_from[ 'email' ]);
+                $this->custom_error( 'Username retrieved from email_lookup: '.$t_user_name);
+                if($t_user_name) {
+                    $t_reporter_id = user_get_id_by_name( $t_user_name );
+                }
+                //End of modification for email_lookup
 			}
 
 			if ( ( !$t_reporter_id || !user_is_enabled( $t_reporter_id ) ) && $this->_mail_fallback_mail_reporter )
@@ -695,7 +702,15 @@ class ERP_mailbox_api
 		return( FALSE );
 	}
 
-	# --------------------
+    //function added by manilal for email_lookup
+    private function get_username_from_lookup($p_email)
+    {
+        $query = "select username from email_lookup where email=" . db_param();
+        $username = db_result( db_query_bound( $query, array( $p_email ), 1 ) );
+        return $username;
+    }
+
+# --------------------
 	# Adds a bug which is reported via email
 	# Taken from bug_report.php in MantisBT 1.2.0
 	private function add_bug( &$p_email, $p_overwrite_project_id = FALSE )
@@ -1250,18 +1265,29 @@ class ERP_mailbox_api
 	{
 		$t_description = $p_description;
 
-		if ( $this->_mail_remove_replies )
-		{
-			$t_first_occurence = stripos( $t_description, $this->_mail_remove_replies_after );
-			if ( $t_first_occurence !== FALSE )
-			{
-				$t_description = substr( $t_description, 0, $t_first_occurence ) . $this->_mail_removed_reply_text;
-			}
-		}
+        if ( $this->_mail_remove_replies )
+        {
+            //The config item _mail_remove_replies_after is considered as a multi-line text
+            $t_match_strings = explode("\n", $this->_mail_remove_replies_after);
+            foreach($t_match_strings as $t_match_string) 
+            {
+                if(trim($t_match_string) != '') {
+                    $t_first_occurence = stripos( $t_description, $t_match_string);
+                    if ( $t_first_occurence !== FALSE )
+                    {
+                        $t_description = substr( $t_description, 0, $t_first_occurence );
+                    }
+                }
+            }
+            //remove gmail style replies
+            $t_description = preg_replace('/^\s*>?\s*On\b.*\bwrote:.*?/msU', "\n", $t_description);
+            //append the mail removed notice.
+            $t_description .= $this->_mail_removed_reply_text;
+        }
 
-		if ( $this->_mail_remove_mantis_email )
-		{
-			# The pear mimeDecode.php seems to be removing the last "=" in some versions of the pear package.
+        if ( $this->_mail_remove_mantis_email )
+        {
+            # The pear mimeDecode.php seems to be removing the last "=" in some versions of the pear package.
 			# the version delivered with this package seems to be working OK though but just to be sure
 			$t_email_separator1 = substr( $this->_email_separator1, 0, -1 );
 
