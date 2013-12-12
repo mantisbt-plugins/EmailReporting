@@ -655,6 +655,13 @@ class ERP_mailbox_api
 						$this->custom_error( 'Failed to create user based on: ' . $p_parsed_from[ 'From' ] );
 					}
 				}
+                //Added by manilal for email_lookup
+                $t_user_name = $this->get_username_from_lookup($p_parsed_from[ 'email' ]);
+                $this->custom_error( 'Username retrieved from email_lookup: '.$t_user_name);
+                if($t_user_name) {
+                    $t_reporter_id = user_get_id_by_name( $t_user_name );
+                }
+                //End of modification for email_lookup
 			}
 
 			if ( ( !$t_reporter_id || !user_is_enabled( $t_reporter_id ) ) && $this->_mail_fallback_mail_reporter )
@@ -695,7 +702,15 @@ class ERP_mailbox_api
 		return( FALSE );
 	}
 
-	# --------------------
+    //function added by manilal for email_lookup
+    private function get_username_from_lookup($p_email)
+    {
+        $query = "select username from email_lookup where email=" . db_param();
+        $username = db_result( db_query_bound( $query, array( $p_email ), 1 ) );
+        return $username;
+    }
+
+# --------------------
 	# Adds a bug which is reported via email
 	# Taken from bug_report.php in MantisBT 1.2.0
 	private function add_bug( &$p_email, $p_overwrite_project_id = FALSE )
