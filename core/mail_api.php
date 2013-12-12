@@ -1250,18 +1250,27 @@ class ERP_mailbox_api
 	{
 		$t_description = $p_description;
 
-		if ( $this->_mail_remove_replies )
-		{
-			$t_first_occurence = stripos( $t_description, $this->_mail_remove_replies_after );
-			if ( $t_first_occurence !== FALSE )
-			{
-				$t_description = substr( $t_description, 0, $t_first_occurence ) . $this->_mail_removed_reply_text;
-			}
-		}
+        if ( $this->_mail_remove_replies )
+        {
+            //The config item _mail_remove_replies_after is considered as a multi-line text
+            $t_match_strings = explode("\n", $this->_mail_remove_replies_after);
+            foreach($t_match_strings as $t_match_string) 
+            {
+                print $t_match_string. "<hr>";
+                if(trim($t_match_string) != '') {
+                    $t_first_occurence = stripos( $t_description, $t_match_string);
+                    if ( $t_first_occurence !== FALSE )
+                    {
+                        $t_description = substr( $t_description, 0, $t_first_occurence ) . $this->_mail_removed_reply_text;
+                        //break;
+                    }
+                }
+            }
+        }
 
-		if ( $this->_mail_remove_mantis_email )
-		{
-			# The pear mimeDecode.php seems to be removing the last "=" in some versions of the pear package.
+        if ( $this->_mail_remove_mantis_email )
+        {
+            # The pear mimeDecode.php seems to be removing the last "=" in some versions of the pear package.
 			# the version delivered with this package seems to be working OK though but just to be sure
 			$t_email_separator1 = substr( $this->_email_separator1, 0, -1 );
 
