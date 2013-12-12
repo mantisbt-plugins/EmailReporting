@@ -1265,7 +1265,7 @@ class ERP_mailbox_api
                 }
             }
             //remove gmail style replies
-            $t_description = preg_replace('/^\s*>?\s*On\b.*\bwrote:.*?/msU', '', $t_description);
+            $t_description = preg_replace('/^\s*>?\s*On\b.*\bwrote:.*?/msU', "\n", $t_description);
             //append the mail removed notice.
             $t_description .= $this->_mail_removed_reply_text;
         }
