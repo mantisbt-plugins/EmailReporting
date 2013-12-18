@@ -29,7 +29,7 @@ class EmailReportingPlugin extends MantisPlugin
 	{
 		return array(
 			'config_version'				=> 0,
-			'schema'						=> -1,
+			'schema'						=> 1,
 			'path_erp'						=> config_get_global( 'plugin_path' ) . plugin_get_current() . DIRECTORY_SEPARATOR,
 			'job_users'						=> array(),
 
@@ -574,5 +574,21 @@ class EmailReportingPlugin extends MantisPlugin
 				plugin_config_set( 'mail_mantisbt_url_fix', $t_path );
 			}
 		}
-	}
+    }
+
+    /*
+     * Database table to store the Message-ID to detect the replies
+     * This is to implement #0016719
+     */
+    function schema() {
+        return array(
+                array( 'CreateTableSQL', array( plugin_table( 'msgids' ), "
+                        id              I       NOTNULL UNSIGNED ZEROFILL AUTOINCREMENT PRIMARY,
+                        issue_id        I       NOTNULL UNSIGNED ZEROFILL,
+                        msg_id          C(255)  NOTNULL
+                        " )
+                    ),
+                 array( 'CreateIndexSQL', array( 'idx_erp_msgids_msgid', plugin_table( 'msgids' ), 'msg_id', array( 'UNIQUE' ) ) ),
+                );
+    }
 }
