@@ -1259,11 +1259,21 @@ class ERP_mailbox_api
 
 		if ( $this->_mail_remove_replies )
 		{
-			$t_first_occurence = stripos( $t_description, $this->_mail_remove_replies_after );
-			if ( $t_first_occurence !== FALSE )
-			{
-				$t_description = substr( $t_description, 0, $t_first_occurence ) . $this->_mail_removed_reply_text;
-			}
+            //Plugin config item mail_remove_replies_after is considered as a multi-line text
+            $t_match_strings = explode("\n", $this->_mail_remove_replies_after);
+
+            foreach($t_match_strings as $t_match_string) 
+            {
+                if(trim($t_match_string) != '') 
+                {
+			        $t_first_occurence = stripos( $t_description, $t_match_string );
+
+                    if ( $t_first_occurence !== FALSE )
+                    {
+                        $t_description = substr( $t_description, 0, $t_first_occurence ) . $this->_mail_removed_reply_text;
+                    }
+			    }
+            }
 		}
 
 		if ( $this->_mail_remove_mantis_email )
