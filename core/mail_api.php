@@ -1330,7 +1330,7 @@ class ERP_mailbox_api
 
 		if ( $this->_mail_strip_signature && strlen( trim( $this->_mail_strip_signature_delim ) ) > 1 )
 		{
-			$t_parts = preg_split( '/((?:\r|\n||\n\r)' . $this->_mail_strip_signature_delim . '\s*(?:\r|\n||\n\r))/', $t_description, -1, PREG_SPLIT_DELIM_CAPTURE );
+			$t_parts = preg_split( '/((?:\r|\n|\n\r)' . $this->_mail_strip_signature_delim . '\s*(?:\r|\n|\n\r))/', $t_description, -1, PREG_SPLIT_DELIM_CAPTURE );
 
 			if ( count( $t_parts ) > 2 ) // String should not start with the delimiter so that why we need at least 3 parts
 			{
