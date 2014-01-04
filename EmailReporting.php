@@ -28,6 +28,7 @@ class EmailReportingPlugin extends MantisPlugin
 	function config()
 	{
 		return array(
+			'reset_schema'					=> 0,
 			'config_version'				=> 0,
 			'schema'						=> -1,
 			'path_erp'						=> config_get_global( 'plugin_path' ) . plugin_get_current() . DIRECTORY_SEPARATOR,
@@ -326,12 +327,12 @@ class EmailReportingPlugin extends MantisPlugin
 			}
 
 			$t_schema = plugin_config_get( 'schema' );
-			if ( $t_schema !== -1 )
+			$t_reset_schema = plugin_config_get( 'reset_schema' );
+			if ( $t_schema !== -1 && $t_reset_schema === 0 )
 			{
 				plugin_config_set( 'schema', -1 );
+				plugin_config_set( 'reset_schema', 1 );
 			}
-
-			plugin_config_delete( 'reset_schema' );
 
 			plugin_config_set( 'config_version', 1 );
 		}
@@ -535,6 +536,13 @@ class EmailReportingPlugin extends MantisPlugin
 			plugin_config_delete( 'mail_encoding' );
 
 			plugin_config_set( 'config_version', 12 );
+		}
+
+		if ( $t_config_version <= 12 )
+		{
+			plugin_config_set( 'reset_schema', 1 );
+
+			plugin_config_set( 'config_version', 13 );
 		}
 	}
 
