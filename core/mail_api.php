@@ -859,6 +859,8 @@ class ERP_mailbox_api
 			event_signal( 'EVENT_REPORT_BUG', array( $t_bug_data, $t_bug_id ) );
 
 			email_new_bug( $t_bug_id );
+
+			ERP_set_temporary_overwrite( 'project_override', NULL );
 		}
 		else
 		{
