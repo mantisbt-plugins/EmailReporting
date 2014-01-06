@@ -859,6 +859,8 @@ class ERP_mailbox_api
 			event_signal( 'EVENT_REPORT_BUG', array( $t_bug_data, $t_bug_id ) );
 
 			email_new_bug( $t_bug_id );
+
+			ERP_set_temporary_overwrite( 'project_override', NULL );
 		}
 		else
 		{
@@ -1340,7 +1342,7 @@ class ERP_mailbox_api
 
 		if ( $this->_mail_strip_signature && strlen( trim( $this->_mail_strip_signature_delim ) ) > 1 )
 		{
-			$t_parts = preg_split( '/((?:\r|\n||\n\r)' . $this->_mail_strip_signature_delim . '\s*(?:\r|\n||\n\r))/', $t_description, -1, PREG_SPLIT_DELIM_CAPTURE );
+			$t_parts = preg_split( '/((?:\r|\n|\n\r)' . $this->_mail_strip_signature_delim . '\s*(?:\r|\n|\n\r))/', $t_description, -1, PREG_SPLIT_DELIM_CAPTURE );
 
 			if ( count( $t_parts ) > 2 ) // String should not start with the delimiter so that why we need at least 3 parts
 			{
