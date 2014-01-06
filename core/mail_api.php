@@ -1262,7 +1262,7 @@ class ERP_mailbox_api
 		if ( $this->_mail_remove_replies )
 		{
             //Plugin config item mail_remove_replies_after is considered as a multi-line text
-            $t_match_strings = explode("\n", $this->_mail_remove_replies_after);
+            $t_match_strings = explode("\r\n", $this->_mail_remove_replies_after);
 
             foreach($t_match_strings as $t_match_string) 
             {
