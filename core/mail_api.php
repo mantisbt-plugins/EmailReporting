@@ -61,6 +61,7 @@ class ERP_mailbox_api
 	private $_mail_remove_mantis_email;
 	private $_mail_remove_replies;
 	private $_mail_remove_replies_after;
+	private $_mail_strip_gmail_style_replies;
 	private $_mail_removed_reply_text;
 	private $_mail_reporter_id;
 	private $_mail_save_from;
@@ -109,6 +110,7 @@ class ERP_mailbox_api
 		$this->_mail_remove_mantis_email		= plugin_config_get( 'mail_remove_mantis_email' );
 		$this->_mail_remove_replies				= plugin_config_get( 'mail_remove_replies' );
 		$this->_mail_remove_replies_after		= plugin_config_get( 'mail_remove_replies_after' );
+		$this->_mail_strip_gmail_style_replies	= plugin_config_get( 'mail_strip_gmail_style_replies' );
 		$this->_mail_removed_reply_text			= plugin_config_get( 'mail_removed_reply_text' );
 		$this->_mail_reporter_id				= plugin_config_get( 'mail_reporter_id' );
 		$this->_mail_save_from					= plugin_config_get( 'mail_save_from' );
@@ -1268,7 +1270,10 @@ class ERP_mailbox_api
 			}
     
             //remove gmail style replies
-            $t_description = preg_replace('/^\s*>?\s*On\b.*\bwrote:.*?/msU', "\n", $t_description);
+            if($this->_mail_strip_gmail_style_replies)
+            {
+                $t_description = preg_replace('/^\s*>?\s*On\b.*\bwrote:.*?/msU', "\n", $t_description);
+            }
 
             //append the mail removed notice.
             $t_description .= $this->_mail_removed_reply_text;
