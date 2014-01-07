@@ -722,6 +722,9 @@ class ERP_mailbox_api
 			$t_description = $this->strip_signature( $t_description );
 			$t_description = $this->add_additional_info( 'note', $p_email, $t_description );
 
+			$t_project_id = bug_get_field( $t_bug_id, 'project_id' );
+			ERP_set_temporary_overwrite( 'project_override', $t_project_id );
+
 			# Event integration
 			# Core mantis event already exists within bugnote_add function
 			$t_description = event_signal( 'EVENT_ERP_BUGNOTE_DATA', $t_description, $t_bug_id );
@@ -731,7 +734,7 @@ class ERP_mailbox_api
 				# Reopen issue and add a bug note
 				bug_reopen( $t_bug_id, $t_description );
 			}
-			elseif ( !is_blank( $t_description ) )
+			else
 			{
 				# Add a bug note
 				bugnote_add( $t_bug_id, $t_description );
@@ -859,8 +862,6 @@ class ERP_mailbox_api
 			event_signal( 'EVENT_REPORT_BUG', array( $t_bug_data, $t_bug_id ) );
 
 			email_new_bug( $t_bug_id );
-
-			ERP_set_temporary_overwrite( 'project_override', NULL );
 		}
 		else
 		{
@@ -911,8 +912,10 @@ class ERP_mailbox_api
 			}
 		}
 
+		ERP_set_temporary_overwrite( 'project_override', NULL );
+
 		$this->show_memory_usage( 'Finished processing attachments' );
-}
+	}
 
 	# --------------------
 	# Very dirty: Adds a file to a bug.
