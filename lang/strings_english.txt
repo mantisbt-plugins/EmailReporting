@@ -59,6 +59,7 @@ $s_plugin_EmailReporting_mail_preferred_username = 'Preferred username for new u
 $s_plugin_EmailReporting_mail_preferred_realname = 'Preferred realname for new user creations';
 $s_plugin_EmailReporting_mail_remove_mantis_email = 'Remove MantisBT notification emails from replies.';
 $s_plugin_EmailReporting_mail_remove_replies = 'Remove all replies from notes';
+$s_plugin_EmailReporting_mail_strip_gmail_style_replies = 'Remove Gmail style replies (English only) from notes (mail_remove_replies should be YES)';
 $s_plugin_EmailReporting_mail_remove_replies_after = 'Use this text to identify the start of a reply';
 $s_plugin_EmailReporting_mail_removed_reply_text = 'Use this text if replies have been removed from the email';
 $s_plugin_EmailReporting_mail_reporter_id = 'The default / fallback reporter user for issues created by email';

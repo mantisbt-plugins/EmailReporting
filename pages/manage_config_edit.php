@@ -26,6 +26,7 @@ $f_gpc = array(
     'mail_preferred_realname'       => gpc_get_string( 'mail_preferred_realname' ),
 	'mail_remove_mantis_email'		=> gpc_get_int( 'mail_remove_mantis_email' ),
 	'mail_remove_replies'			=> gpc_get_int( 'mail_remove_replies' ),
+	'mail_strip_gmail_style_replies'=> gpc_get_int( 'mail_strip_gmail_style_replies' ),
 	'mail_remove_replies_after'		=> gpc_get_string( 'mail_remove_replies_after' ),
 	'mail_removed_reply_text'		=> gpc_get_string( 'mail_removed_reply_text' ),
 	'mail_reporter_id'				=> gpc_get_int( 'mail_reporter_id' ),
