@@ -171,8 +171,8 @@ class EmailReportingPlugin extends MantisPlugin
 			# OFF = it identifies the reporter using the email address of the sender
 			'mail_use_reporter'				=> ON,
 
-            //Strip Gmail style replies from body of the message
-            'mail_strip_gmail_style_replies' => OFF,
+			//Strip Gmail style replies from body of the message
+			'mail_strip_gmail_style_replies'	=> OFF,
 		);
 	}
 
