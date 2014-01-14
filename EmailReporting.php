@@ -29,7 +29,7 @@ class EmailReportingPlugin extends MantisPlugin
 	{
 		return array(
 			'config_version'				=> 0,
-			'schema'						=> 1,
+			'schema'						=> -1,
 			'path_erp'						=> config_get_global( 'plugin_path' ) . plugin_get_current() . DIRECTORY_SEPARATOR,
 			'job_users'						=> array(),
 
@@ -583,8 +583,8 @@ class EmailReportingPlugin extends MantisPlugin
     function schema() {
         return array(
                 array( 'CreateTableSQL', array( plugin_table( 'msgids' ), "
-                        id              I       NOTNULL UNSIGNED ZEROFILL AUTOINCREMENT PRIMARY,
-                        issue_id        I       NOTNULL UNSIGNED ZEROFILL,
+                        id              I       UNSIGNED NOTNULL PRIMARY AUTOINCREMENT,
+                        issue_id        I       UNSIGNED NOTNULL,
                         msg_id          C(255)  NOTNULL
                         " )
                     ),

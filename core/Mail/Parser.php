@@ -327,10 +327,7 @@ class ERP_Mail_Parser
 
     private function setMessageId( $p_messageid )
     {
-        $regex = '<(.*?)>';
-        if(preg_match_all ("/".$regex."/is", $p_messageid, $matches)){
-            $this->_messageid = $matches[1][0];
-        }
+        $this->_messageid = trim( $p_messageid );
     }
 
     private function setReferences( $p_references )
@@ -338,20 +335,14 @@ class ERP_Mail_Parser
         $t_references = explode(' ', $p_references);
         $references = array();
         foreach($t_references as $t_reference) {
-            $regex = '<(.*?)>';
-            if(preg_match_all ("/".$regex."/is", $t_reference, $matches)){
-                $references[] = $matches[1][0];
-            }
+            $references[] = trim( $t_reference );
         }
         $this->_references = $references;
     }
 
     private function setInReplyTo( $p_inreplyto )
     {
-        $regex = '<(.*?)>';
-        if(preg_match_all ("/".$regex."/is", $p_inreplyto, $matches)){
-            $this->_inreplyto = $matches[1][0];
-        }
+        $this->_inreplyto = trim( $p_inreplyto );
     }
 
 	private function setContentType( $primary, $secondary )
