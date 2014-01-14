@@ -70,6 +70,7 @@ class ERP_mailbox_api
 	private $_mail_subject_id_regex;
 	private $_mail_use_bug_priority;
 	private $_mail_use_reporter;
+	private $_mail_use_message_id;
 
 	private $_mp_options = array();
 
@@ -118,6 +119,7 @@ class ERP_mailbox_api
 		$this->_mail_subject_id_regex			= plugin_config_get( 'mail_subject_id_regex' );
 		$this->_mail_use_bug_priority			= plugin_config_get( 'mail_use_bug_priority' );
 		$this->_mail_use_reporter				= plugin_config_get( 'mail_use_reporter' );
+		$this->_mail_use_message_id				= plugin_config_get( 'mail_use_message_id' );
 
 		$this->_mp_options[ 'add_attachments' ]	= config_get( 'allow_file_upload' );
 		$this->_mp_options[ 'debug' ]			= $this->_mail_debug;
@@ -746,7 +748,9 @@ class ERP_mailbox_api
 				# Add a bug note
 				bugnote_add( $t_bug_id, $t_description );
                 //Add the message-id to the database
-                $this->add_msg_id($t_bug_id, $p_email['Message-ID']);
+                if( $this->_mail_use_message_id ) {
+                    $this->add_msg_id($t_bug_id, $p_email['Message-ID']);
+                }
 			}
 		}
 		elseif ( $this->_mail_add_bug_reports )
@@ -829,7 +833,9 @@ class ERP_mailbox_api
 			$t_bug_id = $t_bug_data->create();
 
             //Add the message to msgids table
-            $this->add_msg_id($t_bug_id, $p_email['Message-ID']);
+            if( $this->_mail_use_message_id ) {
+                $this->add_msg_id($t_bug_id, $p_email['Message-ID']);
+            }
 
 			// @TODO@ Disabled for now but possibly needed for other future features
 			# Handle custom field submission
@@ -1215,12 +1221,14 @@ class ERP_mailbox_api
 		}
 
         //Get the ids from Mail References(header)
-        $t_bug_id = $this->get_bug_id_from_references($p_references);
+        if( $this->_mail_use_message_id ) {
+            $t_bug_id = $this->get_bug_id_from_references($p_references);
 
-		if ( $t_bug_id !== FALSE && bug_exists( $t_bug_id ) )
-		{
-			return( $t_bug_id );
-		}
+            if ( $t_bug_id !== FALSE && bug_exists( $t_bug_id ) )
+            {
+                return( $t_bug_id );
+            }
+        }
         
 		return( FALSE );
 	}

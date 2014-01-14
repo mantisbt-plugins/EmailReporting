@@ -38,6 +38,7 @@ $f_gpc = array(
 	'mail_subject_id_regex'			=> gpc_get_string( 'mail_subject_id_regex' ),
 	'mail_use_bug_priority'			=> gpc_get_int( 'mail_use_bug_priority' ),
 	'mail_use_reporter'				=> gpc_get_int( 'mail_use_reporter' ),
+	'mail_use_message_id'				=> gpc_get_int( 'mail_use_message_id' ),
 );
 
 $f_mail_bug_priority				= 'array (' . "\n" . gpc_get_string( 'mail_bug_priority' ) . "\n" . ')';
