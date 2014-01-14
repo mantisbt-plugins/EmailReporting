@@ -880,6 +880,8 @@ class ERP_mailbox_api
 			event_signal( 'EVENT_REPORT_BUG', array( $t_bug_data, $t_bug_id ) );
 
 			email_new_bug( $t_bug_id );
+
+			ERP_set_temporary_overwrite( 'project_override', NULL );
 		}
 		else
 		{
@@ -1299,10 +1301,17 @@ class ERP_mailbox_api
 	# Only works in debug mode
 	private function save_message_to_file( $message_type, &$p_msg )
 	{
-		if ( $this->_mail_debug && is_dir( $this->_mail_debug_directory ) && is_writeable( $this->_mail_debug_directory ) )
+		if ( $this->_mail_debug )
 		{
-			$t_file_name = $this->_mail_debug_directory . $message_type . '_' . time() . '_' . md5( microtime() );
-			file_put_contents( $t_file_name, ( ( is_array( $p_msg ) ) ? var_export( $p_msg, TRUE ) : $p_msg ) );
+			if ( is_dir( $this->_mail_debug_directory ) && is_writeable( $this->_mail_debug_directory ) )
+			{
+				$t_file_name = $this->_mail_debug_directory . '/' . $message_type . '_' . time() . '_' . md5( microtime() );
+				file_put_contents( $t_file_name, ( ( is_array( $p_msg ) ) ? var_export( $p_msg, TRUE ) : $p_msg ) );
+			}
+			else
+			{
+				$this->custom_error( 'Mail debug directory does not exist or is not writable.', FALSE );
+			}
 		}
 	}
 
@@ -1385,7 +1394,7 @@ class ERP_mailbox_api
 
 		if ( $this->_mail_strip_signature && strlen( trim( $this->_mail_strip_signature_delim ) ) > 1 )
 		{
-			$t_parts = preg_split( '/((?:\r|\n||\n\r)' . $this->_mail_strip_signature_delim . '\s*(?:\r|\n||\n\r))/', $t_description, -1, PREG_SPLIT_DELIM_CAPTURE );
+			$t_parts = preg_split( '/((?:\r|\n|\n\r)' . $this->_mail_strip_signature_delim . '\s*(?:\r|\n|\n\r))/', $t_description, -1, PREG_SPLIT_DELIM_CAPTURE );
 
 			if ( count( $t_parts ) > 2 ) // String should not start with the delimiter so that why we need at least 3 parts
 			{
