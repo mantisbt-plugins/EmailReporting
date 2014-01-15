@@ -173,6 +173,9 @@ class EmailReportingPlugin extends MantisPlugin
 
 			//Strip Gmail style replies from body of the message
 			'mail_strip_gmail_style_replies'	=> OFF,
+
+			// Add users from Cc and To field in mail header
+			'mail_add_users_from_cc_to'	=> OFF,
 		);
 	}
 

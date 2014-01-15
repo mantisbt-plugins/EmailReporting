@@ -23,6 +23,8 @@ class ERP_Mail_Parser
 	private $_body;
 	private $_parts = array();
 	private $_ctype = array();
+	private $_cc = array();
+	private $_to = array();
 
 	private $_mb_list_encodings = array();
 
@@ -230,6 +232,16 @@ class ERP_Mail_Parser
 		return( $this->_from );
 	}
 
+	public function to()
+	{
+		return( $this->_to );
+	}
+
+	public function cc()
+	{
+		return( $this->_cc );
+	}
+
 	public function subject()
 	{
 		return( $this->_subject );
@@ -275,6 +287,13 @@ class ERP_Mail_Parser
 		{
 			$this->setParts( $structure->parts );
 		}
+
+		$this->setTo( $structure->headers['to'] );
+        
+ 		if ( isset( $structure->headers['cc'] ) )
+ 		{
+			$this->setCc( $structure->headers['cc'] );
+		}
 	}
 
 	private function setFrom( $from )
@@ -285,6 +304,24 @@ class ERP_Mail_Parser
 	private function setSubject( $subject )
 	{
 		$this->_subject = $this->process_header_encoding( $subject );
+	}
+
+	private function setTo( $p_to )
+	{
+        $regex = '<(.*?)>';
+        if(preg_match_all ("/".$regex."/is", $p_to, $matches))
+        {
+            $this->_to = $matches[1];
+        }
+	}
+
+	private function setCc( $p_cc )
+	{
+        $regex = '<(.*?)>';
+        if(preg_match_all ("/".$regex."/is", $p_cc, $matches))
+        {
+            $this->_cc = $matches[1];
+        }
 	}
 
 	private function setPriority( $priority )

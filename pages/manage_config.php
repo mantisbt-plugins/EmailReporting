@@ -127,6 +127,7 @@ ERP_output_config_option( 'mail_email_receive_own', 'boolean' );
 ERP_output_config_option( 'mail_save_from', 'boolean' );
 ERP_output_config_option( 'mail_save_subject_in_note', 'boolean' );
 ERP_output_config_option( 'mail_subject_id_regex', 'dropdown', NULL, 'print_descriptions_option_list', array( 'strict', 'balanced', 'relaxed' ) );
+ERP_output_config_option( 'mail_add_users_from_cc_to', 'boolean' );
 
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'priority_feature_options', 'header' );
