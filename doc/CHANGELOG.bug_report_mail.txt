@@ -86,6 +86,7 @@ Nov 2013 - EmailReporting-0.9.0-DEV
 	- Parser fix for uppercase ctypes (based on work from rolfkleef)
 	- Attachment blocking added based on a md5 hash list
 	- Added feature to remove Gmail style replies in notes
+	- Added feature to add users from Cc and To list of mail header to issue monitoring list
 
 Nov 2010 - EmailReporting-0.8.4
 	- Improved the project category list
