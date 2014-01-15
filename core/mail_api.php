@@ -870,8 +870,6 @@ class ERP_mailbox_api
 
 			email_new_bug( $t_bug_id );
 
-            //Add the users in Cc and To list in mail header
-            $this->add_monitors( $t_bug_id, $p_email );
 		}
 		else
 		{
@@ -921,6 +919,9 @@ class ERP_mailbox_api
 				}
 			}
 		}
+
+        //Add the users in Cc and To list in mail header
+        $this->add_monitors( $t_bug_id, $p_email );
 
 		ERP_set_temporary_overwrite( 'project_override', NULL );
 
@@ -1386,14 +1387,20 @@ class ERP_mailbox_api
     // Add monitors from Cc and To fields in mail header
     private function add_monitors( $p_bug_id, $p_email )
     {
-        if ( $this->_mail_add_users_from_cc_to) {
+        if ( $this->_mail_add_users_from_cc_to) 
+        {
             $t_emails = array_merge($p_email[ 'To' ], $p_email[ 'Cc' ] );
-            foreach($t_emails as $t_email) {
+            foreach($t_emails as $t_email) 
+            {
                 $t_user_id =  $this->get_user(array('email' => $t_email));
-                // Make sure that mail_reporter_id is not added as a monitor.
-                if( $this->_mail_reporter_id != $t_user_id)
-                {
-                    bug_monitor( $p_bug_id, $t_user_id );
+               
+                if( $t_user_id !== FALSE) 
+                { 
+                    // Make sure that mail_reporter_id is not added as a monitor.
+                    if( $this->_mail_reporter_id != $t_user_id)
+                    {
+                        bug_monitor( $p_bug_id, $t_user_id );
+                    }
                 }
             }
         }
