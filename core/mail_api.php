@@ -1392,6 +1392,8 @@ class ERP_mailbox_api
             $t_emails = array_merge($p_email[ 'To' ], $p_email[ 'Cc' ] );
             foreach($t_emails as $t_email) 
             {
+                // TODO get_user sets $t_email in script_login. this should actually be the reporter.
+                // Need to refactor get_user() or define new method
                 $t_user_id =  $this->get_user(array('email' => $t_email));
                
                 if( $t_user_id !== FALSE) 
