@@ -604,7 +604,7 @@ class ERP_mailbox_api
 
 	# --------------------
 	# return the user id for the mail reporting user
-	private function get_user( $p_parsed_from )
+	private function get_user( $p_parsed_from, $p_script_login=true )
 	{
 		if ( $this->_mail_use_reporter )
 		{
@@ -671,30 +671,37 @@ class ERP_mailbox_api
 			}
 		}
 
-		if ( $t_reporter_id && user_is_enabled( $t_reporter_id ) )
-		{
-			if ( !isset( $t_reporter_name ) )
-			{
-				$t_reporter_name = user_get_field( $t_reporter_id, 'username' );
-			}
+        if( $p_script_login )
+        {
+            if ( $t_reporter_id && user_is_enabled( $t_reporter_id ) )
+            {
+                if ( !isset( $t_reporter_name ) )
+                {
+                    $t_reporter_name = user_get_field( $t_reporter_id, 'username' );
+                }
 
-			$t_authattemptresult = auth_attempt_script_login( $t_reporter_name );
+                $t_authattemptresult = auth_attempt_script_login( $t_reporter_name );
 
-			# last attempt for fallback
-			if ( $t_authattemptresult === FALSE && $this->_mail_fallback_mail_reporter && $t_reporter_id != $this->_mail_reporter_id && user_is_enabled( $this->_mail_reporter_id ) )
-			{
-				$t_reporter_id = $this->_mail_reporter_id;
-				$t_reporter_name = user_get_field( $t_reporter_id, 'username' );
-				$t_authattemptresult = auth_attempt_script_login( $t_reporter_name );
-			}
+                # last attempt for fallback
+                if ( $t_authattemptresult === FALSE && $this->_mail_fallback_mail_reporter && $t_reporter_id != $this->_mail_reporter_id && user_is_enabled( $this->_mail_reporter_id ) )
+                {
+                    $t_reporter_id = $this->_mail_reporter_id;
+                    $t_reporter_name = user_get_field( $t_reporter_id, 'username' );
+                    $t_authattemptresult = auth_attempt_script_login( $t_reporter_name );
+                }
 
-			if ( $t_authattemptresult === TRUE )
-			{
-				user_update_last_visit( $t_reporter_id );
+                if ( $t_authattemptresult === TRUE )
+                {
+                    user_update_last_visit( $t_reporter_id );
 
-				return( (int) $t_reporter_id );
-			}
-		}
+                    return( (int) $t_reporter_id );
+                }
+            }
+        } 
+        else 
+        {
+                    return( (int) $t_reporter_id );
+        }
 
 		// Normally this function does not get here unless all else failed
 		$this->custom_error( 'Could not get a valid reporter. Email will be ignored' );
@@ -1394,7 +1401,7 @@ class ERP_mailbox_api
             {
                 // TODO get_user sets $t_email in script_login. this should actually be the reporter.
                 // Need to refactor get_user() or define new method
-                $t_user_id =  $this->get_user(array('email' => $t_email));
+                $t_user_id =  $this->get_user(array('email' => $t_email), false);
                
                 if( $t_user_id !== FALSE) 
                 { 
