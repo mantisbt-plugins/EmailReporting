@@ -1275,6 +1275,7 @@ class ERP_mailbox_api
         {
             $query = "SELECT issue_id FROM ". plugin_table('msgids')." WHERE msg_id=" . db_param();
             $t_bug_id = db_result( db_query_bound( $query, array( $p_reference ), 1 ) );
+
             if($t_bug_id!== FALSE) 
             {
                 break;
@@ -1288,12 +1289,38 @@ class ERP_mailbox_api
      */
     private function add_msg_id($p_bug_id, $p_msg_id)
     {
-        $query = "INSERT
-                INTO ".plugin_table('msgids')."
-                ( id, issue_id, msg_id )
-                VALUES
-                ( null, '$p_bug_id', '$p_msg_id')";
-        return db_query( $query );
+        //Check whether the msg_id is already in the database table
+        $query = "SELECT issue_id FROM ". plugin_table('msgids')." WHERE msg_id=" . db_param();
+        $t_master_bug_id = db_result( db_query_bound( $query, array( $p_msg_id ), 1 ) );
+
+        if( $t_master_bug_id!== FALSE )
+        {
+            // Add relationship to exisiting bug
+            $t_rel_type = BUG_RELATED;
+
+            // update master bug last updated
+            bug_update_date( $t_master_bug_id );
+
+            // Add the relationship
+            relationship_add( $p_bug_id, $t_master_bug_id, $t_rel_type );
+
+            // Add log line to the history (both issues)
+            history_log_event_special( $t_master_bug_id, BUG_ADD_RELATIONSHIP, relationship_get_complementary_type( $t_rel_type ), $p_bug_id );
+            history_log_event_special( $p_bug_id, BUG_ADD_RELATIONSHIP, $t_rel_type, $t_master_bug_id );
+
+            // Send the email notification
+            email_relationship_added( $t_master_bug_id, $p_bug_id, relationship_get_complementary_type( $t_rel_type ) );    
+        }
+        else
+        {
+            // Add the Messag-ID to the table for future reference
+            $query = "INSERT
+                        INTO ".plugin_table('msgids')."
+                        ( id, issue_id, msg_id )
+                        VALUES
+                        ( null, '$p_bug_id', '$p_msg_id')";
+            db_query( $query );
+        }
     }
 
 	# --------------------
