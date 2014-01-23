@@ -308,8 +308,8 @@ class ERP_Mail_Parser
 
 	private function setTo( $p_to )
 	{
-        $regex = '<(.*?)>';
-        if(preg_match_all ("/".$regex."/is", $p_to, $matches))
+        $regex = '([\\w-+]+(?:\\.[\\w-+]+)*@(?:[\\w-]+\\.)+[a-zA-Z]{2,7})';
+        if( preg_match_all ("/".$regex."/is", $p_to, $matches) )
         {
             $this->_to = $matches[1];
         }
@@ -317,8 +317,8 @@ class ERP_Mail_Parser
 
 	private function setCc( $p_cc )
 	{
-        $regex = '<(.*?)>';
-        if(preg_match_all ("/".$regex."/is", $p_cc, $matches))
+        $regex = '([\\w-+]+(?:\\.[\\w-+]+)*@(?:[\\w-]+\\.)+[a-zA-Z]{2,7})';
+        if( preg_match_all ("/".$regex."/is", $p_cc, $matches) )
         {
             $this->_cc = $matches[1];
         }
