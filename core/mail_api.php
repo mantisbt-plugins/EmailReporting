@@ -671,9 +671,9 @@ class ERP_mailbox_api
 			}
 		}
 
-        if( $p_script_login )
+        if ( $t_reporter_id && user_is_enabled( $t_reporter_id ) )
         {
-            if ( $t_reporter_id && user_is_enabled( $t_reporter_id ) )
+            if( $p_script_login )
             {
                 if ( !isset( $t_reporter_name ) )
                 {
@@ -697,16 +697,16 @@ class ERP_mailbox_api
                     return( (int) $t_reporter_id );
                 }
             }
-        } 
-        else 
-        {
-                    return( (int) $t_reporter_id );
+            else 
+            {
+                return( (int) $t_reporter_id );
+            }
         }
 
-		// Normally this function does not get here unless all else failed
-		$this->custom_error( 'Could not get a valid reporter. Email will be ignored' );
+        // Normally this function does not get here unless all else failed
+        $this->custom_error( 'Could not get a valid reporter. Email will be ignored' );
 
-		return( FALSE );
+        return( FALSE );
 	}
 
 	# --------------------
@@ -876,7 +876,6 @@ class ERP_mailbox_api
 			event_signal( 'EVENT_REPORT_BUG', array( $t_bug_data, $t_bug_id ) );
 
 			email_new_bug( $t_bug_id );
-
 		}
 		else
 		{
@@ -1397,16 +1396,14 @@ class ERP_mailbox_api
         if ( $this->_mail_add_users_from_cc_to) 
         {
             $t_emails = array_merge($p_email[ 'To' ], $p_email[ 'Cc' ] );
-            foreach($t_emails as $t_email) 
+            foreach( $t_emails as $t_email ) 
             {
-                // TODO get_user sets $t_email in script_login. this should actually be the reporter.
-                // Need to refactor get_user() or define new method
                 $t_user_id =  $this->get_user(array('email' => $t_email), false);
                
                 if( $t_user_id !== FALSE) 
                 { 
-                    // Make sure that mail_reporter_id is not added as a monitor.
-                    if( $this->_mail_reporter_id != $t_user_id)
+                    // Make sure that mail_reporter_id and reporter_id are not added as a monitors.
+                    if( ($this->_mail_reporter_id != $t_user_id) && ($p_email['Reporter_id'] != $t_user_id) )
                     {
                         bug_monitor( $p_bug_id, $t_user_id );
                     }
