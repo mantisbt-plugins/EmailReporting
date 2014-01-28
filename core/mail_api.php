@@ -609,7 +609,7 @@ class ERP_mailbox_api
 		else
 		{
 			// Try to get the reporting users id
-			$t_reporter_id = get_userid_from_email( $p_parsed_from[ 'email' ] );
+			$t_reporter_id = $this->get_userid_from_email( $p_parsed_from[ 'email' ] );
 
 			if ( !$t_reporter_id )
 			{
