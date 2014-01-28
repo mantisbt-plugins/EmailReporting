@@ -700,7 +700,7 @@ class ERP_mailbox_api
 
 		if ( !$t_reporter_id )
 		{
-			$t_reporter_id = user_get_id_by_email( $p_parsed_from[ 'email' ] );
+			$t_reporter_id = user_get_id_by_email( $p_email_address );
 		}
 
 		return( $t_reporter_id );
