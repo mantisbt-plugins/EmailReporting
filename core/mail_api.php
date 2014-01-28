@@ -604,7 +604,7 @@ class ERP_mailbox_api
 
 	# --------------------
 	# return the user id for the mail reporting user
-	private function get_user( $p_parsed_from, $p_script_login=true )
+	private function get_user( $p_parsed_from )
 	{
 		if ( $this->_mail_use_reporter )
 		{
@@ -613,23 +613,8 @@ class ERP_mailbox_api
 		}
 		else
 		{
-			$t_reporter_id = FALSE;
-
 			// Try to get the reporting users id
-			if ( $this->_login_method == LDAP && $this->_use_ldap_email )
-			{
-				$t_username = ERP_ldap_get_username_from_email( $p_parsed_from[ 'email' ] );
-
-				if ( $t_username !== NULL && user_is_name_valid( $t_username ) )
-				{
-					$t_reporter_id = user_get_id_by_name( $t_username );
-				}
-			}
-
-			if ( !$t_reporter_id )
-			{
-				$t_reporter_id = user_get_id_by_email( $p_parsed_from[ 'email' ] );
-			}
+			$t_reporter_id = $this->get_userid_from_email( $p_parsed_from[ 'email' ] );
 
 			if ( !$t_reporter_id )
 			{
@@ -673,32 +658,25 @@ class ERP_mailbox_api
 
         if ( $t_reporter_id && user_is_enabled( $t_reporter_id ) )
         {
-            if( $p_script_login )
+            if ( !isset( $t_reporter_name ) )
             {
-                if ( !isset( $t_reporter_name ) )
-                {
-                    $t_reporter_name = user_get_field( $t_reporter_id, 'username' );
-                }
-
-                $t_authattemptresult = auth_attempt_script_login( $t_reporter_name );
-
-                # last attempt for fallback
-                if ( $t_authattemptresult === FALSE && $this->_mail_fallback_mail_reporter && $t_reporter_id != $this->_mail_reporter_id && user_is_enabled( $this->_mail_reporter_id ) )
-                {
-                    $t_reporter_id = $this->_mail_reporter_id;
-                    $t_reporter_name = user_get_field( $t_reporter_id, 'username' );
-                    $t_authattemptresult = auth_attempt_script_login( $t_reporter_name );
-                }
-
-                if ( $t_authattemptresult === TRUE )
-                {
-                    user_update_last_visit( $t_reporter_id );
-
-                    return( (int) $t_reporter_id );
-                }
+                $t_reporter_name = user_get_field( $t_reporter_id, 'username' );
             }
-            else 
+
+            $t_authattemptresult = auth_attempt_script_login( $t_reporter_name );
+
+            # last attempt for fallback
+            if ( $t_authattemptresult === FALSE && $this->_mail_fallback_mail_reporter && $t_reporter_id != $this->_mail_reporter_id && user_is_enabled( $this->_mail_reporter_id ) )
             {
+                $t_reporter_id = $this->_mail_reporter_id;
+                $t_reporter_name = user_get_field( $t_reporter_id, 'username' );
+                $t_authattemptresult = auth_attempt_script_login( $t_reporter_name );
+            }
+
+            if ( $t_authattemptresult === TRUE )
+            {
+                user_update_last_visit( $t_reporter_id );
+
                 return( (int) $t_reporter_id );
             }
         }
@@ -707,6 +685,30 @@ class ERP_mailbox_api
         $this->custom_error( 'Could not get a valid reporter. Email will be ignored' );
 
         return( FALSE );
+	}
+
+	# --------------------
+	# Try to obtain an existing userid based on an email address
+	private function get_userid_from_email( $p_email_address )
+	{
+		$t_reporter_id = FALSE;
+		
+		if ( $this->_use_ldap_email )
+		{
+			$t_username = ldap_get_username_from_email( $p_email_address );
+
+			if ( $t_username !== NULL && user_is_name_valid( $t_username ) )
+			{
+				$t_reporter_id = user_get_id_by_name( $t_username );
+			}
+		}
+
+		if ( !$t_reporter_id )
+		{
+			$t_reporter_id = user_get_id_by_email( $p_email_address );
+		}
+
+		return( $t_reporter_id );
 	}
 
 	# --------------------
@@ -1117,10 +1119,7 @@ class ERP_mailbox_api
 				break;
 
 			case 'from_ldap':
-				if ( $this->_login_method == LDAP )
-				{
-					$t_username = ERP_ldap_get_username_from_email( $p_user_info[ 'email' ] );
-				}
+				$t_username = ldap_get_username_from_email( $p_user_info[ 'email' ] );
 				break;
 
 			case 'name':
@@ -1396,10 +1395,12 @@ class ERP_mailbox_api
         if ( $this->_mail_add_users_from_cc_to) 
         {
             $t_emails = array_merge($p_email[ 'To' ], $p_email[ 'Cc' ] );
+            
+        print_r($t_emails);
             foreach( $t_emails as $t_email ) 
             {
-                $t_user_id =  $this->get_user(array('email' => $t_email), false);
-               
+                $t_user_id =  $this->get_userid_from_email( $t_email );
+        print $t_email.": ".$t_user_id. "<hr>"       ;
                 if( $t_user_id !== FALSE) 
                 { 
                     // Make sure that mail_reporter_id and reporter_id are not added as a monitors.
@@ -1412,7 +1413,6 @@ class ERP_mailbox_api
         }
     }
     
-}
 
 	# --------------------
 	# This function formats the bytes so that they are easily readable.
@@ -1442,66 +1442,90 @@ class ERP_mailbox_api
 	 *
 	 * Based on ldap_get_field_from_username from MantisBT 1.2.14
 	 */
-	function ERP_ldap_get_username_from_email( $p_email_address ) {
-		$t_email_field = 'mail';
+	function ldap_get_username_from_email( $p_email_address )
+	{
+		if ( $this->_login_method == LDAP )
+		{
+			$t_email_field = 'mail';
 
-		$t_ldap_organization    = config_get( 'ldap_organization' );
-		$t_ldap_root_dn         = config_get( 'ldap_root_dn' );
-		$t_ldap_uid_field		= config_get( 'ldap_uid_field' );
+			$t_ldap_organization    = config_get( 'ldap_organization' );
+			$t_ldap_root_dn         = config_get( 'ldap_root_dn' );
+			$t_ldap_uid_field       = config_get( 'ldap_uid_field' );
 
-		$c_email_address = ldap_escape_string( $p_email_address );
+			$c_email_address = ldap_escape_string( $p_email_address );
 
-		log_event( LOG_LDAP, "Retrieving field '$t_ldap_uid_field' for '$p_email_address'" );
+			log_event( LOG_LDAP, "Retrieving field '$t_ldap_uid_field' for '$p_email_address'" );
 
-		# Bind
-		log_event( LOG_LDAP, "Binding to LDAP server" );
-		$t_ds = @ldap_connect_bind();
-		if ( $t_ds === false ) {
-			ldap_log_error( $t_ds );
-			return null;
-		}
+			# Bind
+			log_event( LOG_LDAP, "Binding to LDAP server" );
+			$t_ds = @ldap_connect_bind();
+			if ( $t_ds === false ) {
+				ldap_log_error( $t_ds );
+				return null;
+			}
 
-		# Search
-		$t_search_filter        = "(&$t_ldap_organization($t_email_field=$c_email_address))";
-		$t_search_attrs         = array( $t_ldap_uid_field, $t_email_field, 'dn' );
+			# Search
+			$t_search_filter        = "(&$t_ldap_organization($t_email_field=$c_email_address))";
+			$t_search_attrs         = array( $t_ldap_uid_field, $t_email_field, 'dn' );
 
-		log_event( LOG_LDAP, "Searching for $t_search_filter" );
-		$t_sr = @ldap_search( $t_ds, $t_ldap_root_dn, $t_search_filter, $t_search_attrs );
-		if ( $t_sr === false ) {
-			ldap_log_error( $t_ds );
+			log_event( LOG_LDAP, "Searching for $t_search_filter" );
+			$t_sr = @ldap_search( $t_ds, $t_ldap_root_dn, $t_search_filter, $t_search_attrs );
+			if ( $t_sr === false ) {
+				ldap_log_error( $t_ds );
+				ldap_unbind( $t_ds );
+				log_event( LOG_LDAP, "ldap search failed" );
+				return null;
+			}
+
+			# Get results
+			$t_info = ldap_get_entries( $t_ds, $t_sr );
+			if ( $t_info === false ) {
+				ldap_log_error( $t_ds );
+				log_event( LOG_LDAP, "ldap_get_entries() returned false." );
+				return null;
+			}
+
+			# Free results / unbind
+			log_event( LOG_LDAP, "Unbinding from LDAP server" );
+			ldap_free_result( $t_sr );
 			ldap_unbind( $t_ds );
-			log_event( LOG_LDAP, "ldap search failed" );
-			return null;
+
+			# If no matches, return null.
+			if ( $t_info['count'] == 0 ) {
+				log_event( LOG_LDAP, "No matches found." );
+				return null;
+			}
+
+			# Make sure the requested field exists
+			if( is_array($t_info[0]) && array_key_exists( strtolower( $t_ldap_uid_field ), $t_info[0] ) ) {
+				$t_value = $t_info[0][ strtolower( $t_ldap_uid_field ) ][0];
+				log_event( LOG_LDAP, "Found value '{$t_value}' for field '{$t_ldap_uid_field}'." );
+			} else {
+				log_event( LOG_LDAP, "WARNING: field '$t_ldap_uid_field' does not exist" );
+				return null;
+			}
+
+			return $t_value;
 		}
 
-		# Get results
-		$t_info = ldap_get_entries( $t_ds, $t_sr );
-		if ( $t_info === false ) {
-			ldap_log_error( $t_ds );
-			log_event( LOG_LDAP, "ldap_get_entries() returned false." );
-			return null;
+		return null;
+	}
+}
+
+	# --------------------
+	# This function formats the bytes so that they are easily readable.
+	# Not part of a class
+	function ERP_formatbytes( $p_bytes )
+	{
+		$t_units = array( ' B', ' KiB', ' MiB', ' GiB', ' TiB' );
+
+		$t_bytes = $p_bytes;
+
+		for ( $i = 0; $t_bytes > 1024; $i++ )
+		{
+			$t_bytes /= 1024;
 		}
 
-		# Free results / unbind
-		log_event( LOG_LDAP, "Unbinding from LDAP server" );
-		ldap_free_result( $t_sr );
-		ldap_unbind( $t_ds );
-
-		# If no matches, return null.
-		if ( $t_info['count'] == 0 ) {
-			log_event( LOG_LDAP, "No matches found." );
-			return null;
-		}
-
-		# Make sure the requested field exists
-		if( is_array($t_info[0]) && array_key_exists( strtolower( $t_ldap_uid_field ), $t_info[0] ) ) {
-			$t_value = $t_info[0][ strtolower( $t_ldap_uid_field ) ][0];
-			log_event( LOG_LDAP, "Found value '{$t_value}' for field '{$t_ldap_uid_field}'." );
-		} else {
-			log_event( LOG_LDAP, "WARNING: field '$t_ldap_uid_field' does not exist" );
-			return null;
-		}
-
-		return $t_value;
+		return( round( $t_bytes, 2 ) . $t_units[ $i ] );
 	}
 ?>
