@@ -51,6 +51,9 @@ class EmailReportingPlugin extends MantisPlugin
 			# Add complete email into the attachments
 			'mail_add_complete_email'		=> OFF,
 
+			// Add users from Cc and To field in mail header
+			'mail_add_users_from_cc_to'		=> OFF,
+
 			# Signup new users automatically (possible security risk!)
 			# Default is OFF, if mail_use_reporter is OFF and this is OFF then it will
 			# fallback to the mail_reporter account above
@@ -154,6 +157,9 @@ class EmailReportingPlugin extends MantisPlugin
 			# via a webserver?
 			'mail_secured_script'			=> ON,
 
+			//Strip Gmail style replies from body of the message
+			'mail_strip_gmail_style_replies'	=> OFF,
+
 			#Removes the signature that are delimited by mail_strip_signature_delim
 			'mail_strip_signature'			=> OFF,
 
@@ -170,12 +176,6 @@ class EmailReportingPlugin extends MantisPlugin
 			# ON = mail uses the reporter account in the setting below
 			# OFF = it identifies the reporter using the email address of the sender
 			'mail_use_reporter'				=> ON,
-
-			//Strip Gmail style replies from body of the message
-			'mail_strip_gmail_style_replies'	=> OFF,
-
-			// Add users from Cc and To field in mail header
-			'mail_add_users_from_cc_to'	=> OFF,
 		);
 	}
 

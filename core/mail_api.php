@@ -43,6 +43,7 @@ class ERP_mailbox_api
 	private $_mail_add_bug_reports;
 	private $_mail_add_bugnotes;
 	private $_mail_add_complete_email;
+	private $_mail_add_users_from_cc_to;
 	private $_mail_auto_signup;
 	private $_mail_block_attachments_md5;
 	private $_mail_block_attachments_logging;
@@ -61,17 +62,16 @@ class ERP_mailbox_api
 	private $_mail_remove_mantis_email;
 	private $_mail_remove_replies;
 	private $_mail_remove_replies_after;
-	private $_mail_strip_gmail_style_replies;
 	private $_mail_removed_reply_text;
 	private $_mail_reporter_id;
 	private $_mail_save_from;
 	private $_mail_save_subject_in_note;
+	private $_mail_strip_gmail_style_replies;
 	private $_mail_strip_signature;
 	private $_mail_strip_signature_delim;
 	private $_mail_subject_id_regex;
 	private $_mail_use_bug_priority;
 	private $_mail_use_reporter;
-	private $_mail_add_users_from_cc_to;
 
 	private $_mp_options = array();
 
@@ -93,6 +93,7 @@ class ERP_mailbox_api
 		$this->_mail_add_bug_reports			= plugin_config_get( 'mail_add_bug_reports' );
 		$this->_mail_add_bugnotes				= plugin_config_get( 'mail_add_bugnotes' );
 		$this->_mail_add_complete_email			= plugin_config_get( 'mail_add_complete_email' );
+		$this->_mail_add_users_from_cc_to		= plugin_config_get( 'mail_add_users_from_cc_to' );
 		$this->_mail_auto_signup				= plugin_config_get( 'mail_auto_signup' );
 		$this->_mail_block_attachments_md5		= plugin_config_get( 'mail_block_attachments_md5' );
 		$this->_mail_block_attachments_logging	= plugin_config_get( 'mail_block_attachments_logging' );
@@ -111,17 +112,16 @@ class ERP_mailbox_api
 		$this->_mail_remove_mantis_email		= plugin_config_get( 'mail_remove_mantis_email' );
 		$this->_mail_remove_replies				= plugin_config_get( 'mail_remove_replies' );
 		$this->_mail_remove_replies_after		= plugin_config_get( 'mail_remove_replies_after' );
-		$this->_mail_strip_gmail_style_replies	= plugin_config_get( 'mail_strip_gmail_style_replies' );
 		$this->_mail_removed_reply_text			= plugin_config_get( 'mail_removed_reply_text' );
 		$this->_mail_reporter_id				= plugin_config_get( 'mail_reporter_id' );
 		$this->_mail_save_from					= plugin_config_get( 'mail_save_from' );
 		$this->_mail_save_subject_in_note		= plugin_config_get( 'mail_save_subject_in_note' );
+		$this->_mail_strip_gmail_style_replies	= plugin_config_get( 'mail_strip_gmail_style_replies' );
 		$this->_mail_strip_signature			= plugin_config_get( 'mail_strip_signature' );
 		$this->_mail_strip_signature_delim		= plugin_config_get( 'mail_strip_signature_delim' );
 		$this->_mail_subject_id_regex			= plugin_config_get( 'mail_subject_id_regex' );
 		$this->_mail_use_bug_priority			= plugin_config_get( 'mail_use_bug_priority' );
 		$this->_mail_use_reporter				= plugin_config_get( 'mail_use_reporter' );
-		$this->_mail_add_users_from_cc_to		= plugin_config_get( 'mail_add_users_from_cc_to' );
 
 		$this->_mp_options[ 'add_attachments' ]	= config_get( 'allow_file_upload' );
 		$this->_mp_options[ 'debug' ]			= $this->_mail_debug;
@@ -604,88 +604,88 @@ class ERP_mailbox_api
 
 	# --------------------
 	# return the user id for the mail reporting user
-    private function get_user( $p_parsed_from )
-    {
-        if ( $this->_mail_use_reporter )
-        {
-            // Always report as mail_reporter
-            $t_reporter_id = $this->_mail_reporter_id;
-        }
-        else
-        {
-            // Try to get the reporting users id
-            $t_reporter_id = $this->get_userid_from_email( $p_parsed_from[ 'email' ] );
+	private function get_user( $p_parsed_from )
+	{
+		if ( $this->_mail_use_reporter )
+		{
+			// Always report as mail_reporter
+			$t_reporter_id = $this->_mail_reporter_id;
+		}
+		else
+		{
+			// Try to get the reporting users id
+			$t_reporter_id = $this->get_userid_from_email( $p_parsed_from[ 'email' ] );
 
-            if ( !$t_reporter_id )
-            {
-                if ( $this->_mail_auto_signup )
-                {
-                    // So, we have to sign up a new user...
-                    $t_new_reporter_name = $this->prepare_username( $p_parsed_from );
+			if ( !$t_reporter_id )
+			{
+				if ( $this->_mail_auto_signup )
+				{
+					// So, we have to sign up a new user...
+					$t_new_reporter_name = $this->prepare_username( $p_parsed_from );
 
-                    if ( $t_new_reporter_name !== FALSE && $this->validate_email_address( $p_parsed_from[ 'email' ] ) )
-                    {
-                        if( user_signup( $t_new_reporter_name, $p_parsed_from[ 'email' ] ) )
-                        {
-                            # notify the selected group a new user has signed-up
-                            email_notify_new_account( $t_new_reporter_name, $p_parsed_from[ 'email' ] );
+					if ( $t_new_reporter_name !== FALSE && $this->validate_email_address( $p_parsed_from[ 'email' ] ) )
+					{
+						if( user_signup( $t_new_reporter_name, $p_parsed_from[ 'email' ] ) )
+						{
+							# notify the selected group a new user has signed-up
+							email_notify_new_account( $t_new_reporter_name, $p_parsed_from[ 'email' ] );
 
-                            $t_reporter_id = user_get_id_by_email( $p_parsed_from[ 'email' ] );
-                            $t_reporter_name = $t_new_reporter_name;
+							$t_reporter_id = user_get_id_by_email( $p_parsed_from[ 'email' ] );
+							$t_reporter_name = $t_new_reporter_name;
 
-                            $t_realname = $this->prepare_realname( $p_parsed_from, $t_reporter_name );
+							$t_realname = $this->prepare_realname( $p_parsed_from, $t_reporter_name );
 
-                            if ( $t_realname !== FALSE )
-                            {
-                                user_set_realname( $t_reporter_id, $t_realname );
-                            }
-                        }
-                    }
+							if ( $t_realname !== FALSE )
+							{
+								user_set_realname( $t_reporter_id, $t_realname );
+							}
+						}
+					}
 
-                    if ( !$t_reporter_id )
-                    {
-                        $this->custom_error( 'Failed to create user based on: ' . $p_parsed_from[ 'From' ] );
-                    }
-                }
-            }
+					if ( !$t_reporter_id )
+					{
+						$this->custom_error( 'Failed to create user based on: ' . $p_parsed_from[ 'From' ] );
+					}
+				}
+			}
 
-            if ( ( !$t_reporter_id || !user_is_enabled( $t_reporter_id ) ) && $this->_mail_fallback_mail_reporter )
-            {
-                // Fall back to the default mail_reporter
-                $t_reporter_id = $this->_mail_reporter_id;
-            }
-        }
+			if ( ( !$t_reporter_id || !user_is_enabled( $t_reporter_id ) ) && $this->_mail_fallback_mail_reporter )
+			{
+				// Fall back to the default mail_reporter
+				$t_reporter_id = $this->_mail_reporter_id;
+			}
+		}
 
-        if ( $t_reporter_id && user_is_enabled( $t_reporter_id ) )
-        {
-            if ( !isset( $t_reporter_name ) )
-            {
-                $t_reporter_name = user_get_field( $t_reporter_id, 'username' );
-            }
+		if ( $t_reporter_id && user_is_enabled( $t_reporter_id ) )
+		{
+			if ( !isset( $t_reporter_name ) )
+			{
+				$t_reporter_name = user_get_field( $t_reporter_id, 'username' );
+			}
 
-            $t_authattemptresult = auth_attempt_script_login( $t_reporter_name );
+			$t_authattemptresult = auth_attempt_script_login( $t_reporter_name );
 
-            # last attempt for fallback
-            if ( $t_authattemptresult === FALSE && $this->_mail_fallback_mail_reporter && $t_reporter_id != $this->_mail_reporter_id && user_is_enabled( $this->_mail_reporter_id ) )
-            {
-                $t_reporter_id = $this->_mail_reporter_id;
-                $t_reporter_name = user_get_field( $t_reporter_id, 'username' );
-                $t_authattemptresult = auth_attempt_script_login( $t_reporter_name );
-            }
+			# last attempt for fallback
+			if ( $t_authattemptresult === FALSE && $this->_mail_fallback_mail_reporter && $t_reporter_id != $this->_mail_reporter_id && user_is_enabled( $this->_mail_reporter_id ) )
+			{
+				$t_reporter_id = $this->_mail_reporter_id;
+				$t_reporter_name = user_get_field( $t_reporter_id, 'username' );
+				$t_authattemptresult = auth_attempt_script_login( $t_reporter_name );
+			}
 
-            if ( $t_authattemptresult === TRUE )
-            {
-                user_update_last_visit( $t_reporter_id );
+			if ( $t_authattemptresult === TRUE )
+			{
+				user_update_last_visit( $t_reporter_id );
 
-                return( (int) $t_reporter_id );
-            }
-        }
+				return( (int) $t_reporter_id );
+			}
+		}
 
-        // Normally this function does not get here unless all else failed
-        $this->custom_error( 'Could not get a valid reporter. Email will be ignored' );
+		// Normally this function does not get here unless all else failed
+		$this->custom_error( 'Could not get a valid reporter. Email will be ignored' );
 
-        return( FALSE );
-    }
+		return( FALSE );
+	}
 
 	# --------------------
 	# Try to obtain an existing userid based on an email address
@@ -695,7 +695,7 @@ class ERP_mailbox_api
 		
 		if ( $this->_use_ldap_email )
 		{
-			$t_username = ldap_get_username_from_email( $p_email_address );
+			$t_username = $this->ldap_get_username_from_email( $p_email_address );
 
 			if ( $t_username !== NULL && user_is_name_valid( $t_username ) )
 			{
@@ -750,7 +750,7 @@ class ERP_mailbox_api
 				# Reopen issue and add a bug note
 				bug_reopen( $t_bug_id, $t_description );
 			}
-			else
+			elseif ( !is_blank( $t_description ) )
 			{
 				# Add a bug note
 				bugnote_add( $t_bug_id, $t_description );
@@ -928,8 +928,8 @@ class ERP_mailbox_api
 			}
 		}
 
-        //Add the users in Cc and To list in mail header
-        $this->add_monitors( $t_bug_id, $p_email );
+		//Add the users in Cc and To list in mail header
+		$this->add_monitors( $t_bug_id, $p_email );
 
 		ERP_set_temporary_overwrite( 'project_override', NULL );
 
@@ -1119,7 +1119,7 @@ class ERP_mailbox_api
 				break;
 
 			case 'from_ldap':
-				$t_username = ldap_get_username_from_email( $p_user_info[ 'email' ] );
+				$t_username = $this->ldap_get_username_from_email( $p_user_info[ 'email' ] );
 				break;
 
 			case 'name':
@@ -1360,7 +1360,7 @@ class ERP_mailbox_api
 
 		if ( $this->_mail_strip_signature && strlen( trim( $this->_mail_strip_signature_delim ) ) > 1 )
 		{
-			$t_parts = preg_split( '/((?:\r|\n|\n\r)' . $this->_mail_strip_signature_delim . '\s*(?:\r|\n|\n\r))/', $t_description, -1, PREG_SPLIT_DELIM_CAPTURE );
+			$t_parts = preg_split( '/((?:\r|\n|\r\n)' . $this->_mail_strip_signature_delim . '\s*(?:\r|\n|\r\n))/', $t_description, -1, PREG_SPLIT_DELIM_CAPTURE );
 
 			if ( count( $t_parts ) > 2 ) // String should not start with the delimiter so that why we need at least 3 parts
 			{
@@ -1389,46 +1389,29 @@ class ERP_mailbox_api
 	}
 
 	// --------------------
-    // Add monitors from Cc and To fields in mail header
-    private function add_monitors( $p_bug_id, $p_email )
-    {
-        if ( $this->_mail_add_users_from_cc_to) 
-        {
-            $t_emails = array_merge($p_email[ 'To' ], $p_email[ 'Cc' ] );
-            
-        print_r($t_emails);
-            foreach( $t_emails as $t_email ) 
-            {
-                $t_user_id =  $this->get_userid_from_email( $t_email );
-        print $t_email.": ".$t_user_id. "<hr>"       ;
-                if( $t_user_id !== FALSE) 
-                { 
-                    // Make sure that mail_reporter_id and reporter_id are not added as a monitors.
-                    if( ($this->_mail_reporter_id != $t_user_id) && ($p_email['Reporter_id'] != $t_user_id) )
-                    {
-                        bug_monitor( $p_bug_id, $t_user_id );
-                    }
-                }
-            }
-        }
-    }
-    
-
-	# --------------------
-	# This function formats the bytes so that they are easily readable.
-	# Not part of a class
-	function ERP_formatbytes( $p_bytes )
+	// Add monitors from Cc and To fields in mail header
+	private function add_monitors( $p_bug_id, $p_email )
 	{
-		$t_units = array( ' B', ' KiB', ' MiB', ' GiB', ' TiB' );
-
-		$t_bytes = $p_bytes;
-
-		for ( $i = 0; $t_bytes > 1024; $i++ )
+		if ( $this->_mail_add_users_from_cc_to )
 		{
-			$t_bytes /= 1024;
-		}
+			$t_emails = array_merge( $p_email[ 'To' ], $p_email[ 'Cc' ] );
 
-		return( round( $t_bytes, 2 ) . $t_units[ $i ] );
+			foreach( $t_emails as $t_email )
+			{
+				$t_user_id = $this->get_userid_from_email( $t_email );
+
+				$this->custom_error( 'Monitor: ' . $t_user_id . ' - ' . $t_email . ' --> Issue ID: #' . $p_bug_id, FALSE );
+
+				if( $t_user_id !== FALSE ) 
+				{ 
+					// Make sure that mail_reporter_id and reporter_id are not added as a monitors.
+					if( $this->_mail_reporter_id != $t_user_id && $p_email[ 'Reporter_id' ] != $t_user_id )
+					{
+						bug_monitor( $p_bug_id, $t_user_id );
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -1442,7 +1425,7 @@ class ERP_mailbox_api
 	 *
 	 * Based on ldap_get_field_from_username from MantisBT 1.2.14
 	 */
-	function ldap_get_username_from_email( $p_email_address )
+	private function ldap_get_username_from_email( $p_email_address )
 	{
 		if ( $this->_login_method == LDAP )
 		{
