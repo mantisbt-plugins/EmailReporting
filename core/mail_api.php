@@ -604,57 +604,57 @@ class ERP_mailbox_api
 
 	# --------------------
 	# return the user id for the mail reporting user
-	private function get_user( $p_parsed_from )
-	{
-		if ( $this->_mail_use_reporter )
-		{
-			// Always report as mail_reporter
-			$t_reporter_id = $this->_mail_reporter_id;
-		}
-		else
-		{
-			// Try to get the reporting users id
-			$t_reporter_id = $this->get_userid_from_email( $p_parsed_from[ 'email' ] );
+    private function get_user( $p_parsed_from )
+    {
+        if ( $this->_mail_use_reporter )
+        {
+            // Always report as mail_reporter
+            $t_reporter_id = $this->_mail_reporter_id;
+        }
+        else
+        {
+            // Try to get the reporting users id
+            $t_reporter_id = $this->get_userid_from_email( $p_parsed_from[ 'email' ] );
 
-			if ( !$t_reporter_id )
-			{
-				if ( $this->_mail_auto_signup )
-				{
-					// So, we have to sign up a new user...
-					$t_new_reporter_name = $this->prepare_username( $p_parsed_from );
+            if ( !$t_reporter_id )
+            {
+                if ( $this->_mail_auto_signup )
+                {
+                    // So, we have to sign up a new user...
+                    $t_new_reporter_name = $this->prepare_username( $p_parsed_from );
 
-					if ( $t_new_reporter_name !== FALSE && $this->validate_email_address( $p_parsed_from[ 'email' ] ) )
-					{
-						if( user_signup( $t_new_reporter_name, $p_parsed_from[ 'email' ] ) )
-						{
-							# notify the selected group a new user has signed-up
-							email_notify_new_account( $t_new_reporter_name, $p_parsed_from[ 'email' ] );
+                    if ( $t_new_reporter_name !== FALSE && $this->validate_email_address( $p_parsed_from[ 'email' ] ) )
+                    {
+                        if( user_signup( $t_new_reporter_name, $p_parsed_from[ 'email' ] ) )
+                        {
+                            # notify the selected group a new user has signed-up
+                            email_notify_new_account( $t_new_reporter_name, $p_parsed_from[ 'email' ] );
 
-							$t_reporter_id = user_get_id_by_email( $p_parsed_from[ 'email' ] );
-							$t_reporter_name = $t_new_reporter_name;
+                            $t_reporter_id = user_get_id_by_email( $p_parsed_from[ 'email' ] );
+                            $t_reporter_name = $t_new_reporter_name;
 
-							$t_realname = $this->prepare_realname( $p_parsed_from, $t_reporter_name );
+                            $t_realname = $this->prepare_realname( $p_parsed_from, $t_reporter_name );
 
-							if ( $t_realname !== FALSE )
-							{
-								user_set_realname( $t_reporter_id, $t_realname );
-							}
-						}
-					}
+                            if ( $t_realname !== FALSE )
+                            {
+                                user_set_realname( $t_reporter_id, $t_realname );
+                            }
+                        }
+                    }
 
-					if ( !$t_reporter_id )
-					{
-						$this->custom_error( 'Failed to create user based on: ' . $p_parsed_from[ 'From' ] );
-					}
-				}
-			}
+                    if ( !$t_reporter_id )
+                    {
+                        $this->custom_error( 'Failed to create user based on: ' . $p_parsed_from[ 'From' ] );
+                    }
+                }
+            }
 
-			if ( ( !$t_reporter_id || !user_is_enabled( $t_reporter_id ) ) && $this->_mail_fallback_mail_reporter )
-			{
-				// Fall back to the default mail_reporter
-				$t_reporter_id = $this->_mail_reporter_id;
-			}
-		}
+            if ( ( !$t_reporter_id || !user_is_enabled( $t_reporter_id ) ) && $this->_mail_fallback_mail_reporter )
+            {
+                // Fall back to the default mail_reporter
+                $t_reporter_id = $this->_mail_reporter_id;
+            }
+        }
 
         if ( $t_reporter_id && user_is_enabled( $t_reporter_id ) )
         {
@@ -685,7 +685,7 @@ class ERP_mailbox_api
         $this->custom_error( 'Could not get a valid reporter. Email will be ignored' );
 
         return( FALSE );
-	}
+    }
 
 	# --------------------
 	# Try to obtain an existing userid based on an email address
