@@ -1357,7 +1357,7 @@ class ERP_mailbox_api
 
 		$p_description = $t_additional_info . $p_description;
 
-		$this->check_field_lengths( $p_type, $p_email, $p_description )
+		$this->check_field_lengths( $p_type, $p_email, $p_description );
 
 		return( $p_description );
 	}
