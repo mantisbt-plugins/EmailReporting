@@ -82,6 +82,8 @@ class ERP_mailbox_api
 	private $_use_ldap_email;
 
 	private $_max_file_size;
+	private $_max_text_len = 65535; // mysql text datatype
+	private $_max_subject_len = 128; // mysql varchar(128) datatype
 	private $_memory_limit;
 
 	# --------------------
@@ -736,6 +738,7 @@ class ERP_mailbox_api
 
 			$t_description = $this->identify_replies( $t_description );
 			$t_description = $this->strip_signature( $t_description );
+			check_field_lengths( 'note', $p_email, $t_description );
 			$t_description = $this->add_additional_info( 'note', $p_email, $t_description );
 
 			$t_project_id = bug_get_field( $t_bug_id, 'project_id' );
@@ -786,11 +789,14 @@ class ERP_mailbox_api
 			$t_bug_data->eta					= (int) config_get( 'default_bug_eta' );
 			$t_bug_data->resolution				= config_get( 'default_bug_resolution' );
 			$t_bug_data->status					= config_get( 'bug_submit_status' );
-			$t_bug_data->summary				= $p_email[ 'Subject' ];
 
 			$t_description = $p_email[ 'X-Mantis-Body' ];
 			$t_description = $this->strip_signature( $t_description );
+			check_field_lengths( 'issue', $p_email, $t_description );
 			$t_description = $this->add_additional_info( 'issue', $p_email, $t_description );
+
+			$t_bug_data->summary				= $p_email[ 'Subject' ];
+
 			$t_bug_data->description			= $t_description;
 
 			$t_bug_data->steps_to_reproduce		= config_get( 'default_bug_steps_to_reproduce' );
@@ -1371,6 +1377,36 @@ class ERP_mailbox_api
 		}
 
 		return( $t_description );
+	}
+
+	# --------------------
+	# Check the subject and email body to see if they are too long for MantisBT database fields
+	private function check_field_lengths( $p_type, &$p_email, &$p_description )
+	{
+		if ( strlen( $p_email[ 'Subject' ] ) > $this->_max_subject_len )
+		{
+			$p_email[ 'Subject' ] = substr( $p_email[ 'Subject' ], 0, $this->_max_subject_len );
+		}
+
+		if ( strlen( $p_description ) > $this->_max_text_len )
+		{
+			if ( $this->_allow_file_upload )
+			{
+				$t_part = array(
+					'name' => $p_type . '_description.txt',
+					'ctype' => 'text/plain',
+					'body' => $p_description,
+				);
+
+				$p_description = 'Email body was too big. It has been moved to the attachments';
+
+				array_push( $p_email[ 'X-Mantis-Parts' ], $t_part );
+			}
+			else
+			{
+				$p_description = substr( $p_description, 0, $this->_max_text_len );
+			}
+		}
 	}
 
 	# --------------------

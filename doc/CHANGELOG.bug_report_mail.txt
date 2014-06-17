@@ -87,6 +87,7 @@ Nov 2013 - EmailReporting-0.9.0-DEV
 	- Attachment blocking added based on a md5 hash list
 	- Added feature to remove Gmail style replies in notes
 	- Added feature to add users from Cc and To list of mail header to issue monitoring list
+	- Added a workaround for situations where the subject or email body is too big for MantisBT standards
 
 Nov 2010 - EmailReporting-0.8.4
 	- Improved the project category list
