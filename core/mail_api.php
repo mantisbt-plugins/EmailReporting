@@ -738,7 +738,7 @@ class ERP_mailbox_api
 
 			$t_description = $this->identify_replies( $t_description );
 			$t_description = $this->strip_signature( $t_description );
-			check_field_lengths( 'note', $p_email, $t_description );
+			$this->check_field_lengths( 'note', $p_email, $t_description );
 			$t_description = $this->add_additional_info( 'note', $p_email, $t_description );
 
 			$t_project_id = bug_get_field( $t_bug_id, 'project_id' );
@@ -792,7 +792,7 @@ class ERP_mailbox_api
 
 			$t_description = $p_email[ 'X-Mantis-Body' ];
 			$t_description = $this->strip_signature( $t_description );
-			check_field_lengths( 'issue', $p_email, $t_description );
+			$this->check_field_lengths( 'issue', $p_email, $t_description );
 			$t_description = $this->add_additional_info( 'issue', $p_email, $t_description );
 
 			$t_bug_data->summary				= $p_email[ 'Subject' ];
@@ -1355,7 +1355,11 @@ class ERP_mailbox_api
 			$t_additional_info .= "\n";
 		}
 
-		return( $t_additional_info . $p_description );
+		$p_description = $t_additional_info . $p_description;
+
+		$this->check_field_lengths( $p_type, $p_email, $p_description )
+
+		return( $p_description );
 	}
 
 	# --------------------
