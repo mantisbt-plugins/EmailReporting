@@ -1034,15 +1034,20 @@ class ERP_mailbox_api
 	# return the hostname parsed into a hostname + port
 	private function prepare_mailbox_hostname()
 	{
-		if ( $this->_mailbox[ 'encryption' ] !== 'None' && extension_loaded( 'openssl' ) )
-		{
-			$this->_mailbox[ 'hostname' ] = strtolower( $this->_mailbox[ 'encryption' ] ) . '://' . $this->_mailbox[ 'hostname' ];
+		$t_def_mailbox_port_index = 'normal';
 
-			$t_def_mailbox_port_index = 'encrypted';
-		}
-		else
+		if ( $this->_mailbox[ 'encryption' ] !== 'None' )
 		{
-			$t_def_mailbox_port_index = 'normal';
+			if ( extension_loaded( 'openssl' ) )
+			{
+				$this->_mailbox[ 'hostname' ] = strtolower( $this->_mailbox[ 'encryption' ] ) . '://' . $this->_mailbox[ 'hostname' ];
+
+				$t_def_mailbox_port_index = 'encrypted';
+			}
+			else
+			{
+				$this->custom_error( 'OpenSSL plugin not available even though the mailbox is configured to use it. Please check whether OpenSSL is properly being loaded' );
+			}
 		}
 
 		$this->_mailbox[ 'port' ] = (int) $this->_mailbox[ 'port' ];
