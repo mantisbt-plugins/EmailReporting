@@ -413,10 +413,6 @@ class ERP_mailbox_api
 												{
 													// Email marked as deleted. Do nothing
 												}
-												elseif ( $this->_mailserver->isSeen( $i ) === TRUE )
-												{
-													// Email marked as seen/read. Do nothing
-												}
 												else
 												{
 													$t_emailresult = $this->process_single_email( $i, (int) $t_project[ 'id' ] );
