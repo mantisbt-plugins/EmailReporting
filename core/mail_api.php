@@ -409,7 +409,7 @@ class ERP_mailbox_api
 												{
 													break 2;
 												}
-												elseif ( $this->_mailserver->isDeleted( $i ) === TRUE )
+												elseif ( $this->isDeleted( $i ) === TRUE )
 												{
 													// Email marked as deleted. Do nothing
 												}
@@ -525,7 +525,7 @@ class ERP_mailbox_api
 
 	# --------------------
 	# Return a single raw email
-	# Handles a workaround for problems with Net_IMAP 1.1.0 and 1.1.2
+	# Handles a workaround for problems with Net_IMAP 1.1.x concerning the getMsg function
 	private function getMsg( $p_msg_id )
 	{
 		if ( $this->_mailbox[ 'mailbox_type' ] === 'IMAP' )
@@ -544,6 +544,34 @@ class ERP_mailbox_api
 		}
 
 		return( $t_msg );
+	}
+
+	# --------------------
+	# Check whether a email is deleted
+	# for IMAP only function
+	# Handles a workaround for problems with Net_IMAP 1.1.x with the hasFlag function (isDeleted uses that function)
+	private function isDeleted( $message_nro )
+	{
+//		return $this->hasFlag($message_nro, '\Deleted');
+		$flag = '\Deleted';
+
+		if ( ( $resp = $this->_mailserver->getFlags( $message_nro ) ) instanceOf PEAR_Error )
+		{
+			return $resp;
+		}
+
+		if ( isset( $resp[ 0 ] ) )
+		{
+			if ( is_array( $resp[ 0 ] ) )
+			{
+				if ( in_array( $flag, $resp[ 0 ] ) )
+				{
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	# --------------------
