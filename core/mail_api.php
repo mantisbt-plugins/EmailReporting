@@ -1157,7 +1157,7 @@ class ERP_mailbox_api
 			$t_username = utf8_substr( $t_username, 0, ( DB_FIELD_SIZE_USERNAME - strlen( $p_rand ) ) );
 		}
 
-		$t_username = $t_username . $t_rand;
+		$t_username = $t_username . $p_rand;
 
 		if ( user_is_name_valid( $t_username ) && user_is_name_unique( $t_username ) )
 		{
