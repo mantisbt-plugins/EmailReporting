@@ -18,7 +18,6 @@ $f_gpc = array(
 	'mail_disposable_email_checker'	=> gpc_get_int( 'mail_disposable_email_checker' ),
 	'mail_email_receive_own'		=> gpc_get_int( 'mail_email_receive_own' ),
 	'mail_fallback_mail_reporter'	=> gpc_get_int( 'mail_fallback_mail_reporter' ),
-	'mail_fetch_max'				=> gpc_get_int( 'mail_fetch_max' ),
 	'mail_nodescription'			=> gpc_get_string( 'mail_nodescription' ),
 	'mail_nosubject'				=> gpc_get_string( 'mail_nosubject' ),
 	'mail_parse_html'				=> gpc_get_int( 'mail_parse_html' ),

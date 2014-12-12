@@ -101,7 +101,6 @@ ERP_output_config_option( 'mail_secured_script', 'boolean' );
 
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'runtime_options', 'header' );
-ERP_output_config_option( 'mail_fetch_max', 'integer' );
 ERP_output_config_option( 'mail_delete', 'boolean' );
 
 ERP_output_config_option( NULL, 'empty' );

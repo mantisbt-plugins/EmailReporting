@@ -108,10 +108,6 @@ class EmailReportingPlugin extends MantisPlugin
 			# Enable fallback to mail reporter
 			'mail_fallback_mail_reporter'	=> ON,
 
-			# How many mails should be fetched at the same time
-			# If big mails with attachments should be received, specify only one
-			'mail_fetch_max'				=> 1,
-
 			# Use the following text when the description is missing from the email
 			'mail_nodescription'			=> 'No description found',
 
@@ -549,6 +545,13 @@ class EmailReportingPlugin extends MantisPlugin
 			plugin_config_set( 'reset_schema', 1 );
 
 			plugin_config_set( 'config_version', 13 );
+		}
+
+		if ( $t_config_version <= 13 )
+		{
+			plugin_config_delete( 'mail_fetch_max' );
+
+			plugin_config_set( 'config_version', 14 );
 		}
 	}
 

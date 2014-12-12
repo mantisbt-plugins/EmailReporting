@@ -89,6 +89,8 @@ Sep 2014 - EmailReporting-0.9.0-DEV
 	- Added feature to add users from Cc and To list of mail header to issue monitoring list
 	- Added extra error in case OpenSSL is missing while it is needed
 	- Added a workaround for Net_IMAP 1.1.x issues with the hasFlag function (used by isDeleted function).
+	- mail_fetch_max has been removed as it was useless after some memory optimizations
+	- Fixed Exchange IMAP support
 
 Nov 2010 - EmailReporting-0.8.4
 	- Improved the project category list

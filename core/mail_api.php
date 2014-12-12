@@ -54,7 +54,6 @@ class ERP_mailbox_api
 	private $_mail_delete;
 	private $_mail_disposable_email_checker;
 	private $_mail_fallback_mail_reporter;
-	private $_mail_fetch_max;
 	private $_mail_nodescription;
 	private $_mail_nosubject;
 	private $_mail_preferred_username;
@@ -104,7 +103,6 @@ class ERP_mailbox_api
 		$this->_mail_delete						= plugin_config_get( 'mail_delete' );
 		$this->_mail_disposable_email_checker	= plugin_config_get( 'mail_disposable_email_checker' );
 		$this->_mail_fallback_mail_reporter		= plugin_config_get( 'mail_fallback_mail_reporter' );
-		$this->_mail_fetch_max					= plugin_config_get( 'mail_fetch_max' );
 		$this->_mail_nodescription				= plugin_config_get( 'mail_nodescription' );
 		$this->_mail_nosubject					= plugin_config_get( 'mail_nosubject' );
 		$this->_mail_preferred_username			= plugin_config_get( 'mail_preferred_username' );
@@ -173,74 +171,67 @@ class ERP_mailbox_api
 				// Check whether EmailReporting supports the mailbox type. The check is based on available default ports
 				if ( isset( $this->_default_ports[ $this->_mailbox[ 'mailbox_type' ] ] ) )
 				{
-					if ( $this->check_fetch_max() === FALSE )
+					if ( project_exists( $this->_mailbox[ 'project_id' ] ) )
 					{
-						if ( project_exists( $this->_mailbox[ 'project_id' ] ) )
+						if ( category_exists( $this->_mailbox[ 'global_category_id' ] ) )
 						{
-							if ( category_exists( $this->_mailbox[ 'global_category_id' ] ) )
+							$t_upload_folder_passed = TRUE;
+
+							if ( $this->_allow_file_upload && $this->_file_upload_method == DISK )
 							{
-								$t_upload_folder_passed = TRUE;
+								$t_upload_folder_passed = FALSE;
 
-								if ( $this->_allow_file_upload && $this->_file_upload_method == DISK )
+								$t_file_path = project_get_field( $this->_mailbox[ 'project_id' ], 'file_path' );
+								if( $t_file_path == '' )
 								{
-									$t_upload_folder_passed = FALSE;
-
-									$t_file_path = project_get_field( $this->_mailbox[ 'project_id' ], 'file_path' );
-									if( $t_file_path == '' )
-									{
-										$t_file_path = config_get( 'absolute_path_default_upload_folder' );
-									}
-
-									$t_file_path = ERP_prepare_directory_string( $t_file_path, TRUE );
-									$t_real_file_path = ERP_prepare_directory_string( $t_file_path );
-
-									if( !file_exists( $t_file_path ) || !is_dir( $t_file_path ) || !is_writable( $t_file_path ) || !is_readable( $t_file_path ) )
-									{
-										$this->custom_error( 'Upload folder is not writable: ' . $t_file_path . "\n" );
-									}
-									elseif ( strcasecmp( $t_real_file_path, $t_file_path ) !== 0 )
-									{
-										$this->custom_error( 'Upload folder is not an absolute path' . "\n" .
-											'Upload folder: ' . $t_file_path . "\n" .
-											'Absolute path: ' . $t_real_file_path . "\n" );
-									}
-									else
-									{
-										$t_upload_folder_passed = TRUE;
-									}
+									$t_file_path = config_get( 'absolute_path_default_upload_folder' );
 								}
 
-								if ( $t_upload_folder_passed )
+								$t_file_path = ERP_prepare_directory_string( $t_file_path, TRUE );
+								$t_real_file_path = ERP_prepare_directory_string( $t_file_path );
+
+								if( !file_exists( $t_file_path ) || !is_dir( $t_file_path ) || !is_writable( $t_file_path ) || !is_readable( $t_file_path ) )
 								{
-									$this->prepare_mailbox_hostname();
-
-									if ( !$this->_test_only && $this->_mail_debug )
-									{
-										var_dump( $this->_mailbox );
-									}
-
-									$this->show_memory_usage( 'Start process mailbox' );
-
-									$t_process_mailbox_function = 'process_' . strtolower( $this->_mailbox[ 'mailbox_type' ] ) . '_mailbox';
-
-									$this->$t_process_mailbox_function();
-
-									$this->show_memory_usage( 'Finished process mailbox' );
+									$this->custom_error( 'Upload folder is not writable: ' . $t_file_path . "\n" );
+								}
+								elseif ( strcasecmp( $t_real_file_path, $t_file_path ) !== 0 )
+								{
+									$this->custom_error( 'Upload folder is not an absolute path' . "\n" .
+										'Upload folder: ' . $t_file_path . "\n" .
+										'Absolute path: ' . $t_real_file_path . "\n" );
+								}
+								else
+								{
+									$t_upload_folder_passed = TRUE;
 								}
 							}
-							else
+
+							if ( $t_upload_folder_passed )
 							{
-								$this->custom_error( 'Category does not exist' );
+								$this->prepare_mailbox_hostname();
+
+								if ( !$this->_test_only && $this->_mail_debug )
+								{
+									var_dump( $this->_mailbox );
+								}
+
+								$this->show_memory_usage( 'Start process mailbox' );
+
+								$t_process_mailbox_function = 'process_' . strtolower( $this->_mailbox[ 'mailbox_type' ] ) . '_mailbox';
+
+								$this->$t_process_mailbox_function();
+
+								$this->show_memory_usage( 'Finished process mailbox' );
 							}
 						}
 						else
 						{
-							$this->custom_error( 'Project does not exist' );
+							$this->custom_error( 'Category does not exist' );
 						}
 					}
 					else
 					{
-						$this->custom_error( 'Maximum number of emails retrieved for this session. Waiting for next scheduled job run' );
+						$this->custom_error( 'Project does not exist' );
 					}
 				}
 				else
@@ -316,18 +307,16 @@ class ERP_mailbox_api
 			{
 				if ( project_get_field( $this->_mailbox[ 'project_id' ], 'enabled' ) == TRUE )
 				{
-					$t_numMsg = $this->_mailserver->numMsg();
-					if ( !$this->pear_error( 'Retrieve number of messages', $t_numMsg ) )
+					$t_ListMsgs = $this->_mailserver->getListing();
+					if ( !$this->pear_error( 'Retrieve list of messages', $t_ListMsgs ) )
 					{
-						$t_numMsg = $this->check_fetch_max( $t_numMsg );
-
-						for ( $i = 1; $i <= $t_numMsg; $i++ )
+						while ( $t_Msg = array_shift( $t_ListMsgs ) )
 						{
-							$t_emailresult = $this->process_single_email( $i );
+							$t_emailresult = $this->process_single_email( $t_Msg[ 'msg_id' ] );
 
 							if ( $this->_mail_delete && $t_emailresult )
 							{
-								$t_deleteresult = $this->_mailserver->deleteMsg( $i );
+								$t_deleteresult = $this->_mailserver->deleteMsg( $t_Msg[ 'msg_id' ] );
 
 								$this->pear_error( 'Attempt delete email', $t_deleteresult );
 							}
@@ -387,51 +376,50 @@ class ERP_mailbox_api
 						{
 							if ( $t_project[ 'enabled' ] == TRUE )
 							{
-								if ( $this->check_fetch_max() === FALSE )
+								$t_project_name = $this->cleanup_project_name( $t_project[ 'name' ] );
+
+								$t_foldername = $this->_mailbox[ 'imap_basefolder' ] . ( ( $this->_mailbox[ 'imap_createfolderstructure' ] ) ? $t_hierarchydelimiter . $t_project_name : NULL );
+
+								// We don't need to check twice whether the mailbox exist incase createfolderstructure is false
+								if ( !$this->_mailbox[ 'imap_createfolderstructure' ] || $this->_mailserver->mailboxExist( $t_foldername ) === TRUE )
 								{
-									$t_project_name = $this->cleanup_project_name( $t_project[ 'name' ] );
+									$this->_mailserver->selectMailbox( $t_foldername );
 
-									$t_foldername = $this->_mailbox[ 'imap_basefolder' ] . ( ( $this->_mailbox[ 'imap_createfolderstructure' ] ) ? $t_hierarchydelimiter . $t_project_name : NULL );
+									$t_ListMsgs = $this->_mailserver->getListing();
 
-									// We don't need to check twice whether the mailbox exist incase createfolderstructure is false
-									if ( !$this->_mailbox[ 'imap_createfolderstructure' ] || $this->_mailserver->mailboxExist( $t_foldername ) === TRUE )
+									if ( !$this->pear_error( 'Retrieve list of messages', $t_ListMsgs ) )
 									{
-										$this->_mailserver->selectMailbox( $t_foldername );
-
-										$t_numMsg = $this->_mailserver->numMsg();
-
-										if ( !$this->pear_error( 'Retrieve number of messages', $t_numMsg ) )
+										while ( $t_Msg = array_shift( $t_ListMsgs ) )
 										{
-											// check_fetch_max not performed here as $t_numMsg could contain emails marked as deleted.
-											for ( $i = 1; $i <= $t_numMsg; $i++ )
+											$t_isDeleted = $this->isDeleted( $t_Msg[ 'msg_id' ] );
+
+											if ( $this->pear_error( 'Check email deleted flag', $t_isDeleted ) )
 											{
-												if ( $this->check_fetch_max() === TRUE )
-												{
-													break 2;
-												}
-												elseif ( $this->isDeleted( $i ) === TRUE )
-												{
-													// Email marked as deleted. Do nothing
-												}
-												else
-												{
-													$t_emailresult = $this->process_single_email( $i, (int) $t_project[ 'id' ] );
+												$t_isDeleted = FALSE;
+											}
 
-													if ( $t_emailresult === TRUE )
-													{
-														$t_deleteresult = $this->_mailserver->deleteMsg( $i );
+											if ( $t_isDeleted === TRUE )
+											{
+												// Email marked as deleted. Do nothing
+											}
+											else
+											{
+												$t_emailresult = $this->process_single_email( $t_Msg[ 'msg_id' ], (int) $t_project[ 'id' ] );
 
-														$this->pear_error( 'Attempt delete email', $t_deleteresult );
-													}
+												if ( $t_emailresult === TRUE )
+												{
+													$t_deleteresult = $this->_mailserver->deleteMsg( $t_Msg[ 'msg_id' ] );
+
+													$this->pear_error( 'Attempt delete email', $t_deleteresult );
 												}
 											}
 										}
 									}
-									elseif ( $this->_mailbox[ 'imap_createfolderstructure' ] === TRUE )
-									{
-										// create this mailbox
-										$this->_mailserver->createMailbox( $t_foldername );
-									}
+								}
+								elseif ( $this->_mailbox[ 'imap_createfolderstructure' ] === TRUE )
+								{
+									// create this mailbox
+									$this->_mailserver->createMailbox( $t_foldername );
 								}
 							}
 							else
@@ -1018,25 +1006,6 @@ class ERP_mailbox_api
 		}
 
 		return( TRUE );
-	}
-
-	# --------------------
-	# return whether the current process has reached the mail_fetch_max parameter
-	# $p_numMsg either left empty or contains the number of emails EmailReporting would like to process
-	#  integer will be the number of emails EmailReporting is still allowed and able to process
-	#  boolean will be true or false depending on whether or not the maximum number of emails processed has been reached
-	private function check_fetch_max( $p_numMsg = FALSE )
-	{
-		if ( ( $this->_mails_fetched ) >= $this->_mail_fetch_max )
-		{
-			$t_numMsg_allowed = ( ( $p_numMsg === FALSE ) ? TRUE : 0 );
-		}
-		else
-		{
-			$t_numMsg_allowed = ( ( $p_numMsg === FALSE ) ? FALSE : min( $p_numMsg, ( $this->_mail_fetch_max - $this->_mails_fetched ) ) );
-		}
-
-		return( $t_numMsg_allowed );
 	}
 
 	# --------------------

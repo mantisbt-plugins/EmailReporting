@@ -51,7 +51,6 @@ $s_plugin_EmailReporting_mail_delete = 'Delete processed email from the mailbox'
 $s_plugin_EmailReporting_mail_disposable_email_checker = 'Disposable email address checker of MantisBT';
 $s_plugin_EmailReporting_mail_email_receive_own = 'Should users receive emails for their own actions (N/A if email_receive_own = ON)';
 $s_plugin_EmailReporting_mail_fallback_mail_reporter = 'Enable fallback to default reporter';
-$s_plugin_EmailReporting_mail_fetch_max = 'Maximum fetched emails per execution of the scheduled job (see documentation)';
 $s_plugin_EmailReporting_mail_nodescription = 'Use this text if no description is found in the email';
 $s_plugin_EmailReporting_mail_nosubject = 'Use this text if no subject is found in the email';
 $s_plugin_EmailReporting_mail_parse_html = 'Parse HTML emails';
