@@ -18,14 +18,14 @@ $f_gpc = array(
 	'mail_disposable_email_checker'	=> gpc_get_int( 'mail_disposable_email_checker' ),
 	'mail_email_receive_own'		=> gpc_get_int( 'mail_email_receive_own' ),
 	'mail_fallback_mail_reporter'	=> gpc_get_int( 'mail_fallback_mail_reporter' ),
-	'mail_fetch_max'				=> gpc_get_int( 'mail_fetch_max' ),
 	'mail_nodescription'			=> gpc_get_string( 'mail_nodescription' ),
 	'mail_nosubject'				=> gpc_get_string( 'mail_nosubject' ),
 	'mail_parse_html'				=> gpc_get_int( 'mail_parse_html' ),
 	'mail_preferred_username'		=> gpc_get_string( 'mail_preferred_username' ),
-    'mail_preferred_realname'       => gpc_get_string( 'mail_preferred_realname' ),
+	'mail_preferred_realname'		=> gpc_get_string( 'mail_preferred_realname' ),
 	'mail_remove_mantis_email'		=> gpc_get_int( 'mail_remove_mantis_email' ),
 	'mail_remove_replies'			=> gpc_get_int( 'mail_remove_replies' ),
+	'mail_strip_gmail_style_replies'=> gpc_get_int( 'mail_strip_gmail_style_replies' ),
 	'mail_remove_replies_after'		=> gpc_get_string( 'mail_remove_replies_after' ),
 	'mail_removed_reply_text'		=> gpc_get_string( 'mail_removed_reply_text' ),
 	'mail_reporter_id'				=> gpc_get_int( 'mail_reporter_id' ),
@@ -38,7 +38,8 @@ $f_gpc = array(
 	'mail_subject_id_regex'			=> gpc_get_string( 'mail_subject_id_regex' ),
 	'mail_use_bug_priority'			=> gpc_get_int( 'mail_use_bug_priority' ),
 	'mail_use_reporter'				=> gpc_get_int( 'mail_use_reporter' ),
-	'mail_use_message_id'				=> gpc_get_int( 'mail_use_message_id' ),
+	'mail_add_users_from_cc_to'		=> gpc_get_int( 'mail_add_users_from_cc_to' ),
+	'mail_use_message_id'			=> gpc_get_int( 'mail_use_message_id' ),
 );
 
 $f_mail_bug_priority				= 'array (' . "\n" . gpc_get_string( 'mail_bug_priority' ) . "\n" . ')';

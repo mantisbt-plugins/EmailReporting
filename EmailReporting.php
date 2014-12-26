@@ -51,6 +51,9 @@ class EmailReportingPlugin extends MantisPlugin
 			# Add complete email into the attachments
 			'mail_add_complete_email'		=> OFF,
 
+			// Add users from Cc and To field in mail header
+			'mail_add_users_from_cc_to'		=> OFF,
+
 			# Signup new users automatically (possible security risk!)
 			# Default is OFF, if mail_use_reporter is OFF and this is OFF then it will
 			# fallback to the mail_reporter account above
@@ -105,10 +108,6 @@ class EmailReportingPlugin extends MantisPlugin
 			# Enable fallback to mail reporter
 			'mail_fallback_mail_reporter'	=> ON,
 
-			# How many mails should be fetched at the same time
-			# If big mails with attachments should be received, specify only one
-			'mail_fetch_max'				=> 1,
-
 			# Use the following text when the description is missing from the email
 			'mail_nodescription'			=> 'No description found',
 
@@ -153,6 +152,9 @@ class EmailReportingPlugin extends MantisPlugin
 			# Do you want to secure the EmailReporting script so that it cannot be run
 			# via a webserver?
 			'mail_secured_script'			=> ON,
+
+			//Strip Gmail style replies from body of the message
+			'mail_strip_gmail_style_replies'	=> OFF,
 
 			#Removes the signature that are delimited by mail_strip_signature_delim
 			'mail_strip_signature'			=> OFF,
@@ -546,6 +548,13 @@ class EmailReportingPlugin extends MantisPlugin
 			plugin_config_set( 'reset_schema', 1 );
 
 			plugin_config_set( 'config_version', 13 );
+		}
+
+		if ( $t_config_version <= 13 )
+		{
+			plugin_config_delete( 'mail_fetch_max' );
+
+			plugin_config_set( 'config_version', 14 );
 		}
 	}
 

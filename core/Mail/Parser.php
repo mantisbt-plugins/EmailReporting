@@ -26,6 +26,8 @@ class ERP_Mail_Parser
 	private $_body;
 	private $_parts = array();
 	private $_ctype = array();
+	private $_cc = array();
+	private $_to = array();
 
 	private $_mb_list_encodings = array();
 
@@ -233,6 +235,16 @@ class ERP_Mail_Parser
 		return( $this->_from );
 	}
 
+	public function to()
+	{
+		return( $this->_to );
+	}
+
+	public function cc()
+	{
+		return( $this->_cc );
+	}
+
 	public function subject()
 	{
 		return( $this->_subject );
@@ -273,8 +285,8 @@ class ERP_Mail_Parser
 		$this->setFrom( $structure->headers['from'] );
 		$this->setSubject( $structure->headers['subject'] );
 
- 		if ( isset( $structure->headers['x-priority'] ) )
- 		{
+		if ( isset( $structure->headers['x-priority'] ) )
+		{
 			$this->setPriority( $structure->headers['x-priority'] );
 		}
 
@@ -307,6 +319,13 @@ class ERP_Mail_Parser
 		if ( isset( $structure->parts ) )
 		{
 			$this->setParts( $structure->parts );
+		}
+
+		$this->setTo( $structure->headers['to'] );
+
+		if ( isset( $structure->headers['cc'] ) )
+		{
+			$this->setCc( $structure->headers['cc'] );
 		}
 	}
 
@@ -344,6 +363,29 @@ class ERP_Mail_Parser
     {
         $this->_inreplyto = trim( $p_inreplyto );
     }
+
+	private function setTo( $p_to )
+	{
+		$regex = '([\\w-+]+(?:\\.[\\w-+]+)*@(?:[\\w-]+\\.)+[a-zA-Z]{2,7})';
+		if( preg_match_all ( "/" . $regex . "/is", $p_to, $matches ) )
+		{
+			$this->_to = $matches[1];
+		}
+	}
+
+	private function setCc( $p_cc )
+	{
+		$regex = '([\\w-+]+(?:\\.[\\w-+]+)*@(?:[\\w-]+\\.)+[a-zA-Z]{2,7})';
+		if( preg_match_all ( "/" . $regex . "/is", $p_cc, $matches ) )
+		{
+			$this->_cc = $matches[1];
+		}
+	}
+
+	private function setPriority( $priority )
+	{
+		$this->_priority = $priority;
+	}
 
 	private function setContentType( $primary, $secondary )
 	{

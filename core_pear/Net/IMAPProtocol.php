@@ -506,7 +506,7 @@ class Net_IMAPProtocol
      */
     function cmdLogin($uid, $pwd)
     {
-        $param = '"' . $uid . '" "'. $pwd .'"';
+        $param = self::escape($uid) . ' ' . self::escape($pwd);
         return $this->_genericCommand('LOGIN', $param);
     }
 
@@ -3822,6 +3822,40 @@ class Net_IMAPProtocol
                 return substr($string, $start);
             }
         }
+    }
+
+
+    /**
+     * Escapes a string when it contains special characters (RFC3501)
+     *
+     * @param string  $string       IMAP string
+     * @param boolean $force_quotes Forces string quoting (for atoms)
+     *
+     * @return string String atom, quoted-string or string literal
+     * @todo lists
+     */
+    static function escape($string, $force_quotes = false)
+    {
+        if ($string === null) {
+            return 'NIL';
+        }
+
+        if ($string === '') {
+            return '""';
+        }
+
+        // atom-string (only safe characters)
+        if (!$force_quotes && !preg_match('/[\x00-\x20\x22\x25\x28-\x2A\x5B-\x5D\x7B\x7D\x80-\xFF]/', $string)) {
+            return $string;
+        }
+
+        // quoted-string
+        if (!preg_match('/[\r\n\x00\x80-\xFF]/', $string)) {
+            return '"' . addcslashes($string, '\\"') . '"';
+        }
+
+        // literal-string
+        return sprintf("{%d}\r\n%s", strlen($string), $string);
     }
 
 }//Class

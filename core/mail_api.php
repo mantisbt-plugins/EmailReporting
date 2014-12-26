@@ -43,6 +43,7 @@ class ERP_mailbox_api
 	private $_mail_add_bug_reports;
 	private $_mail_add_bugnotes;
 	private $_mail_add_complete_email;
+	private $_mail_add_users_from_cc_to;
 	private $_mail_auto_signup;
 	private $_mail_block_attachments_md5;
 	private $_mail_block_attachments_logging;
@@ -53,7 +54,6 @@ class ERP_mailbox_api
 	private $_mail_delete;
 	private $_mail_disposable_email_checker;
 	private $_mail_fallback_mail_reporter;
-	private $_mail_fetch_max;
 	private $_mail_nodescription;
 	private $_mail_nosubject;
 	private $_mail_preferred_username;
@@ -65,6 +65,7 @@ class ERP_mailbox_api
 	private $_mail_reporter_id;
 	private $_mail_save_from;
 	private $_mail_save_subject_in_note;
+	private $_mail_strip_gmail_style_replies;
 	private $_mail_strip_signature;
 	private $_mail_strip_signature_delim;
 	private $_mail_subject_id_regex;
@@ -92,6 +93,7 @@ class ERP_mailbox_api
 		$this->_mail_add_bug_reports			= plugin_config_get( 'mail_add_bug_reports' );
 		$this->_mail_add_bugnotes				= plugin_config_get( 'mail_add_bugnotes' );
 		$this->_mail_add_complete_email			= plugin_config_get( 'mail_add_complete_email' );
+		$this->_mail_add_users_from_cc_to		= plugin_config_get( 'mail_add_users_from_cc_to' );
 		$this->_mail_auto_signup				= plugin_config_get( 'mail_auto_signup' );
 		$this->_mail_block_attachments_md5		= plugin_config_get( 'mail_block_attachments_md5' );
 		$this->_mail_block_attachments_logging	= plugin_config_get( 'mail_block_attachments_logging' );
@@ -102,7 +104,6 @@ class ERP_mailbox_api
 		$this->_mail_delete						= plugin_config_get( 'mail_delete' );
 		$this->_mail_disposable_email_checker	= plugin_config_get( 'mail_disposable_email_checker' );
 		$this->_mail_fallback_mail_reporter		= plugin_config_get( 'mail_fallback_mail_reporter' );
-		$this->_mail_fetch_max					= plugin_config_get( 'mail_fetch_max' );
 		$this->_mail_nodescription				= plugin_config_get( 'mail_nodescription' );
 		$this->_mail_nosubject					= plugin_config_get( 'mail_nosubject' );
 		$this->_mail_preferred_username			= plugin_config_get( 'mail_preferred_username' );
@@ -114,6 +115,7 @@ class ERP_mailbox_api
 		$this->_mail_reporter_id				= plugin_config_get( 'mail_reporter_id' );
 		$this->_mail_save_from					= plugin_config_get( 'mail_save_from' );
 		$this->_mail_save_subject_in_note		= plugin_config_get( 'mail_save_subject_in_note' );
+		$this->_mail_strip_gmail_style_replies	= plugin_config_get( 'mail_strip_gmail_style_replies' );
 		$this->_mail_strip_signature			= plugin_config_get( 'mail_strip_signature' );
 		$this->_mail_strip_signature_delim		= plugin_config_get( 'mail_strip_signature_delim' );
 		$this->_mail_subject_id_regex			= plugin_config_get( 'mail_subject_id_regex' );
@@ -171,74 +173,67 @@ class ERP_mailbox_api
 				// Check whether EmailReporting supports the mailbox type. The check is based on available default ports
 				if ( isset( $this->_default_ports[ $this->_mailbox[ 'mailbox_type' ] ] ) )
 				{
-					if ( $this->check_fetch_max() === FALSE )
+					if ( project_exists( $this->_mailbox[ 'project_id' ] ) )
 					{
-						if ( project_exists( $this->_mailbox[ 'project_id' ] ) )
+						if ( category_exists( $this->_mailbox[ 'global_category_id' ] ) )
 						{
-							if ( category_exists( $this->_mailbox[ 'global_category_id' ] ) )
+							$t_upload_folder_passed = TRUE;
+
+							if ( $this->_allow_file_upload && $this->_file_upload_method == DISK )
 							{
-								$t_upload_folder_passed = TRUE;
+								$t_upload_folder_passed = FALSE;
 
-								if ( $this->_allow_file_upload && $this->_file_upload_method == DISK )
+								$t_file_path = project_get_field( $this->_mailbox[ 'project_id' ], 'file_path' );
+								if( $t_file_path == '' )
 								{
-									$t_upload_folder_passed = FALSE;
-
-									$t_file_path = project_get_field( $this->_mailbox[ 'project_id' ], 'file_path' );
-									if( $t_file_path == '' )
-									{
-										$t_file_path = config_get( 'absolute_path_default_upload_folder' );
-									}
-
-									$t_file_path = ERP_prepare_directory_string( $t_file_path, TRUE );
-									$t_real_file_path = ERP_prepare_directory_string( $t_file_path );
-
-									if( !file_exists( $t_file_path ) || !is_dir( $t_file_path ) || !is_writable( $t_file_path ) || !is_readable( $t_file_path ) )
-									{
-										$this->custom_error( 'Upload folder is not writable: ' . $t_file_path . "\n" );
-									}
-									elseif ( strcasecmp( $t_real_file_path, $t_file_path ) !== 0 )
-									{
-										$this->custom_error( 'Upload folder is not an absolute path' . "\n" .
-											'Upload folder: ' . $t_file_path . "\n" .
-											'Absolute path: ' . $t_real_file_path . "\n" );
-									}
-									else
-									{
-										$t_upload_folder_passed = TRUE;
-									}
+									$t_file_path = config_get( 'absolute_path_default_upload_folder' );
 								}
 
-								if ( $t_upload_folder_passed )
+								$t_file_path = ERP_prepare_directory_string( $t_file_path, TRUE );
+								$t_real_file_path = ERP_prepare_directory_string( $t_file_path );
+
+								if( !file_exists( $t_file_path ) || !is_dir( $t_file_path ) || !is_writable( $t_file_path ) || !is_readable( $t_file_path ) )
 								{
-									$this->prepare_mailbox_hostname();
-
-									if ( !$this->_test_only && $this->_mail_debug )
-									{
-										var_dump( $this->_mailbox );
-									}
-
-									$this->show_memory_usage( 'Start process mailbox' );
-
-									$t_process_mailbox_function = 'process_' . strtolower( $this->_mailbox[ 'mailbox_type' ] ) . '_mailbox';
-
-									$this->$t_process_mailbox_function();
-
-									$this->show_memory_usage( 'Finished process mailbox' );
+									$this->custom_error( 'Upload folder is not writable: ' . $t_file_path . "\n" );
+								}
+								elseif ( strcasecmp( $t_real_file_path, $t_file_path ) !== 0 )
+								{
+									$this->custom_error( 'Upload folder is not an absolute path' . "\n" .
+										'Upload folder: ' . $t_file_path . "\n" .
+										'Absolute path: ' . $t_real_file_path . "\n" );
+								}
+								else
+								{
+									$t_upload_folder_passed = TRUE;
 								}
 							}
-							else
+
+							if ( $t_upload_folder_passed )
 							{
-								$this->custom_error( 'Category does not exist' );
+								$this->prepare_mailbox_hostname();
+
+								if ( !$this->_test_only && $this->_mail_debug )
+								{
+									var_dump( $this->_mailbox );
+								}
+
+								$this->show_memory_usage( 'Start process mailbox' );
+
+								$t_process_mailbox_function = 'process_' . strtolower( $this->_mailbox[ 'mailbox_type' ] ) . '_mailbox';
+
+								$this->$t_process_mailbox_function();
+
+								$this->show_memory_usage( 'Finished process mailbox' );
 							}
 						}
 						else
 						{
-							$this->custom_error( 'Project does not exist' );
+							$this->custom_error( 'Category does not exist' );
 						}
 					}
 					else
 					{
-						$this->custom_error( 'Maximum number of emails retrieved for this session. Waiting for next scheduled job run' );
+						$this->custom_error( 'Project does not exist' );
 					}
 				}
 				else
@@ -314,18 +309,16 @@ class ERP_mailbox_api
 			{
 				if ( project_get_field( $this->_mailbox[ 'project_id' ], 'enabled' ) == TRUE )
 				{
-					$t_numMsg = $this->_mailserver->numMsg();
-					if ( !$this->pear_error( 'Retrieve number of messages', $t_numMsg ) )
+					$t_ListMsgs = $this->_mailserver->getListing();
+					if ( !$this->pear_error( 'Retrieve list of messages', $t_ListMsgs ) )
 					{
-						$t_numMsg = $this->check_fetch_max( $t_numMsg );
-
-						for ( $i = 1; $i <= $t_numMsg; $i++ )
+						while ( $t_Msg = array_shift( $t_ListMsgs ) )
 						{
-							$t_emailresult = $this->process_single_email( $i );
+							$t_emailresult = $this->process_single_email( $t_Msg[ 'msg_id' ] );
 
 							if ( $this->_mail_delete && $t_emailresult )
 							{
-								$t_deleteresult = $this->_mailserver->deleteMsg( $i );
+								$t_deleteresult = $this->_mailserver->deleteMsg( $t_Msg[ 'msg_id' ] );
 
 								$this->pear_error( 'Attempt delete email', $t_deleteresult );
 							}
@@ -385,51 +378,50 @@ class ERP_mailbox_api
 						{
 							if ( $t_project[ 'enabled' ] == TRUE )
 							{
-								if ( $this->check_fetch_max() === FALSE )
+								$t_project_name = $this->cleanup_project_name( $t_project[ 'name' ] );
+
+								$t_foldername = $this->_mailbox[ 'imap_basefolder' ] . ( ( $this->_mailbox[ 'imap_createfolderstructure' ] ) ? $t_hierarchydelimiter . $t_project_name : NULL );
+
+								// We don't need to check twice whether the mailbox exist incase createfolderstructure is false
+								if ( !$this->_mailbox[ 'imap_createfolderstructure' ] || $this->_mailserver->mailboxExist( $t_foldername ) === TRUE )
 								{
-									$t_project_name = $this->cleanup_project_name( $t_project[ 'name' ] );
+									$this->_mailserver->selectMailbox( $t_foldername );
 
-									$t_foldername = $this->_mailbox[ 'imap_basefolder' ] . ( ( $this->_mailbox[ 'imap_createfolderstructure' ] ) ? $t_hierarchydelimiter . $t_project_name : NULL );
+									$t_ListMsgs = $this->_mailserver->getListing();
 
-									// We don't need to check twice whether the mailbox exist incase createfolderstructure is false
-									if ( !$this->_mailbox[ 'imap_createfolderstructure' ] || $this->_mailserver->mailboxExist( $t_foldername ) === TRUE )
+									if ( !$this->pear_error( 'Retrieve list of messages', $t_ListMsgs ) )
 									{
-										$this->_mailserver->selectMailbox( $t_foldername );
-
-										$t_numMsg = $this->_mailserver->numMsg();
-
-										if ( !$this->pear_error( 'Retrieve number of messages', $t_numMsg ) )
+										while ( $t_Msg = array_shift( $t_ListMsgs ) )
 										{
-											// check_fetch_max not performed here as $t_numMsg could contain emails marked as deleted.
-											for ( $i = 1; $i <= $t_numMsg; $i++ )
+											$t_isDeleted = $this->isDeleted( $t_Msg[ 'msg_id' ] );
+
+											if ( $this->pear_error( 'Check email deleted flag', $t_isDeleted ) )
 											{
-												if ( $this->check_fetch_max() === TRUE )
-												{
-													break 2;
-												}
-												elseif ( $this->_mailserver->isDeleted( $i ) === TRUE )
-												{
-													// Email marked as deleted. Do nothing
-												}
-												else
-												{
-													$t_emailresult = $this->process_single_email( $i, (int) $t_project[ 'id' ] );
+												$t_isDeleted = FALSE;
+											}
 
-													if ( $t_emailresult === TRUE )
-													{
-														$t_deleteresult = $this->_mailserver->deleteMsg( $i );
+											if ( $t_isDeleted === TRUE )
+											{
+												// Email marked as deleted. Do nothing
+											}
+											else
+											{
+												$t_emailresult = $this->process_single_email( $t_Msg[ 'msg_id' ], (int) $t_project[ 'id' ] );
 
-														$this->pear_error( 'Attempt delete email', $t_deleteresult );
-													}
+												if ( $t_emailresult === TRUE )
+												{
+													$t_deleteresult = $this->_mailserver->deleteMsg( $t_Msg[ 'msg_id' ] );
+
+													$this->pear_error( 'Attempt delete email', $t_deleteresult );
 												}
 											}
 										}
 									}
-									elseif ( $this->_mailbox[ 'imap_createfolderstructure' ] === TRUE )
-									{
-										// create this mailbox
-										$this->_mailserver->createMailbox( $t_foldername );
-									}
+								}
+								elseif ( $this->_mailbox[ 'imap_createfolderstructure' ] === TRUE )
+								{
+									// create this mailbox
+									$this->_mailserver->createMailbox( $t_foldername );
 								}
 							}
 							else
@@ -523,7 +515,7 @@ class ERP_mailbox_api
 
 	# --------------------
 	# Return a single raw email
-	# Handles a workaround for problems with Net_IMAP 1.1.0 and 1.1.2
+	# Handles a workaround for problems with Net_IMAP 1.1.x concerning the getMsg function
 	private function getMsg( $p_msg_id )
 	{
 		if ( $this->_mailbox[ 'mailbox_type' ] === 'IMAP' )
@@ -542,6 +534,34 @@ class ERP_mailbox_api
 		}
 
 		return( $t_msg );
+	}
+
+	# --------------------
+	# Check whether a email is deleted
+	# for IMAP only function
+	# Handles a workaround for problems with Net_IMAP 1.1.x with the hasFlag function (isDeleted uses that function)
+	private function isDeleted( $message_nro )
+	{
+//		return $this->hasFlag($message_nro, '\Deleted');
+		$flag = '\Deleted';
+
+		if ( ( $resp = $this->_mailserver->getFlags( $message_nro ) ) instanceOf PEAR_Error )
+		{
+			return $resp;
+		}
+
+		if ( isset( $resp[ 0 ] ) )
+		{
+			if ( is_array( $resp[ 0 ] ) )
+			{
+				if ( in_array( $flag, $resp[ 0 ] ) )
+				{
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	# --------------------
@@ -571,6 +591,9 @@ class ERP_mailbox_api
 		$t_email[ 'Reporter_id' ] = $this->get_user( $t_email[ 'From_parsed' ] );
 
 		$t_email[ 'Subject' ] = trim( $t_mp->subject() );
+
+		$t_email[ 'To' ] = $t_mp->to();
+		$t_email[ 'Cc' ] = $t_mp->cc();
 
 		$t_email[ 'X-Mantis-Body' ] = trim( $t_mp->body() );
 
@@ -614,23 +637,8 @@ class ERP_mailbox_api
 		}
 		else
 		{
-			$t_reporter_id = FALSE;
-
 			// Try to get the reporting users id
-			if ( $this->_login_method == LDAP && $this->_use_ldap_email )
-			{
-				$t_username = ERP_ldap_get_username_from_email( $p_parsed_from[ 'email' ] );
-
-				if ( $t_username !== NULL && user_is_name_valid( $t_username ) )
-				{
-					$t_reporter_id = user_get_id_by_name( $t_username );
-				}
-			}
-
-			if ( !$t_reporter_id )
-			{
-				$t_reporter_id = user_get_id_by_email( $p_parsed_from[ 'email' ] );
-			}
+			$t_reporter_id = $this->get_userid_from_email( $p_parsed_from[ 'email' ] );
 
 			if ( !$t_reporter_id )
 			{
@@ -704,6 +712,30 @@ class ERP_mailbox_api
 	}
 
 	# --------------------
+	# Try to obtain an existing userid based on an email address
+	private function get_userid_from_email( $p_email_address )
+	{
+		$t_reporter_id = FALSE;
+		
+		if ( $this->_use_ldap_email )
+		{
+			$t_username = $this->ldap_get_username_from_email( $p_email_address );
+
+			if ( $t_username !== NULL && user_is_name_valid( $t_username ) )
+			{
+				$t_reporter_id = user_get_id_by_name( $t_username );
+			}
+		}
+
+		if ( !$t_reporter_id )
+		{
+			$t_reporter_id = user_get_id_by_email( $p_email_address );
+		}
+
+		return( $t_reporter_id );
+	}
+
+	# --------------------
 	# Adds a bug which is reported via email
 	# Taken from bug_report.php in MantisBT 1.2.0
 	private function add_bug( &$p_email, $p_overwrite_project_id = FALSE )
@@ -733,6 +765,9 @@ class ERP_mailbox_api
 			$t_description = $this->identify_replies( $t_description );
 			$t_description = $this->strip_signature( $t_description );
 			$t_description = $this->add_additional_info( 'note', $p_email, $t_description );
+
+			$t_project_id = bug_get_field( $t_bug_id, 'project_id' );
+			ERP_set_temporary_overwrite( 'project_override', $t_project_id );
 
 			# Event integration
 			# Core mantis event already exists within bugnote_add function
@@ -880,8 +915,6 @@ class ERP_mailbox_api
 			event_signal( 'EVENT_REPORT_BUG', array( $t_bug_data, $t_bug_id ) );
 
 			email_new_bug( $t_bug_id );
-
-			ERP_set_temporary_overwrite( 'project_override', NULL );
 		}
 		else
 		{
@@ -932,8 +965,13 @@ class ERP_mailbox_api
 			}
 		}
 
+		//Add the users in Cc and To list in mail header
+		$this->add_monitors( $t_bug_id, $p_email );
+
+		ERP_set_temporary_overwrite( 'project_override', NULL );
+
 		$this->show_memory_usage( 'Finished processing attachments' );
-}
+	}
 
 	# --------------------
 	# Very dirty: Adds a file to a bug.
@@ -992,25 +1030,6 @@ class ERP_mailbox_api
 	}
 
 	# --------------------
-	# return whether the current process has reached the mail_fetch_max parameter
-	# $p_numMsg either left empty or contains the number of emails EmailReporting would like to process
-	#  integer will be the number of emails EmailReporting is still allowed and able to process
-	#  boolean will be true or false depending on whether or not the maximum number of emails processed has been reached
-	private function check_fetch_max( $p_numMsg = FALSE )
-	{
-		if ( ( $this->_mails_fetched ) >= $this->_mail_fetch_max )
-		{
-			$t_numMsg_allowed = ( ( $p_numMsg === FALSE ) ? TRUE : 0 );
-		}
-		else
-		{
-			$t_numMsg_allowed = ( ( $p_numMsg === FALSE ) ? FALSE : min( $p_numMsg, ( $this->_mail_fetch_max - $this->_mails_fetched ) ) );
-		}
-
-		return( $t_numMsg_allowed );
-	}
-
-	# --------------------
 	# Translate the project name into an IMAP folder name:
 	# - translate all accented characters to plain ASCII equivalents
 	# - replace all but alphanum chars and space and colon to dashes
@@ -1033,15 +1052,20 @@ class ERP_mailbox_api
 	# return the hostname parsed into a hostname + port
 	private function prepare_mailbox_hostname()
 	{
-		if ( $this->_mailbox[ 'encryption' ] !== 'None' && extension_loaded( 'openssl' ) )
-		{
-			$this->_mailbox[ 'hostname' ] = strtolower( $this->_mailbox[ 'encryption' ] ) . '://' . $this->_mailbox[ 'hostname' ];
+		$t_def_mailbox_port_index = 'normal';
 
-			$t_def_mailbox_port_index = 'encrypted';
-		}
-		else
+		if ( $this->_mailbox[ 'encryption' ] !== 'None' )
 		{
-			$t_def_mailbox_port_index = 'normal';
+			if ( extension_loaded( 'openssl' ) )
+			{
+				$this->_mailbox[ 'hostname' ] = strtolower( $this->_mailbox[ 'encryption' ] ) . '://' . $this->_mailbox[ 'hostname' ];
+
+				$t_def_mailbox_port_index = 'encrypted';
+			}
+			else
+			{
+				$this->custom_error( 'OpenSSL plugin not available even though the mailbox is configured to use it. Please check whether OpenSSL is properly being loaded' );
+			}
 		}
 
 		$this->_mailbox[ 'port' ] = (int) $this->_mailbox[ 'port' ];
@@ -1118,10 +1142,7 @@ class ERP_mailbox_api
 				break;
 
 			case 'from_ldap':
-				if ( $this->_login_method == LDAP )
-				{
-					$t_username = ERP_ldap_get_username_from_email( $p_user_info[ 'email' ] );
-				}
+				$t_username = $this->ldap_get_username_from_email( $p_user_info[ 'email' ] );
 				break;
 
 			case 'name':
@@ -1154,7 +1175,7 @@ class ERP_mailbox_api
 			$t_username = utf8_substr( $t_username, 0, ( DB_FIELD_SIZE_USERNAME - strlen( $p_rand ) ) );
 		}
 
-		$t_username = $t_username . $t_rand;
+		$t_username = $t_username . $p_rand;
 
 		if ( user_is_name_valid( $t_username ) && user_is_name_unique( $t_username ) )
 		{
@@ -1355,6 +1376,15 @@ class ERP_mailbox_api
 			{
 				$t_description = substr( $t_description, 0, $t_first_occurence ) . $this->_mail_removed_reply_text;
 			}
+
+			//remove gmail style replies
+			if( $this->_mail_strip_gmail_style_replies )
+			{
+				$t_description = preg_replace( '/^\s*>?\s*On\b.*\bwrote:.*?/msU', "\n", $t_description );
+			}
+
+			//append the mail removed notice.
+			$t_description .= $this->_mail_removed_reply_text;
 		}
 
 		if ( $this->_mail_remove_mantis_email )
@@ -1421,7 +1451,7 @@ class ERP_mailbox_api
 
 		if ( $this->_mail_strip_signature && strlen( trim( $this->_mail_strip_signature_delim ) ) > 1 )
 		{
-			$t_parts = preg_split( '/((?:\r|\n|\n\r)' . $this->_mail_strip_signature_delim . '\s*(?:\r|\n|\n\r))/', $t_description, -1, PREG_SPLIT_DELIM_CAPTURE );
+			$t_parts = preg_split( '/((?:\r|\n|\r\n)' . $this->_mail_strip_signature_delim . '\s*(?:\r|\n|\r\n))/', $t_description, -1, PREG_SPLIT_DELIM_CAPTURE );
 
 			if ( count( $t_parts ) > 2 ) // String should not start with the delimiter so that why we need at least 3 parts
 			{
@@ -1448,6 +1478,112 @@ class ERP_mailbox_api
 				'Peak real memory usage: ' . ERP_formatbytes( memory_get_peak_usage( TRUE ) ) . ' / ' . $this->_memory_limit . "\n";
 		}
 	}
+
+	// --------------------
+	// Add monitors from Cc and To fields in mail header
+	private function add_monitors( $p_bug_id, $p_email )
+	{
+		if ( $this->_mail_add_users_from_cc_to )
+		{
+			$t_emails = array_merge( $p_email[ 'To' ], $p_email[ 'Cc' ] );
+
+			foreach( $t_emails as $t_email )
+			{
+				$t_user_id = $this->get_userid_from_email( $t_email );
+
+				$this->custom_error( 'Monitor: ' . $t_user_id . ' - ' . $t_email . ' --> Issue ID: #' . $p_bug_id, FALSE );
+
+				if( $t_user_id !== FALSE ) 
+				{ 
+					// Make sure that mail_reporter_id and reporter_id are not added as a monitors.
+					if( $this->_mail_reporter_id != $t_user_id && $p_email[ 'Reporter_id' ] != $t_user_id )
+					{
+						bug_monitor( $p_bug_id, $t_user_id );
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Gets the username from LDAP given the email address
+	 *
+	 * @todo Implement caching by retrieving all needed information in one query.
+	 * @todo Implement logging to LDAP queries same way like DB queries.
+	 *
+	 * @param string $p_email_address The email address.
+	 * @return string The username or null if not found.
+	 *
+	 * Based on ldap_get_field_from_username from MantisBT 1.2.14
+	 */
+	private function ldap_get_username_from_email( $p_email_address )
+	{
+		if ( $this->_login_method == LDAP )
+		{
+			$t_email_field = 'mail';
+
+			$t_ldap_organization    = config_get( 'ldap_organization' );
+			$t_ldap_root_dn         = config_get( 'ldap_root_dn' );
+			$t_ldap_uid_field       = config_get( 'ldap_uid_field' );
+
+			$c_email_address = ldap_escape_string( $p_email_address );
+
+			log_event( LOG_LDAP, "Retrieving field '$t_ldap_uid_field' for '$p_email_address'" );
+
+			# Bind
+			log_event( LOG_LDAP, "Binding to LDAP server" );
+			$t_ds = @ldap_connect_bind();
+			if ( $t_ds === false ) {
+				ldap_log_error( $t_ds );
+				return null;
+			}
+
+			# Search
+			$t_search_filter        = "(&$t_ldap_organization($t_email_field=$c_email_address))";
+			$t_search_attrs         = array( $t_ldap_uid_field, $t_email_field, 'dn' );
+
+			log_event( LOG_LDAP, "Searching for $t_search_filter" );
+			$t_sr = @ldap_search( $t_ds, $t_ldap_root_dn, $t_search_filter, $t_search_attrs );
+			if ( $t_sr === false ) {
+				ldap_log_error( $t_ds );
+				ldap_unbind( $t_ds );
+				log_event( LOG_LDAP, "ldap search failed" );
+				return null;
+			}
+
+			# Get results
+			$t_info = ldap_get_entries( $t_ds, $t_sr );
+			if ( $t_info === false ) {
+				ldap_log_error( $t_ds );
+				log_event( LOG_LDAP, "ldap_get_entries() returned false." );
+				return null;
+			}
+
+			# Free results / unbind
+			log_event( LOG_LDAP, "Unbinding from LDAP server" );
+			ldap_free_result( $t_sr );
+			ldap_unbind( $t_ds );
+
+			# If no matches, return null.
+			if ( $t_info['count'] == 0 ) {
+				log_event( LOG_LDAP, "No matches found." );
+				return null;
+			}
+
+			# Make sure the requested field exists
+			if( is_array($t_info[0]) && array_key_exists( strtolower( $t_ldap_uid_field ), $t_info[0] ) ) {
+				$t_value = $t_info[0][ strtolower( $t_ldap_uid_field ) ][0];
+				log_event( LOG_LDAP, "Found value '{$t_value}' for field '{$t_ldap_uid_field}'." );
+			} else {
+				log_event( LOG_LDAP, "WARNING: field '$t_ldap_uid_field' does not exist" );
+				return null;
+			}
+
+			return $t_value;
+		}
+
+		return null;
+	}
 }
 
 	# --------------------
@@ -1465,79 +1601,5 @@ class ERP_mailbox_api
 		}
 
 		return( round( $t_bytes, 2 ) . $t_units[ $i ] );
-	}
-
-	/**
-	 * Gets the username from LDAP given the email address
-	 *
-	 * @todo Implement caching by retrieving all needed information in one query.
-	 * @todo Implement logging to LDAP queries same way like DB queries.
-	 *
-	 * @param string $p_email_address The email address.
-	 * @return string The username or null if not found.
-	 *
-	 * Based on ldap_get_field_from_username from MantisBT 1.2.14
-	 */
-	function ERP_ldap_get_username_from_email( $p_email_address ) {
-		$t_email_field = 'mail';
-
-		$t_ldap_organization    = config_get( 'ldap_organization' );
-		$t_ldap_root_dn         = config_get( 'ldap_root_dn' );
-		$t_ldap_uid_field		= config_get( 'ldap_uid_field' );
-
-		$c_email_address = ldap_escape_string( $p_email_address );
-
-		log_event( LOG_LDAP, "Retrieving field '$t_ldap_uid_field' for '$p_email_address'" );
-
-		# Bind
-		log_event( LOG_LDAP, "Binding to LDAP server" );
-		$t_ds = @ldap_connect_bind();
-		if ( $t_ds === false ) {
-			ldap_log_error( $t_ds );
-			return null;
-		}
-
-		# Search
-		$t_search_filter        = "(&$t_ldap_organization($t_email_field=$c_email_address))";
-		$t_search_attrs         = array( $t_ldap_uid_field, $t_email_field, 'dn' );
-
-		log_event( LOG_LDAP, "Searching for $t_search_filter" );
-		$t_sr = @ldap_search( $t_ds, $t_ldap_root_dn, $t_search_filter, $t_search_attrs );
-		if ( $t_sr === false ) {
-			ldap_log_error( $t_ds );
-			ldap_unbind( $t_ds );
-			log_event( LOG_LDAP, "ldap search failed" );
-			return null;
-		}
-
-		# Get results
-		$t_info = ldap_get_entries( $t_ds, $t_sr );
-		if ( $t_info === false ) {
-			ldap_log_error( $t_ds );
-			log_event( LOG_LDAP, "ldap_get_entries() returned false." );
-			return null;
-		}
-
-		# Free results / unbind
-		log_event( LOG_LDAP, "Unbinding from LDAP server" );
-		ldap_free_result( $t_sr );
-		ldap_unbind( $t_ds );
-
-		# If no matches, return null.
-		if ( $t_info['count'] == 0 ) {
-			log_event( LOG_LDAP, "No matches found." );
-			return null;
-		}
-
-		# Make sure the requested field exists
-		if( is_array($t_info[0]) && array_key_exists( strtolower( $t_ldap_uid_field ), $t_info[0] ) ) {
-			$t_value = $t_info[0][ strtolower( $t_ldap_uid_field ) ][0];
-			log_event( LOG_LDAP, "Found value '{$t_value}' for field '{$t_ldap_uid_field}'." );
-		} else {
-			log_event( LOG_LDAP, "WARNING: field '$t_ldap_uid_field' does not exist" );
-			return null;
-		}
-
-		return $t_value;
 	}
 ?>
