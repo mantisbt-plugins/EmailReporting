@@ -339,11 +339,6 @@ class ERP_Mail_Parser
 		$this->_subject = $this->process_header_encoding( $subject );
 	}
 
-    private function setPriority( $priority )
-    {
-        $this->_priority = $priority;
-    }
-
     private function setMessageId( $p_messageid )
     {
         $this->_messageid = trim( $p_messageid );
