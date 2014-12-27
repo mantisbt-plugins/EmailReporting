@@ -71,6 +71,7 @@ class ERP_mailbox_api
 	private $_mail_subject_id_regex;
 	private $_mail_use_bug_priority;
 	private $_mail_use_reporter;
+	private $_mail_use_message_id;
 
 	private $_mp_options = array();
 
@@ -120,6 +121,7 @@ class ERP_mailbox_api
 		$this->_mail_subject_id_regex			= plugin_config_get( 'mail_subject_id_regex' );
 		$this->_mail_use_bug_priority			= plugin_config_get( 'mail_use_bug_priority' );
 		$this->_mail_use_reporter				= plugin_config_get( 'mail_use_reporter' );
+		$this->_mail_use_message_id				= plugin_config_get( 'mail_use_message_id' );
 
 		$this->_mp_options[ 'add_attachments' ]	= config_get( 'allow_file_upload' );
 		$this->_mp_options[ 'debug' ]			= $this->_mail_debug;
@@ -605,6 +607,12 @@ class ERP_mailbox_api
 		{
 			$t_email[ 'Priority' ] = config_get( 'default_bug_priority' );
 		}
+    
+        $t_email[ 'Message-ID' ] = $t_mp->messageid();
+
+        $t_email[ 'References' ] = $t_mp->references();
+
+        $t_email[ 'In-Reply-To' ] = $t_mp->inreplyto();
 
 		if ( $this->_mail_add_complete_email )
 		{
@@ -734,9 +742,13 @@ class ERP_mailbox_api
 	{
 		$this->show_memory_usage( 'Start add bug' );
 
+        //Merge References and In-Reply-To headers into one array
+        $t_references = $p_email['References'];
+        $t_references[] = $p_email['In-Reply-To'];
+
 		if ( $this->_mail_add_bugnotes )
 		{
-			$t_bug_id = $this->mail_is_a_bugnote( $p_email[ 'Subject' ] );
+			$t_bug_id = $this->mail_is_a_bugnote( $p_email[ 'Subject' ], $t_references );
 		}
 		else
 		{
@@ -770,6 +782,10 @@ class ERP_mailbox_api
 			{
 				# Add a bug note
 				bugnote_add( $t_bug_id, $t_description );
+                //Add the message-id to the database
+                if( $this->_mail_use_message_id ) {
+                    $this->add_msg_id($t_bug_id, $p_email['Message-ID']);
+                }
 			}
 		}
 		elseif ( $this->_mail_add_bug_reports )
@@ -850,6 +866,11 @@ class ERP_mailbox_api
 
 			# Create the bug
 			$t_bug_id = $t_bug_data->create();
+
+            //Add the message to msgids table
+            if( $this->_mail_use_message_id ) {
+                $this->add_msg_id($t_bug_id, $p_email['Message-ID']);
+            }
 
 			// @TODO@ Disabled for now but possibly needed for other future features
 			# Handle custom field submission
@@ -1213,7 +1234,7 @@ class ERP_mailbox_api
 
 	# --------------------
 	# return bug_id if there is a valid mantis bug refererence in subject or return false if not found
-	private function mail_is_a_bugnote( $p_mail_subject )
+	private function mail_is_a_bugnote( $p_mail_subject, $p_references )
 	{
 		$t_bug_id = $this->get_bug_id_from_subject( $p_mail_subject );
 
@@ -1222,6 +1243,16 @@ class ERP_mailbox_api
 			return( $t_bug_id );
 		}
 
+        //Get the ids from Mail References(header)
+        if( $this->_mail_use_message_id ) {
+            $t_bug_id = $this->get_bug_id_from_references($p_references);
+
+            if ( $t_bug_id !== FALSE && bug_exists( $t_bug_id ) )
+            {
+                return( $t_bug_id );
+            }
+        }
+        
 		return( FALSE );
 	}
 
@@ -1254,6 +1285,64 @@ class ERP_mailbox_api
 
 		return( FALSE );
 	}
+
+    /* 
+     * Get the Bug ID from messageid
+     */
+    private function get_bug_id_from_references($p_references)
+    {
+        $t_bug_id = FALSE;
+        foreach($p_references as $p_reference) 
+        {
+            $query = "SELECT issue_id FROM ". plugin_table('msgids')." WHERE msg_id=" . db_param();
+            $t_bug_id = db_result( db_query_bound( $query, array( $p_reference ), 1 ) );
+
+            if($t_bug_id!== FALSE) 
+            {
+                break;
+            }
+        }
+        return $t_bug_id;
+    }
+
+    /*
+     * Add the new message-id from the new mail to the database
+     */
+    private function add_msg_id($p_bug_id, $p_msg_id)
+    {
+        //Check whether the msg_id is already in the database table
+        $query = "SELECT issue_id FROM ". plugin_table('msgids')." WHERE msg_id=" . db_param();
+        $t_master_bug_id = db_result( db_query_bound( $query, array( $p_msg_id ), 1 ) );
+
+        if( $t_master_bug_id!== FALSE )
+        {
+            // Add relationship to exisiting bug
+            $t_rel_type = BUG_RELATED;
+
+            // update master bug last updated
+            bug_update_date( $t_master_bug_id );
+
+            // Add the relationship
+            relationship_add( $p_bug_id, $t_master_bug_id, $t_rel_type );
+
+            // Add log line to the history (both issues)
+            history_log_event_special( $t_master_bug_id, BUG_ADD_RELATIONSHIP, relationship_get_complementary_type( $t_rel_type ), $p_bug_id );
+            history_log_event_special( $p_bug_id, BUG_ADD_RELATIONSHIP, $t_rel_type, $t_master_bug_id );
+
+            // Send the email notification
+            email_relationship_added( $t_master_bug_id, $p_bug_id, relationship_get_complementary_type( $t_rel_type ) );    
+        }
+        else
+        {
+            // Add the Messag-ID to the table for future reference
+            $query = "INSERT
+                        INTO ".plugin_table('msgids')."
+                        ( id, issue_id, msg_id )
+                        VALUES
+                        ( null, '$p_bug_id', '$p_msg_id')";
+            db_query( $query );
+        }
+    }
 
 	# --------------------
 	# Saves the complete email to file

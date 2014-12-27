@@ -20,6 +20,9 @@ class ERP_Mail_Parser
 	private $_def_charset = 'auto';
 	private $_fallback_charset = 'ASCII';
 	private $_priority;
+	private $_messageid;
+	private $_references;
+	private $_inreplyto;
 	private $_body;
 	private $_parts = array();
 	private $_ctype = array();
@@ -252,6 +255,21 @@ class ERP_Mail_Parser
 		return( $this->_priority );
 	}
 
+	public function messageid()
+	{
+		return( $this->_messageid );
+	}
+
+	public function references()
+	{
+		return( $this->_references );
+	}
+
+	public function inreplyto()
+	{
+		return( $this->_inreplyto );
+	}
+
 	public function body()
 	{
 		return( $this->_body );
@@ -270,6 +288,21 @@ class ERP_Mail_Parser
 		if ( isset( $structure->headers['x-priority'] ) )
 		{
 			$this->setPriority( $structure->headers['x-priority'] );
+		}
+
+ 		if ( isset( $structure->headers['message-id'] ) )
+ 		{
+			$this->setMessageId( $structure->headers['message-id'] );
+		}
+
+ 		if ( isset( $structure->headers['references'] ) )
+ 		{
+			$this->setReferences( $structure->headers['references'] );
+		}
+
+ 		if ( isset( $structure->headers['in-reply-to'] ) )
+ 		{
+			$this->setInReplyTo( $structure->headers['in-reply-to'] );
 		}
 
 		$t_body_charset = NULL;
@@ -305,6 +338,26 @@ class ERP_Mail_Parser
 	{
 		$this->_subject = $this->process_header_encoding( $subject );
 	}
+
+    private function setMessageId( $p_messageid )
+    {
+        $this->_messageid = trim( $p_messageid );
+    }
+
+    private function setReferences( $p_references )
+    {
+        $t_references = explode(' ', $p_references);
+        $references = array();
+        foreach($t_references as $t_reference) {
+            $references[] = trim( $t_reference );
+        }
+        $this->_references = $references;
+    }
+
+    private function setInReplyTo( $p_inreplyto )
+    {
+        $this->_inreplyto = trim( $p_inreplyto );
+    }
 
 	private function setTo( $p_to )
 	{

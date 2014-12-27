@@ -91,6 +91,7 @@ Sep 2014 - EmailReporting-0.9.0-DEV
 	- Added a workaround for Net_IMAP 1.1.x issues with the hasFlag function (used by isDeleted function).
 	- mail_fetch_max has been removed as it was useless after some memory optimizations
 	- Fixed Exchange IMAP support
+	- Added feature to identify notes using Message-ID in mail header. Relate the bugs if Message-ID is already in the database (Refer #16719).
 
 Nov 2010 - EmailReporting-0.8.4
 	- Improved the project category list

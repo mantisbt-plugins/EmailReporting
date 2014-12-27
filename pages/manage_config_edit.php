@@ -39,6 +39,7 @@ $f_gpc = array(
 	'mail_use_bug_priority'			=> gpc_get_int( 'mail_use_bug_priority' ),
 	'mail_use_reporter'				=> gpc_get_int( 'mail_use_reporter' ),
 	'mail_add_users_from_cc_to'		=> gpc_get_int( 'mail_add_users_from_cc_to' ),
+	'mail_use_message_id'			=> gpc_get_int( 'mail_use_message_id' ),
 );
 
 $f_mail_bug_priority				= 'array (' . "\n" . gpc_get_string( 'mail_bug_priority' ) . "\n" . ')';
