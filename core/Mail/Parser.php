@@ -282,27 +282,27 @@ class ERP_Mail_Parser
 
 	private function parseStructure( &$structure )
 	{
-		$this->setFrom( $structure->headers['from'] );
-		$this->setSubject( $structure->headers['subject'] );
+		$this->setFrom( $structure->headers[ 'from' ] );
+		$this->setSubject( $structure->headers[ 'subject' ] );
 
-		if ( isset( $structure->headers['x-priority'] ) )
+		if ( isset( $structure->headers[ 'x-priority' ] ) )
 		{
-			$this->setPriority( $structure->headers['x-priority'] );
+			$this->setPriority( $structure->headers[ 'x-priority' ] );
 		}
 
- 		if ( isset( $structure->headers['message-id'] ) )
- 		{
-			$this->setMessageId( $structure->headers['message-id'] );
+		if ( isset( $structure->headers[ 'message-id' ] ) )
+		{
+			$this->setMessageId( $structure->headers[ 'message-id' ] );
 		}
 
- 		if ( isset( $structure->headers['references'] ) )
- 		{
-			$this->setReferences( $structure->headers['references'] );
+		if ( isset( $structure->headers[ 'references' ] ) )
+		{
+			$this->setReferences( $structure->headers[ 'references' ] );
 		}
 
- 		if ( isset( $structure->headers['in-reply-to'] ) )
- 		{
-			$this->setInReplyTo( $structure->headers['in-reply-to'] );
+		if ( isset( $structure->headers[ 'in-reply-to' ] ) )
+		{
+			$this->setInReplyTo( $structure->headers[ 'in-reply-to' ] );
 		}
 
 		$t_body_charset = NULL;
@@ -321,11 +321,11 @@ class ERP_Mail_Parser
 			$this->setParts( $structure->parts );
 		}
 
-		$this->setTo( $structure->headers['to'] );
+		$this->setTo( $structure->headers[ 'to' ] );
 
-		if ( isset( $structure->headers['cc'] ) )
+		if ( isset( $structure->headers[ 'cc' ] ) )
 		{
-			$this->setCc( $structure->headers['cc'] );
+			$this->setCc( $structure->headers[ 'cc' ] );
 		}
 	}
 
@@ -339,25 +339,28 @@ class ERP_Mail_Parser
 		$this->_subject = $this->process_header_encoding( $subject );
 	}
 
-    private function setMessageId( $p_messageid )
-    {
-        $this->_messageid = trim( $p_messageid );
-    }
+	private function setMessageId( $p_messageid )
+	{
+		$this->_messageid = trim( $p_messageid );
+	}
 
-    private function setReferences( $p_references )
-    {
-        $t_references = explode(' ', $p_references);
-        $references = array();
-        foreach($t_references as $t_reference) {
-            $references[] = trim( $t_reference );
-        }
-        $this->_references = $references;
-    }
+	private function setReferences( $p_references )
+	{
+		$t_references = explode(' ', $p_references);
 
-    private function setInReplyTo( $p_inreplyto )
-    {
-        $this->_inreplyto = trim( $p_inreplyto );
-    }
+		$references = array();
+		foreach( $t_references AS $t_reference )
+		{
+			$references[] = trim( $t_reference );
+		}
+
+		$this->_references = $references;
+	}
+
+	private function setInReplyTo( $p_inreplyto )
+	{
+		$this->_inreplyto = trim( $p_inreplyto );
+	}
 
 	private function setTo( $p_to )
 	{

@@ -173,8 +173,8 @@ class EmailReportingPlugin extends MantisPlugin
 			# OFF = it identifies the reporter using the email address of the sender
 			'mail_use_reporter'				=> ON,
 
-            // Whether to identify notes using Message-ID in the mail header
-            'mail_use_message_id'           => ON,
+			// Whether to identify notes using Message-ID in the mail header
+			'mail_use_message_id'			=> ON,
 		);
 	}
 
@@ -258,6 +258,23 @@ class EmailReportingPlugin extends MantisPlugin
 
 			// Keep in mind that this event is called AFTER its MantisBT core counterpart
 			'EVENT_ERP_REPORT_BUG_DATA' => EVENT_TYPE_CHAIN,
+		);
+	}
+
+	/*
+	 * Database table to store the Message-ID to detect the replies
+	 * This is to implement #0016719
+	 */
+	function schema()
+	{
+		return array(
+			array( 'CreateTableSQL', array( plugin_table( 'msgids' ), "
+				id              I       UNSIGNED NOTNULL PRIMARY AUTOINCREMENT,
+				issue_id        I       UNSIGNED NOTNULL,
+				msg_id          C(255)  NOTNULL
+				" )
+			),
+			array( 'CreateIndexSQL', array( 'idx_erp_msgids_msgid', plugin_table( 'msgids' ), 'msg_id', array( 'UNIQUE' ) ) ),
 		);
 	}
 
@@ -594,21 +611,6 @@ class EmailReportingPlugin extends MantisPlugin
 				plugin_config_set( 'mail_mantisbt_url_fix', $t_path );
 			}
 		}
-    }
+	}
 
-    /*
-     * Database table to store the Message-ID to detect the replies
-     * This is to implement #0016719
-     */
-    function schema() {
-        return array(
-                array( 'CreateTableSQL', array( plugin_table( 'msgids' ), "
-                        id              I       UNSIGNED NOTNULL PRIMARY AUTOINCREMENT,
-                        issue_id        I       UNSIGNED NOTNULL,
-                        msg_id          C(255)  NOTNULL
-                        " )
-                    ),
-                 array( 'CreateIndexSQL', array( 'idx_erp_msgids_msgid', plugin_table( 'msgids' ), 'msg_id', array( 'UNIQUE' ) ) ),
-                );
-    }
 }

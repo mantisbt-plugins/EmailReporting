@@ -8,6 +8,7 @@ $f_gpc = array(
 	'mail_add_bug_reports'			=> gpc_get_int( 'mail_add_bug_reports' ),
 	'mail_add_bugnotes'				=> gpc_get_int( 'mail_add_bugnotes' ),
 	'mail_add_complete_email'		=> gpc_get_int( 'mail_add_complete_email' ),
+	'mail_add_users_from_cc_to'		=> gpc_get_int( 'mail_add_users_from_cc_to' ),
 	'mail_auto_signup'				=> gpc_get_int( 'mail_auto_signup' ),
 	'mail_block_attachments_md5'	=> array_map( 'strtolower', array_filter( array_map( 'trim', explode( "\n", str_replace( array( "\r\n", "\r" ), "\n", gpc_get_string( 'mail_block_attachments_md5' ) ) ) ) ) ),
 	'mail_block_attachments_logging'=> gpc_get_int( 'mail_block_attachments_logging' ),
@@ -37,9 +38,8 @@ $f_gpc = array(
 	'mail_strip_signature_delim'	=> gpc_get_string( 'mail_strip_signature_delim' ),
 	'mail_subject_id_regex'			=> gpc_get_string( 'mail_subject_id_regex' ),
 	'mail_use_bug_priority'			=> gpc_get_int( 'mail_use_bug_priority' ),
-	'mail_use_reporter'				=> gpc_get_int( 'mail_use_reporter' ),
-	'mail_add_users_from_cc_to'		=> gpc_get_int( 'mail_add_users_from_cc_to' ),
 	'mail_use_message_id'			=> gpc_get_int( 'mail_use_message_id' ),
+	'mail_use_reporter'				=> gpc_get_int( 'mail_use_reporter' ),
 );
 
 $f_mail_bug_priority				= 'array (' . "\n" . gpc_get_string( 'mail_bug_priority' ) . "\n" . ')';
