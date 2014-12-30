@@ -606,14 +606,7 @@ class ERP_mailbox_api
 			unset( $t_part );
 		}
 
-		if ( $this->_mail_use_bug_priority )
-		{
-			$t_email[ 'Priority' ] = $this->_mail_bug_priority[ strtolower( $t_mp->priority() ) ];
-		}
-		else
-		{
-			$t_email[ 'Priority' ] = config_get( 'default_bug_priority' );
-		}
+		$t_email[ 'Priority' ] = $this->_mail_bug_priority[ strtolower( $t_mp->priority() ) ];
 
 		$t_email[ 'Message-ID' ] = $t_mp->messageid();
 		$t_email[ 'References' ] = $t_mp->references();
@@ -807,7 +800,8 @@ class ERP_mailbox_api
 			$t_bug_data->category_id			= (int) $this->_mailbox[ 'global_category_id' ];
 			$t_bug_data->reproducibility		= (int) config_get( 'default_bug_reproducibility' );
 			$t_bug_data->severity				= (int) config_get( 'default_bug_severity' );
-			$t_bug_data->priority				= (int) $p_email[ 'Priority' ];
+
+			$t_bug_data->priority				= (int) ( ( $this->_mail_use_bug_priority ) ? $p_email[ 'Priority' ] : config_get( 'default_bug_priority' ) );
 			$t_bug_data->projection				= (int) config_get( 'default_bug_projection' );
 			$t_bug_data->eta					= (int) config_get( 'default_bug_eta' );
 			$t_bug_data->resolution				= config_get( 'default_bug_resolution' );
