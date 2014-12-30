@@ -1289,15 +1289,14 @@ class ERP_mailbox_api
     /* 
      * Get the Bug ID from messageid
      */
-    private function get_bug_id_from_references($p_references)
+    private function get_bug_id_from_references( $p_references )
     {
         $t_bug_id = FALSE;
-        foreach($p_references as $p_reference) 
+        foreach( $p_references as $p_reference ) 
         {
-            $query = "SELECT issue_id FROM ". plugin_table('msgids')." WHERE msg_id=" . db_param();
-            $t_bug_id = db_result( db_query_bound( $query, array( $p_reference ), 1 ) );
+			$t_bug_id = $this->get_bug_id_from_reference( $p_reference );
 
-            if($t_bug_id!== FALSE) 
+            if( $t_bug_id !== FALSE ) 
             {
                 break;
             }
@@ -1308,33 +1307,14 @@ class ERP_mailbox_api
     /*
      * Add the new message-id from the new mail to the database
      */
-    private function add_msg_id($p_bug_id, $p_msg_id)
+    private function add_msg_id( $p_bug_id, $p_msg_id )
     {
-        //Check whether the msg_id is already in the database table
-        $query = "SELECT issue_id FROM ". plugin_table('msgids')." WHERE msg_id=" . db_param();
-        $t_master_bug_id = db_result( db_query_bound( $query, array( $p_msg_id ), 1 ) );
-
-        if( $t_master_bug_id!== FALSE )
+        // Check whether the msg_id is already in the database table
+		$t_master_bug_id = $this->get_bug_id_from_reference( $p_msg_id );	
+	
+        if( $t_master_bug_id === FALSE )
         {
-            // Add relationship to exisiting bug
-            $t_rel_type = BUG_RELATED;
-
-            // update master bug last updated
-            bug_update_date( $t_master_bug_id );
-
-            // Add the relationship
-            relationship_add( $p_bug_id, $t_master_bug_id, $t_rel_type );
-
-            // Add log line to the history (both issues)
-            history_log_event_special( $t_master_bug_id, BUG_ADD_RELATIONSHIP, relationship_get_complementary_type( $t_rel_type ), $p_bug_id );
-            history_log_event_special( $p_bug_id, BUG_ADD_RELATIONSHIP, $t_rel_type, $t_master_bug_id );
-
-            // Send the email notification
-            email_relationship_added( $t_master_bug_id, $p_bug_id, relationship_get_complementary_type( $t_rel_type ) );    
-        }
-        else
-        {
-            // Add the Messag-ID to the table for future reference
+            // Add the Message-ID to the table for future reference
             $query = "INSERT
                         INTO ".plugin_table('msgids')."
                         ( id, issue_id, msg_id )
@@ -1344,6 +1324,12 @@ class ERP_mailbox_api
         }
     }
 
+	private function get_bug_id_from_reference( $p_reference )
+	{
+		$query = "SELECT issue_id FROM ". plugin_table('msgids')." WHERE msg_id=" . db_param();
+        $t_bug_id = db_result( db_query_bound( $query, array( $p_reference ), 1 ) );
+		return $t_bug_id;
+	}
 	# --------------------
 	# Saves the complete email to file
 	# Only works in debug mode
