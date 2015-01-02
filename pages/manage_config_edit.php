@@ -2,7 +2,7 @@
 auth_reauthenticate( );
 access_ensure_global_level( config_get( 'manage_plugin_threshold' ) );
 
-require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/config_api.php' );
+plugin_require_api( 'core/config_api.php' );
 
 $f_gpc = array(
 	'mail_add_bug_reports'			=> gpc_get_int( 'mail_add_bug_reports' ),

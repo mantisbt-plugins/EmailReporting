@@ -2,7 +2,7 @@
 auth_reauthenticate( );
 access_ensure_global_level( config_get( 'manage_plugin_threshold' ) );
 
-require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/config_api.php' );
+plugin_require_api( 'core/config_api.php' );
 
 $f_mailbox_action = gpc_get_string( 'mailbox_action' );
 $f_select_mailbox = gpc_get_int( 'select_mailbox' );
@@ -12,7 +12,7 @@ $t_mailboxes = plugin_config_get( 'mailboxes' );
 if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailbox_action === 'edit' || $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test' ) && $f_select_mailbox >= 0 ) )
 {
 	$t_mailbox = array(
-		'enabled'				=> gpc_get_bool( 'enabled', ON ),
+		'enabled'				=> gpc_get_int( 'enabled', ON ),
 		'description'			=> gpc_get_string( 'description', '' ),
 		'mailbox_type'			=> gpc_get_string( 'mailbox_type' ),
 		'hostname'				=> gpc_get_string( 'hostname', '' ),
@@ -30,7 +30,7 @@ if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailb
 	{
 		$t_mailbox_imap = array(
 			'imap_basefolder'				=> ERP_prepare_directory_string( gpc_get_string( 'imap_basefolder', '' ), TRUE ),
-			'imap_createfolderstructure'	=> gpc_get_bool( 'imap_createfolderstructure' ),
+			'imap_createfolderstructure'	=> gpc_get_int( 'imap_createfolderstructure' ),
 		);
 
 		$t_mailbox += $t_mailbox_imap;
@@ -59,7 +59,7 @@ elseif ( $f_mailbox_action === 'delete' && $f_select_mailbox >= 0 )
 elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test' ) && $f_select_mailbox >= 0 )
 {
 	# Verify mailbox - from Recmail by Cas Nuy
-	require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/mail_api.php' );
+	plugin_require_api( 'core/mail_api.php' );
 
 	echo '<pre>';
 	$t_mailbox_api = new ERP_mailbox_api( ( ( $f_mailbox_action === 'complete_test' ) ? FALSE : TRUE ) );

@@ -8,18 +8,18 @@
 
 	# This page receives an E-Mail via POP3 or IMAP and generates an Report
 
-	require_once( 'bug_api.php' );
-	require_once( 'bugnote_api.php' );
-	require_once( 'user_api.php' );
-	require_once( 'file_api.php' );
+	require_api( 'bug_api.php' );
+	require_api( 'bugnote_api.php' );
+	require_api( 'user_api.php' );
+	require_api( 'file_api.php' );
 
 	require_once( config_get_global( 'absolute_path' ) . 'api/soap/mc_file_api.php' );
 
 	require_once( 'Net/POP3.php' );
 	require_once( 'Net/IMAP.php' );
 
-	require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/config_api.php' );
-	require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/Mail/Parser.php' );
+	plugin_require_api( 'core/config_api.php' );
+	plugin_require_api( 'core/Mail/Parser.php' );
 
 class ERP_mailbox_api
 {
@@ -307,7 +307,7 @@ class ERP_mailbox_api
 
 			if ( $this->_test_only === FALSE && !$this->pear_error( 'Attempt login', $t_loginresult ) )
 			{
-				if ( project_get_field( $this->_mailbox[ 'project_id' ], 'enabled' ) == TRUE )
+				if ( project_get_field( $this->_mailbox[ 'project_id' ], 'enabled' ) == ON )
 				{
 					$t_ListMsgs = $this->_mailserver->getListing();
 					if ( !$this->pear_error( 'Retrieve list of messages', $t_ListMsgs ) )
@@ -364,7 +364,7 @@ class ERP_mailbox_api
 						// There does not seem to be a viable api function which removes this plugins dependability on table column names
 						// So if a column name is changed it might cause problems if the code below depends on it.
 						// Luckily we only depend on id, name and enabled
-						if ( $this->_mailbox[ 'imap_createfolderstructure' ] === TRUE )
+						if ( $this->_mailbox[ 'imap_createfolderstructure' ] == ON )
 						{
 							$t_projects = project_get_all_rows();
 							$t_hierarchydelimiter = $this->_mailserver->getHierarchyDelimiter();
@@ -376,7 +376,7 @@ class ERP_mailbox_api
 
 						foreach ( $t_projects AS $t_project )
 						{
-							if ( $t_project[ 'enabled' ] == TRUE )
+							if ( $t_project[ 'enabled' ] == ON )
 							{
 								$t_project_name = $this->cleanup_project_name( $t_project[ 'name' ] );
 
@@ -1276,10 +1276,7 @@ class ERP_mailbox_api
 	{
 		if( $this->_mail_use_message_id )
 		{
-			if ( !is_array( $p_references ) )
-			{
-				$p_references = array( $p_references );
-			}
+			$p_references = (array) $p_references;
 
 			foreach( $p_references AS $t_reference ) 
 			{

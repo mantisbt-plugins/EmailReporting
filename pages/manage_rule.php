@@ -6,8 +6,8 @@ html_page_top( plugin_lang_get( 'plugin_title' ) );
 
 print_manage_menu();
 
-require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/config_api.php' );
-require_once( 'custom_field_api.php' );
+plugin_require_api( 'core/config_api.php' );
+require_api( 'custom_field_api.php' );
 
 $t_this_page = 'manage_rule';
 ERP_print_menu( $t_this_page );

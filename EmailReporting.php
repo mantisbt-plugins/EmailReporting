@@ -1,5 +1,54 @@
 <?php
+// Needed for MantisBT 1.2.x.
+// Not needed for MantisBT 1.3.x
 require_once( config_get( 'class_path' ) . 'MantisPlugin.class.php' );
+
+// New function in MantisBT 1.3.x
+// Included for compatibility with 1.2.x
+if ( !function_exists( 'plugin_require_api' ) )
+{
+	/**
+	 * Allows a plugin page to require a plugin-specific API
+	 * @param string $p_file     The API to be included.
+	 * @param string $p_basename Plugin's basename (defaults to current plugin).
+	 * @return void
+	 */
+	function plugin_require_api( $p_file, $p_basename = null ) {
+		if( is_null( $p_basename ) ) {
+			$t_current = plugin_get_current();
+		} else {
+			$t_current = $p_basename;
+		}
+
+		$t_path = config_get_global( 'plugin_path' ) . $t_current . '/';
+
+		require_once( $t_path . $p_file );
+	}
+}
+
+// New function in MantisBT 1.3.x
+// Included for compatibility with 1.2.x
+if ( !function_exists( 'require_api' ) )
+{
+	/**
+	 * Define an API inclusion function to replace require_once
+	 *
+	 * @param string $p_api_name An API file name.
+	 * @return void
+	 */
+	function require_api( $p_api_name ) {
+		static $s_api_included;
+		global $g_core_path;
+		if( !isset( $s_api_included[$p_api_name] ) ) {
+			require_once( $g_core_path . $p_api_name );
+			$t_new_globals = array_diff_key( get_defined_vars(), $GLOBALS, array( 't_new_globals' => 0 ) );
+			foreach ( $t_new_globals as $t_global_name => $t_global_value ) {
+				$GLOBALS[$t_global_name] = $t_global_value;
+			}
+			$s_api_included[$p_api_name] = 1;
+		}
+	}
+}
 
 class EmailReportingPlugin extends MantisPlugin
 {
@@ -14,7 +63,7 @@ class EmailReportingPlugin extends MantisPlugin
 
 		$this->version = '0.9.0-DEV';
 		$this->requires = array(
-			'MantisCore' => '1.2.6',
+			'MantisCore' => '1.2.6, <1.3.99',
 		);
 
 		$this->author = plugin_lang_get( 'plugin_author' );
@@ -31,7 +80,6 @@ class EmailReportingPlugin extends MantisPlugin
 			'reset_schema'					=> 0,
 			'config_version'				=> 0,
 			'schema'						=> -1,
-			'path_erp'						=> config_get_global( 'plugin_path' ) . plugin_get_current() . DIRECTORY_SEPARATOR,
 			'job_users'						=> array(),
 
 			# --- mail reporting settings -----
@@ -191,7 +239,7 @@ class EmailReportingPlugin extends MantisPlugin
 		if ( $t_mail_reporter_id === 'Mail' )
 		{
 			// The plugin variable path_erp is not yet available. So path_erp cannot be used here
-			require_once( config_get_global( 'plugin_path' ) . plugin_get_current() . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'config_api.php' );
+			plugin_require_api( 'core/config_api.php' );
 
 			# We need to allow blank emails for a sec
 			ERP_set_temporary_overwrite( 'allow_blank_email', ON );
@@ -338,7 +386,7 @@ class EmailReportingPlugin extends MantisPlugin
 
 					if ( $t_user_email === 'nomail' )
 					{
-						require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/config_api.php' );
+						plugin_require_api( 'core/config_api.php' );
 
 						# We need to allow blank emails for a sec
 						ERP_set_temporary_overwrite( 'allow_blank_email', ON );

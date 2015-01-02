@@ -28,8 +28,8 @@
 		echo '<pre>';
 	}
 
-	require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/mail_api.php' );
-	require_once( plugin_config_get( 'path_erp', NULL, TRUE ) . 'core/config_api.php' );
+	plugin_require_api( 'core/mail_api.php' );
+	plugin_require_api( 'core/config_api.php' );
 
 	$GLOBALS[ 't_mailboxes' ] = plugin_config_get( 'mailboxes' );
 
