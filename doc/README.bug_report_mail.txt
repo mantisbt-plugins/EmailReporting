@@ -99,7 +99,7 @@ they have been processed but it will neglect to perform the expunge command
 which would delete them permanently.
 
 
-Authenthication methods:
+Authentication methods:
 With the auth method you may set the AUTH method for your POP3/IMAP server.
 Default is 'USER', but 'DIGEST-MD5','CRAM-MD5','LOGIN','PLAIN','APOP'
 are also possible
