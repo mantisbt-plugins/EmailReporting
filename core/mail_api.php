@@ -310,6 +310,7 @@ class ERP_mailbox_api
 				if ( project_get_field( $this->_mailbox[ 'project_id' ], 'enabled' ) == ON )
 				{
 					$t_ListMsgs = $this->_mailserver->getListing();
+
 					if ( !$this->pear_error( 'Retrieve list of messages', $t_ListMsgs ) )
 					{
 						while ( $t_Msg = array_shift( $t_ListMsgs ) )
