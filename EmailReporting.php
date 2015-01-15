@@ -266,6 +266,9 @@ class EmailReportingPlugin extends MantisPlugin
 				plugin_config_set( 'mail_reporter_id', $t_user_id );
 			}
 
+			// We need to set this here otherwise we mess up new installations with ERP_update_check
+			plugin_config_set( 'reset_schema', 1 );
+
 			return( $t_result_user_create );
 		}
 
