@@ -1300,18 +1300,21 @@ class ERP_mailbox_api
 	{
 		if( $this->_mail_use_message_id )
 		{
-			// Check whether the msg_id is already in the database table
-			$t_bug_id = $this->get_bug_id_from_references( $p_msg_id );
-
-			if( $t_bug_id === FALSE )
+			if ( !is_blank( $p_msg_id ) )
 			{
-				// Add the Messag-ID to the table for future reference
-				$query = 'INSERT
-					INTO ' . plugin_table( 'msgids' ) . '
-					( issue_id, msg_id )
-					VALUES
-					( ' . db_param() . ', ' . db_param() . ')';
-				db_query_bound( $query, array( $p_bug_id, $p_msg_id ) );
+				// Check whether the msg_id is already in the database table
+				$t_bug_id = $this->get_bug_id_from_references( $p_msg_id );
+
+				if( $t_bug_id === FALSE )
+				{
+					// Add the Messag-ID to the table for future reference
+					$query = 'INSERT
+						INTO ' . plugin_table( 'msgids' ) . '
+						( issue_id, msg_id )
+						VALUES
+						( ' . db_param() . ', ' . db_param() . ')';
+					db_query_bound( $query, array( $p_bug_id, $p_msg_id ) );
+				}
 			}
 		}
 	}
