@@ -971,7 +971,21 @@ class ERP_mailbox_api
 
 		if ( is_blank( $t_part_name ) )
 		{
-			$t_part_name = md5( microtime() ) . '.erp';
+		      
+            switch($p_part[ 'ctype' ])
+            {
+                case 'image/png' : $ext = '.png'; break;
+                case 'image/gif' : $ext = '.gif'; break;
+                case 'image/jpeg' : $ext = '.jpg'; break;
+                case 'text/html' : $ext = '.html'; break;
+                case 'text/plain' : $ext = '.txt'; break;
+                case 'application/pdf' : $ext = '.pdf'; break;
+                case 'text/plain' : $ext = '.txt'; break;
+                default: $ext = '.erp'; break;
+            }
+
+            $t_part_name = md5( microtime() ) . $ext;
+
 		}
 
 		$t_body_md5 = ( ( !empty( $this->_mail_block_attachments_md5 ) ) ? md5( $p_part[ 'body' ] ) : NULL );
