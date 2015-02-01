@@ -971,7 +971,12 @@ class ERP_mailbox_api
 
 		if ( is_blank( $t_part_name ) )
 		{
-			$t_part_name = md5( microtime() ) . '.erp';
+			// Set the file extension according to it's mime type
+			$ext = array_search($p_part[ 'ctype' ] , $g_plugin_mime_types);
+			if($ext === false)
+				$ext = '.erp';
+    
+			$t_part_name = md5( microtime() ) . $ext;
 		}
 
 		$t_body_md5 = ( ( !empty( $this->_mail_block_attachments_md5 ) ) ? md5( $p_part[ 'body' ] ) : NULL );
