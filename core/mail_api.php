@@ -971,19 +971,11 @@ class ERP_mailbox_api
 
 		if ( is_blank( $t_part_name ) )
 		{
-		      
-            switch($p_part[ 'ctype' ])
-            {
-                case 'image/png' : $ext = '.png'; break;
-                case 'image/gif' : $ext = '.gif'; break;
-                case 'image/jpeg' : $ext = '.jpg'; break;
-                case 'text/html' : $ext = '.html'; break;
-                case 'text/plain' : $ext = '.txt'; break;
-                case 'application/pdf' : $ext = '.pdf'; break;
-                case 'text/plain' : $ext = '.txt'; break;
-                default: $ext = '.erp'; break;
-            }
-
+		      // Set the file extension according to it's mime type
+	          $ext = array_search($p_part[ 'ctype' ] , $g_plugin_mime_types);
+              if($ext === false)
+                  $ext = '.erp';
+    
             $t_part_name = md5( microtime() ) . $ext;
 
 		}
