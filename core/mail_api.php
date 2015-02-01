@@ -80,6 +80,7 @@ class ERP_mailbox_api
 	private $_email_separator1;
 	private $_login_method;
 	private $_use_ldap_email;
+	private $_plugin_mime_types;
 
 	private $_max_file_size;
 	private $_memory_limit;
@@ -133,6 +134,7 @@ class ERP_mailbox_api
 		$this->_email_separator1				= config_get( 'email_separator1' );
 		$this->_login_method					= config_get( 'login_method' );
 		$this->_use_ldap_email					= config_get( 'use_ldap_email' );
+		$this->_plugin_mime_types				= config_get( 'plugin_mime_types' );
 
 		$this->_max_file_size					= (int) min( ini_get_number( 'upload_max_filesize' ), ini_get_number( 'post_max_size' ), config_get( 'max_file_size' ) );
 
@@ -971,12 +973,14 @@ class ERP_mailbox_api
 
 		if ( is_blank( $t_part_name ) )
 		{
-			// Set the file extension according to it's mime type
-			$ext = array_search($p_part[ 'ctype' ] , $g_plugin_mime_types);
-			if($ext === false)
-				$ext = '.erp';
-    
-			$t_part_name = md5( microtime() ) . $ext;
+			// Try setting the file extension according to it's mime type
+			$t_ext = array_search( $p_part[ 'ctype' ], $this->_plugin_mime_types, TRUE );
+			if( $t_ext === FALSE )
+			{
+				$t_ext = 'erp';
+			}
+
+			$t_part_name = md5( microtime() ) . '.' . $t_ext;
 		}
 
 		$t_body_md5 = ( ( !empty( $this->_mail_block_attachments_md5 ) ) ? md5( $p_part[ 'body' ] ) : NULL );
