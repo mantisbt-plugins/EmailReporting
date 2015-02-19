@@ -688,7 +688,7 @@ if ( !function_exists( 'constant_replace' ) )
 		{
 			echo '<option value="' . string_attribute( $t_option_key ) . '"';
 			check_selected( $t_sel_value, $t_option_key );
-			echo '>' . ( ( isset( $p_options_array[ $t_option_key ][ 'enabled' ] ) && $p_options_array[ $t_option_key ][ 'enabled' ] === FALSE ) ? '* ' : NULL ) . string_attribute( $t_description ) . '</option>';
+			echo '>' . ( ( isset( $p_options_array[ $t_option_key ][ 'enabled' ] ) && $p_options_array[ $t_option_key ][ 'enabled' ] == FALSE ) ? '* ' : NULL ) . string_attribute( $t_description ) . '</option>';
 		}
 	}
 
