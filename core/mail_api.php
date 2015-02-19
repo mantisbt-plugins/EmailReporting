@@ -1049,14 +1049,19 @@ class ERP_mailbox_api
 	private function prepare_mailbox_hostname()
 	{
 		$t_def_mailbox_port_index = 'normal';
+		$this->_mailbox[ 'port' ] = (int) $this->_mailbox[ 'port' ];
 
 		if ( $this->_mailbox[ 'encryption' ] !== 'None' )
 		{
 			if ( extension_loaded( 'openssl' ) )
 			{
-				$this->_mailbox[ 'hostname' ] = strtolower( $this->_mailbox[ 'encryption' ] ) . '://' . $this->_mailbox[ 'hostname' ];
-
 				$t_def_mailbox_port_index = 'encrypted';
+
+				// The IMAP extension will enable encryption after the connection is established if the default port is used. So we need to work around that
+				if ( !( $this->_mailbox[ 'mailbox_type' ] === 'IMAP' && ( $this->_mailbox[ 'port' ] <= 0 || $this->_mailbox[ 'port' ] === $this->_default_ports[ $this->_mailbox[ 'mailbox_type' ] ][ $t_def_mailbox_port_index ] ) ) )
+				{
+					$this->_mailbox[ 'hostname' ] = strtolower( $this->_mailbox[ 'encryption' ] ) . '://' . $this->_mailbox[ 'hostname' ];
+				}
 			}
 			else
 			{
@@ -1064,7 +1069,6 @@ class ERP_mailbox_api
 			}
 		}
 
-		$this->_mailbox[ 'port' ] = (int) $this->_mailbox[ 'port' ];
 		if ( $this->_mailbox[ 'port' ] <= 0 )
 		{
 			$this->_mailbox[ 'port' ] = (int) $this->_default_ports[ $this->_mailbox[ 'mailbox_type' ] ][ $t_def_mailbox_port_index ];
