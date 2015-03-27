@@ -782,19 +782,20 @@ if ( !function_exists( 'constant_replace' ) )
 	function ERP_custom_function_print_reporter_option_list( $p_sel_value )
 	{
 		$t_user_ids = (array) $p_sel_value;
+		$t_report_bug_threshold = config_get_global( 'report_bug_threshold' );
 
 		if ( !empty( $t_user_ids ) )
 		{
 			foreach ( $t_user_ids AS $t_single_user_id )
 			{
-				if ( !user_exists( $t_single_user_id ) )
+				if ( !user_exists( $t_single_user_id ) || !access_has_global_level( $t_report_bug_threshold, $t_single_user_id ) )
 				{
 					echo '<option value="' . $t_single_user_id . '" selected class="negative">' . plugin_lang_get( 'missing_user', 'EmailReporting' ) . '</option>';
 				}
 			}
 		}
 
-		print_user_option_list( $t_user_ids, ALL_PROJECTS, config_get_global( 'report_bug_threshold' ) );
+		print_user_option_list( $t_user_ids, ALL_PROJECTS, $t_report_bug_threshold );
 	}
 
 	# --------------------

@@ -256,7 +256,7 @@ class EmailReportingPlugin extends MantisPlugin
 			$t_password = auth_generate_random_password( $t_seed );
 
 			# create the user
-			$t_result_user_create = user_create( $t_username, $t_password, $t_email, REPORTER, FALSE, TRUE, 'Mail Reporter', plugin_lang_get( 'plugin_title' ) );
+			$t_result_user_create = user_create( $t_username, $t_password, $t_email, config_get_global( 'report_bug_threshold' ), FALSE, TRUE, 'Mail Reporter', plugin_lang_get( 'plugin_title' ) );
 
 			# Save these after the user has been created successfully
 			if ( $t_result_user_create )
@@ -623,6 +623,22 @@ class EmailReportingPlugin extends MantisPlugin
 			plugin_config_delete( 'mail_fetch_max' );
 
 			plugin_config_set( 'config_version', 14 );
+		}
+
+		if ( $t_config_version <= 14 )
+		{
+			$t_mail_reporter_id = plugin_config_get( 'mail_reporter_id', 'Mail' );
+			$t_report_bug_threshold = config_get_global( 'report_bug_threshold' );
+
+			if ( $t_mail_reporter_id !== 'Mail' && user_exists( $t_mail_reporter_id ) )
+			{
+				if ( !access_has_global_level( $t_report_bug_threshold, $t_mail_reporter_id ) )
+				{
+					user_set_field( $t_mail_reporter_id, 'access_level', $t_report_bug_threshold );
+				}
+			}
+
+			plugin_config_set( 'config_version', 15 );
 		}
 	}
 
