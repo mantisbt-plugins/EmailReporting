@@ -36,8 +36,6 @@ class ERP_mailbox_api
 		'IMAP' => array( 'normal' => 143, 'encrypted' => 993 ),
 	);
 
-	private $_mails_fetched = 0;
-
 	private $_validated_email_list = array();
 
 	private $_mail_add_bug_reports;
@@ -484,8 +482,6 @@ class ERP_mailbox_api
 		}
 
 		$this->show_memory_usage( 'Single email retrieved from mailbox' );
-
-		$this->_mails_fetched++;
 
 		$this->save_message_to_file( 'raw_msg', $t_msg );
 
