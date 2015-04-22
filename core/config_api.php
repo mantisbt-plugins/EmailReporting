@@ -699,7 +699,7 @@ if ( !function_exists( 'constant_replace' ) )
 		if ( extension_loaded( 'openssl' ) )
 		{
 			$t_socket_transports = stream_get_transports();
-			$t_supported_encryptions = array( 'None', 'SSL', 'SSLv2', 'SSLv3', 'TLS' );
+			$t_supported_encryptions = array( 'None', 'SSL', 'SSLv2', 'SSLv3', 'TLS', 'TLSv1.0', 'TLSv1.1', 'TLSv1.2' );
 			foreach ( $t_supported_encryptions AS $t_encryption )
 			{
 				if ( $t_encryption === 'None' || in_array( strtolower( $t_encryption ), $t_socket_transports, TRUE ) )
