@@ -471,15 +471,15 @@ class ERP_mailbox_api
 
 		$t_msg = $this->getMsg( $p_i );
 
-		if ( empty( $t_msg ) || $this->pear_error( 'Retrieve raw message', $t_msg ) )
+		if ( empty( $t_msg ) )
 		{
-			if ( empty( $t_msg ) )
-			{
-				$this->custom_error( 'Retrieved message was empty. Either an invalid message ID was passed or there is a problem with one of the required PEAR packages' );
-			}
+			$this->custom_error( 'Retrieved message was empty. Either an invalid message ID was passed or there is a problem with one of the required PEAR packages' );
 
-			$this->pear_error( 'Retrieve raw message', $t_msg );
+			return( FALSE );
+		}
 
+		if ( $this->pear_error( 'Retrieve raw message', $t_msg ) )
+		{
 			return( FALSE );
 		}
 
