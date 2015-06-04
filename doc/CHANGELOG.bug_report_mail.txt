@@ -99,6 +99,7 @@ Dec 2014 - EmailReporting-0.9.0-DEV
 	- Corrected variable used for access level of Mail reporter user during installation
 	- Mail Reporter dropdown list now shows all users
 	- Added more supported encryptions
+	- Cast job_users to string to avoid possible issues
 
 Nov 2010 - EmailReporting-0.8.4
 	- Improved the project category list

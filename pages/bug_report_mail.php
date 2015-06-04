@@ -44,7 +44,7 @@
 	$t_username = ERP_get_current_os_user();
 	if ( !isset( $t_job_users[ php_sapi_name() ] ) || $t_job_users[ php_sapi_name() ] !== $t_username )
 	{
-		$t_job_users[ php_sapi_name() ] = $t_username;
+		$t_job_users[ php_sapi_name() ] = (string) $t_username;
 		plugin_config_set( 'job_users', $t_job_users );
 	}
 
