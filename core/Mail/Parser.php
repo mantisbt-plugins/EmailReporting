@@ -74,12 +74,6 @@ class ERP_Mail_Parser
 
 			$t_charset_list = mb_list_encodings();
 
-			$r_charset_list = array();
-			foreach ( $t_charset_list AS $t_value )
-			{
-				$r_charset_list[ strtolower( $t_value ) ] = $t_value;
-			}
-
 			// This function does not exist in version older then PHP 5.3.0
 			if ( function_exists( 'mb_encoding_aliases' ) )
 			{
@@ -89,13 +83,13 @@ class ERP_Mail_Parser
 					$t_encoding_aliases = array_merge( $t_encoding_aliases, mb_encoding_aliases( $t_value ) );
 				}
 
-				foreach ( $t_encoding_aliases AS $t_value )
-				{
-					if ( !isset( $r_charset_list[ strtolower( $t_value ) ] ) )
-					{
-						$r_charset_list[ strtolower( $t_value ) ] = $t_value;
-					}
-				}
+				$t_charset_list = array_merge( $t_charset_list, $t_encoding_aliases );
+			}
+
+			$r_charset_list = array();
+			foreach ( $t_charset_list AS $t_value )
+			{
+				$r_charset_list[ strtolower( $t_value ) ] = $t_value;
 			}
 
 			$this->_mb_list_encodings = $r_charset_list + $this->_mbstring_unsupportedcharsets;
