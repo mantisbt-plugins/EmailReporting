@@ -1475,14 +1475,14 @@ class ERP_mailbox_api
 			{
 				$t_user_id = $this->get_userid_from_email( $t_email );
 
-				$this->custom_error( 'Monitor: ' . $t_user_id . ' - ' . $t_email . ' --> Issue ID: #' . $p_bug_id, FALSE );
-
 				if( $t_user_id !== FALSE ) 
 				{ 
 					// Make sure that mail_reporter_id and reporter_id are not added as a monitors.
 					if( $this->_mail_reporter_id != $t_user_id && $p_email[ 'Reporter_id' ] != $t_user_id )
 					{
 						bug_monitor( $p_bug_id, $t_user_id );
+
+						$this->custom_error( 'Monitor: ' . $t_user_id . ' - ' . $t_email . ' --> Issue ID: #' . $p_bug_id, FALSE );
 					}
 				}
 			}
