@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 $s_plugin_EmailReporting_plugin_title = 'Email Reporting';
 $s_plugin_EmailReporting_plugin_description = 'Eingehende Mails zu Tickets und Notizen verarbeiten.';
 $s_plugin_EmailReporting_plugin_author = 'Indy und diverse weitere Entwickler.';
@@ -8,13 +8,15 @@ $s_plugin_EmailReporting_manage_config = 'Konfiguration anpassen';
 $s_plugin_EmailReporting_manage_mailbox = 'Mailkonten anpassen';
 $s_plugin_EmailReporting_manage_rule = 'Regeln anpassen';
 
-$s_plugin_EmailReporting_jobsetup = 'To collect the emails from the mailboxes you need to add a scheduled job which runs a script. You can run the script from 2 locations but only option 1 will work as a scheduled job. Both perform the same tasks. See the documentation for examples on how to schedule these.';
-$s_plugin_EmailReporting_job_users = '<span class="negative">Warning</span>: It seems that the scheduled job is not run with the same user account as the webserver / PHP process. This could cause problems with attachments.<br />The SAPI for the scheduled job is most likely "cli".<br />The webserver runs under the following user account: ';
+$s_plugin_EmailReporting_jobsetup = 'Um Emails aus den eingerichteten Mailboxen auszulesen, muss ein zeitgesteuerter Job eingerichtet werden, der ein Script ausführt. Dieses Script kann auf zwei verschiedene Arten gestartet werden, aber nur eine davon ermöglicht eine zeitgesteuerte Ausführung. Beide Optionen erfüllen aber denselben Zweck. In der Dokumentation werden Beispiele beschrieben, wie ein solcher Job auszusehen hat.';
+$s_plugin_EmailReporting_job_users = '<span class="negative">Warning</span>: Es scheint so, als laufe der zeitgesteuerte Job mit einem anderen Benutzerkonto, als der Webserver / PHP-Prozess. Dies könnte Probleme mit Emailanhängen verursachen<br />
+Der SAPI für den zeitgesteuerten Job ist meistens „cli“.<br />Der Webserver läuft zurzeit unter folgendem Benutzerkonto: ';
 
 $s_plugin_EmailReporting_mailbox_settings = 'Mailkontoeinstellungen';
 $s_plugin_EmailReporting_mailbox_settings_imap = 'IMAP Kontoeinstellungen';
 $s_plugin_EmailReporting_mailbox_settings_issue = 'Ticketeinstellungen für Mailkonten';
-$s_plugin_EmailReporting_problems = 'To reset a configuration option to its default value, please delete the configuration option in question from the "<a href="adm_config_report.php">Configuration Report</a>" page.';
+$s_plugin_EmailReporting_problems = 'Um eine Konfigurationsoption auf ihren Standardwert zrückzusetzen, lösche einfach die Konfigurationsoption vom <a 
+href="adm_config_report.php">“Konfigurationsreport</a>".';
 
 $s_plugin_EmailReporting_rule_settings = 'Regeleinstellungen';
 $s_plugin_EmailReporting_rule_conditions = 'Konditionen';
@@ -131,9 +133,9 @@ $s_plugin_EmailReporting_function_not_found = 'Funktion nicht gefunden';
 $s_plugin_EmailReporting_input_name_not_allowed = 'Der ausgewählte Variablename ist nicht gestattet, da in bestimmten Situationen Konflikte auftreten können';
 $s_plugin_EmailReporting_complete_test_action_note = '<span class="negative">Warning</span>: Diese Option wird eine Mailbox komplett testen.
 
-There are still minor differences compared to the scheduled job (bug_report_mail.php). For example one of the differences could be the useraccount that runs the job.
+Es gibt immernoch kleine Unterschiede zum zeitgesteuerten Job (bug_report_mail.php). Beispielsweise könnte das Benutzerkonto, unter der Job läuft, ein Anderes sein.
 
-Use with care';
+Benutze diese Funktion mit Bedacht';
 
 $s_plugin_EmailReporting_rules = 'Regeln';
 $s_plugin_EmailReporting_select_rule = 'Regel selektieren';
@@ -144,9 +146,9 @@ $s_plugin_EmailReporting_rule_wildcards_help = '- Charaktere für Platzhalter: *
 
 $s_plugin_EmailReporting_rule_conditions_help = 'NULL';
 
-$s_plugin_EmailReporting_rule_actions_help = '- "[any]" means the action in question will be ignored
-- Custom fields not connected to the project of the created issue will be ignored
-- Dropdown list in custom fields should contain an empty value if you want that option in the dropdown list. Otherwise a value will always be applied when the conditions specified are met.';
+$s_plugin_EmailReporting_rule_actions_help = '- "[any]" bedeuetet, die Aktion wird ignoriert
+- Benutzerdefinierte Felder, die keinem Projekt zugeordnet sind, dem das gerade erstellte Ticket angehört, werden ignoriert
+- Auswahllisten in benutzerdefinierten Feldern sollten einen leeren Listeneintrag enthalten. Ansonsten wird der Standardwert des Feldes jedes Mal zugewiesen, wenn die spezifizierten Konditionen zutreffen.';
 
 $s_plugin_EmailReporting_rule_exceptions_help = 'NULL';
 
