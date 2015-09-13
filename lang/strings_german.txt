@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $s_plugin_EmailReporting_plugin_title = 'Email Reporting';
 $s_plugin_EmailReporting_plugin_description = 'Eingehende Mails zu Tickets und Notizen verarbeiten.';
 $s_plugin_EmailReporting_plugin_author = 'Indy und diverse weitere Entwickler.';
@@ -120,7 +120,7 @@ $s_plugin_EmailReporting_project_id = 'Projekt selektieren';
 $s_plugin_EmailReporting_global_category_id = 'Kategorie selektieren';
 $s_plugin_EmailReporting_link_rules = 'Regel selektieren';
 
-$s_plugin_EmailReporting_mail_bug_priority_array_failure = 'Das übergebene Format ist kein gültiger Array.';
+$s_plugin_EmailReporting_mail_bug_priority_array_failure = 'Das übergebene Format ist kein gültiges Array.';
 $s_plugin_EmailReporting_recorddisabled = '* = Deaktivieren';
 $s_plugin_EmailReporting_mbstring_unavailable = '<span class="negative">Warning</span>: PHP mbstring Erweiterung nicht verfügbar. Das könnte Probleme beim Empfang von Mails verursachen.';
 $s_plugin_EmailReporting_missing_user = 'Ausgewählter Benutzer nicht vorhanden. Bitte einen anderen selektieren.';
@@ -156,7 +156,7 @@ $s_plugin_EmailReporting_cond_issue_creation_method = 'Methode zur Ticketerstell
 $s_plugin_EmailReporting_cond_mailbox = 'Zur Mailbox hinzufügen';
 $s_plugin_EmailReporting_cond_issue_issue_issuenote = 'Neues Ticket und/oder Notiz hinzufügen';
 $s_plugin_EmailReporting_cond_issue_reporter = 'Reporter';
-$s_plugin_EmailReporting_cond_issue_project = 'Project';
+$s_plugin_EmailReporting_cond_issue_project = 'Projekt';
 $s_plugin_EmailReporting_cond_issue_category = 'Kategorie';
 $s_plugin_EmailReporting_cond_issue_priority = 'Priorität';
 $s_plugin_EmailReporting_cond_issue_summary = 'Zusammenfassung';
@@ -164,7 +164,7 @@ $s_plugin_EmailReporting_cond_issue_description = 'Beschreibung';
 
 $s_plugin_EmailReporting_act_issue_category = 'Kategorie aktualsieren';
 $s_plugin_EmailReporting_act_issue_tag = 'Tag hinzufügen';
-$s_plugin_EmailReporting_act_issue_custom_field = 'Benutzerdefiniertes feld aktualisieren';
+$s_plugin_EmailReporting_act_issue_custom_field = 'Benutzerdefiniertes Feld aktualisieren';
 
 $s_plugin_EmailReporting_excep_issue_summary = 'Zusammenfassung';
 $s_plugin_EmailReporting_excep_issue_description = 'Beschreibung';
