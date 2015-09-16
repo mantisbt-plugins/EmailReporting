@@ -386,34 +386,37 @@ class ERP_mailbox_api
 								// We don't need to check twice whether the mailbox exist incase createfolderstructure is false
 								if ( !$this->_mailbox[ 'imap_createfolderstructure' ] || $this->_mailserver->mailboxExist( $t_foldername ) === TRUE )
 								{
-									$this->_mailserver->selectMailbox( $t_foldername );
+									$t_result = $this->_mailserver->selectMailbox( $t_foldername );
 
-									$t_ListMsgs = $this->_mailserver->getListing();
-
-									if ( !$this->pear_error( 'Retrieve list of messages', $t_ListMsgs ) )
+									if ( !$this->pear_error( 'Select IMAP folder', $t_result ) )
 									{
-										while ( $t_Msg = array_shift( $t_ListMsgs ) )
+										$t_ListMsgs = $this->_mailserver->getListing();
+
+										if ( !$this->pear_error( 'Retrieve list of messages', $t_ListMsgs ) )
 										{
-											$t_isDeleted = $this->isDeleted( $t_Msg[ 'msg_id' ] );
-
-											if ( $this->pear_error( 'Check email deleted flag', $t_isDeleted ) )
+											while ( $t_Msg = array_shift( $t_ListMsgs ) )
 											{
-												$t_isDeleted = FALSE;
-											}
+												$t_isDeleted = $this->isDeleted( $t_Msg[ 'msg_id' ] );
 
-											if ( $t_isDeleted === TRUE )
-											{
-												// Email marked as deleted. Do nothing
-											}
-											else
-											{
-												$t_emailresult = $this->process_single_email( $t_Msg[ 'msg_id' ], (int) $t_project[ 'id' ] );
-
-												if ( $t_emailresult === TRUE )
+												if ( $this->pear_error( 'Check email deleted flag', $t_isDeleted ) )
 												{
-													$t_deleteresult = $this->_mailserver->deleteMsg( $t_Msg[ 'msg_id' ] );
+													$t_isDeleted = FALSE;
+												}
 
-													$this->pear_error( 'Attempt delete email', $t_deleteresult );
+												if ( $t_isDeleted === TRUE )
+												{
+													// Email marked as deleted. Do nothing
+												}
+												else
+												{
+													$t_emailresult = $this->process_single_email( $t_Msg[ 'msg_id' ], (int) $t_project[ 'id' ] );
+
+													if ( $t_emailresult === TRUE )
+													{
+														$t_deleteresult = $this->_mailserver->deleteMsg( $t_Msg[ 'msg_id' ] );
+	
+														$this->pear_error( 'Attempt delete email', $t_deleteresult );
+													}
 												}
 											}
 										}
@@ -422,7 +425,9 @@ class ERP_mailbox_api
 								elseif ( $this->_mailbox[ 'imap_createfolderstructure' ] === TRUE )
 								{
 									// create this mailbox
-									$this->_mailserver->createMailbox( $t_foldername );
+									$t_result = $this->_mailserver->createMailbox( $t_foldername );
+
+									$this->pear_error( 'Create IMAP folder', $t_result );
 								}
 							}
 							else
