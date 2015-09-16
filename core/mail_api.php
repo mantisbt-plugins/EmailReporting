@@ -443,7 +443,7 @@ class ERP_mailbox_api
 				}
 			}
 
-			//$t_mailbox->expunge(); //disabled as this is handled by the disconnect
+			//$this->_mailserver->expunge(); //disabled as this is handled by the disconnect
 
 			// mail_delete decides whether to perform the expunge command before closing the connection
 			$this->_mailserver->disconnect( (bool) $this->_mail_delete );
