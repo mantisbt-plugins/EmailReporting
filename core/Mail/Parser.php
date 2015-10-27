@@ -402,7 +402,7 @@ class ERP_Mail_Parser
 		}
 		elseif ( $this->_parse_html && 'text' === $this->_ctype['primary'] && 'html' === $this->_ctype['secondary'] )
 		{
-			$htmlToText = str_get_html( $body );
+			$htmlToText = str_get_html( $body, true, true, $this->_encoding, false ); 
 
 			// extract text from HTML
 			$this->_body = $htmlToText->plaintext;
