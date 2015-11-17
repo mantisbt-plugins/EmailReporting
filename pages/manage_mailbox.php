@@ -77,6 +77,7 @@ ERP_output_config_option( 'mailbox_type', 'dropdown', $t_mailbox, 'print_descrip
 ERP_output_config_option( 'hostname', 'string', $t_mailbox );
 ERP_output_config_option( 'port', 'string', $t_mailbox );
 ERP_output_config_option( 'encryption', 'dropdown', $t_mailbox, 'print_encryption_option_list' );
+ERP_output_config_option( 'ssl_cert_verify', 'boolean', $t_mailbox );
 ERP_output_config_option( 'erp_username', 'string', $t_mailbox );
 ERP_output_config_option( 'erp_password', 'string_password', $t_mailbox );
 ERP_output_config_option( 'auth_method', 'dropdown', $t_mailbox, 'print_auth_method_option_list' );

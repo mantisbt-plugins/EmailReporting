@@ -109,6 +109,7 @@ $s_plugin_EmailReporting_mailbox_type = 'Mailbox type';
 $s_plugin_EmailReporting_hostname = 'Hostname';
 $s_plugin_EmailReporting_port = 'TCP port (optional)';
 $s_plugin_EmailReporting_encryption = 'Connection encryption';
+$s_plugin_EmailReporting_ssl_cert_verify = 'Verify SSL certificate';
 $s_plugin_EmailReporting_erp_username = 'Username';
 $s_plugin_EmailReporting_erp_password = 'Password';
 $s_plugin_EmailReporting_auth_method = 'Authentication method';

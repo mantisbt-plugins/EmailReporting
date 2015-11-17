@@ -207,11 +207,14 @@ class Net_IMAPProtocol
         if ($error instanceOf PEAR_Error) {
             return $error;
         }
+/*
+// ERP-modification: Creates more problems then it fixes so we disable it
         if ($port == 993) {
             if (!$this->_socket->enableCrypto(true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) { 
                 return new PEAR_Error('Failed to set crypto');
             }
         }
+*/
 
         if ($this->_getRawResponse() instanceOf PEAR_Error) {
             return new PEAR_Error('unable to open socket');

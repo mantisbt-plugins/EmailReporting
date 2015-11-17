@@ -155,7 +155,8 @@ class Net_Socket extends PEAR
                 }
 
                 $addr = $this->addr . ':' . $this->port;
-                $fp   = stream_socket_client($addr, $errno, $errstr,
+// ERP-modification: Added @ because it was probably forgotten and we need the error handling done differently
+                $fp   = @stream_socket_client($addr, $errno, $errstr,
                                              $timeout, $flags, $context);
             } else {
                 $fp = @$openfunc($this->addr, $this->port, $errno,

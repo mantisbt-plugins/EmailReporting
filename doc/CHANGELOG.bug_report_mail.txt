@@ -102,6 +102,9 @@ Okt 2015 - EmailReporting-0.9.0-DEV
 	- Cast job_users to string to avoid possible issues
 	- Added extra error handling during selection/creation of imap folder
 	- Adjusted SIMPLE_HTML_DOM to not strip linewrap endings
+	- Added STARTTLS support for IMAP
+	- Added an option to enable or disable SSL certificate verification.
+	- EmailReporting will now always use the included PEAR packages Net_IMAP, Net_POP3 and Net_Socket because of custom modifications applied to them for EmailReporting
 
 Nov 2010 - EmailReporting-0.8.4
 	- Improved the project category list

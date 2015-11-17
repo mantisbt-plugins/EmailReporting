@@ -11,6 +11,7 @@
 			'enabled'				=> ON,
 			'mailbox_type'			=> 'POP3',
 			'encryption'			=> 'None',
+			'ssl_cert_verify'		=> ON,
 			'auth_method'			=> 'USER',
 		);
 
@@ -647,8 +648,10 @@ if ( !function_exists( 'constant_replace' ) )
 	# output a option list for authentication methods for POP3 and IMAP
 	function ERP_custom_function_print_auth_method_option_list( $p_sel_value )
 	{
-		require_once( 'Net/POP3.php' );
-		require_once( 'Net/IMAPProtocol.php' );
+		//require_once( 'Net/POP3.php' );
+		plugin_require_api( 'core_pear/Net/POP3.php' );
+		//require_once( 'Net/IMAPProtocol.php' );
+		plugin_require_api( 'core_pear/Net/IMAPProtocol.php' );
 
 		$t_mailbox_connection_pop3 = new Net_POP3();
 		$t_mailbox_connection_imap = new Net_IMAPProtocol();
@@ -699,10 +702,10 @@ if ( !function_exists( 'constant_replace' ) )
 		if ( extension_loaded( 'openssl' ) )
 		{
 			$t_socket_transports = stream_get_transports();
-			$t_supported_encryptions = array( 'None', 'SSL', 'SSLv2', 'SSLv3', 'TLS', 'TLSv1.0', 'TLSv1.1', 'TLSv1.2' );
+			$t_supported_encryptions = array( 'None', 'SSL', 'SSLv2', 'SSLv3', 'TLS', 'TLSv1.0', 'TLSv1.1', 'TLSv1.2', 'STARTTLS' );
 			foreach ( $t_supported_encryptions AS $t_encryption )
 			{
-				if ( $t_encryption === 'None' || in_array( strtolower( $t_encryption ), $t_socket_transports, TRUE ) )
+				if ( $t_encryption === 'None' || $t_encryption === 'STARTTLS' || in_array( strtolower( $t_encryption ), $t_socket_transports, TRUE ) )
 				{
 					echo '<option';
 					check_selected( (string) $p_sel_value, $t_encryption );

@@ -49,7 +49,11 @@ class Net_IMAP extends Net_IMAPProtocol
                       $encoding = 'ISO-8859-1')
     {
         $this->Net_IMAPProtocol();
+
+/*
+// ERP-modification: We want to do some other stuff before we connect so disable this line in the constructor
         $ret             = $this->connect($host, $port, $enableSTARTTLS);
+*/
         $this->_encoding = $encoding;
     }
 

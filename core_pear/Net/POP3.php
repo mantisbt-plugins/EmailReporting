@@ -199,12 +199,15 @@ class Net_POP3
     * @param  string $port Port to use to connect to on host
     * @return bool  Success/Failure
     */
-    function connect($host = 'localhost', $port = 110)
+
+// ERP-modification: Added parameter to pass on Stream Context Options
+    function connect($host = 'localhost', $port = 110, $options = NULL)
     {
         $this->_host = $host;
         $this->_port = $port;
 
-        $result = $this->_socket->connect($host, $port, false, $this->_timeout);
+// ERP-modification: Added parameter to pass on Stream Context Options
+        $result = $this->_socket->connect($host, $port, false, $this->_timeout, $options);
         if ($result === true) {
             $data = $this->_recvLn();
 
