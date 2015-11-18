@@ -15,7 +15,7 @@ Der SAPI für den zeitgesteuerten Job ist meistens „cli“.<br />Der Webserver
 $s_plugin_EmailReporting_mailbox_settings = 'Mailkontoeinstellungen';
 $s_plugin_EmailReporting_mailbox_settings_imap = 'IMAP Kontoeinstellungen';
 $s_plugin_EmailReporting_mailbox_settings_issue = 'Ticketeinstellungen für Mailkonten';
-$s_plugin_EmailReporting_problems = 'Um eine Konfigurationsoption auf ihren Standardwert zrückzusetzen, lösche einfach die Konfigurationsoption vom <a 
+$s_plugin_EmailReporting_problems = 'Um eine Konfigurationsoption auf ihren Standardwert zurückzusetzen, lösche einfach die Konfigurationsoption vom <a 
 href="adm_config_report.php">“Konfigurationsreport</a>".';
 
 $s_plugin_EmailReporting_rule_settings = 'Regeleinstellungen';
