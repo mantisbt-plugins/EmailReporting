@@ -1,6 +1,7 @@
 <?php
 
-require_once( 'Mail/mimeDecode.php' );
+//require_once( 'Mail/mimeDecode.php' );
+plugin_require_api( 'core_pear/Mail/mimeDecode.php' );
 plugin_require_api( 'core/Mail/simple_html_dom.php');
 
 class ERP_Mail_Parser
