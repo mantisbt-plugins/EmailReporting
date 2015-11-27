@@ -107,6 +107,7 @@ Okt 2015 - EmailReporting-0.9.0-DEV
 	- EmailReporting will now always use the included PEAR packages Net_IMAP, Net_POP3 and Net_Socket because of custom modifications applied to them for EmailReporting
 	- German language file added (JeromyK & roman-1983)
 	- EmailReporting will now always use the included Mail_mimeDecode package to avoid issues with older versions that might reside on the host system
+	- Added error message incase there are Collation issues in the database
 
 Nov 2010 - EmailReporting-0.8.4
 	- Improved the project category list

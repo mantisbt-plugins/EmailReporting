@@ -49,6 +49,30 @@ ERP_print_menu( $t_this_page );
 <br />
 <?php
 	}
+	elseif ( $t_results_utf_test = test_database_utf8() )
+	{
+?>
+<table align="center" class="width50" cellspacing="1">
+
+<tr>
+	<td class="left">
+<?php
+		echo plugin_lang_get( 'db_utf8_issue' ) . '<br /><a href="' . helper_mantis_url( 'admin/check.php' ) . '">MantisBT Administration - Check Installation</a>';
+?>
+	</td>
+</tr>
+<tr>
+	<td class="left">
+<?php
+		echo $t_results_utf_test;
+?>
+	</td>
+</tr>
+
+</table>
+<br />
+<?php
+	}
 
 	$t_job_users = plugin_config_get( 'job_users' );
 	$t_username = ERP_get_current_os_user();

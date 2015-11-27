@@ -122,6 +122,7 @@ $s_plugin_EmailReporting_link_rules = 'Select rules';
 $s_plugin_EmailReporting_mail_bug_priority_array_failure = 'The given format is not an acceptable array.';
 $s_plugin_EmailReporting_recorddisabled = '* = Disabled';
 $s_plugin_EmailReporting_mbstring_unavailable = '<span class="negative">Warning</span>: PHP mbstring extension unavailable. This might cause problems with received emails.';
+$s_plugin_EmailReporting_db_utf8_issue = 'Please correct any Collation issues shown below otherwise MantisBT might return query errors';
 $s_plugin_EmailReporting_missing_user = 'Selected user is missing. Please select a new one.';
 $s_plugin_EmailReporting_openssl_unavailable = 'PHP OpenSSL extension unavailable';
 $s_plugin_EmailReporting_test_failure = 'Operation NOT successful';
