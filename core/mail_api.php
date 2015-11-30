@@ -930,7 +930,7 @@ class ERP_mailbox_api
 			}
 			else
 			{
-				$this->custom_error( 'New issue notify function not found. Could not send the notification' );
+				$this->custom_error( 'New issue notify function not found. Could not trigger the notification' );
 			}
 		}
 		else
