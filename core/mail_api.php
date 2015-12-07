@@ -15,8 +15,10 @@
 
 	require_once( config_get_global( 'absolute_path' ) . 'api/soap/mc_file_api.php' );
 
-	require_once( 'Net/POP3.php' );
-	require_once( 'Net/IMAP.php' );
+	//require_once( 'Net/POP3.php' );
+	plugin_require_api( 'core_pear/Net/POP3.php' );
+	//require_once( 'Net/IMAP.php' );
+	plugin_require_api( 'core_pear/Net/IMAP.php' );
 
 	plugin_require_api( 'core/config_api.php' );
 	plugin_require_api( 'core/Mail/Parser.php' );
@@ -299,7 +301,7 @@ class ERP_mailbox_api
 	{
 		$this->_mailserver = new Net_POP3();
 
-		$t_connectresult = $this->_mailserver->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ] );
+		$t_connectresult = $this->_mailserver->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ], $this->get_StreamContextOptions() );
 
 		if ( $t_connectresult === TRUE )
 		{
@@ -336,7 +338,7 @@ class ERP_mailbox_api
 		}
 		else
 		{
-			$this->custom_error( 'Failed to connect to the mail server' );
+			$this->custom_error( 'Failed to connect to the mail server' . ( ( $this->_mailbox[ 'encryption' ] !== 'None' ) ? '. This could possibly be because SSL certificate verification failed' : NULL ) );
 		}
 	}
 
@@ -344,7 +346,12 @@ class ERP_mailbox_api
 	# process all mails for an imap mailbox
 	private function process_imap_mailbox()
 	{
-		$this->_mailserver = new Net_IMAP( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ] );
+//		$this->_mailserver = new Net_IMAP( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ] );
+		$this->_mailserver = new Net_IMAP();
+
+		$this->_mailserver->setStreamContextOptions( $this->get_StreamContextOptions() );
+
+		$this->_mailserver->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ], ( ( $this->_mailbox[ 'encryption' ] === 'STARTTLS' ) ? TRUE : FALSE ) );
 
 		if ( $this->_mailserver->_connected === TRUE )
 		{
@@ -386,34 +393,37 @@ class ERP_mailbox_api
 								// We don't need to check twice whether the mailbox exist incase createfolderstructure is false
 								if ( !$this->_mailbox[ 'imap_createfolderstructure' ] || $this->_mailserver->mailboxExist( $t_foldername ) === TRUE )
 								{
-									$this->_mailserver->selectMailbox( $t_foldername );
+									$t_result = $this->_mailserver->selectMailbox( $t_foldername );
 
-									$t_ListMsgs = $this->_mailserver->getListing();
-
-									if ( !$this->pear_error( 'Retrieve list of messages', $t_ListMsgs ) )
+									if ( !$this->pear_error( 'Select IMAP folder', $t_result ) )
 									{
-										while ( $t_Msg = array_shift( $t_ListMsgs ) )
+										$t_ListMsgs = $this->_mailserver->getListing();
+
+										if ( !$this->pear_error( 'Retrieve list of messages', $t_ListMsgs ) )
 										{
-											$t_isDeleted = $this->isDeleted( $t_Msg[ 'msg_id' ] );
-
-											if ( $this->pear_error( 'Check email deleted flag', $t_isDeleted ) )
+											while ( $t_Msg = array_shift( $t_ListMsgs ) )
 											{
-												$t_isDeleted = FALSE;
-											}
+												$t_isDeleted = $this->isDeleted( $t_Msg[ 'msg_id' ] );
 
-											if ( $t_isDeleted === TRUE )
-											{
-												// Email marked as deleted. Do nothing
-											}
-											else
-											{
-												$t_emailresult = $this->process_single_email( $t_Msg[ 'msg_id' ], (int) $t_project[ 'id' ] );
-
-												if ( $t_emailresult === TRUE )
+												if ( $this->pear_error( 'Check email deleted flag', $t_isDeleted ) )
 												{
-													$t_deleteresult = $this->_mailserver->deleteMsg( $t_Msg[ 'msg_id' ] );
+													$t_isDeleted = FALSE;
+												}
 
-													$this->pear_error( 'Attempt delete email', $t_deleteresult );
+												if ( $t_isDeleted === TRUE )
+												{
+													// Email marked as deleted. Do nothing
+												}
+												else
+												{
+													$t_emailresult = $this->process_single_email( $t_Msg[ 'msg_id' ], (int) $t_project[ 'id' ] );
+
+													if ( $t_emailresult === TRUE )
+													{
+														$t_deleteresult = $this->_mailserver->deleteMsg( $t_Msg[ 'msg_id' ] );
+	
+														$this->pear_error( 'Attempt delete email', $t_deleteresult );
+													}
 												}
 											}
 										}
@@ -422,7 +432,9 @@ class ERP_mailbox_api
 								elseif ( $this->_mailbox[ 'imap_createfolderstructure' ] === TRUE )
 								{
 									// create this mailbox
-									$this->_mailserver->createMailbox( $t_foldername );
+									$t_result = $this->_mailserver->createMailbox( $t_foldername );
+
+									$this->pear_error( 'Create IMAP folder', $t_result );
 								}
 							}
 							else
@@ -438,15 +450,27 @@ class ERP_mailbox_api
 				}
 			}
 
-			//$t_mailbox->expunge(); //disabled as this is handled by the disconnect
+			//$this->_mailserver->expunge(); //disabled as this is handled by the disconnect
 
 			// mail_delete decides whether to perform the expunge command before closing the connection
 			$this->_mailserver->disconnect( (bool) $this->_mail_delete );
 		}
 		else
 		{
-			$this->custom_error( 'Failed to connect to the mail server' );
+			$this->custom_error( 'Failed to connect to the mail server' . ( ( $this->_mailbox[ 'encryption' ] !== 'None' ) ? '. This could possibly be because SSL certificate verification failed' : NULL ) );
 		}
+	}
+
+	# Return Stream Context Options array
+	private function get_StreamContextOptions()
+	{
+		return( array(
+			'ssl' => array
+			(
+				'verify_peer'      => (bool) $this->_mailbox[ 'ssl_cert_verify' ],
+				'verify_peer_name' => (bool) $this->_mailbox[ 'ssl_cert_verify' ]
+			)
+		) );
 	}
 
 	# --------------------
@@ -896,7 +920,20 @@ class ERP_mailbox_api
 			# Allow plugins to post-process bug data with the new bug ID
 			event_signal( 'EVENT_REPORT_BUG', array( $t_bug_data, $t_bug_id ) );
 
-			email_new_bug( $t_bug_id );
+			// MantisBT 1.2.x
+			if ( function_exists( 'email_new_bug' ) )
+			{
+				email_new_bug( $t_bug_id );
+			}
+			// MantisBT 1.3.x
+			elseif ( function_exists( 'email_bug_added' ) )
+			{
+				email_bug_added( $t_bug_id );
+			}
+			else
+			{
+				$this->custom_error( 'New issue notification function not found. Could not trigger the notification' );
+			}
 		}
 		else
 		{
@@ -1047,14 +1084,15 @@ class ERP_mailbox_api
 		$t_def_mailbox_port_index = 'normal';
 		$this->_mailbox[ 'port' ] = (int) $this->_mailbox[ 'port' ];
 
-		if ( $this->_mailbox[ 'encryption' ] !== 'None' )
+		if ( $this->_mailbox[ 'encryption' ] !== 'None' && $this->_mailbox[ 'encryption' ] !== 'STARTTLS' )
 		{
 			if ( extension_loaded( 'openssl' ) )
 			{
 				$t_def_mailbox_port_index = 'encrypted';
 
 				// The IMAP pear package will enable encryption after the connection is established if the default port is used. So we need to work around that
-				if ( !( $this->_mailbox[ 'mailbox_type' ] === 'IMAP' && ( $this->_mailbox[ 'port' ] <= 0 || $this->_mailbox[ 'port' ] === $this->_default_ports[ $this->_mailbox[ 'mailbox_type' ] ][ $t_def_mailbox_port_index ] ) ) )
+				// No longer needed since we disabled the code in question in IMAPProtocol.php
+//				if ( !( $this->_mailbox[ 'mailbox_type' ] === 'IMAP' && ( $this->_mailbox[ 'port' ] <= 0 || $this->_mailbox[ 'port' ] === $this->_default_ports[ $this->_mailbox[ 'mailbox_type' ] ][ $t_def_mailbox_port_index ] ) ) )
 				{
 					$this->_mailbox[ 'hostname' ] = strtolower( $this->_mailbox[ 'encryption' ] ) . '://' . $this->_mailbox[ 'hostname' ];
 				}

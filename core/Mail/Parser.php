@@ -1,6 +1,7 @@
 <?php
 
-require_once( 'Mail/mimeDecode.php' );
+//require_once( 'Mail/mimeDecode.php' );
+plugin_require_api( 'core_pear/Mail/mimeDecode.php' );
 plugin_require_api( 'core/Mail/simple_html_dom.php');
 
 class ERP_Mail_Parser
@@ -402,7 +403,7 @@ class ERP_Mail_Parser
 		}
 		elseif ( $this->_parse_html && 'text' === $this->_ctype['primary'] && 'html' === $this->_ctype['secondary'] )
 		{
-			$htmlToText = str_get_html( $body );
+			$htmlToText = str_get_html( $body, true, true, $this->_encoding, false ); 
 
 			// extract text from HTML
 			$this->_body = $htmlToText->plaintext;

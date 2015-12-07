@@ -18,6 +18,7 @@ if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailb
 		'hostname'				=> gpc_get_string( 'hostname', '' ),
 		'port'					=> gpc_get_string( 'port', '' ),
 		'encryption'			=> gpc_get_string( 'encryption' ),
+		'ssl_cert_verify'		=> gpc_get_int( 'ssl_cert_verify', ON ),
 		'erp_username'			=> gpc_get_string( 'erp_username', '' ),
 		'erp_password'			=> base64_encode( gpc_get_string( 'erp_password', '' ) ),
 		'auth_method'			=> gpc_get_string( 'auth_method' ),
@@ -83,6 +84,7 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 		echo plugin_lang_get( 'hostname' ) . ': ', $t_mailbox_api->_mailbox[ 'hostname' ] . '<br />';
 		echo plugin_lang_get( 'port' ) . ': ', $t_mailbox_api->_mailbox[ 'port' ] . '<br />';
 		echo plugin_lang_get( 'encryption' ) . ': ' . $t_mailbox_api->_mailbox[ 'encryption' ] . '<br />';
+		echo plugin_lang_get( 'ssl_cert_verify' ) . ': ' . $t_mailbox_api->_mailbox[ 'ssl_cert_verify' ] . '<br />';
 		echo plugin_lang_get( 'erp_username' ) . ': ' . $t_mailbox_api->_mailbox[ 'erp_username' ] . '<br />';
 		echo plugin_lang_get( 'erp_password' ) . ': ******' . '<br />';
 		echo plugin_lang_get( 'auth_method' ) . ': ' . $t_mailbox_api->_mailbox[ 'auth_method' ] . '<br />';

@@ -11,6 +11,7 @@
 			'enabled'				=> ON,
 			'mailbox_type'			=> 'POP3',
 			'encryption'			=> 'None',
+			'ssl_cert_verify'		=> ON,
 			'auth_method'			=> 'USER',
 		);
 
@@ -338,6 +339,117 @@ if ( !function_exists( 'constant_replace' ) )
 	}
 }
 
+
+	/**
+	 * Copy of the function in /admin/check.php (MantisBT 1.2.19)
+	 * ERP - Removed the global variable
+	 * ERP - Changed output method
+	 */
+	/**
+	 * Check the DB colation if its MySQL
+	 */
+if ( !function_exists( 'print_test_result' ) )
+{
+	function print_test_result( $p_result ) {
+		$t_output = NULL;
+
+		switch ( $p_result ) {
+			case BAD:
+				$t_output .= '<td bgcolor="#ff0088">BAD</td>';
+				break;
+			case GOOD:
+				$t_output .= '<td bgcolor="#00ff88">GOOD</td>';
+				break;
+			case WARN:
+				$t_output .= '<td bgcolor="#E56717">WARN</td>';
+				break;
+		}
+
+		return $t_output;
+	}
+}
+
+	/**
+	 * Copy of the function in /admin/check.php (MantisBT 1.2.19)
+	 * ERP - Changed global $f_showall to local variable and forced it to FALSE
+	 * ERP - Changed output method
+	 */
+	/**
+	 * Check the DB colation if its MySQL
+	 */
+if ( !function_exists( 'print_test_row' ) )
+{
+	function print_test_row( $p_description, $p_pass, $p_info = null ) {
+		$t_output = NULL;
+
+		$f_showall = FALSE;
+		if ( $f_showall == false && $p_pass == true ) {
+			return $t_output;
+		}
+		$t_output .= '<tr><td bgcolor="#ffffff">' .$p_description;
+		if( $p_info != null) {
+			if( is_array( $p_info ) ) {
+				if( isset( $p_info[$p_pass] ) ) {
+					$t_output .= '<br /><i>' . $p_info[$p_pass] . '</i>';
+				}
+			} else {
+				$t_output .= '<br /><i>' . $p_info . '</i>';
+			}
+		}
+		$t_output .= '</td>';
+
+		if( $p_pass ) {
+			$t_output .= print_test_result( GOOD );
+		} else {
+			$t_output .= print_test_result( BAD );
+		}
+
+		$t_output .= '</tr>';
+
+		return $t_output;
+	}
+}
+
+	/**
+	 * Copy of the function in /admin/check.php (MantisBT 1.2.19)
+	 * ERP - Changed output method
+	 */
+	/**
+	 * Check the DB colation if its MySQL
+	 */
+if ( !function_exists( 'test_database_utf8' ) )
+{
+	function test_database_utf8() {
+		$t_output = NULL;
+
+		if ( !db_is_mysql() ) {
+			return $t_output ;
+		}
+
+		// table collation/character set check
+		$result = db_query_bound( 'SHOW TABLE STATUS' );
+		while( $row = db_fetch_array( $result ) ) {
+			if( $row['Comment'] !== 'VIEW' ) {
+				$t_output .= print_test_row( 'Checking Table Collation is utf8 for ' . $row['Name'] . '....', substr( $row['Collation'], 0, 5 ) === 'utf8_', $row['Collation'] );
+			}
+		}
+
+		foreach( db_get_table_list() as $t_table ) {
+			if( db_table_exists( $t_table ) ) {
+				$result = db_query_bound( 'SHOW FULL FIELDS FROM ' . $t_table );
+				while( $row = db_fetch_array( $result ) ) {
+					if ( $row['Collation'] === null ) {
+						continue;
+					}
+					$t_output .= print_test_row( 'Checking Non-null Column Collation in ' . $t_table . ' is utf8 for ' . $row['Field'] . '....', substr( $row['Collation'], 0, 5 ) === 'utf8_', $row['Collation'] . ' ( ' . $row['Type'] . ')' );
+				}
+			}
+		}
+
+		return $t_output ;
+	}
+}
+
 	# --------------------
 	# output a configuration option
 	# This function is only meant to be used by the EmailReporting plugin or by other plugins within the EVENT_ERP_OUTPUT_MAILBOX_FIELDS event
@@ -647,8 +759,10 @@ if ( !function_exists( 'constant_replace' ) )
 	# output a option list for authentication methods for POP3 and IMAP
 	function ERP_custom_function_print_auth_method_option_list( $p_sel_value )
 	{
-		require_once( 'Net/POP3.php' );
-		require_once( 'Net/IMAPProtocol.php' );
+		//require_once( 'Net/POP3.php' );
+		plugin_require_api( 'core_pear/Net/POP3.php' );
+		//require_once( 'Net/IMAPProtocol.php' );
+		plugin_require_api( 'core_pear/Net/IMAPProtocol.php' );
 
 		$t_mailbox_connection_pop3 = new Net_POP3();
 		$t_mailbox_connection_imap = new Net_IMAPProtocol();
@@ -699,10 +813,10 @@ if ( !function_exists( 'constant_replace' ) )
 		if ( extension_loaded( 'openssl' ) )
 		{
 			$t_socket_transports = stream_get_transports();
-			$t_supported_encryptions = array( 'None', 'SSL', 'SSLv2', 'SSLv3', 'TLS', 'TLSv1.0', 'TLSv1.1', 'TLSv1.2' );
+			$t_supported_encryptions = array( 'None', 'SSL', 'SSLv2', 'SSLv3', 'TLS', 'TLSv1.0', 'TLSv1.1', 'TLSv1.2', 'STARTTLS' );
 			foreach ( $t_supported_encryptions AS $t_encryption )
 			{
-				if ( $t_encryption === 'None' || in_array( strtolower( $t_encryption ), $t_socket_transports, TRUE ) )
+				if ( $t_encryption === 'None' || $t_encryption === 'STARTTLS' || in_array( strtolower( $t_encryption ), $t_socket_transports, TRUE ) )
 				{
 					echo '<option';
 					check_selected( (string) $p_sel_value, $t_encryption );

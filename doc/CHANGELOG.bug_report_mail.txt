@@ -1,8 +1,8 @@
 Changelog:
-Dec 2014 - EmailReporting-0.9.0-DEV
+Okt 2015 - EmailReporting-0.9.0-DEV
 	- Minimum requirement for EmailReporting is now MantisBT 1.2.6
 	- Officially compatible with MantisBT 1.2.6-1.2.18
-	- Preliminary compatibility for 1.3.x
+	- Preliminary compatibility for MantisBT 1.3.x
 	- Updated pear packages (Fixes issue ~28437)
 	- New rule system added
 	- Removed "Mailbox " from mailbox setting descriptions
@@ -100,6 +100,14 @@ Dec 2014 - EmailReporting-0.9.0-DEV
 	- Mail Reporter dropdown list now shows all users
 	- Added more supported encryptions
 	- Cast job_users to string to avoid possible issues
+	- Added extra error handling during selection/creation of imap folder
+	- Adjusted SIMPLE_HTML_DOM to not strip linewrap endings
+	- Added STARTTLS support for IMAP
+	- Added an option to enable or disable SSL certificate verification.
+	- EmailReporting will now always use the included PEAR packages Net_IMAP and Net_POP3 because of custom modifications applied to them for EmailReporting
+	- German language file added (JeromyK & roman-1983)
+	- EmailReporting will now always use the included Mail_mimeDecode package to avoid issues with older versions that might reside on the host system
+	- Added error message incase there are Collation issues in the database
 
 Nov 2010 - EmailReporting-0.8.4
 	- Improved the project category list
