@@ -1,7 +1,7 @@
 Changelog:
-Okt 2015 - EmailReporting-0.9.0-DEV
+Dec 2015 - EmailReporting-0.9.0
 	- Minimum requirement for EmailReporting is now MantisBT 1.2.6
-	- Officially compatible with MantisBT 1.2.6-1.2.18
+	- Officially compatible with MantisBT 1.2.6-1.2.19
 	- Preliminary compatibility for MantisBT 1.3.x
 	- Updated pear packages (Fixes issue ~28437)
 	- New rule system added
