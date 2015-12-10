@@ -530,6 +530,11 @@ class ERP_mailbox_api
 				$this->custom_error( 'From email address rejected by email_is_valid function based on: ' . $t_email[ 'From_parsed' ][ 'From' ] );
 			}
 		}
+		else
+		{
+			// Email will ignored and another attempt will be made the next time
+			return( FALSE );
+		}
 
 		$this->show_memory_usage( 'Finished process single email' );
 
@@ -720,7 +725,7 @@ class ERP_mailbox_api
 		}
 
 		// Normally this function does not get here unless all else failed
-		$this->custom_error( 'Could not get a valid reporter. Email will be ignored' );
+		$this->custom_error( 'Could not get a valid reporter. Email will be ignored and another attempt will be made the next time' );
 
 		return( FALSE );
 	}
