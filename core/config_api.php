@@ -216,7 +216,7 @@
 	# The $p_a_name is a link into the documentation.html file
 	function ERP_print_documentation_link( $p_a_name = '' )
 	{
-		$t_a_name = preg_replace( '/[^a-z_]/ui', '', $p_a_name );
+		$t_a_name = preg_replace( '/[^a-z0-9_]/ui', '', $p_a_name );
 
 		echo plugin_lang_get( $p_a_name ) . "\n";
 		echo '<a href="http://www.mantisbt.org/wiki/doku.php/mantisbt:emailreporting#' . $t_a_name . '" target="_blank">[?]</a>';

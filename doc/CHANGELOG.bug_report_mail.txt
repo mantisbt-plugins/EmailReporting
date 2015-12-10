@@ -1,6 +1,7 @@
 Changelog:
 Dec 2015 - EmailReporting-0.9.1-DEV
 	- Changed the behaviour if no valid reporter could be found from delete to ignore
+	- Allow numbers in the anchor name for the help link
 
 Dec 2015 - EmailReporting-0.9.0
 	- Minimum requirement for EmailReporting is now MantisBT 1.2.6
