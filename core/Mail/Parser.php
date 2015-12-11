@@ -408,6 +408,12 @@ class ERP_Mail_Parser
 			// extract text from HTML
 			$this->_body = $htmlToText->plaintext;
 		}
+		else
+		{
+			return( FALSE );
+		}
+		
+		return( TRUE );
 	}
 
 	private function setParts( &$parts, $attachment = FALSE, $p_attached_email_subject = NULL )
@@ -452,7 +458,12 @@ class ERP_Mail_Parser
 					$t_body_charset = $parts[ $i ]->ctype_parameters[ 'charset' ];
 				}
 
-				$this->setBody( $parts[ $i ]->body, $parts[ $i ]->ctype_primary, $parts[ $i ]->ctype_secondary, $t_body_charset );
+				$t_result = $this->setBody( $parts[ $i ]->body, $parts[ $i ]->ctype_primary, $parts[ $i ]->ctype_secondary, $t_body_charset );
+
+				if ( $t_result === FALSE )
+				{
+					$this->addPart( $parts[ $i ], $p_attached_email_subject );
+				}
 			}
 
 			if ( $t_stop_part === TRUE )
