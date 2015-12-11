@@ -15,7 +15,7 @@ ERP_print_menu( $t_this_page );
 
 <pre>
 <?php
-plugin_require_api( 'doc/README.bug_report_mail.txt' );
+plugin_require_api( 'doc/INSTALL.txt' );
 ?>
 </pre>
 
