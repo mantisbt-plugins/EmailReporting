@@ -34,6 +34,10 @@ EmailReporting plugin is hosted in GitHub along with other MantisBT plugins. Git
 
 Support
 =======
+Documentation
+-------------
+https://www.mantisbt.org/wiki/doku.php/mantisbt:emailreporting
+
 Forum
 -----
 Please use forum to get help in installing and using EmailReporting plugin. Visit [EmailReporting Forum](https://www.mantisbt.org/forums/viewforum.php?f=13)
