@@ -33,7 +33,7 @@ Source code
 EmailReporting plugin is hosted in GitHub along with other MantisBT plugins. GitHub URL: https://github.com/mantisbt-plugins/EmailReporting
 
 Support
-=======
+========
 Documentation
 -------------
 https://www.mantisbt.org/wiki/doku.php/mantisbt:emailreporting
