@@ -64,6 +64,24 @@ if ( $f_mailbox_action === 'complete_test' )
 <br />
 <?php
 }
+
+// Loading this one here to throw a error if necessary and notifying the user of the issue
+include_once 'PEAR.php';
+if ( !defined( 'PEAR_OS' ) )
+{
+?>
+<table align="center" class="width50" cellspacing="1">
+
+<tr>
+	<td class="left">
+		<?php echo plugin_lang_get( 'pear_load_error' ); ?>
+	</td>
+</tr>
+
+</table>
+<br />
+<?php
+}
 ?>
 
 <table align="center" class="width50 nowrap" cellspacing="1">

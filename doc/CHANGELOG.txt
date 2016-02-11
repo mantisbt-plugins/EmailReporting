@@ -6,6 +6,7 @@ Dec 2015 - EmailReporting-0.9.1-DEV
 	- Readme and Changelog renamed
 	- README.md added for github
 	- Corrected typo for english language variable input_name_not_allowed
+	- Added error incase pear.php could not be loaded from the local PEAR repository because of open_basedir
 
 Dec 2015 - EmailReporting-0.9.0
 	- Minimum requirement for EmailReporting is now MantisBT 1.2.6
