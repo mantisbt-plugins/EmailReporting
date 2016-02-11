@@ -130,7 +130,7 @@ $s_plugin_EmailReporting_test_success = 'Operation successful';
 $s_plugin_EmailReporting_unknown_setting = 'Unknown setting encountered. Setting ignored: ';
 $s_plugin_EmailReporting_zero_records = 'None available';
 $s_plugin_EmailReporting_function_not_found = 'Function not found';
-$s_plugin_EmailReporting_input_name_not_allowed = 'The selected variable name is not allowed as it could cause conflits in certain situations';
+$s_plugin_EmailReporting_input_name_not_allowed = 'The selected variable name is not allowed as it could cause conflicts in certain situations';
 $s_plugin_EmailReporting_complete_test_action_note = '<span class="negative">Warning</span>: This will test a single mailbox as completely as possible unlike "Test" which will only perform the tasks that do not change anything.
 
 There are still minor differences compared to the scheduled job (bug_report_mail.php). For example one of the differences could be the useraccount that runs the job.

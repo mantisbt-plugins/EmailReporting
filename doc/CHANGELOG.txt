@@ -5,6 +5,7 @@ Dec 2015 - EmailReporting-0.9.1-DEV
 	- HTML Body will be added as attachment if mail_parse_html is off
 	- Readme and Changelog renamed
 	- README.md added for github
+	- Corrected typo for english language variable input_name_not_allowed
 
 Dec 2015 - EmailReporting-0.9.0
 	- Minimum requirement for EmailReporting is now MantisBT 1.2.6
