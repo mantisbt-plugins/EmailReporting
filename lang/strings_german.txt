@@ -131,7 +131,7 @@ $s_plugin_EmailReporting_unknown_setting = 'Unbekannte Einstellung erkannt. Eins
 $s_plugin_EmailReporting_zero_records = 'Keine Einträge verfügbar';
 $s_plugin_EmailReporting_function_not_found = 'Funktion nicht gefunden';
 $s_plugin_EmailReporting_input_name_not_allowed = 'Der ausgewählte Variablename ist nicht gestattet, da in bestimmten Situationen Konflikte auftreten können';
-$s_plugin_EmailReporting_pear_load_error = 'Failed to load pear.php. This might be because security settings do not allow loading your existing PEAR repository';
+$s_plugin_EmailReporting_pear_load_error = 'pear.php konnte nicht geladen werden. Möglicherweise verhindern PHP Sicherheitseinstellungen (open_basedir), dass auf das PEAR Verzeichnis nicht zugegriffen werden kann.';
 $s_plugin_EmailReporting_complete_test_action_note = '<span class="negative">Warning</span>: Diese Option wird eine Mailbox komplett testen.
 
 Es gibt immernoch kleine Unterschiede zum zeitgesteuerten Job (bug_report_mail.php). Beispielsweise könnte das Benutzerkonto, unter der Job läuft, ein Anderes sein.
