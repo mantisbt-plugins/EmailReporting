@@ -429,7 +429,7 @@ class ERP_mailbox_api
 										}
 									}
 								}
-								elseif ( $this->_mailbox[ 'imap_createfolderstructure' ] === TRUE )
+								elseif ( $this->_mailbox[ 'imap_createfolderstructure' ] == ON )
 								{
 									// create this mailbox
 									$t_result = $this->_mailserver->createMailbox( $t_foldername );
