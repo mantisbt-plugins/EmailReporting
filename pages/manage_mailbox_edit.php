@@ -73,7 +73,7 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 	{
 		$t_no_redirect = TRUE;
 
-		html_page_top( plugin_lang_get( 'plugin_title' ) );
+		layout_page_header( plugin_lang_get( 'plugin_title' ) );
 ?>
 <br /><div class="center">
 <?php
@@ -100,7 +100,7 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 ?>
 </div>
 <?php
-		html_page_bottom( __FILE__ );
+		layout_page_end();
 	}
 }
 
