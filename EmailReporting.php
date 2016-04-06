@@ -323,7 +323,8 @@ class EmailReportingPlugin extends MantisPlugin
 				id              I       UNSIGNED NOTNULL PRIMARY AUTOINCREMENT,
 				issue_id        I       UNSIGNED NOTNULL,
 				msg_id          C(255)  NOTNULL
-				" )
+				", Array('mysql' => 'ENGINE=MyISAM DEFAULT CHARSET=utf8', 'pgsql' => 'WITHOUT OIDS')
+				)
 			),
 			array( 'CreateIndexSQL', array( 'idx_erp_msgids_msgid', plugin_table( 'msgids' ), 'msg_id', array( 'UNIQUE' ) ) ),
 		);
