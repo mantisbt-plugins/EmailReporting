@@ -315,7 +315,7 @@ class ERP_mailbox_api
 
 					if ( !$this->pear_error( 'Retrieve list of messages', $t_ListMsgs ) )
 					{
-						while ( $t_Msg = array_shift( $t_ListMsgs ) )
+						while ( $t_Msg = array_pop( $t_ListMsgs ) )
 						{
 							$t_emailresult = $this->process_single_email( $t_Msg[ 'msg_id' ] );
 
@@ -401,7 +401,7 @@ class ERP_mailbox_api
 
 										if ( !$this->pear_error( 'Retrieve list of messages', $t_ListMsgs ) )
 										{
-											while ( $t_Msg = array_shift( $t_ListMsgs ) )
+											while ( $t_Msg = array_pop( $t_ListMsgs ) )
 											{
 												$t_isDeleted = $this->isDeleted( $t_Msg[ 'msg_id' ] );
 
