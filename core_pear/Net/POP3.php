@@ -35,7 +35,9 @@
 //
 // $Id: POP3.php 295243 2010-02-18 22:05:20Z clockwerx $
 
-require_once 'Net/Socket.php';
+// ERP-modification: Need to load included net_socket since it has some required fixes
+// require_once 'Net/Socket.php';
+plugin_require_api( 'core_pear/Net/Socket.php' );
 
 
 

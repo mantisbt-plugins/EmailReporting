@@ -16,7 +16,10 @@
 /**
  * Net_IMAP requires Net_Socket
  */
-require_once 'Net/Socket.php';
+
+// ERP-modification: Need to load included net_socket since it has some required fixes
+// require_once 'Net/Socket.php';
+plugin_require_api( 'core_pear/Net/Socket.php' );
 
 
 /**

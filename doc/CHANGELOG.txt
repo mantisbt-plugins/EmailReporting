@@ -9,6 +9,7 @@ Dec 2015 - EmailReporting-0.9.1-DEV
 	- Added error incase pear.php could not be loaded from the local PEAR repository because of open_basedir
 	- Fixed issue with IMAP subfolder not being created (#20599)
 	- Corrected schema to include charset for MySQL
+	- Net_Socket now force loaded from included pear repository
 
 Dec 2015 - EmailReporting-0.9.0
 	- Minimum requirement for EmailReporting is now MantisBT 1.2.6
