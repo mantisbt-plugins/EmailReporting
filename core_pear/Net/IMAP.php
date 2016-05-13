@@ -17,7 +17,9 @@
 /**
  * IMAPProtocol.php holds protocol implementation for IMAP.php
  */
-require_once 'Net/IMAPProtocol.php';
+// ERP-modification: Need to load included IMAPProtocol since it has some required fixes
+// require_once 'Net/IMAPProtocol.php';
+plugin_require_api( 'core_pear/Net/IMAPProtocol.php' );
 
 
 /**
