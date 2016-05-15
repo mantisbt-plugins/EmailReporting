@@ -1,5 +1,5 @@
 Changelog:
-Dec 2015 - EmailReporting-0.9.1-DEV
+May 2016 - EmailReporting-0.9.1
 	- Modified error message incase no valid reporter could be found
 	- Allow numbers in the anchor name for the help link
 	- HTML Body will be added as attachment if mail_parse_html is off
