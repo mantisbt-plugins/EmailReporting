@@ -426,11 +426,18 @@ if ( !function_exists( 'test_database_utf8' ) )
 			return $t_output ;
 		}
 
-		// table collation/character set check
+		$t_field_name      = 'name';
+		$t_field_comment   = 'comment';
+		$t_field_collation = 'collation';
+		$t_field_field     = 'field';
+		$t_field_type      = 'type';
+
+ 		// table collation/character set check
 		$result = db_query_bound( 'SHOW TABLE STATUS' );
 		while( $row = db_fetch_array( $result ) ) {
-			if( $row['Comment'] !== 'VIEW' ) {
-				$t_output .= print_test_row( 'Checking Table Collation is utf8 for ' . $row['Name'] . '....', substr( $row['Collation'], 0, 5 ) === 'utf8_', $row['Collation'] );
+			$row = array_change_key_case( $row, CASE_LOWER );
+			if( $row[$t_field_comment] !== 'VIEW' ) {
+				$t_output .= print_test_row( 'Checking Table Collation is utf8 for ' . $row[$t_field_name] . '....', substr( $row[$t_field_collation], 0, 5 ) === 'utf8_', $row[$t_field_collation] );
 			}
 		}
 
@@ -438,10 +445,11 @@ if ( !function_exists( 'test_database_utf8' ) )
 			if( db_table_exists( $t_table ) ) {
 				$result = db_query_bound( 'SHOW FULL FIELDS FROM ' . $t_table );
 				while( $row = db_fetch_array( $result ) ) {
-					if ( $row['Collation'] === null ) {
+					$row = array_change_key_case( $row, CASE_LOWER );
+					if ( $row[$t_field_collation] === null ) {
 						continue;
 					}
-					$t_output .= print_test_row( 'Checking Non-null Column Collation in ' . $t_table . ' is utf8 for ' . $row['Field'] . '....', substr( $row['Collation'], 0, 5 ) === 'utf8_', $row['Collation'] . ' ( ' . $row['Type'] . ')' );
+					$t_output .= print_test_row( 'Checking Non-null Column Collation in ' . $t_table . ' is utf8 for ' . $row[$t_field_field] . '....', substr( $row[$t_field_collation], 0, 5 ) === 'utf8_', $row[$t_field_collation] . ' ( ' . $row[$t_field_type] . ')' );
 				}
 			}
 		}
