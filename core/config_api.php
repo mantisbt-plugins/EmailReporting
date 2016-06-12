@@ -909,9 +909,9 @@ if ( !function_exists( 'test_database_utf8' ) )
 		{
 			foreach ( $t_user_ids AS $t_single_user_id )
 			{
-				if ( !user_exists( $t_single_user_id ) )
+				if ( !user_exists( $t_single_user_id ) || empty( user_get_accessible_projects( $t_single_user_id ) ) )
 				{
-					echo '<option value="' . $t_single_user_id . '" selected class="negative">' . plugin_lang_get( 'missing_user', 'EmailReporting' ) . '</option>';
+					echo '<option value="' . $t_single_user_id . '" selected class="negative">' . plugin_lang_get( 'missing_user', 'EmailReporting' ) . ': ' . $t_single_user_id . '</option>';
 				}
 			}
 		}
