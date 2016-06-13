@@ -1258,7 +1258,7 @@ class ERP_mailbox_api
 			$t_realname = utf8_substr( $t_realname, 0, DB_FIELD_SIZE_REALNAME );
 		}
 
-		if ( user_is_realname_valid( $t_realname ) && user_is_realname_unique( $p_username, $t_realname ) )
+		if ( ( !function_exists( 'user_is_realname_valid' ) || user_is_realname_valid( $t_realname ) ) && user_is_realname_unique( $p_username, $t_realname ) )
 		{
 			return( $t_realname );
 		}
