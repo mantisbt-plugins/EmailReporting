@@ -53,7 +53,7 @@ class ERP_Mail_Parser
 			'us-ascii' => 'ASCII',
 	);
 
-	public function __construct( $options, $mailbox_starttime )
+	public function __construct( $options, $mailbox_starttime = NULL )
 	{
 		$this->_parse_html = $options[ 'parse_html' ];
 		$this->_add_attachments = $options[ 'add_attachments' ];
