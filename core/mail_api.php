@@ -27,6 +27,7 @@ class ERP_mailbox_api
 {
 	private $_functionality_enabled = FALSE;
 	private $_test_only = FALSE;
+	private $_mailbox_starttime = NULL;
 
 	public $_mailbox = array( 'description' => 'INITIALIZATION PHASE' );
 
@@ -166,6 +167,8 @@ class ERP_mailbox_api
 	#  return a boolean for whether the mailbox was successfully processed
 	public function process_mailbox( $p_mailbox )
 	{
+		$this->_mailbox_starttime = ERP_get_timestamp();
+		
 		$this->_mailbox = $p_mailbox + ERP_get_default_mailbox();
 
 		if ( $this->_functionality_enabled )
@@ -217,6 +220,7 @@ class ERP_mailbox_api
 								if ( !$this->_test_only && $this->_mail_debug )
 								{
 									var_dump( $this->_mailbox );
+									echo "\n";
 								}
 
 								$this->show_memory_usage( 'Start process mailbox' );
@@ -263,7 +267,7 @@ class ERP_mailbox_api
 
 			if ( !$this->_test_only )
 			{
-				echo "\n\n" . 'Mailbox: ' . $this->_mailbox[ 'description' ] . "\n" . 'Location: ' . $p_location . "\n" . $p_pear->toString() . "\n";
+				echo 'Mailbox: ' . $this->_mailbox[ 'description' ] . "\n" . 'Location: ' . $p_location . "\n" . $p_pear->toString() . "\n\n";
 			}
 
 			return( TRUE );
@@ -291,7 +295,7 @@ class ERP_mailbox_api
 
 		if ( !$this->_test_only )
 		{
-			echo "\n\n" . 'Mailbox: ' . $this->_mailbox[ 'description' ] . "\n" . $t_error_text;
+			echo 'Mailbox: ' . $this->_mailbox[ 'description' ] . "\n" . $t_error_text . "\n\n";
 		}
 	}
 
@@ -593,7 +597,7 @@ class ERP_mailbox_api
 	{
 		$this->show_memory_usage( 'Start Mail Parser' );
 
-		$t_mp = new ERP_Mail_Parser( $this->_mp_options );
+		$t_mp = new ERP_Mail_Parser( $this->_mp_options, $this->_mailbox_starttime );
 
 		$t_mp->setInputString( $p_msg );
 
@@ -1492,12 +1496,14 @@ class ERP_mailbox_api
 	{
 		if ( !$this->_test_only && $this->_mail_debug && $this->_mail_debug_show_memory_usage )
 		{
+			$t_current_runtime = ( ( $this->_mailbox_starttime !== NULL ) ? round( ERP_get_timestamp() - $this->_mailbox_starttime, 4 ) : 0 );
 			echo 'Debug output memory usage' . "\n" .
 				'Location: Mail API - ' . $p_location . "\n" .
+				'Runtime in seconds: ' . $t_current_runtime . "\n" .
 				'Current memory usage: ' . ERP_formatbytes( memory_get_usage( FALSE ) ) . ' / ' . $this->_memory_limit . "\n" .
 				'Peak memory usage: ' . ERP_formatbytes( memory_get_peak_usage( FALSE ) ) . ' / ' . $this->_memory_limit . "\n" .
 				'Current real memory usage: ' . ERP_formatbytes( memory_get_usage( TRUE ) ) . ' / ' . $this->_memory_limit . "\n" .
-				'Peak real memory usage: ' . ERP_formatbytes( memory_get_peak_usage( TRUE ) ) . ' / ' . $this->_memory_limit . "\n";
+				'Peak real memory usage: ' . ERP_formatbytes( memory_get_peak_usage( TRUE ) ) . ' / ' . $this->_memory_limit . "\n\n";
 		}
 	}
 
@@ -1624,4 +1630,13 @@ class ERP_mailbox_api
 
 		return( round( $t_bytes, 2 ) . $t_units[ $i ] );
 	}
+
+	# --------------------
+	# Returns the current timestamp
+	function ERP_get_timestamp()
+	{
+		$t_time = explode( ' ', microtime() );
+		return( $t_time[1] + $t_time[0] );
+	}
+
 ?>

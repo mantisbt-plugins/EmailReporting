@@ -12,6 +12,7 @@ class ERP_Mail_Parser
 	private $_debug = FALSE;
 	private $_show_mem_usage = FALSE;
 	private $_memory_limit = FALSE;
+	private $_mailbox_starttime = NULL;
 
 	private $_file;
 	private $_content;
@@ -52,12 +53,13 @@ class ERP_Mail_Parser
 			'us-ascii' => 'ASCII',
 	);
 
-	public function __construct( $options )
+	public function __construct( $options, $mailbox_starttime )
 	{
 		$this->_parse_html = $options[ 'parse_html' ];
 		$this->_add_attachments = $options[ 'add_attachments' ];
 		$this->_debug = $options[ 'debug' ];
 		$this->_show_mem_usage = $options[ 'show_mem_usage' ];
+		$this->_mailbox_starttime = $mailbox_starttime;
 
 		$this->prepare_mb_list_encodings();
 
@@ -539,12 +541,14 @@ class ERP_Mail_Parser
 	{
 		if ( $this->_debug && $this->_show_mem_usage )
 		{
+			$t_current_runtime = ( ( $this->_mailbox_starttime !== NULL ) ? round( ERP_get_timestamp() - $this->_mailbox_starttime, 4 ) : 0 );
 			echo 'Debug output memory usage' . "\n" .
 				'Location: Mail Parser - ' . $p_location . "\n" .
+				'Runtime in seconds: ' . $t_current_runtime . "\n" .
 				'Current memory usage: ' . ERP_formatbytes( memory_get_usage( FALSE ) ) . ' / ' . $this->_memory_limit . "\n" .
 				'Peak memory usage: ' . ERP_formatbytes( memory_get_peak_usage( FALSE ) ) . ' / ' . $this->_memory_limit . "\n" .
 				'Current real memory usage: ' . ERP_formatbytes( memory_get_usage( TRUE ) ) . ' / ' . $this->_memory_limit . "\n" .
-				'Peak real memory usage: ' . ERP_formatbytes( memory_get_peak_usage( TRUE ) ) . ' / ' . $this->_memory_limit . "\n";
+				'Peak real memory usage: ' . ERP_formatbytes( memory_get_peak_usage( TRUE ) ) . ' / ' . $this->_memory_limit . "\n\n";
 		}
 	}
 }
