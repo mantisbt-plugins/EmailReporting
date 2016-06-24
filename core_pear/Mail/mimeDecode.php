@@ -453,7 +453,9 @@ class Mail_mimeDecode extends PEAR
             foreach ($headers as $value) {
                 $hdr_name = substr($value, 0, $pos = strpos($value, ':'));
                 $hdr_value = substr($value, $pos+1);
-                if($hdr_value[0] == ' ')
+                // ERP-modification: Small fix for notice level error
+//              if($hdr_value[0] == ' ')
+                if(isset($hdr_value[0]) && $hdr_value[0] == ' ')
                     $hdr_value = substr($hdr_value, 1);
 
                 $return[] = array(
@@ -759,7 +761,9 @@ class Mail_mimeDecode extends PEAR
         $input = preg_replace("/=\r?\n/", '', $input);
 
         // Replace encoded characters
-		$input = preg_replace('/=([a-f0-9]{2})/ie', "chr(hexdec('\\1'))", $input);
+		// ERP-modification: PHP7 deprecated the /e PCRE modifier.
+//		$input = preg_replace('/=([a-f0-9]{2})/ie', "chr(hexdec('\\1'))", $input);
+		$input = preg_replace_callback('/=([a-f0-9]{2})/i', "chr(hexdec('\\1'))", $input);
 
         return $input;
     }
