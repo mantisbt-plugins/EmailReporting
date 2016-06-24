@@ -763,7 +763,7 @@ class Mail_mimeDecode extends PEAR
         // Replace encoded characters
 		// ERP-modification: PHP7 deprecated the /e PCRE modifier.
 //		$input = preg_replace('/=([a-f0-9]{2})/ie', "chr(hexdec('\\1'))", $input);
-		$input = preg_replace_callback('/=([a-f0-9]{2})/i', "chr(hexdec('\\1'))", $input);
+		$input = preg_replace_callback('/=([a-f0-9]{2})/i', function ($matches) { return chr(hexdec($matches[1])); }, $input);
 
         return $input;
     }
