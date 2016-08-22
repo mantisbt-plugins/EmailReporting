@@ -252,6 +252,10 @@ class ERP_mailbox_api
 				$this->custom_error( 'Mailbox disabled' );
 			}
 		}
+		else
+		{
+			$this->custom_error( 'EmailReporting not initialised properly' );
+		}
 
 		return( $this->_result );
 	}
