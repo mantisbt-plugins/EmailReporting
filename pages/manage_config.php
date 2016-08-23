@@ -21,7 +21,8 @@ ERP_print_menu( $t_this_page );
 <?php
 	$t_link1 = helper_mantis_url( 'plugins/' . plugin_get_current() . '/scripts/bug_report_mail.php' );
 	$t_link2 = plugin_page( 'bug_report_mail' );
-	echo plugin_lang_get( 'jobsetup' ) . '<hr />' .
+	ERP_print_documentation_link( 'setting_up_a_scheduled_cron_job_for_emailreporting', 'jobsetup' );
+	echo '<hr />' .
 		'<ol><li><a href="' . $t_link1 . '">' . $t_link1 . '</a></li>' .
 		'<li><a href="' . $t_link2 . '">' . $t_link2 . '</a></li></ol>';
 ?>

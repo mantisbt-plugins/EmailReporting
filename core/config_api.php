@@ -214,11 +214,21 @@
 
 	# This prints the little [?] link for user help
 	# The $p_a_name is a link into the documentation.html file
-	function ERP_print_documentation_link( $p_a_name = '' )
+	# 
+	function ERP_print_documentation_link( $p_a_name = '', $p_other_description = FALSE )
 	{
 		$t_a_name = preg_replace( '/[^a-z0-9_]/ui', '', $p_a_name );
 
-		echo plugin_lang_get( $p_a_name ) . "\n";
+		if ( $p_other_description === FALSE )
+		{
+			$t_description = $p_a_name;
+		}
+		else
+		{
+			$t_description = $p_other_description;
+		}
+
+		echo plugin_lang_get( $t_description ) . "\n";
 		echo '<a href="http://www.mantisbt.org/wiki/doku.php/mantisbt:emailreporting#' . $t_a_name . '" target="_blank">[?]</a>';
 	}
 

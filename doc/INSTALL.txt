@@ -116,7 +116,7 @@ bug_report_mail can be used via scheduled job like this:
 Linux or similar OS using Cron jobs:
 Via webserver (see settings because this is disabled by default, see plugin
 config page in mantis)
-*/5 *   *   *   * lynx --dump http://mantis.homepage.com/plugins/EmailReporting/scripts/bug_report_mail.php
+*/5 *   *   *   * lynx --dump http://mantis.homepage.com/plugin.php?page=EmailReporting/bug_report_mail
 or via command line interface
 */5 *   *   *   * /usr/local/bin/php /path/to/mantis/plugins/EmailReporting/scripts/bug_report_mail.php
 
