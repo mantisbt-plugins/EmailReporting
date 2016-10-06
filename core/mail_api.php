@@ -465,7 +465,7 @@ class ERP_mailbox_api
 		}
 		else
 		{
-			$this->custom_error( 'Failed to connect to the mail server' . ( ( $this->_mailbox[ 'encryption' ] !== 'None' ) ? '. This could possibly be because SSL certificate verification failed' : NULL ) );
+			$this->custom_error( 'Failed to connect to the mail server' . ( ( $this->_mailbox[ 'encryption' ] !== 'None' && $this->_mailbox[ 'ssl_cert_verify' ] == ON ) ? '. This could possibly be because SSL certificate verification failed' : NULL ) );
 		}
 	}
 
