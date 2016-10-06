@@ -2,9 +2,9 @@
 auth_reauthenticate( );
 access_ensure_global_level( config_get( 'manage_plugin_threshold' ) );
 
-html_page_top( plugin_lang_get( 'plugin_title' ) );
+layout_page_header( plugin_lang_get( 'plugin_title' ) );
 
-print_manage_menu();
+layout_page_begin( 'manage_overview_page.php' );
 
 plugin_require_api( 'core/config_api.php' );
 
@@ -139,5 +139,5 @@ ERP_output_config_option( 'select_mailbox', 'submit' );
 <form>
 
 <?php
-html_page_bottom( __FILE__ );
+layout_page_end();
 ?>
