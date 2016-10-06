@@ -2,11 +2,10 @@
 auth_reauthenticate( );
 access_ensure_global_level( config_get( 'manage_plugin_threshold' ) );
 
-layout_page_header( plugin_lang_get( 'plugin_title' ) );
-
-layout_page_begin( 'manage_overview_page.php' );
-
 plugin_require_api( 'core/config_api.php' );
+
+ERP_page_begin( plugin_lang_get( 'plugin_title' ) );
+
 require_api( 'custom_field_api.php' );
 
 $t_this_page = 'manage_rule';
@@ -123,5 +122,5 @@ ERP_output_config_option( 'select_rule', 'submit' );
 <form>
 
 <?php
-layout_page_end();
+ERP_page_end( __FILE__ );
 ?>

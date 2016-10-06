@@ -62,7 +62,7 @@ if( is_array( $t_mail_bug_priority ) )
 }
 else
 {
-	layout_page_header( plugin_lang_get( 'plugin_title' ) );
+	ERP_page_begin( plugin_lang_get( 'plugin_title' ) );
 
 	echo '<br /><div class="center">';
 	echo plugin_lang_get( 'mail_bug_priority_array_failure' ) . ' ';
@@ -71,7 +71,7 @@ else
 
 	$t_notsuccesfull = TRUE;
 
-	layout_page_end();
+	ERP_page_end( __FILE__ );
 }
 
 if ( !isset( $t_notsuccesfull ) )

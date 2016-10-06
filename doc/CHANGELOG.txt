@@ -1,5 +1,6 @@
 Changelog:
 Jul 2016 - EmailReporting-0.9.3-DEV
+	- Preliminary support for MantisBT 2.0.x and ModernUI
 	- Fix possible fatal error on return value
 	- Added error when __construct is not run when it should have
 	- Added fallback in case of an unknown email priority

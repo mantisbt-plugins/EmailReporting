@@ -99,6 +99,41 @@
 	}
 
 	# --------------------
+	# Page header en beginning.
+	function ERP_page_begin( $p_page = '' )
+	{
+		// MantisBT 2.0.x
+		if ( function_exists( 'layout_page_header' ) )
+		{
+			layout_page_header( $p_page );
+			layout_page_begin( 'manage_overview_page.php' );
+			print_manage_menu( 'manage_plugin_page.php' );
+		}
+		// pre-MantisBT 2.0.x
+		else
+		{
+			html_page_top( $p_page );
+			print_manage_menu();
+		}
+	}
+
+	# --------------------
+	# Page footer
+	function ERP_page_end( $p_page = '' )
+	{
+		// MantisBT 2.0.x
+		if ( function_exists( 'layout_page_end' ) )
+		{
+			layout_page_end();
+		}
+		// pre-MantisBT 2.0.x
+		else
+		{
+			html_page_bottom( $p_page );
+		}
+	}
+
+	# --------------------
 	# output the menu with the ERP menu links
 	function ERP_print_menu( $p_page = '' )
 	{

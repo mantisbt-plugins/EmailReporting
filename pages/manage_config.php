@@ -2,11 +2,9 @@
 auth_reauthenticate( );
 access_ensure_global_level( config_get( 'manage_plugin_threshold' ) );
 
-layout_page_header( plugin_lang_get( 'plugin_title' ) );
-
-layout_page_begin( 'manage_overview_page.php' );
-
 plugin_require_api( 'core/config_api.php' );
+
+ERP_page_begin( plugin_lang_get( 'plugin_title' ) );
 
 $t_this_page = 'manage_config';
 ERP_print_menu( $t_this_page );
@@ -191,5 +189,5 @@ ERP_output_config_option( 'update_configuration', 'submit' );
 </form>
 
 <?php
-layout_page_end();
+ERP_page_end( __FILE__ );
 ?>
