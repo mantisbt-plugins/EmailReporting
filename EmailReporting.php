@@ -197,12 +197,16 @@ class EmailReportingPlugin extends MantisPlugin
 			# Write the subject of the email in the note
 			'mail_save_subject_in_note'		=> OFF,
 
-			# Do you want to secure the EmailReporting script so that it cannot be run
+			# Do you want to secure the EmailReporting script so that it cannot be invoked
 			# via a webserver?
 			'mail_secured_script'			=> ON,
 
+			# If you must invoke bug_report_mail though a webserver you can use this to restrict
+			# access to this IP address
+			'mail_secured_ipaddr'			=> '',
+
 			//Strip Gmail style replies from body of the message
-			'mail_strip_gmail_style_replies'	=> OFF,
+			'mail_strip_gmail_style_replies'=> OFF,
 
 			#Removes the signature that are delimited by mail_strip_signature_delim
 			'mail_strip_signature'			=> OFF,

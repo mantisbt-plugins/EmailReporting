@@ -34,6 +34,7 @@ $f_gpc = array(
 	'mail_save_from'				=> gpc_get_int( 'mail_save_from' ),
 	'mail_save_subject_in_note'		=> gpc_get_int( 'mail_save_subject_in_note' ),
 	'mail_secured_script'			=> gpc_get_int( 'mail_secured_script' ),
+	'mail_secured_ipaddr'			=> gpc_get_string( 'mail_secured_ipaddr' ),
 	'mail_strip_signature'			=> gpc_get_int( 'mail_strip_signature' ),
 	'mail_strip_signature_delim'	=> gpc_get_string( 'mail_strip_signature_delim' ),
 	'mail_subject_id_regex'			=> gpc_get_string( 'mail_subject_id_regex' ),

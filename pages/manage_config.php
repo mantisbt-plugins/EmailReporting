@@ -121,6 +121,7 @@ ERP_output_config_option( 'problems', 'header' );
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'security_options', 'header', 'manage_mailbox' );
 ERP_output_config_option( 'mail_secured_script', 'boolean' );
+ERP_output_config_option( 'mail_secured_ipaddr', 'string' );
 
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'runtime_options', 'header' );

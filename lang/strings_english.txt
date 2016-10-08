@@ -40,6 +40,7 @@ $s_plugin_EmailReporting_directory_unwritable = 'Warning: directory not writable
 $s_plugin_EmailReporting_mail_add_bug_reports = 'Create new issues';
 $s_plugin_EmailReporting_mail_add_bugnotes = 'Add notes';
 $s_plugin_EmailReporting_mail_add_complete_email = 'Add the complete email into the attachments';
+$s_plugin_EmailReporting_mail_add_users_from_cc_to = 'Add users to issue monitoring list from Cc and To fields in mail header';
 $s_plugin_EmailReporting_mail_auto_signup = 'Signup new users automatically (possible security risk!, see documentation)';
 $s_plugin_EmailReporting_mail_block_attachments_md5 = 'Block attachments matching these MD5 hashes';
 $s_plugin_EmailReporting_mail_block_attachments_logging = 'Log blocked attachments in the "Rejected files" list';
@@ -58,9 +59,6 @@ $s_plugin_EmailReporting_mail_preferred_username = 'Preferred username for new u
 $s_plugin_EmailReporting_mail_preferred_realname = 'Preferred realname for new user creations';
 $s_plugin_EmailReporting_mail_remove_mantis_email = 'Remove MantisBT notification emails from replies';
 $s_plugin_EmailReporting_mail_remove_replies = 'Remove all replies from notes';
-$s_plugin_EmailReporting_mail_strip_gmail_style_replies = 'Remove Gmail style replies (English only) from notes (mail_remove_replies should be YES)';
-$s_plugin_EmailReporting_mail_add_users_from_cc_to = 'Add users to issue monitoring list from Cc and To fields in mail header';
-
 $s_plugin_EmailReporting_mail_remove_replies_after = 'Use this text to identify the start of a reply';
 $s_plugin_EmailReporting_mail_removed_reply_text = 'Use this text if replies have been removed from the email';
 $s_plugin_EmailReporting_mail_reporter_id = 'The default / fallback reporter user for issues created by email';
@@ -68,6 +66,8 @@ $s_plugin_EmailReporting_mail_rule_system = 'Rule system';
 $s_plugin_EmailReporting_mail_save_from = 'Write the sender of the email into the issue report/note';
 $s_plugin_EmailReporting_mail_save_subject_in_note = 'Write the subject of the email in the note';
 $s_plugin_EmailReporting_mail_secured_script = 'Block this script from running via a webserver (recommended = "Yes")';
+$s_plugin_EmailReporting_mail_secured_ipaddr = 'Only allow access to bug_report_mail from this IP address';
+$s_plugin_EmailReporting_mail_strip_gmail_style_replies = 'Remove Gmail style replies (English only) from notes (mail_remove_replies should be YES)';
 $s_plugin_EmailReporting_mail_strip_signature = 'Strip signature from email body';
 $s_plugin_EmailReporting_mail_strip_signature_delim = 'Delimited by';
 $s_plugin_EmailReporting_mail_subject_id_regex = 'What kind of search should be used to find the issue id in the subject';

@@ -13,8 +13,23 @@
 	$t_mail_secured_script = plugin_config_get( 'mail_secured_script' );
 	if( php_sapi_name() !== 'cli' && $t_mail_secured_script )
 	{
-		echo "bug_report_mail.php is not allowed to run through the webserver.\n";
+		echo 'bug_report_mail.php is not allowed to be invoked through a webserver.' . "\n";
 		exit( 1 );
+	}
+
+	$t_remote_addr = trim( ( ( isset( $_SERVER[ 'REMOTE_ADDR' ] ) ) ? $_SERVER['REMOTE_ADDR'] : NULL ) );
+	$t_mail_secured_ipaddr = trim( plugin_config_get( 'mail_secured_ipaddr' ) );
+	if ( !is_blank( $t_mail_secured_ipaddr ) && !is_blank( $t_remote_addr ) )
+	{
+		if ( $t_remote_addr !== $t_mail_secured_ipaddr )
+		{
+			echo 'bug_report_mail.php is not allowed to be invoked from: ' . $t_remote_addr . "\n";
+			exit( 1 );
+		}
+		else
+		{
+			echo 'bug_report_mail.php invoked from: ' . $t_remote_addr . "\n";
+		}
 	}
 
 	ini_set( 'memory_limit', -1 );
