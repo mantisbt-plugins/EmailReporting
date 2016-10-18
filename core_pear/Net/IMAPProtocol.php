@@ -168,7 +168,7 @@ class Net_IMAPProtocol
      *
      * @since  1.0
      */
-    function Net_IMAPProtocol()
+    function __construct()
     {
         $this->_socket = new Net_Socket();
 
@@ -182,6 +182,11 @@ class Net_IMAPProtocol
                 unset($this->supportedAuthMethods[$pos]);
             }
         }
+    }
+    // BC
+    function Net_IMAPProtocol()
+    {
+        $this->__construct();
     }
 
 
