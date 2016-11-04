@@ -186,7 +186,7 @@ class Net_IMAPProtocol
     // BC
     function Net_IMAPProtocol()
     {
-        $this->__construct();
+        self::__construct();
     }
 
 
