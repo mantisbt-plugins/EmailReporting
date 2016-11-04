@@ -445,7 +445,7 @@ class ERP_mailbox_api
 									$this->pear_error( 'Create IMAP folder', $t_result );
 								}
 							}
-							else
+							elseif ( $this->_mailbox[ 'imap_createfolderstructure' ] == OFF )
 							{
 								$this->custom_error( 'Project is disabled: ' . $t_project[ 'name' ] );
 							}
