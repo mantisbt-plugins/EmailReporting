@@ -50,7 +50,7 @@ class Net_IMAP extends Net_IMAPProtocol
                       $enableSTARTTLS = true,
                       $encoding = 'ISO-8859-1')
     {
-        $this->Net_IMAPProtocol();
+        parent::__construct();
 
 /*
 // ERP-modification: We want to do some other stuff before we connect so disable this line in the constructor
@@ -64,7 +64,7 @@ class Net_IMAP extends Net_IMAPProtocol
                       $enableSTARTTLS = true,
                       $encoding = 'ISO-8859-1')
     {
-        $this->__construct($host, $port, $enableSTARTTLS, $encoding);
+        self::__construct($host, $port, $enableSTARTTLS, $encoding);
     }
 
 

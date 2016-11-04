@@ -177,7 +177,7 @@ class Net_POP3
     // BC
     function Net_POP3()
     {
-        $this->__construct();
+        self::__construct();
     }
 
 
