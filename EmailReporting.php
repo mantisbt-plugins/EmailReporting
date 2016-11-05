@@ -342,6 +342,7 @@ class EmailReportingPlugin extends MantisPlugin
 		$hooks = array(
 			'EVENT_MENU_MANAGE'	=> 'ERP_manage_emailreporting_menu',
 			'EVENT_CORE_READY'	=> 'ERP_core_ready',
+			'EVENT_BUG_DELETED'	=> 'ERP_issue_deleted',
 		);
 
 		return $hooks;
@@ -683,6 +684,15 @@ class EmailReportingPlugin extends MantisPlugin
 				plugin_config_set( 'mail_mantisbt_url_fix', $t_path );
 			}
 		}
+	}
+
+	/*
+	 * Clean up the stored data when an issue is deleted
+	 */
+	function ERP_issue_deleted( $p_event, $p_bug_id )
+	{
+		$query = 'DELETE FROM ' . plugin_table( 'msgids' ) . ' WHERE issue_id=' . db_param();
+		db_query_bound( $query, array( (int)$p_bug_id ) );
 	}
 
 }
