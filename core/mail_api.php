@@ -442,7 +442,7 @@ class ERP_mailbox_api
 									// create this mailbox
 									$t_result = $this->_mailserver->createMailbox( $t_foldername );
 
-									$this->pear_error( 'Create IMAP folder', $t_result );
+									$this->pear_error( 'Create IMAP folder: "' . $t_foldername . '"', $t_result );
 								}
 							}
 							elseif ( $this->_mailbox[ 'imap_createfolderstructure' ] == OFF )
