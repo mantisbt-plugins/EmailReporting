@@ -401,36 +401,41 @@ class ERP_mailbox_api
 								// We don't need to check twice whether the mailbox exist incase createfolderstructure is false
 								if ( !$this->_mailbox[ 'imap_createfolderstructure' ] || $this->_mailserver->mailboxExist( $t_foldername ) === TRUE )
 								{
-									$t_result = $this->_mailserver->selectMailbox( $t_foldername );
+									$t_result = $this->_mailserver->examineMailbox( $t_foldername );
 
-									if ( !$this->pear_error( 'Select IMAP folder', $t_result ) )
+									if ( !$this->pear_error( 'Examine IMAP folder', $t_result ) && $t_result[ 'EXISTS' ] > 0 )
 									{
-										$t_ListMsgs = $this->_mailserver->getListing();
+										$t_result = $this->_mailserver->selectMailbox( $t_foldername );
 
-										if ( !$this->pear_error( 'Retrieve list of messages', $t_ListMsgs ) )
+										if ( !$this->pear_error( 'Select IMAP folder', $t_result ) )
 										{
-											while ( $t_Msg = array_pop( $t_ListMsgs ) )
+											$t_ListMsgs = $this->_mailserver->getListing();
+
+											if ( !$this->pear_error( 'Retrieve list of messages', $t_ListMsgs ) )
 											{
-												$t_isDeleted = $this->isDeleted( $t_Msg[ 'msg_id' ] );
-
-												if ( $this->pear_error( 'Check email deleted flag', $t_isDeleted ) )
+												while ( $t_Msg = array_pop( $t_ListMsgs ) )
 												{
-													$t_isDeleted = FALSE;
-												}
+													$t_isDeleted = $this->isDeleted( $t_Msg[ 'msg_id' ] );
 
-												if ( $t_isDeleted === TRUE )
-												{
-													// Email marked as deleted. Do nothing
-												}
-												else
-												{
-													$t_emailresult = $this->process_single_email( $t_Msg[ 'msg_id' ], (int) $t_project[ 'id' ] );
-
-													if ( $t_emailresult === TRUE )
+													if ( $this->pear_error( 'Check email deleted flag', $t_isDeleted ) )
 													{
-														$t_deleteresult = $this->_mailserver->deleteMsg( $t_Msg[ 'msg_id' ] );
-	
-														$this->pear_error( 'Attempt delete email', $t_deleteresult );
+														$t_isDeleted = FALSE;
+													}
+
+													if ( $t_isDeleted === TRUE )
+													{
+														// Email marked as deleted. Do nothing
+													}
+													else
+													{
+														$t_emailresult = $this->process_single_email( $t_Msg[ 'msg_id' ], (int) $t_project[ 'id' ] );
+
+														if ( $t_emailresult === TRUE )
+														{
+															$t_deleteresult = $this->_mailserver->deleteMsg( $t_Msg[ 'msg_id' ] );
+
+															$this->pear_error( 'Attempt delete email', $t_deleteresult );
+														}
 													}
 												}
 											}
