@@ -249,7 +249,7 @@
 
 	# This prints the little [?] link for user help
 	# The $p_a_name is a link into the documentation.html file
-	# $p_other_description allowd you to use another variable as the description of the link
+	# $p_other_description allows you to use another variable as the description of the link
 	function ERP_print_documentation_link( $p_a_name = '', $p_other_description = FALSE )
 	{
 		$t_a_name = preg_replace( '/[^a-z0-9_]/ui', '', $p_a_name );
