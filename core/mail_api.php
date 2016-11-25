@@ -780,6 +780,8 @@ class ERP_mailbox_api
 		//Merge References and In-Reply-To headers into one array
 		$t_references = $p_email['References'];
 		$t_references[] = $p_email['In-Reply-To'];
+		// Add Message-ID, to have all references, and in case the email is duplicated
+		$t_references[] = $p_email['Message-ID'];
 
 		if ( $this->_mail_add_bugnotes )
 		{
@@ -1009,7 +1011,7 @@ class ERP_mailbox_api
 		$this->add_monitors( $t_bug_id, $p_email );
 
 		//Add the message-id to the database
-		$this->add_msg_id( $t_bug_id, $p_email[ 'Message-ID' ] );
+		$this->add_msg_ids( $t_bug_id, $t_references );
 
 		ERP_set_temporary_overwrite( 'project_override', NULL );
 
@@ -1363,28 +1365,51 @@ class ERP_mailbox_api
 	}
 
 	# --------------------
-	# Add the new message-id from the new mail to the database
-	private function add_msg_id( $p_bug_id, $p_msg_id )
+	# Return the mail references ids stored for a bug id
+	private function get_bug_references( $p_bug_id )
+	{
+		$t_ref_ids = array();
+
+		$query = 'SELECT msg_id FROM ' . plugin_table( 'msgids' ) . ' WHERE issue_id=' . db_param();
+		$t_result = db_query_bound( $query, array( (int)$p_bug_id ) );
+
+		while( $t_row = db_fetch_array( $t_result ) )
+		{
+			$t_ref_ids[] = $t_row['msg_id'];
+		}
+
+		return $t_ref_ids;
+	}
+
+	# --------------------
+	# Add message references from the new mail to the database
+	private function add_msg_ids( $p_bug_id, array $p_ref_ids )
 	{
 		if( $this->_mail_use_message_id )
 		{
-			if ( !is_blank( $p_msg_id ) )
-			{
-				// Check whether the msg_id is already in the database table
-				$t_bug_id = $this->get_bug_id_from_references( $p_msg_id );
+			// get existing references, and insert only new ones
+			$t_existing_refs = $this->get_bug_references( $p_bug_id );
+			$t_new_references = array_diff( array_unique( $p_ref_ids ), $t_existing_refs );
 
-				if( $t_bug_id === FALSE )
+			// Add the references ids to the table for future reference
+			foreach( $t_new_references as $t_ref )
+			{
+				if ( !is_blank( $t_ref ) )
 				{
-					// Add the Messag-ID to the table for future reference
-					$query = 'INSERT
-						INTO ' . plugin_table( 'msgids' ) . '
-						( issue_id, msg_id )
-						VALUES
-						( ' . db_param() . ', ' . db_param() . ')';
-					db_query_bound( $query, array( $p_bug_id, $p_msg_id ) );
+					$t_query = 'INSERT INTO ' . plugin_table( 'msgids' ) . '( issue_id, msg_id ) VALUES'
+							. ' (' . db_param() . ', ' . db_param() . ')';
+					db_query_bound( $t_query, array( (int)$p_bug_id, $t_ref ) );
 				}
 			}
 		}
+	}
+
+	# --------------------
+	# Add the new message-id from the new mail to the database
+	/** @deprecated */
+	private function add_msg_id( $p_bug_id, $p_msg_id )
+	{
+		$this->add_msg_ids( $p_bug_id, array( $p_msg_id ) );
 	}
 
 	# --------------------
