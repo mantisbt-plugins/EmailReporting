@@ -401,6 +401,11 @@ class ERP_mailbox_api
 								// We don't need to check twice whether the mailbox exist incase createfolderstructure is false
 								if ( !$this->_mailbox[ 'imap_createfolderstructure' ] || $this->_mailserver->mailboxExist( $t_foldername ) === TRUE )
 								{
+									// Exchange does not seem to like numMsg so that was changed to getListing
+									// getListing returns an error when there are no emails in an IMAP folder.
+									// After 10 errors Exchange will ignore the connection and any further commands will fail with ", "
+									// 10 errors or more can happen when imap_createfolderstructure is ON
+									// examineMailbox allows EmailReporting to check whether or not there are emails in the folder without producing an error
 									$t_result = $this->_mailserver->examineMailbox( $t_foldername );
 
 									if ( !$this->pear_error( 'Examine IMAP folder', $t_result ) && $t_result[ 'EXISTS' ] > 0 )
