@@ -26,6 +26,7 @@ $s_plugin_EmailReporting_debug_options = 'Debug configuration options';
 $s_plugin_EmailReporting_default_texts_options = 'Default texts configuration options';
 $s_plugin_EmailReporting_feature_options = 'Feature configuration options';
 $s_plugin_EmailReporting_priority_feature_options = 'Priority feature configuration options';
+$s_plugin_EmailReporting_remove_reply_options = 'Remove replies configuration options';
 $s_plugin_EmailReporting_reporter_options = 'Issue reporter configuration options';
 $s_plugin_EmailReporting_runtime_options = 'Runtime configuration options';
 $s_plugin_EmailReporting_security_options = 'Security configuration options';

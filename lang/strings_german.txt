@@ -26,6 +26,7 @@ $s_plugin_EmailReporting_debug_options = 'Debug Konfigurationsoptionen';
 $s_plugin_EmailReporting_default_texts_options = 'Standard Konfigurationsoptionen für Texte';
 $s_plugin_EmailReporting_feature_options = 'Konfigurationsoptionen für Merkmale';
 $s_plugin_EmailReporting_priority_feature_options = 'Konfigurationsoptionen für Prioritäten';
+$s_plugin_EmailReporting_remove_reply_options = 'Remove replies configuration options'; //TODO Needs german translation
 $s_plugin_EmailReporting_reporter_options = 'Konfigurationsoptionen für Ticketreporter';
 $s_plugin_EmailReporting_runtime_options = 'Konfigurationsoptionen für Laufzeit';
 $s_plugin_EmailReporting_security_options = 'Konfigurationsoptionen für Sicherheit';

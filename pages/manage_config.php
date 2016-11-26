@@ -143,9 +143,6 @@ ERP_output_config_option( 'mail_add_bug_reports', 'boolean' );
 ERP_output_config_option( 'mail_add_bugnotes', 'boolean' );
 ERP_output_config_option( 'mail_rule_system', 'disabled' ); //disabled as the rule system is not ready for use
 ERP_output_config_option( 'mail_parse_html', 'boolean' );
-ERP_output_config_option( 'mail_remove_mantis_email', 'boolean' );
-ERP_output_config_option( 'mail_remove_replies', 'boolean' );
-ERP_output_config_option( 'mail_strip_gmail_style_replies', 'boolean' );
 ERP_output_config_option( 'mail_email_receive_own', 'boolean' );
 ERP_output_config_option( 'mail_save_from', 'boolean' );
 ERP_output_config_option( 'mail_save_subject_in_note', 'boolean' );
@@ -172,8 +169,14 @@ ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'default_texts_options', 'header' );
 ERP_output_config_option( 'mail_nosubject', 'string' );
 ERP_output_config_option( 'mail_nodescription', 'string' );
-ERP_output_config_option( 'mail_removed_reply_text', 'string' );
+
+ERP_output_config_option( NULL, 'empty' );
+ERP_output_config_option( 'remove_reply_options', 'header' );
+ERP_output_config_option( 'mail_remove_replies', 'boolean' );
 ERP_output_config_option( 'mail_remove_replies_after', 'string_multiline' );
+ERP_output_config_option( 'mail_strip_gmail_style_replies', 'boolean' );
+ERP_output_config_option( 'mail_remove_mantis_email', 'boolean' );
+ERP_output_config_option( 'mail_removed_reply_text', 'string' );
 
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'debug_options', 'header' );
