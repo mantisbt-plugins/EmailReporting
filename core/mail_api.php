@@ -1410,14 +1410,6 @@ class ERP_mailbox_api
 	}
 
 	# --------------------
-	# Add the new message-id from the new mail to the database
-	/** @deprecated */
-	private function add_msg_id( $p_bug_id, $p_msg_id )
-	{
-		$this->add_msg_ids( $p_bug_id, array( $p_msg_id ) );
-	}
-
-	# --------------------
 	# Saves the complete email to file
 	# Only works in debug mode
 	private function save_message_to_file( $message_type, &$p_msg )
