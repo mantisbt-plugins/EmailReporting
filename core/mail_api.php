@@ -1439,7 +1439,7 @@ class ERP_mailbox_api
 			$t_first_occurence = stripos( $t_description, $this->_mail_remove_replies_after );
 			if ( $t_first_occurence !== FALSE )
 			{
-				$t_description = substr( $t_description, 0, $t_first_occurence ) . $this->_mail_removed_reply_text;
+				$t_description = substr( $t_description, 0, $t_first_occurence );
 			}
 
 			//remove gmail style replies
@@ -1447,9 +1447,6 @@ class ERP_mailbox_api
 			{
 				$t_description = preg_replace( '/^\s*>?\s*On\b.*\bwrote:.*?/msU', "\n", $t_description );
 			}
-
-			//append the mail removed notice.
-			$t_description .= $this->_mail_removed_reply_text;
 		}
 
 		if ( $this->_mail_remove_mantis_email )
@@ -1461,8 +1458,14 @@ class ERP_mailbox_api
 			$t_first_occurence = strpos( $t_description, $t_email_separator1 );
 			if ( $t_first_occurence !== FALSE && substr_count( $t_description, $t_email_separator1, $t_first_occurence ) >= 5 )
 			{
-				$t_description = substr( $t_description, 0, $t_first_occurence ) . $this->_mail_removed_reply_text;
+				$t_description = substr( $t_description, 0, $t_first_occurence );
 			}
+		}
+
+		//append the mail removed notice.
+		if ( $t_description !== $p_description )
+		{
+			$t_description .= $this->_mail_removed_reply_text;
 		}
 
 		return( $t_description );
