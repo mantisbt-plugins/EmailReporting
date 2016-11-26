@@ -1316,9 +1316,18 @@ class ERP_mailbox_api
 		//Get the ids from Mail References(header)
 		$t_bug_id = $this->get_bug_id_from_references( $p_references );
 
-		if ( $t_bug_id !== FALSE && bug_exists( $t_bug_id ) )
+		if ( $t_bug_id !== FALSE )
 		{
-			return( $t_bug_id );
+			if( bug_exists( $t_bug_id ) )
+			{
+				return( $t_bug_id );
+			}
+			else
+			{
+				// We found a referenced bug_id that does not exists.
+				// Do a clean up of the table to avoid inconsistencies.
+				self::clean_references_for_deleted_issues();
+			}
 		}
 
 		return( FALSE );
