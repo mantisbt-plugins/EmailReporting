@@ -55,6 +55,9 @@ class ERP_mailbox_api
 	private $_mail_delete;
 	private $_mail_disposable_email_checker;
 	private $_mail_fallback_mail_reporter;
+	private $_mail_max_email_body;
+	private $_mail_max_email_body_text;
+	private $_mail_max_email_body_add_attach;
 	private $_mail_nodescription;
 	private $_mail_nosubject;
 	private $_mail_preferred_username;
@@ -106,6 +109,9 @@ class ERP_mailbox_api
 		$this->_mail_delete						= plugin_config_get( 'mail_delete' );
 		$this->_mail_disposable_email_checker	= plugin_config_get( 'mail_disposable_email_checker' );
 		$this->_mail_fallback_mail_reporter		= plugin_config_get( 'mail_fallback_mail_reporter' );
+		$this->_mail_max_email_body				= plugin_config_get( 'mail_max_email_body' );
+		$this->_mail_max_email_body_text		= plugin_config_get( 'mail_max_email_body_text' );
+		$this->_mail_max_email_body_add_attach	= plugin_config_get( 'mail_max_email_body_add_attach' );
 		$this->_mail_nodescription				= plugin_config_get( 'mail_nodescription' );
 		$this->_mail_nosubject					= plugin_config_get( 'mail_nosubject' );
 		$this->_mail_preferred_username			= plugin_config_get( 'mail_preferred_username' );
@@ -807,6 +813,7 @@ class ERP_mailbox_api
 			$t_description = $this->identify_replies( $t_description );
 			$t_description = $this->strip_signature( $t_description );
 			$t_description = $this->add_additional_info( 'note', $p_email, $t_description );
+			$t_description = $this->limit_body_size( 'note', $t_description, $p_email );
 
 			$t_project_id = bug_get_field( $t_bug_id, 'project_id' );
 			ERP_set_temporary_overwrite( 'project_override', $t_project_id );
@@ -862,6 +869,7 @@ class ERP_mailbox_api
 			$t_description = $p_email[ 'X-Mantis-Body' ];
 			$t_description = $this->strip_signature( $t_description );
 			$t_description = $this->add_additional_info( 'issue', $p_email, $t_description );
+			$t_description = $this->limit_body_size( 'description', $t_description, $p_email );
 			$t_bug_data->description			= $t_description;
 
 			$t_bug_data->steps_to_reproduce		= config_get( 'default_bug_steps_to_reproduce' );
@@ -1526,6 +1534,35 @@ class ERP_mailbox_api
 				array_pop( $t_parts );
 				array_pop( $t_parts );
 				$t_description = implode( '', $t_parts );
+			}
+		}
+
+		return( $t_description );
+	}
+
+	# --------------------
+	# Limit email body size
+	private function limit_body_size( $p_type, $p_description, &$p_email )
+	{
+		$t_description = $p_description;
+
+		// Checking binary length since MySQL TEXT column is also binary sized
+		if ( strlen( $t_description ) > $this->_mail_max_email_body )
+		{
+			$t_mail_max_email_body_text = "\n" . $this->_mail_max_email_body_text;
+			
+			// Decide on max length and truncate. Remove one extra character just to be sure
+			$t_description = substr( $t_description, 0, $this->_mail_max_email_body - strlen( $t_mail_max_email_body_text ) - 1 ) . $t_mail_max_email_body_text;
+
+			if ( $this->_mail_max_email_body_add_attach )
+			{
+				$t_part = array(
+					'name' => $p_type . '.txt',
+					'ctype' => 'text/plain',
+					'body' => $p_description,
+				);
+
+				$p_email[ 'X-Mantis-Parts' ][] = $t_part;
 			}
 		}
 

@@ -126,6 +126,9 @@ ERP_output_config_option( 'mail_secured_ipaddr', 'string' );
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'runtime_options', 'header' );
 ERP_output_config_option( 'mail_delete', 'boolean' );
+ERP_output_config_option( 'mail_max_email_body', 'integer' );
+ERP_output_config_option( 'mail_max_email_body_text', 'string' );
+ERP_output_config_option( 'mail_max_email_body_add_attach', 'boolean' );
 
 ERP_output_config_option( NULL, 'empty' );
 ERP_output_config_option( 'reporter_options', 'header' );

@@ -53,6 +53,9 @@ $s_plugin_EmailReporting_mail_delete = 'Lösche verarbeitete Mails aus dem Mailk
 $s_plugin_EmailReporting_mail_disposable_email_checker = 'MantisBT-Prüfer für Wegwerf-Emailadressen';
 $s_plugin_EmailReporting_mail_email_receive_own = 'Sollen Benutzer Emails für ihre eigenen Aktionen erhalten? (Nicht verfügbar wenn email_receive_own = ON)';
 $s_plugin_EmailReporting_mail_fallback_mail_reporter = 'Verwende den Standard Reporter als Backup';
+$s_plugin_EmailReporting_mail_max_email_body = 'Maximum size of the description or note being added to the issue'; //TODO Needs german translation
+$s_plugin_EmailReporting_mail_max_email_body_text = 'Use this text if the description or note has been truncated'; //TODO Needs german translation
+$s_plugin_EmailReporting_mail_max_email_body_add_attach = 'Add the complete description or note as an attachment incase it was truncated'; //TODO Needs german translation
 $s_plugin_EmailReporting_mail_nodescription = 'Der Mailbody beeinhaltet keinen Text.';
 $s_plugin_EmailReporting_mail_nosubject = 'Der Mailbetreff beeinhaltete keinen Text.';
 $s_plugin_EmailReporting_mail_parse_html = 'Analysiere HTML Mails';
