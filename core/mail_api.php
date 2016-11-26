@@ -1425,6 +1425,25 @@ class ERP_mailbox_api
 	}
 
 	# --------------------
+	# Deletes the stored references for an issue
+	# It's static to be called from main plugin event for bug deletion
+	public static function delete_references_for_bug_id( $p_bug_id )
+	{
+		$t_query = 'DELETE FROM ' . plugin_table( 'msgids' ) . ' WHERE issue_id = ' . db_param();
+		db_query_bound( $t_query, array( (int)$p_bug_id ) );
+	}
+
+	# --------------------
+	# Deletes all references linked to non existant issues
+	# It's static to be called by upgrade as a cleanup step
+	public static function clean_references_for_deleted_issues()
+	{
+		$t_query = 'DELETE FROM ' . plugin_table( 'msgids' ) . ' WHERE NOT EXISTS'
+				. '( SELECT 1 FROM ' . db_get_table( 'bug' ) . ' B WHERE B.id = issue_id )';
+		db_query_bound( $t_query );
+	}
+
+	# --------------------
 	# Saves the complete email to file
 	# Only works in debug mode
 	private function save_message_to_file( $message_type, &$p_msg )
