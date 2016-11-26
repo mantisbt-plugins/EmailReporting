@@ -1409,9 +1409,16 @@ class ERP_mailbox_api
 			{
 				if ( !is_blank( $t_ref ) )
 				{
-					$t_query = 'INSERT INTO ' . plugin_table( 'msgids' ) . '( issue_id, msg_id ) VALUES'
-							. ' (' . db_param() . ', ' . db_param() . ')';
-					db_query_bound( $t_query, array( (int)$p_bug_id, $t_ref ) );
+					// Check whether the msg_id is already in the database table
+					$t_bug_id = $this->get_bug_id_from_references( $t_ref );
+
+					if( $t_bug_id === FALSE )
+					{
+						// Add the Message-ID to the table for future reference
+						$t_query = 'INSERT INTO ' . plugin_table( 'msgids' ) . '( issue_id, msg_id ) VALUES'
+								. ' (' . db_param() . ', ' . db_param() . ')';
+						db_query_bound( $t_query, array( (int)$p_bug_id, $t_ref ) );
+					}
 				}
 			}
 		}
