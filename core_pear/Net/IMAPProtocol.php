@@ -867,7 +867,7 @@ class Net_IMAPProtocol
             for ($i=0; $i<count($ret['PARSED']); $i++) {
                 if (array_key_exists('EXT', $ret['PARSED'][$i]) 
                 // ERP-modification: Added line to fix an error with Gmail and a possible empty array that is returned
-                   && count($ret['PARSED'][$i]['EXT']) > 0
+                   && !empty($ret['PARSED'][$i]['EXT'])
                    && is_array($ret['PARSED'][$i]['EXT'])) {
                     $command               = $ret['PARSED'][$i]['EXT'];
                     $parsed[key($command)] = $command[key($command)];
