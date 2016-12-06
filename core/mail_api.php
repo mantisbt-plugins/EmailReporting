@@ -325,7 +325,7 @@ class ERP_mailbox_api
 			{
 				if ( project_get_field( $this->_mailbox[ 'project_id' ], 'enabled' ) == ON )
 				{
-					$t_ListMsgs = $this->_mailserver->getListing();
+					$t_ListMsgs = $this->getListing();
 
 					if ( !$this->pear_error( 'Retrieve list of messages', $t_ListMsgs ) )
 					{
@@ -420,7 +420,7 @@ class ERP_mailbox_api
 
 										if ( !$this->pear_error( 'Select IMAP folder', $t_result ) )
 										{
-											$t_ListMsgs = $this->_mailserver->getListing();
+											$t_ListMsgs = $this->getListing();
 
 											if ( !$this->pear_error( 'Retrieve list of messages', $t_ListMsgs ) )
 											{
@@ -506,6 +506,44 @@ class ERP_mailbox_api
 		$t_mailbox_auth_method = $this->_mailbox[ 'auth_method' ];
 
 		return( $this->_mailserver->login( $t_mailbox_username, $t_mailbox_password, $t_mailbox_auth_method ) );
+	}
+
+	# --------------------
+	# Return a list of emails in the mailbox
+	# Needed a workaround to sort IMAP emails in a certain order
+	private function getListing()
+	{
+		$t_ListMsgs = NULL;
+
+		if ( $this->_mailbox[ 'mailbox_type' ] === 'IMAP' )
+		{
+			$t_getSummary = $this->_mailserver->getSummary();
+
+			if ( !$this->pear_error( 'IMAP Get folder info', $t_getSummary ) )
+			{
+				$t_nummsg = count( $t_getSummary );
+				$t_ListMsgs = array();
+				for ( $i = 0; $i < $t_nummsg; $i++ )
+				{
+					$t_getSummary[ $i ][ 'DATE' ] = strtotime( $t_getSummary[ $i ][ 'DATE' ] );
+					// If strtotime fails we default back to the current time. 
+					if ( $t_getSummary[ $i ][ 'DATE' ] === FALSE )
+					{
+						$t_getSummary[ $i ][ 'DATE' ] = time();
+					}
+
+					$t_ListMsgs[ $t_getSummary[ $i ][ 'DATE' ] ] = array( 'msg_id' => (int) $t_getSummary[ $i ][ 'MSG_NUM' ] );
+				}
+				krsort( $t_ListMsgs );
+			}
+		}
+
+		if ( $t_ListMsgs === NULL )
+		{
+			$t_ListMsgs = $this->_mailserver->getListing();
+		}
+
+		return( $t_ListMsgs );
 	}
 
 	# --------------------
