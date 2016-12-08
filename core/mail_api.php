@@ -273,6 +273,11 @@ class ERP_mailbox_api
 	{
 		if ( PEAR::isError( $p_pear ) )
 		{
+			if ( empty( $p_pear->userinfo ) )
+			{
+				$p_pear->ERP_location = $p_location;
+			}
+
 			$this->_result = &$p_pear;
 
 			if ( !$this->_test_only )
