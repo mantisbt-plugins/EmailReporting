@@ -11,6 +11,7 @@ Jul 2016 - EmailReporting-0.9.3-DEV
 	- Fixed deprecated errors in PEAR packages
 	- Fixed issue with disabled mailboxes and "Create project subfolder structure" (#21856)
 	- Added clean-up of message ids after issue deletion (#21850)
+	- Added clean-up of message ids for issues beyond the readonly border (#21850)
 	- Show IMAP foldername if it could not be created
 	- Fixed IMAP issue with Exchange and empty folders
 	- Store references ids from message headers for a better match of new emails to existing bugs (#21851)

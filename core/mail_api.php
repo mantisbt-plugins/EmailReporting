@@ -849,7 +849,7 @@ class ERP_mailbox_api
 		if ( $t_bug_id !== FALSE && !bug_is_readonly( $t_bug_id ) )
 		{
 			// @TODO@ Disabled for now until we find a good solution on how to handle the reporters possible lack of access permissions
-//			access_ensure_bug_level( config_get( 'add_bugnote_threshold' ), $f_bug_id );
+//			access_ensure_bug_level( config_get( 'add_bugnote_threshold' ), $t_bug_id );
 
 			$t_description = $p_email[ 'X-Mantis-Body' ];
 
@@ -881,7 +881,15 @@ class ERP_mailbox_api
 			// @TODO@ Disabled for now until we find a good solution on how to handle the reporters possible lack of access permissions
 //			access_ensure_project_level( config_get('report_bug_threshold' ) );
 
-			$f_master_bug_id = ( ( $t_bug_id !== FALSE && bug_is_readonly( $t_bug_id ) ) ? $t_bug_id : 0 );
+			$t_master_bug_id = NULL;
+			if ( $t_bug_id !== FALSE && bug_is_readonly( $t_bug_id ) )
+			{
+				$t_master_bug_id = $t_bug_id;
+
+				// Issues beyond the readonly border will not be reopened and will result in a new issue with a relationship to the old one
+				// This requires us to relink the references to the new issue by first cleaning up the old ones
+				ERP_mailbox_api::delete_references_for_bug_id( $t_master_bug_id );
+			}
 
 			$this->fix_empty_fields( $p_email );
 
@@ -976,22 +984,22 @@ class ERP_mailbox_api
 			}*/
 
 			// Lets link a readonly already existing bug to the newly created one
-			if ( $f_master_bug_id > 0 )
+			if ( !empty( $t_master_bug_id ) )
 			{
-				$f_rel_type = BUG_RELATED;
+				$t_rel_type = BUG_RELATED;
 
 				# update master bug last updated
-				bug_update_date( $f_master_bug_id );
+				bug_update_date( $t_master_bug_id );
 
 				# Add the relationship
-				relationship_add( $t_bug_id, $f_master_bug_id, $f_rel_type );
+				relationship_add( $t_bug_id, $t_master_bug_id, $t_rel_type );
 
 				# Add log line to the history (both issues)
-				history_log_event_special( $f_master_bug_id, BUG_ADD_RELATIONSHIP, relationship_get_complementary_type( $f_rel_type ), $t_bug_id );
-				history_log_event_special( $t_bug_id, BUG_ADD_RELATIONSHIP, $f_rel_type, $f_master_bug_id );
+				history_log_event_special( $t_master_bug_id, BUG_ADD_RELATIONSHIP, relationship_get_complementary_type( $t_rel_type ), $t_bug_id );
+				history_log_event_special( $t_bug_id, BUG_ADD_RELATIONSHIP, $t_rel_type, $t_master_bug_id );
 
 				# Send the email notification
-				email_relationship_added( $f_master_bug_id, $t_bug_id, relationship_get_complementary_type( $f_rel_type ) );
+				email_relationship_added( $t_master_bug_id, $t_bug_id, relationship_get_complementary_type( $t_rel_type ) );
 			}
 
 			helper_call_custom_function( 'issue_create_notify', array( $t_bug_id ) );
