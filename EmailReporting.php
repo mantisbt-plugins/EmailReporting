@@ -656,6 +656,14 @@ class EmailReportingPlugin extends MantisPlugin
 
 			plugin_config_set( 'config_version', 15 );
 		}
+
+		if ( $t_config_version <= 15 )
+		{
+			plugin_require_api( 'core/mail_api.php' );
+			ERP_mailbox_api::clean_references_for_deleted_issues();
+
+			plugin_config_set( 'config_version', 16 );
+		}
 	}
 
 	/*
@@ -701,8 +709,8 @@ class EmailReportingPlugin extends MantisPlugin
 	 */
 	function ERP_issue_deleted( $p_event, $p_bug_id )
 	{
-		$query = 'DELETE FROM ' . plugin_table( 'msgids' ) . ' WHERE issue_id=' . db_param();
-		db_query_bound( $query, array( (int)$p_bug_id ) );
+		plugin_require_api( 'core/mail_api.php' );
+		ERP_mailbox_api::delete_references_for_bug_id( $p_bug_id );
 	}
 
 }
