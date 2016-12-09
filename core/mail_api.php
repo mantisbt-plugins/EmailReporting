@@ -1359,9 +1359,18 @@ class ERP_mailbox_api
 		//Get the ids from Mail References(header)
 		$t_bug_id = $this->get_bug_id_from_references( $p_references );
 
-		if ( $t_bug_id !== FALSE && bug_exists( $t_bug_id ) )
+		if ( $t_bug_id !== FALSE )
 		{
-			return( $t_bug_id );
+			if( bug_exists( $t_bug_id ) )
+			{
+				return( $t_bug_id );
+			}
+			else
+			{
+				// We found a referenced bug_id that does not exists.
+				// Do a clean up of the table to avoid inconsistencies.
+				self::clean_references_for_deleted_issues();
+			}
 		}
 
 		return( FALSE );
@@ -1465,6 +1474,25 @@ class ERP_mailbox_api
 				}
 			}
 		}
+	}
+
+	# --------------------
+	# Deletes the stored references for an issue
+	# It's static to be called from main plugin event for bug deletion
+	public static function delete_references_for_bug_id( $p_bug_id )
+	{
+		$t_query = 'DELETE FROM ' . plugin_table( 'msgids' ) . ' WHERE issue_id = ' . db_param();
+		db_query_bound( $t_query, array( (int)$p_bug_id ) );
+	}
+
+	# --------------------
+	# Deletes all references linked to non existant issues
+	# It's static to be called by upgrade as a cleanup step
+	public static function clean_references_for_deleted_issues()
+	{
+		$t_query = 'DELETE FROM ' . plugin_table( 'msgids' ) . ' WHERE NOT EXISTS'
+				. '( SELECT 1 FROM ' . db_get_table( 'bug' ) . ' B WHERE B.id = issue_id )';
+		db_query_bound( $t_query );
 	}
 
 	# --------------------
