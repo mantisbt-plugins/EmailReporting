@@ -871,7 +871,34 @@ class ERP_mailbox_api
 			elseif ( !is_blank( $t_description ) )
 			{
 				# Add a bug note
-				bugnote_add( $t_bug_id, $t_description );
+				$t_bugnote_id = bugnote_add( $t_bug_id, $t_description );
+
+				// MantisBT 1.3.x function
+				// reassign_on_feedback only needs to be done here incase of MantisBT 1.3.x
+				if ( function_exists( 'bugnote_process_mentions' ) )
+				{
+					$t_bug = bug_get( $t_bug_id, true );
+
+					# Process the mentions in the added note
+					bugnote_process_mentions( $t_bug->id, $t_bugnote_id, $t_description );
+
+					/* Code based on MantisBT 1.3.4 */
+					# Handle the reassign on feedback feature. Note that this feature generally
+					# won't work very well with custom workflows as it makes a lot of assumptions
+					# that may not be true. It assumes you don't have any statuses in the workflow
+					# between 'bug_submit_status' and 'bug_feedback_status'. It assumes you only
+					# have one feedback, assigned and submitted status.
+					if( config_get( 'reassign_on_feedback' ) &&
+						 $t_bug->status === config_get( 'bug_feedback_status' ) &&
+						 $t_bug->handler_id !== auth_get_current_user_id() &&
+						 $t_bug->reporter_id === auth_get_current_user_id() ) {
+						if( $t_bug->handler_id !== NO_USER ) {
+							bug_set_field( $t_bug->id, 'status', config_get( 'bug_assigned_status' ) );
+						} else {
+							bug_set_field( $t_bug->id, 'status', config_get( 'bug_submit_status' ) );
+						}
+					}
+				}
 			}
 		}
 		elseif ( $this->_mail_add_bug_reports )
@@ -895,6 +922,12 @@ class ERP_mailbox_api
 			ERP_set_temporary_overwrite( 'project_override', $t_project_id );
 
 			$t_bug_data = new BugData;
+			// MantisBT 1.3.x function
+			if ( method_exists( $t_bug_data, 'process_mentions' ) )
+			{
+				$t_bug_data->process_mentions();
+			}
+
 			$t_bug_data->build					= '';
 			$t_bug_data->platform				= '';
 			$t_bug_data->os						= '';
