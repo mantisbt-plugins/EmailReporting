@@ -922,11 +922,6 @@ class ERP_mailbox_api
 			ERP_set_temporary_overwrite( 'project_override', $t_project_id );
 
 			$t_bug_data = new BugData;
-			// MantisBT 1.3.x function
-			if ( method_exists( $t_bug_data, 'process_mentions' ) )
-			{
-				$t_bug_data->process_mentions();
-			}
 
 			$t_bug_data->build					= '';
 			$t_bug_data->platform				= '';
@@ -995,6 +990,11 @@ class ERP_mailbox_api
 
 			# Create the bug
 			$t_bug_id = $t_bug_data->create();
+			// MantisBT 1.3.x function
+			if ( method_exists( $t_bug_data, 'process_mentions' ) )
+			{
+				$t_bug_data->process_mentions();
+			}
 
 			// @TODO@ Disabled for now but possibly needed for other future features
 			# Handle custom field submission
