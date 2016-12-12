@@ -536,6 +536,7 @@ class ERP_mailbox_api
 
 					$t_ListMsgs[ $t_getSummary[ $i ][ 'DATE' ] ] = array( 'msg_id' => (int) $t_getSummary[ $i ][ 'MSG_NUM' ] );
 				}
+
 				krsort( $t_ListMsgs );
 			}
 		}
