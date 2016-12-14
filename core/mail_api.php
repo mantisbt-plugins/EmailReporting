@@ -696,7 +696,7 @@ class ERP_mailbox_api
 
 		if ( isset( $this->_mail_bug_priority[ strtolower( $t_mp->priority() ) ] ) )
 		{
-			$t_email[ 'Priority' ] = $this->_mail_bug_priority[ strtolower( $t_mp->priority() ) ];
+			$t_email[ 'Priority' ] = (int) $this->_mail_bug_priority[ strtolower( $t_mp->priority() ) ];
 		}
 		else
 		{
@@ -936,7 +936,21 @@ class ERP_mailbox_api
 			$t_bug_data->reproducibility		= (int) config_get( 'default_bug_reproducibility' );
 			$t_bug_data->severity				= (int) config_get( 'default_bug_severity' );
 
-			$t_bug_data->priority				= (int) ( ( $this->_mail_use_bug_priority && $p_email[ 'Priority' ] !== FALSE ) ? $p_email[ 'Priority' ] : config_get( 'default_bug_priority' ) );
+			// Lets check whether the priority exists in MantisBT
+			$t_priority = config_get( 'default_bug_priority' );
+			if ( $this->_mail_use_bug_priority && $p_email[ 'Priority' ] !== FALSE )
+			{
+				$t_available_priorities = MantisEnum::getValues( config_get( 'priority_enum_string' ) );
+				if ( in_array( (int) $p_email[ 'Priority' ], $t_available_priorities, TRUE ) )
+				{
+					$t_priority = $p_email[ 'Priority' ];
+				}
+				else
+				{
+					$this->custom_error( 'Unknown priority encountered (' . $p_email[ 'Priority' ] . '). Falling back to default priority', FALSE );
+				}
+			}
+			$t_bug_data->priority				= (int) $t_priority;
 			$t_bug_data->projection				= (int) config_get( 'default_bug_projection' );
 			$t_bug_data->eta					= (int) config_get( 'default_bug_eta' );
 			$t_bug_data->resolution				= config_get( 'default_bug_resolution' );
