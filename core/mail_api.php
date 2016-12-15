@@ -936,7 +936,7 @@ class ERP_mailbox_api
 			$t_bug_data->reproducibility		= (int) config_get( 'default_bug_reproducibility' );
 			$t_bug_data->severity				= (int) config_get( 'default_bug_severity' );
 
-			$t_priority = $this->verify_priority( $p_email[ 'Priority' ] )
+			$t_priority = $this->verify_priority( $p_email[ 'Priority' ] );
 			$t_bug_data->priority				= (int) $t_priority;
 			$t_bug_data->projection				= (int) config_get( 'default_bug_projection' );
 			$t_bug_data->eta					= (int) config_get( 'default_bug_eta' );
