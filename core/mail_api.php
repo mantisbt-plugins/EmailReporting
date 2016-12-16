@@ -700,7 +700,7 @@ class ERP_mailbox_api
 		}
 		else
 		{
-			$this->custom_error( 'Unknown priority encountered (' . strtolower( $t_mp->priority() ) . '). Falling back to default priority', FALSE );
+			$this->custom_error( 'Unknown email priority encountered (' . strtolower( $t_mp->priority() ) . '). Falling back to default priority', FALSE );
 			$t_email[ 'Priority' ] = FALSE;
 		}
 
@@ -1702,7 +1702,7 @@ class ERP_mailbox_api
 			}
 			else
 			{
-				$this->custom_error( 'Unknown priority encountered (' . $p_priority . '). Falling back to default priority', FALSE );
+				$this->custom_error( 'Unknown MantisBT priority encountered (' . $p_priority . '). Falling back to default priority', FALSE );
 			}
 		}
 
