@@ -1,54 +1,4 @@
 <?php
-// Needed for MantisBT 1.2.x.
-// Not needed for MantisBT 1.3.x
-require_once( config_get( 'class_path' ) . 'MantisPlugin.class.php' );
-
-// New function in MantisBT 1.3.x
-// Included for compatibility with 1.2.x
-if ( !function_exists( 'plugin_require_api' ) )
-{
-	/**
-	 * Allows a plugin page to require a plugin-specific API
-	 * @param string $p_file     The API to be included.
-	 * @param string $p_basename Plugin's basename (defaults to current plugin).
-	 * @return void
-	 */
-	function plugin_require_api( $p_file, $p_basename = null ) {
-		if( is_null( $p_basename ) ) {
-			$t_current = plugin_get_current();
-		} else {
-			$t_current = $p_basename;
-		}
-
-		$t_path = config_get_global( 'plugin_path' ) . $t_current . '/';
-
-		require_once( $t_path . $p_file );
-	}
-}
-
-// New function in MantisBT 1.3.x
-// Included for compatibility with 1.2.x
-if ( !function_exists( 'require_api' ) )
-{
-	/**
-	 * Define an API inclusion function to replace require_once
-	 *
-	 * @param string $p_api_name An API file name.
-	 * @return void
-	 */
-	function require_api( $p_api_name ) {
-		static $s_api_included;
-		global $g_core_path;
-		if( !isset( $s_api_included[$p_api_name] ) ) {
-			require_once( $g_core_path . $p_api_name );
-			$t_new_globals = array_diff_key( get_defined_vars(), $GLOBALS, array( 't_new_globals' => 0 ) );
-			foreach ( $t_new_globals as $t_global_name => $t_global_value ) {
-				$GLOBALS[$t_global_name] = $t_global_value;
-			}
-			$s_api_included[$p_api_name] = 1;
-		}
-	}
-}
 
 class EmailReportingPlugin extends MantisPlugin
 {
@@ -63,7 +13,7 @@ class EmailReportingPlugin extends MantisPlugin
 
 		$this->version = '0.10.0';
 		$this->requires = array(
-			'MantisCore' => '1.2.6, <2.0.99',
+			'MantisCore' => '1.3.0, <2.0.99',
 		);
 
 		$this->author = plugin_lang_get( 'plugin_author' );

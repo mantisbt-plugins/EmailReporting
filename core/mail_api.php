@@ -1039,20 +1039,7 @@ class ERP_mailbox_api
 			# Allow plugins to post-process bug data with the new bug ID
 			event_signal( 'EVENT_REPORT_BUG', array( $t_bug_data, $t_bug_id ) );
 
-			// MantisBT 1.2.x
-			if ( function_exists( 'email_new_bug' ) )
-			{
-				email_new_bug( $t_bug_id );
-			}
-			// MantisBT 1.3.x
-			elseif ( function_exists( 'email_bug_added' ) )
-			{
-				email_bug_added( $t_bug_id );
-			}
-			else
-			{
-				$this->custom_error( 'New issue notification function not found. Could not trigger the notification' );
-			}
+			email_bug_added( $t_bug_id );
 		}
 		else
 		{
