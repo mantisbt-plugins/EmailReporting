@@ -646,8 +646,11 @@ class EmailReportingPlugin extends MantisPlugin
 		{
 			$t_path						= config_get_global( 'path' );
 			$t_mail_mantisbt_url_fix	= plugin_config_get( 'mail_mantisbt_url_fix', '' );
+			$t_absolute_path			= config_get_global( 'absolute_path' );
+			$t_dir_script_filename		= dirname( $_SERVER['SCRIPT_FILENAME'] ) . DIRECTORY_SEPARATOR;
 
-			if ( strncasecmp( $t_path, 'http', 4 ) === 0 && $t_path !== $t_mail_mantisbt_url_fix )
+			if ( strncasecmp( $t_path, 'http', 4 ) === 0 && $t_path !== $t_mail_mantisbt_url_fix &&
+				$t_absolute_path === $t_dir_script_filename )
 			{
 				plugin_config_set( 'mail_mantisbt_url_fix', $t_path );
 			}

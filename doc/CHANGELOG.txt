@@ -2,6 +2,7 @@ Changelog:
 Jan 2017 - EmailReporting-0.10.0
 	- Removed MantisBT 1.2.x compatibility functions
 	- Increased minimum MantisBT version number
+	- Fixed issue with css path in notification emails
 
 Jan 2017 - EmailReporting-0.9.3
 	- Preliminary support for MantisBT 2.0.x and ModernUI
