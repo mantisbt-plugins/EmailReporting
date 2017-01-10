@@ -418,8 +418,11 @@ class ERP_Mail_Parser
 		return( TRUE );
 	}
 
-	private function setParts( &$parts, $attachment = FALSE, $p_attached_email_subject = NULL )
+	private function setParts( &$pparts, $attachment = FALSE, $p_attached_email_subject = NULL )
 	{
+		// turn assoc array into an indexed array with numbers
+		$parts = array_values($pparts);
+
 		$i = 0;
 
 		if ( $attachment === TRUE && $p_attached_email_subject === NULL && !empty( $parts[ $i ]->headers[ 'subject' ] ) )
