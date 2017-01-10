@@ -4,6 +4,49 @@
 plugin_require_api( 'core_pear/Mail/mimeDecode.php' );
 plugin_require_api( 'core/Mail/simple_html_dom.php');
 
+// Compatibility function for PHP versions older then 5.3.0
+if ( !function_exists( 'array_replace_recursive' ) )
+{
+	function ERP_recurse( $array, $array1 )
+	{
+		foreach ( $array1 as $key => $value )
+		{
+			// create new key in $array, if it is empty or not an array
+			if ( !isset( $array[ $key ] ) || ( isset( $array[ $key ] ) && !is_array( $array[ $key ] ) ) )
+			{
+				$array[ $key ] = array();
+			}
+
+			// overwrite the value in the base array
+			if ( is_array( $value ) )
+			{
+				$value = ERP_recurse( $array[ $key ], $value );
+			}
+			$array[ $key ] = $value;
+		}
+		return $array;
+	}
+
+	function array_replace_recursive( $array, $array1 )
+	{
+		// handle the arguments, merge one by one
+		$args = func_get_args();
+		$array = $args[ 0 ];
+		if ( !is_array( $array ) )
+		{
+			return $array;
+		}
+		for ( $i = 1; $i < count( $args ); $i++ )
+		{
+			if ( is_array( $args[ $i ] ) )
+			{
+				$array = ERP_recurse( $array, $args[ $i ] );
+			}
+		}
+		return $array;
+	}
+}
+
 class ERP_Mail_Parser
 {
 	private $_parse_html = FALSE;
@@ -221,6 +264,20 @@ class ERP_Mail_Parser
 		$structure = $decoder->decode( $params );
 
 		unset( $decoder );
+
+		if ( 'multipart' === strtolower( $structure->ctype_primary ) && 'signed' === strtolower( $structure->ctype_secondary ) )
+		{
+			$decoder_signed = new Mail_mimeDecode( $structure->parts['msg_body'] );
+			unset( $structure->parts[ 'msg_body' ], $structure->parts[ 'sig_hdr' ], $structure->parts[ 'sig_body' ] );
+
+			$structure_signed = $decoder_signed->decode( $params );
+
+			unset( $decoder_signed );
+
+			$structure = (object) array_replace_recursive( (array) $structure, (array) $structure_signed );
+
+			unset( $structure_signed );
+		}
 
 		$this->show_memory_usage( 'Start parse structure' );
 
