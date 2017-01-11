@@ -41,6 +41,9 @@ class ERP_mailbox_api
 
 	private $_validated_email_list = array();
 
+	// Unable to use the MantisBT email_regex_simple because it doesn't capture the local and domain seperately anymore since MantisBT 1.3.x
+	private $_email_regex_simple="/([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]{1,64})@([a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)/";
+
 	private $_mail_add_bug_reports;
 	private $_mail_add_bugnotes;
 	private $_mail_add_complete_email;
@@ -1272,7 +1275,7 @@ class ERP_mailbox_api
 				break;
 
 			case 'email_no_domain':
-				if( preg_match( email_regex_simple(), $p_user_info[ 'email' ], $t_check ) )
+				if( preg_match( $this->_email_regex_simple, $p_user_info[ 'email' ], $t_check ) )
 				{
 					$t_local = $t_check[ 1 ];
 					$t_domain = $t_check[ 2 ];
@@ -1335,7 +1338,7 @@ class ERP_mailbox_api
 				break;
 
 			case 'email_no_domain':
-				if( preg_match( email_regex_simple(), $p_user_info[ 'email' ], $t_check ) )
+				if( preg_match( $this->_email_regex_simple, $p_user_info[ 'email' ], $t_check ) )
 				{
 					$t_local = $t_check[ 1 ];
 					$t_domain = $t_check[ 2 ];
