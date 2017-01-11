@@ -721,8 +721,12 @@ class Mail_mimeDecode extends PEAR
             $boundary = $bs_possible;
         }
         // eatline is used by multipart/signed.
+        // ERP-modification: Regexes had issues if input started with boundary
+        // ERP-modification: Regexes had issues with last newline not accounting for possible carriage return
+        // ERP-modification: Regexes had took nothing over -- so turned the two possibilities around and now it will properly find it
+//            preg_split("/\r?\n--".preg_quote($boundary, '/')."(|--)\n/", $input) :
         $tmp = $eatline ?
-            preg_split("/\r?\n--".preg_quote($boundary, '/')."(|--)\n/", $input) :
+            preg_split("/\r?\n?--".preg_quote($boundary, '/')."(--|)\r?\n?/", $input) :
             preg_split("/--".preg_quote($boundary, '/')."((?=\s)|--)/", $input);
 
         $len = count($tmp) -1;
