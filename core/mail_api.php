@@ -89,6 +89,10 @@ class ERP_mailbox_api
 	private $_max_file_size;
 	private $_memory_limit;
 
+
+	private $email_regex_simple="/([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+)@([a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)/";
+
+
 	# --------------------
 	# Retrieve all necessary configuration options
 	public function __construct( $p_test_only = FALSE )
@@ -1272,7 +1276,7 @@ class ERP_mailbox_api
 				break;
 
 			case 'email_no_domain':
-				if( preg_match( email_regex_simple(), $p_user_info[ 'email' ], $t_check ) )
+				if( preg_match( $this->email_regex_simple, $p_user_info[ 'email' ], $t_check ) )
 				{
 					$t_local = $t_check[ 1 ];
 					$t_domain = $t_check[ 2 ];
@@ -1335,7 +1339,7 @@ class ERP_mailbox_api
 				break;
 
 			case 'email_no_domain':
-				if( preg_match( email_regex_simple(), $p_user_info[ 'email' ], $t_check ) )
+				if( preg_match( $this->email_regex_simple, $p_user_info[ 'email' ], $t_check ) )
 				{
 					$t_local = $t_check[ 1 ];
 					$t_domain = $t_check[ 2 ];
