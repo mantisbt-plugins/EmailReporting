@@ -244,12 +244,10 @@ class ERP_Mail_Parser
 		return( $t_encode );
 	}
 
-	public function parse()
+	private function decode( &$email )
 	{
-		$this->show_memory_usage( 'Start parse' );
-
-		$decoder = new Mail_mimeDecode( $this->_content );
-		$this->_content = NULL;
+		$decoder = new Mail_mimeDecode( $email );
+		$email = NULL;
 		$decoder->_input = NULL;
 
 		$this->show_memory_usage( 'mimeDecode initiated' );
@@ -259,25 +257,35 @@ class ERP_Mail_Parser
 		$params['decode_headers'] = FALSE;
 		$params['rfc_822bodies'] = FALSE;
 
-		$this->show_memory_usage( 'Start decode' );
-
 		$structure = $decoder->decode( $params );
 
-		unset( $decoder );
+		$this->show_memory_usage( 'mimeDecode finished' );
 
-		if ( 'multipart' === strtolower( $structure->ctype_primary ) && 'signed' === strtolower( $structure->ctype_secondary ) )
+		return( $structure );
+	}
+
+	private function parse_signed_content( &$structure )
+	{
+		if ( is_object( $structure ) )
 		{
-			$decoder_signed = new Mail_mimeDecode( $structure->parts['msg_body'] );
-			unset( $structure->parts[ 'msg_body' ], $structure->parts[ 'sig_hdr' ], $structure->parts[ 'sig_body' ] );
+			if ( 'multipart' === strtolower( $structure->ctype_primary ) && 'signed' === strtolower( $structure->ctype_secondary ) )
+			{
+				$structure_signed = $this->decode( $structure->parts['msg_body'] );
+				unset( $structure->parts[ 'msg_body' ], $structure->parts[ 'sig_hdr' ], $structure->parts[ 'sig_body' ] );
 
-			$structure_signed = $decoder_signed->decode( $params );
-
-			unset( $decoder_signed );
-
-			$structure = (object) array_replace_recursive( (array) $structure, (array) $structure_signed );
-
-			unset( $structure_signed );
+				$structure = (object) array_replace_recursive( (array) $structure, (array) $structure_signed );
+			}
 		}
+	}
+
+	public function parse()
+	{
+		$this->show_memory_usage( 'Start parse' );
+
+		$structure = $this->decode( $this->_content );
+		$this->_content = NULL;
+
+		$this->parse_signed_content( $structure );
 
 		$this->show_memory_usage( 'Start parse structure' );
 
@@ -477,6 +485,13 @@ class ERP_Mail_Parser
 
 	private function setParts( &$parts, $attachment = FALSE, $p_attached_email_subject = NULL )
 	{
+		if ( !array_key_exists( 0, $parts ) )
+		{
+			echo "\n" . 'EmailReporting can\'t handle this mime part. Please report this to the EmailReporting project developers' . "\n" . 'Array key: ' . key( $parts ) . "\n";
+
+			return;
+		}
+	
 		$i = 0;
 
 		if ( $attachment === TRUE && $p_attached_email_subject === NULL && !empty( $parts[ $i ]->headers[ 'subject' ] ) )
@@ -537,9 +552,14 @@ class ERP_Mail_Parser
 		{
 			if ( 'multipart' === strtolower( $parts[ $i ]->ctype_primary ) )
 			{
+				if ( 'signed' === strtolower( $parts[ $i ]->ctype_secondary ) )
+				{
+					$this->parse_signed_content( $parts[ $i ] );
+				}
+
 				$this->setParts( $parts[ $i ]->parts, $attachment, $p_attached_email_subject );
 			}
-			elseif ( $this->_add_attachments && 'message' === strtolower( $parts[ $i ]->ctype_primary ) && strtolower( $parts[ $i ]->ctype_secondary ) === 'rfc822' )
+			elseif ( $this->_add_attachments && 'message' === strtolower( $parts[ $i ]->ctype_primary ) && 'rfc822' === strtolower( $parts[ $i ]->ctype_secondary ) )
 			{
 				$this->setParts( $parts[ $i ]->parts, TRUE );
 			}
