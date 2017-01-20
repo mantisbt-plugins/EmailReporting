@@ -8,6 +8,9 @@ Jan 2017 - EmailReporting-0.10.0-DEV
 	- Fixed issues with MimeDecode concerning signed email attachments
 	- Improved email parser to not parse unsupported content
 
+Jan 2017 - EmailReporting-0.9.3.1
+	- Fixed issue with db_get_table and MantisBT 1.2.x (legacy issue)
+
 Jan 2017 - EmailReporting-0.9.3
 	- Preliminary support for MantisBT 2.0.x and ModernUI
 	- Fix possible fatal error on return value
