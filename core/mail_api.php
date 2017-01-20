@@ -1531,7 +1531,7 @@ class ERP_mailbox_api
 	public static function clean_references_for_deleted_issues()
 	{
 		$t_query = 'DELETE FROM ' . plugin_table( 'msgids' ) . ' WHERE NOT EXISTS'
-				. '( SELECT 1 FROM ' . db_get_table( 'bug' ) . ' B WHERE B.id = issue_id )';
+				. '( SELECT 1 FROM ' . db_get_table( 'mantis_bug_table' ) . ' B WHERE B.id = issue_id )';
 		db_query_bound( $t_query );
 	}
 
