@@ -7,6 +7,7 @@ Jan 2017 - EmailReporting-0.10.0-DEV
 	- Fixed "Email address without the domain name" option for user/real names (based on work from srh-hochschule-berlin)
 	- Fixed issues with MimeDecode concerning signed email attachments
 	- Improved email parser to not parse unsupported content
+	- Fixed issue with "Test" not reporting issues with login information incase of POP3 mailbox
 
 Jan 2017 - EmailReporting-0.9.3.1
 	- Fixed issue with db_get_table and MantisBT 1.2.x (legacy issue)

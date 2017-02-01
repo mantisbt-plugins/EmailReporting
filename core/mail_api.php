@@ -326,30 +326,33 @@ class ERP_mailbox_api
 		{
 			$t_loginresult = $this->mailbox_login();
 
-			if ( $this->_test_only === FALSE && !$this->pear_error( 'Attempt login', $t_loginresult ) )
+			if ( !$this->pear_error( 'Attempt login', $t_loginresult ) )
 			{
-				if ( project_get_field( $this->_mailbox[ 'project_id' ], 'enabled' ) == ON )
+				if ( $this->_test_only === FALSE )
 				{
-					$t_ListMsgs = $this->getListing();
-
-					if ( !$this->pear_error( 'Retrieve list of messages', $t_ListMsgs ) )
+					if ( project_get_field( $this->_mailbox[ 'project_id' ], 'enabled' ) == ON )
 					{
-						while ( $t_Msg = array_pop( $t_ListMsgs ) )
+						$t_ListMsgs = $this->getListing();
+
+						if ( !$this->pear_error( 'Retrieve list of messages', $t_ListMsgs ) )
 						{
-							$t_emailresult = $this->process_single_email( $t_Msg[ 'msg_id' ] );
-
-							if ( $this->_mail_delete && $t_emailresult )
+							while ( $t_Msg = array_pop( $t_ListMsgs ) )
 							{
-								$t_deleteresult = $this->_mailserver->deleteMsg( $t_Msg[ 'msg_id' ] );
+								$t_emailresult = $this->process_single_email( $t_Msg[ 'msg_id' ] );
 
-								$this->pear_error( 'Attempt delete email', $t_deleteresult );
+								if ( $this->_mail_delete && $t_emailresult )
+								{
+									$t_deleteresult = $this->_mailserver->deleteMsg( $t_Msg[ 'msg_id' ] );
+
+									$this->pear_error( 'Attempt delete email', $t_deleteresult );
+								}
 							}
 						}
 					}
-				}
-				else
-				{
-					$this->custom_error( 'Project is disabled: ' . project_get_field( $this->_mailbox[ 'project_id' ], 'name' ) );
+					else
+					{
+						$this->custom_error( 'Project is disabled: ' . project_get_field( $this->_mailbox[ 'project_id' ], 'name' ) );
+					}
 				}
 			}
 
