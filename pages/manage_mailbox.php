@@ -4,9 +4,8 @@ access_ensure_global_level( config_get( 'manage_plugin_threshold' ) );
 
 plugin_require_api( 'core/config_api.php' );
 
-ERP_page_begin( plugin_lang_get( 'plugin_title' ) );
-
 $t_this_page = 'manage_mailbox';
+ERP_page_begin( $t_this_page );
 ERP_print_menu( $t_this_page );
 
 ?>
@@ -85,7 +84,7 @@ if ( !defined( 'PEAR_OS' ) )
 <table align="center" class="width50 nowrap" cellspacing="1">
 <?php
 
-ERP_output_config_option( 'mailbox_settings', 'header', 'manage_config' );
+ERP_output_config_option( 'mailbox_settings', 'header' );
 
 ERP_output_config_option( 'enabled', 'boolean', $t_mailbox );
 ERP_output_config_option( 'description', 'string', $t_mailbox );

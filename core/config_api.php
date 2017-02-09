@@ -102,18 +102,18 @@
 	# Page header en beginning.
 	function ERP_page_begin( $p_page = '' )
 	{
-		// MantisBT 2.0.x
-		if ( function_exists( 'layout_page_header' ) )
-		{
-			layout_page_header( $p_page );
-			layout_page_begin( 'manage_overview_page.php' );
-			print_manage_menu( 'manage_plugin_page.php' );
-		}
 		// pre-MantisBT 2.0.x
+		if ( plugin_config_get( 'mantisbt_version' ) === 1 )
+		{
+			html_page_top( plugin_lang_get( 'plugin_title' ) );
+			print_manage_menu( plugin_page( $p_page ) );
+		}
+		// MantisBT 2.0.x
 		else
 		{
-			html_page_top( $p_page );
-			print_manage_menu();
+			layout_page_header( plugin_lang_get( 'plugin_title' ) );
+			layout_page_begin( 'manage_overview_page.php' );
+			print_manage_menu( plugin_page( $p_page ) );
 		}
 	}
 
@@ -121,15 +121,15 @@
 	# Page footer
 	function ERP_page_end( $p_page = '' )
 	{
-		// MantisBT 2.0.x
-		if ( function_exists( 'layout_page_end' ) )
-		{
-			layout_page_end();
-		}
 		// pre-MantisBT 2.0.x
-		else
+		if ( plugin_config_get( 'mantisbt_version' ) === 1 )
 		{
 			html_page_bottom( $p_page );
+		}
+		// MantisBT 2.0.x
+		else
+		{
+			layout_page_end();
 		}
 	}
 
@@ -155,7 +155,10 @@
 
 		if( access_has_global_level( config_get( 'manage_plugin_threshold' ) ) )
 		{
-			echo '<div align="center"><p>';
+			echo '<div class="space-10"></div>' . "\n";
+			echo '<div class="center">' . "\n";
+			echo '<div class="btn-toolbar inline">' . "\n";
+			echo '<div class="btn-group">' . "\n";
 
 			foreach( $t_pages AS $t_lang_function => $t_pageset )
 			{
@@ -166,13 +169,27 @@
 						$t_page_lang = $t_page_name;
 					}
 
-					$t_page = ( ( $p_page !== $t_page_name ) ? plugin_page( $t_page_name ) : NULL );
+					// pre-MantisBT 2.0.x
+					if ( plugin_config_get( 'mantisbt_version' ) === 1 )
+					{
+						$t_page = ( ( $p_page !== $t_page_name ) ? plugin_page( $t_page_name ) : NULL );
 
-					print_bracket_link( $t_page, $t_lang_function( $t_page_lang ) );
+						print_bracket_link( $t_page, $t_lang_function( $t_page_lang ) );
+					}
+					// MantisBT 2.0.x
+					else
+					{
+						$t_active = ( ( $t_page_name === $p_page ) ? 'active' : '' );
+						echo '<a class="btn btn-sm btn-white btn-primary ' . $t_active . '" href="'. plugin_page( $t_page_name ) .'">' . "\n";
+						echo $t_lang_function( $t_page_lang );
+						echo '</a>' . "\n";
+					}
 				}
 			}
 
-			echo '</p></div>';
+			echo '</div>' . "\n";
+			echo '</div>' . "\n";
+			echo '</div>' . "\n";
 		}
 	}
 

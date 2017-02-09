@@ -4,9 +4,8 @@ access_ensure_global_level( config_get( 'manage_plugin_threshold' ) );
 
 plugin_require_api( 'core/config_api.php' );
 
-ERP_page_begin( plugin_lang_get( 'plugin_title' ) );
-
 $t_this_page = 'manage_config';
+ERP_page_begin( $t_this_page );
 ERP_print_menu( $t_this_page );
 
 ?>
@@ -119,7 +118,7 @@ ERP_print_menu( $t_this_page );
 ERP_output_config_option( 'problems', 'header' );
 
 ERP_output_config_option( NULL, 'empty' );
-ERP_output_config_option( 'security_options', 'header', 'manage_mailbox' );
+ERP_output_config_option( 'security_options', 'header' );
 ERP_output_config_option( 'mail_secured_script', 'boolean' );
 ERP_output_config_option( 'mail_secured_ipaddr', 'string' );
 

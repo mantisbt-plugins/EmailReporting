@@ -4,9 +4,8 @@ access_ensure_global_level( config_get( 'manage_plugin_threshold' ) );
 
 plugin_require_api( 'core/config_api.php' );
 
-ERP_page_begin( plugin_lang_get( 'plugin_title' ) );
-
 $t_this_page = 'view_changelog';
+ERP_page_begin( $t_this_page );
 ERP_print_menu( $t_this_page );
 
 ?>

@@ -30,6 +30,7 @@ class EmailReportingPlugin extends MantisPlugin
 			'reset_schema'					=> 0,
 			'config_version'				=> 0,
 			'schema'						=> -1,
+			'mantisbt_version'				=> (int) trim( MANTIS_VERSION )[ 0 ],
 			'job_users'						=> array(),
 
 			# --- mail reporting settings -----

@@ -4,11 +4,10 @@ access_ensure_global_level( config_get( 'manage_plugin_threshold' ) );
 
 plugin_require_api( 'core/config_api.php' );
 
-ERP_page_begin( plugin_lang_get( 'plugin_title' ) );
-
 require_api( 'custom_field_api.php' );
 
 $t_this_page = 'manage_rule';
+ERP_page_begin( $t_this_page );
 ERP_print_menu( $t_this_page );
 
 ?>
@@ -66,7 +65,7 @@ ERP_output_config_option( 'select_rule', 'hidden', $f_select_rule );
 <table align="center" class="width50 nowrap" cellspacing="1">
 <?php
 
-ERP_output_config_option( 'rule_settings', 'header', 'manage_mailbox' );
+ERP_output_config_option( 'rule_settings', 'header' );
 
 ERP_output_config_option( 'enabled', 'boolean', $t_rule );
 ERP_output_config_option( 'description', 'string', $t_rule );
