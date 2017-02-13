@@ -64,14 +64,14 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 	# Verify mailbox - from Recmail by Cas Nuy
 	plugin_require_api( 'core/mail_api.php' );
 
+	ERP_page_begin( plugin_lang_get( 'plugin_title' ) );
+
 	echo '<pre>';
 	$t_mailbox_api = new ERP_mailbox_api( ( ( $f_mailbox_action === 'complete_test' ) ? FALSE : TRUE ) );
 	$t_result = $t_mailbox_api->process_mailbox( $t_mailbox );
 	echo '</pre>';
 
 	$t_is_custom_error = ( ( is_array( $t_result ) && isset( $t_result[ 'ERROR_TYPE' ] ) && $t_result[ 'ERROR_TYPE' ] === 'NON-PEAR-ERROR' ) || ( is_bool( $t_result ) && $t_result === FALSE ) );
-
-	ERP_page_begin( plugin_lang_get( 'plugin_title' ) );
 ?>
 <br /><div class="center">
 <?php
