@@ -87,7 +87,7 @@ ERP_print_menu( $t_this_page );
 ?>
 		<table align="center" class="width50" cellspacing="1">
 			<tr>
-				<th class="left">SAPI <a href="http://www.php.net/php_sapi_name">[?]</a></th>
+				<th class="left">SAPI <a href="http://www.php.net/php_sapi_name" target="_blank">[?]</a></th>
 				<th class="left">Username</th>
 			</tr>
 <?php
