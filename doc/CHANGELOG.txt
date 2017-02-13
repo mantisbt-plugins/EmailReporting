@@ -68,7 +68,7 @@ Dec 2015 - EmailReporting-0.9.0
 	- Officially compatible with MantisBT 1.2.6-1.2.19
 	- Preliminary compatibility for MantisBT 1.3.x
 	- Updated pear packages (Fixes issue ~28437)
-	- New rule system added
+	- Foundation for new rule system added
 	- Removed "Mailbox " from mailbox setting descriptions
 	- Changed the action texts (for example "Add mailbox" to "Add")
 	- Added default values for form variables to manage_mailbox_edit
