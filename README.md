@@ -15,22 +15,24 @@ Requirements
 EmailReporting v0.10.0 and later versions:
 
 * MantisBT 1.3.0 or higher
-* Ability to set scheduled / cron jobs on the webserver
 
 EmailReporting v0.9.x:
 
 * MantisBT 1.2.6 or higher
-* Ability to set scheduled / cron jobs on the webserver
 
 Optional:
 
-   * PHP 7 is supported from EmailReporting 0.9.2 and higher
-   * MantisBT 1.3.x is supported from EmailReporting 0.9.2 and higher
-   * Preliminary support for MantisBT 2.0.x is available from EmailReporting 0.9.3 and higher. This is not ready for production environments. Please report any issues encountered.
+* PHP 7 is supported from EmailReporting 0.9.2 and higher
+* MantisBT 1.3.x is supported from EmailReporting 0.9.2 and higher
+* Preliminary support for MantisBT 2.0.x is available from EmailReporting 0.9.3 and higher. This is not ready for production environments. Please report any issues encountered.
+* Full support for MantisBT 2.x.x is available from EmailReporting 0.10.0 and higher.
 
 EmailReporting v0.8.4 and earlier versions:
 
 * MantisBT 1.2.0 until 1.2.5
+
+All versions:
+
 * Ability to set scheduled / cron jobs on the webserver
 
 Download
