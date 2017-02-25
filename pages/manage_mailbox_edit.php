@@ -64,7 +64,7 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 	# Verify mailbox - from Recmail by Cas Nuy
 	plugin_require_api( 'core/mail_api.php' );
 
-	ERP_page_begin( plugin_lang_get( 'plugin_title' ) );
+	ERP_page_begin( 'manage_mailbox' );
 
 	echo '<pre>';
 	$t_mailbox_api = new ERP_mailbox_api( ( ( $f_mailbox_action === 'complete_test' ) ? FALSE : TRUE ) );

@@ -107,6 +107,7 @@
 		{
 			html_page_top( plugin_lang_get( 'plugin_title' ) );
 			print_manage_menu( plugin_page( $p_page ) );
+			ERP_print_menu( $p_page );
 		}
 		// MantisBT 2.0.x
 		else
@@ -114,13 +115,21 @@
 			layout_page_header( plugin_lang_get( 'plugin_title' ) );
 			layout_page_begin( 'manage_overview_page.php' );
 			print_manage_menu( plugin_page( $p_page ) );
+			ERP_print_menu( $p_page );
 		}
+?>
+<div class="col-md-12 col-xs-12">
+<div class="space-10"></div>
+<?php
 	}
 
 	# --------------------
 	# Page footer
 	function ERP_page_end( $p_page = '' )
 	{
+?>
+</div>
+<?php
 		// pre-MantisBT 2.0.x
 		if ( plugin_config_get( 'mantisbt_version' ) === 1 )
 		{
@@ -131,6 +140,76 @@
 		{
 			layout_page_end();
 		}
+	}
+
+	# --------------------
+	# output html table open elements
+	# 
+	function ERP_output_table_open( $p_headertitle = NULL )
+	{
+?>
+<div class="widget-box widget-color-blue2">
+<?php
+		if ( $p_headertitle !== NULL )
+		{
+?>
+<div class="widget-header widget-header-small">
+	<h4 class="widget-title lighter">
+		<i class="ace-icon fa fa-envelope"></i>
+		<?php echo plugin_lang_get( $p_headertitle ) ?>
+	</h4>
+</div>
+<?php
+		}
+?>
+<div class="widget-body">
+<div class="widget-main no-padding">
+<div class="table-responsive">
+	<table class="table table-bordered table-condensed table-striped">
+<?php
+//<div class="form-container" >
+	}
+
+	# --------------------
+	# output html table close elements
+	# 
+	function ERP_output_table_close( $p_submitbutton = NULL )
+	{
+?>
+	</table>
+</div>
+</div>
+<?php
+		if ( $p_submitbutton !== NULL )
+		{
+			ERP_output_config_option( $p_submitbutton, 'submit' );
+		}
+?>
+</div>
+</div>
+<div class="space-10"></div>
+<?php
+	}
+
+	# --------------------
+	# output html note open elements
+	# 
+	function ERP_output_note_open()
+	{
+?>
+<div class="well">
+<?php
+	}
+
+	# --------------------
+	# output html note close elements
+	# 
+	function ERP_output_note_close()
+	{
+?>
+</div>
+<div class="space-10"></div>
+<?php
 	}
 
 	# --------------------
@@ -155,11 +234,12 @@
 
 		if( access_has_global_level( config_get( 'manage_plugin_threshold' ) ) )
 		{
-			echo '<div class="space-10"></div>' . "\n";
-			echo '<div class="center">' . "\n";
-			echo '<div class="btn-toolbar inline">' . "\n";
-			echo '<div class="btn-group">' . "\n";
-
+?>
+<div class="space-10"></div>
+<div class="center">
+<div class="btn-toolbar inline">
+<div class="btn-group">
+<?php
 			foreach( $t_pages AS $t_lang_function => $t_pageset )
 			{
 				foreach( $t_pageset AS $t_page_lang => $t_page_name )
@@ -179,17 +259,20 @@
 					// MantisBT 2.0.x
 					else
 					{
-						$t_active = ( ( $t_page_name === $p_page ) ? 'active' : '' );
-						echo '<a class="btn btn-sm btn-white btn-primary ' . $t_active . '" href="'. plugin_page( $t_page_name ) .'">' . "\n";
-						echo $t_lang_function( $t_page_lang );
-						echo '</a>' . "\n";
+						$t_active = ( ( $t_page_name === $p_page ) ? ' active' : '' );
+?>
+<a class="btn btn-sm btn-white btn-primary<?php echo $t_active ?>" href="<?php echo plugin_page( $t_page_name ) ?>">
+<?php echo $t_lang_function( $t_page_lang ) ?>
+</a>
+<?php
 					}
 				}
 			}
-
-			echo '</div>' . "\n";
-			echo '</div>' . "\n";
-			echo '</div>' . "\n";
+?>
+</div>
+</div>
+</div>
+<?php
 		}
 	}
 
@@ -523,6 +606,15 @@ if ( !function_exists( 'test_database_utf8' ) )
 	# --------------------
 	# output a configuration option
 	# This function is only meant to be used by the EmailReporting plugin or by other plugins within the EVENT_ERP_OUTPUT_MAILBOX_FIELDS event
+	# 
+	# @param string $p_name The name of the input variable
+	# @param string $p_type The type of input field that should be outputted
+	# @param varies $p_def_value The default value for the input field.
+	# - If NULL $p_name will be checked with plugin_config_get
+	# - If array then the index with $p_name will be used
+	# - If string then it will be used as-is
+	# @param string $p_function_name The function that should be called to handle this customized input field
+	# @param varies $p_function_parameter The parameter that will be passed to $p_function_name
 	function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, $p_function_name = NULL, $p_function_parameter = NULL )
 	{
 		// $p_def_value has special purposes when it contains certain values. See below
@@ -531,6 +623,7 @@ if ( !function_exists( 'test_database_utf8' ) )
 			$t_value = plugin_config_get( $p_name );
 		}
 		// Need to catch the instance where $p_def_value is an array for dropdown_multiselect (_any)
+		// @TODO code verification needed for the new rule system
 		elseif ( is_array( $p_def_value ) &&
 			(
 				( !in_array( $p_type, array( 'dropdown_multiselect', 'dropdown_multiselect_any', 'custom' ), TRUE ) ) ||
@@ -600,7 +693,7 @@ if ( !function_exists( 'test_database_utf8' ) )
 				}
 				else
 				{
-					echo '<span class="negative">' . plugin_lang_get( 'function_not_found', 'EmailReporting' ) . ': ' . $t_function_name . '</span>';
+					echo '<span class="red">' . plugin_lang_get( 'function_not_found', 'EmailReporting' ) . ': ' . $t_function_name . '</span>';
 				}
 
 				echo '</td></tr>';
@@ -608,7 +701,11 @@ if ( !function_exists( 'test_database_utf8' ) )
 				break;
 
 			case 'submit':
-				echo '<tr><td class="center" width="100%" colspan="3"><input ' . helper_get_tab_index() . ' type="submit" class="button" value="' . plugin_lang_get( $p_name ) . '" /></td></tr>';
+?>
+<div class="widget-toolbox clearfix center">
+	<input <?php echo helper_get_tab_index() ?> type="submit" class="btn btn-primary btn-white btn-round" value="<?php echo plugin_lang_get( $p_name ) ?>" />
+</div>
+<?php
 
 				break;
 
@@ -624,24 +721,24 @@ if ( !function_exists( 'test_database_utf8' ) )
 			case 'dropdown_any':
 			case 'dropdown_multiselect':
 			case 'dropdown_multiselect_any':
-				echo '<tr ' . helper_alternate_class( ) . '><td class="category" width="60%">';
+				echo '<tr ' . helper_alternate_class( ) . '><td class="category width-40">';
 				ERP_print_documentation_link( $p_name );
 				echo '</td>';
 
 				switch ( $p_type )
 				{
 					case 'boolean':
-						echo '<td class="center" width="20%"><label><input ' . helper_get_tab_index() . ' type="radio" name="' . $t_input_name . '" value="' . ON . '" ';
+						echo '<td class="center" width="20%"><label><input class="ace" ' . helper_get_tab_index() . ' type="radio" name="' . $t_input_name . '" value="' . ON . '" ';
 						check_checked( (int) $t_value, ON );
-						echo '/>' . lang_get( 'yes' ) . '</label></td>';
+						echo '/><span class="lbl">' . lang_get( 'yes' ) . '</span></label></td>';
 
-						echo '<td class="center" width="20%"><label><input ' . helper_get_tab_index() . ' type="radio" name="' . $t_input_name . '" value="' . OFF . '" ';
+						echo '<td class="center" width="20%"><label><input class="ace" ' . helper_get_tab_index() . ' type="radio" name="' . $t_input_name . '" value="' . OFF . '" ';
 						// NULL can also be interpreted as 0. But in this case NULL means no option chosen
 						if ( $t_value !== NULL )
 						{
 							check_checked( (int) $t_value, OFF );
 						}
-						echo '/>' . lang_get( 'no' ) . '</label></td>';
+						echo '/><span class="lbl">' . lang_get( 'no' ) . '</span></label></td>';
 
 						break;
 
@@ -649,23 +746,23 @@ if ( !function_exists( 'test_database_utf8' ) )
 						$t_dir = $t_value;
 						if ( is_dir( $t_dir ) )
 						{
-							$t_result_is_dir_color = 'positive';
+							$t_result_is_dir_color = 'green';
 							$t_result_is_dir_text = plugin_lang_get( 'directory_exists', 'EmailReporting' );
 
 							if ( is_writable( $t_dir ) )
 							{
-								$t_result_is_writable_color = 'positive';
+								$t_result_is_writable_color = 'green';
 								$t_result_is_writable_text = plugin_lang_get( 'directory_writable', 'EmailReporting' );
 							}
 							else
 							{
-								$t_result_is_writable_color = 'negative';
+								$t_result_is_writable_color = 'red';
 								$t_result_is_writable_text = plugin_lang_get( 'directory_unwritable', 'EmailReporting' );
 							}
 						}
 						else
 						{
-							$t_result_is_dir_color = 'negative';
+							$t_result_is_dir_color = 'red';
 							$t_result_is_dir_text = plugin_lang_get( 'directory_unavailable', 'EmailReporting' );
 							$t_result_is_writable_color = NULL;
 							$t_result_is_writable_text = NULL;
@@ -673,7 +770,7 @@ if ( !function_exists( 'test_database_utf8' ) )
 
 						echo '
 	<td class="center" width="20%">
-		<input ' . helper_get_tab_index() . ' type="text" size="30" maxlength="200" name="' . $t_input_name . '" value="' . string_attribute( $t_dir ) . '"/>
+		<input class="input-sm" ' . helper_get_tab_index() . ' type="text" size="32" maxlength="200" name="' . $t_input_name . '" value="' . string_attribute( $t_dir ) . '"/>
 	</td>
 	<td class="center" width="20%">
 		<span class="' . $t_result_is_dir_color . '">' . $t_result_is_dir_text . '</span><br /><span class="' . $t_result_is_writable_color . '">' . $t_result_is_writable_text . '</span>
@@ -690,13 +787,13 @@ if ( !function_exists( 'test_database_utf8' ) )
 
 					case 'integer':
 					case 'string':
-						echo '<td class="center" width="40%" colspan="2"><input ' . helper_get_tab_index() . ' type="text" size="50" maxlength="100" name="' . $t_input_name . '" value="' . string_attribute( $t_value ) . '"/></td>';
+						echo '<td class="center" width="40%" colspan="2"><input class="input-sm" ' . helper_get_tab_index() . ' type="text" size="64" maxlength="100" name="' . $t_input_name . '" value="' . string_attribute( $t_value ) . '"/></td>';
 
 						break;
 
 					case 'string_multiline':
 					case 'string_multiline_array':
-						echo '<td class="center" width="40%" colspan="2"><textarea ' . helper_get_tab_index() . ' cols="40" rows="6" name="' . $t_input_name . '">';
+						echo '<td class="center" width="40%" colspan="2"><textarea class="form-control" ' . helper_get_tab_index() . ' cols="64" rows="6" name="' . $t_input_name . '">';
 
 						if ( is_array( $t_value ) )
 						{
@@ -728,7 +825,7 @@ if ( !function_exists( 'test_database_utf8' ) )
 						break;
 
 					case 'string_password':
-						echo '<td class="center" width="40%" colspan="2"><input ' . helper_get_tab_index() . ' type="password" size="50" maxlength="50" name="' . $t_input_name . '" value="' . string_attribute( base64_decode( $t_value ) ) . '"/></td>';
+						echo '<td class="center" width="40%" colspan="2"><input class="input-sm" ' . helper_get_tab_index() . ' type="password" size="64" maxlength="50" name="' . $t_input_name . '" value="' . string_attribute( base64_decode( $t_value ) ) . '"/></td>';
 
 						break;
 
@@ -736,10 +833,12 @@ if ( !function_exists( 'test_database_utf8' ) )
 					case 'dropdown_any':
 					case 'dropdown_multiselect':
 					case 'dropdown_multiselect_any':
-						echo '<td class="center" width="40%" colspan="2"><select ' . helper_get_tab_index() . ' name="' . $t_input_name . ( ( in_array( $p_type, array( 'dropdown_multiselect', 'dropdown_multiselect_any' ), TRUE ) ) ? '[]" multiple size="6' : NULL ) . '">';
+						echo '<td class="center" width="40%" colspan="2">';
 
 						if ( function_exists( $t_function_name ) )
 						{
+							echo '<select class="input-sm" ' . helper_get_tab_index() . ' name="' . $t_input_name . ( ( in_array( $p_type, array( 'dropdown_multiselect', 'dropdown_multiselect_any' ), TRUE ) ) ? '[]" multiple size="6' : NULL ) . '">';
+
 							if ( in_array( $p_type, array( 'dropdown_any', 'dropdown_multiselect_any' ), TRUE ) )
 							{
 								echo '<option value="' . META_FILTER_ANY . '"';
@@ -748,13 +847,15 @@ if ( !function_exists( 'test_database_utf8' ) )
 							}
 
 							$t_function_name( $t_value, $p_function_parameter );
+	
+							echo '</select>';
 						}
 						else
 						{
-							echo '<option class="negative">' . plugin_lang_get( 'function_not_found', 'EmailReporting' ) . ': ' . $t_function_name . '</option>';
+							echo '<span class="red">' . plugin_lang_get( 'function_not_found', 'EmailReporting' ) . ': ' . $t_function_name . '</span>';
 						}
 
-						echo '</select></td>';
+						echo '</td>';
 
 						break;
 
@@ -772,7 +873,7 @@ if ( !function_exists( 'test_database_utf8' ) )
 				}
 				else
 				{
-					echo '<option class="negative">' . plugin_lang_get( 'function_not_found', 'EmailReporting' ) . ': ' . $t_function_name . '</option>';
+					echo '<tr><td colspan="3"><span class="red">' . plugin_lang_get( 'function_not_found', 'EmailReporting' ) . ': ' . $t_function_name . '</span></td></tr>';
 				}
 				break;
 
@@ -896,7 +997,7 @@ if ( !function_exists( 'test_database_utf8' ) )
 		}
 		else
 		{
-			echo '<option value="None" selected class="negative">' . plugin_lang_get( 'openssl_unavailable', 'EmailReporting' ) . '</option>';
+			echo '<option value="None" selected class="red">' . plugin_lang_get( 'openssl_unavailable', 'EmailReporting' ) . '</option>';
 		}
 	}
 
@@ -971,10 +1072,16 @@ if ( !function_exists( 'test_database_utf8' ) )
 		{
 			foreach ( $t_user_ids AS $t_single_user_id )
 			{
-				$t_user_get_accessible_projects = user_get_accessible_projects( $t_single_user_id );
-				if ( !user_exists( $t_single_user_id ) || empty( $t_user_get_accessible_projects ) )
+				$t_user_exists = user_exists( $t_single_user_id );
+
+				if ( $t_user_exists )
 				{
-					echo '<option value="' . $t_single_user_id . '" selected class="negative">' . plugin_lang_get( 'missing_user', 'EmailReporting' ) . ': ' . $t_single_user_id . '</option>';
+					$t_user_get_accessible_projects = user_get_accessible_projects( $t_single_user_id );
+				}
+
+				if ( !$t_user_exists || empty( $t_user_get_accessible_projects ) )
+				{
+					echo '<option value="' . $t_single_user_id . '" selected class="red">' . plugin_lang_get( 'missing_user', 'EmailReporting' ) . ': ' . $t_single_user_id . '</option>';
 				}
 			}
 		}
@@ -1029,18 +1136,22 @@ if ( !function_exists( 'test_database_utf8' ) )
 
 	function ERP_print_action_radio_buttons( $p_input_name, $p_sel_value, $p_variable_array, $p_actions_list )
 	{
+		echo '<table border=0 width="100%"><tr>';
+
 		foreach ( $p_actions_list AS $t_action_key => $t_actions )
 		{
 			if ( is_array( $p_variable_array ) && count( $p_variable_array ) >= $t_action_key )
 			{
 				foreach ( $t_actions AS $t_action )
 				{
-					echo '<label><input ' . helper_get_tab_index() . ' type="radio" name="' . $p_input_name . '" value="' . string_attribute( $t_action ) . '"';
+					echo '<td><label><input class="ace" ' . helper_get_tab_index() . ' type="radio" name="' . $p_input_name . '" value="' . string_attribute( $t_action ) . '"';
 					check_checked( $p_sel_value, $t_action );
-					echo '/>' . plugin_lang_get( $t_action . '_action' ) . '</label>';
+					echo '/><span class="lbl">' . plugin_lang_get( $t_action . '_action' ) . '</span></label></td>';
 				}
 			}
 		}
+
+		echo '</tr></table>';
 	}
 
 ?>

@@ -6,7 +6,6 @@ plugin_require_api( 'core/config_api.php' );
 
 $t_this_page = 'view_readme';
 ERP_page_begin( $t_this_page );
-ERP_print_menu( $t_this_page );
 
 ?>
 
