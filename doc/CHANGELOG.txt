@@ -2,8 +2,6 @@ Changelog:
 Jan 2017 - EmailReporting-0.10.0-DEV
 	- Preliminary support for MantisBT 2.1.x
 	- Drop support for MantisBT 1.2.x
-	- Removed MantisBT 1.2.x compatibility functions
-	- Increased minimum MantisBT version number
 	- Fixed issue with css path in notification emails
 	- Added support for processing signed emails (#22153)
 	- Fixed "Email address without the domain name" option for user/real names (based on work from srh-hochschule-berlin)
