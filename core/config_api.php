@@ -363,8 +363,10 @@
 			$t_description = $p_other_description;
 		}
 
-		echo plugin_lang_get( $t_description ) . "\n";
-		echo '<a href="http://www.mantisbt.org/wiki/doku.php/mantisbt:emailreporting#' . $t_a_name . '" target="_blank">[?]</a>';
+		echo plugin_lang_get( $t_description );
+?>
+<a href="http://www.mantisbt.org/wiki/doku.php/mantisbt:emailreporting#<?php echo $t_a_name ?>" target="_blank"> [?]</a>
+<?php
 	}
 
 	# This overwrites a specific configuration option for the current request
@@ -618,7 +620,7 @@ if ( !function_exists( 'test_database_utf8' ) )
 	function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, $p_function_name = NULL, $p_function_parameter = NULL )
 	{
 		// $p_def_value has special purposes when it contains certain values. See below
-		if ( $p_def_value === NULL && !is_blank( $p_name ) && !in_array( $p_type, array( 'empty', 'header', 'submit' ), TRUE ) )
+		if ( $p_def_value === NULL && !is_blank( $p_name ) && !in_array( $p_type, array( 'submit' ), TRUE ) )
 		{
 			$t_value = plugin_config_get( $p_name );
 		}
@@ -664,28 +666,18 @@ if ( !function_exists( 'test_database_utf8' ) )
 
 		switch ( $p_type )
 		{
-			case 'empty':
-			case 'header':
-				echo '
-<tr>
-	<td class="form-title" ' . ( ( is_blank( $t_value ) ) ? 'width="100%" colspan="3"' : 'width="60%"' ) . '>
-		' . ( ( !is_blank( $p_name ) ) ? ( ( $p_type === 'header' ) ? plugin_lang_get( 'plugin_title' ) . ': ' : NULL ) . plugin_lang_get( $p_name ) : '&nbsp;' ) . '
-	</td>';
-				if ( !is_blank( $t_value ) )
-				{
-					echo '<td class="right" width="40%" colspan="2"><a href="' . plugin_page( $t_value ) . '">' . plugin_lang_get( $t_value ) . '</a></td>';
-				}
-				echo '</tr>';
-
-				break;
-
 			case 'hidden':
-				echo '<input type="hidden" name="' . $t_input_name . '" value="' . string_attribute( $t_value ) . '"/>';
+?>
+<input type="hidden" name="<?php echo $t_input_name ?>" value="<?php echo string_attribute( $t_value ) ?>"/>
+<?php
 
 				break;
 
 			case 'radio_buttons':
-				echo '<tr ' . helper_alternate_class( ) . '><td class="center" width="100%" colspan="3">';
+?>
+<tr <?php echo helper_alternate_class() ?>>
+	<td class="center" colspan="3">
+<?php
 
 				if ( function_exists( $t_function_name ) )
 				{
@@ -693,10 +685,15 @@ if ( !function_exists( 'test_database_utf8' ) )
 				}
 				else
 				{
-					echo '<span class="red">' . plugin_lang_get( 'function_not_found', 'EmailReporting' ) . ': ' . $t_function_name . '</span>';
+?>
+		<span class="red negative"><?php echo plugin_lang_get( 'function_not_found', 'EmailReporting' ) . ': ' . $t_function_name ?></span>
+<?php
 				}
 
-				echo '</td></tr>';
+?>
+	</td>
+</tr>
+<?php
 
 				break;
 
@@ -721,24 +718,38 @@ if ( !function_exists( 'test_database_utf8' ) )
 			case 'dropdown_any':
 			case 'dropdown_multiselect':
 			case 'dropdown_multiselect_any':
-				echo '<tr ' . helper_alternate_class( ) . '><td class="category width-40">';
+?>
+<tr <?php echo helper_alternate_class() ?>>
+	<td class="category width-50">
+<?php
 				ERP_print_documentation_link( $p_name );
-				echo '</td>';
+?>
+	</td>
+<?php
 
 				switch ( $p_type )
 				{
 					case 'boolean':
-						echo '<td class="center" width="20%"><label><input class="ace" ' . helper_get_tab_index() . ' type="radio" name="' . $t_input_name . '" value="' . ON . '" ';
+?>
+<td class="center" width="25%">
+	<label>
+		<input class="ace" <?php echo helper_get_tab_index() ?> type="radio" name="<?php echo $t_input_name ?>" value="<?php echo ON ?>" <?php
 						check_checked( (int) $t_value, ON );
-						echo '/><span class="lbl">' . lang_get( 'yes' ) . '</span></label></td>';
-
-						echo '<td class="center" width="20%"><label><input class="ace" ' . helper_get_tab_index() . ' type="radio" name="' . $t_input_name . '" value="' . OFF . '" ';
+?>/><span class="lbl"><?php echo lang_get( 'yes' ) ?></span>
+	</label>
+</td>
+<td class="center" width="25%">
+	<label>
+		<input class="ace" <?php echo helper_get_tab_index() ?> type="radio" name="<?php echo $t_input_name ?>" value="<?php echo OFF ?>" <?php
 						// NULL can also be interpreted as 0. But in this case NULL means no option chosen
 						if ( $t_value !== NULL )
 						{
 							check_checked( (int) $t_value, OFF );
 						}
-						echo '/><span class="lbl">' . lang_get( 'no' ) . '</span></label></td>';
+?>/><span class="lbl"><?php echo lang_get( 'no' ) ?></span>
+	</label>
+</td>
+<?php
 
 						break;
 
@@ -746,54 +757,66 @@ if ( !function_exists( 'test_database_utf8' ) )
 						$t_dir = $t_value;
 						if ( is_dir( $t_dir ) )
 						{
-							$t_result_is_dir_color = 'green';
+							$t_result_is_dir_color = 'green postive';
 							$t_result_is_dir_text = plugin_lang_get( 'directory_exists', 'EmailReporting' );
 
 							if ( is_writable( $t_dir ) )
 							{
-								$t_result_is_writable_color = 'green';
+								$t_result_is_writable_color = 'green positive';
 								$t_result_is_writable_text = plugin_lang_get( 'directory_writable', 'EmailReporting' );
 							}
 							else
 							{
-								$t_result_is_writable_color = 'red';
+								$t_result_is_writable_color = 'red negative';
 								$t_result_is_writable_text = plugin_lang_get( 'directory_unwritable', 'EmailReporting' );
 							}
 						}
 						else
 						{
-							$t_result_is_dir_color = 'red';
+							$t_result_is_dir_color = 'red negative';
 							$t_result_is_dir_text = plugin_lang_get( 'directory_unavailable', 'EmailReporting' );
 							$t_result_is_writable_color = NULL;
 							$t_result_is_writable_text = NULL;
 						}
-
-						echo '
-	<td class="center" width="20%">
-		<input class="input-sm" ' . helper_get_tab_index() . ' type="text" size="32" maxlength="200" name="' . $t_input_name . '" value="' . string_attribute( $t_dir ) . '"/>
-	</td>
-	<td class="center" width="20%">
-		<span class="' . $t_result_is_dir_color . '">' . $t_result_is_dir_text . '</span><br /><span class="' . $t_result_is_writable_color . '">' . $t_result_is_writable_text . '</span>
-	</td>';
+?>
+<td width="25%">
+	<input class="input-sm" <?php echo helper_get_tab_index() ?> type="text" size="32" maxlength="200" name="<?php echo $t_input_name ?>" value="<?php echo string_attribute( $t_dir ) ?>"/>
+</td>
+<td width="25%">
+	<span class="<?php echo $t_result_is_dir_color ?>"><?php echo $t_result_is_dir_text ?></span><br />
+	<span class="<?php echo $t_result_is_writable_color ?>"><?php echo $t_result_is_writable_text ?></span>
+</td>
+<?php
 
 						break;
 
 					case 'disabled':
-						echo '<td class="center" width="40%" colspan="2">' . plugin_lang_get( 'disabled' );
+?>
+<td colspan="2">
+<?php
+						echo plugin_lang_get( 'disabled' );
 						ERP_output_config_option( $t_input_name, 'hidden', $t_value );
-						echo '</td>';
+?>
+</td>
+<?php
 
 						break;
 
 					case 'integer':
 					case 'string':
-						echo '<td class="center" width="40%" colspan="2"><input class="input-sm" ' . helper_get_tab_index() . ' type="text" size="64" maxlength="100" name="' . $t_input_name . '" value="' . string_attribute( $t_value ) . '"/></td>';
+?>
+<td colspan="2">
+	<input class="input-sm" <?php echo helper_get_tab_index() ?> type="text" size="64" maxlength="100" name="<?php echo $t_input_name ?>" value="<?php echo string_attribute( $t_value ) ?>"/>
+</td>
+<?php
 
 						break;
 
 					case 'string_multiline':
 					case 'string_multiline_array':
-						echo '<td class="center" width="40%" colspan="2"><textarea class="form-control" ' . helper_get_tab_index() . ' cols="64" rows="6" name="' . $t_input_name . '">';
+?>
+<td colspan="2">
+	<textarea class="form-control" <?php echo helper_get_tab_index() ?> cols="64" rows="6" name="<?php echo $t_input_name ?>"><?php
 
 						if ( is_array( $t_value ) )
 						{
@@ -820,12 +843,18 @@ if ( !function_exists( 'test_database_utf8' ) )
 							echo string_textarea( $t_value );
 						}
 
-						echo '</textarea></td>';
+?></textarea>
+</td>
+<?php
 
 						break;
 
 					case 'string_password':
-						echo '<td class="center" width="40%" colspan="2"><input class="input-sm" ' . helper_get_tab_index() . ' type="password" size="64" maxlength="50" name="' . $t_input_name . '" value="' . string_attribute( base64_decode( $t_value ) ) . '"/></td>';
+?>
+<td colspan="2">
+	<input class="input-sm" <?php echo helper_get_tab_index() ?> type="password" size="64" maxlength="50" name="<?php echo $t_input_name ?>" value="<?php echo string_attribute( base64_decode( $t_value ) ) ?>"/>
+</td>
+<?php
 
 						break;
 
@@ -833,36 +862,55 @@ if ( !function_exists( 'test_database_utf8' ) )
 					case 'dropdown_any':
 					case 'dropdown_multiselect':
 					case 'dropdown_multiselect_any':
-						echo '<td class="center" width="40%" colspan="2">';
+?>
+<td colspan="2">
+<?php
 
 						if ( function_exists( $t_function_name ) )
 						{
-							echo '<select class="input-sm" ' . helper_get_tab_index() . ' name="' . $t_input_name . ( ( in_array( $p_type, array( 'dropdown_multiselect', 'dropdown_multiselect_any' ), TRUE ) ) ? '[]" multiple size="6' : NULL ) . '">';
+?>
+	<select class="input-sm" <?php echo helper_get_tab_index() ?> name="<?php
+							echo $t_input_name . ( ( in_array( $p_type, array( 'dropdown_multiselect', 'dropdown_multiselect_any' ), TRUE ) ) ? '[]" multiple size="6' : NULL );
+	?>">
+<?php
 
 							if ( in_array( $p_type, array( 'dropdown_any', 'dropdown_multiselect_any' ), TRUE ) )
 							{
-								echo '<option value="' . META_FILTER_ANY . '"';
-								check_selected( (array) $t_value, META_FILTER_ANY );
-								echo '>[' . lang_get( 'any' ) . ']</option>';
+?>
+		<option value="<?php echo META_FILTER_ANY ?>" <?php check_selected( (array) $t_value, META_FILTER_ANY ) ?>>[<?php echo lang_get( 'any' ) ?>]</option>
+<?php
 							}
 
 							$t_function_name( $t_value, $p_function_parameter );
 	
-							echo '</select>';
+?>
+	</select>
+<?php
 						}
 						else
 						{
-							echo '<span class="red">' . plugin_lang_get( 'function_not_found', 'EmailReporting' ) . ': ' . $t_function_name . '</span>';
+?>
+	<span class="red negative"><?php echo plugin_lang_get( 'function_not_found', 'EmailReporting' ) . ': ' . $t_function_name ?></span>
+<?php
 						}
 
-						echo '</td>';
+?>
+</td>
+<?php
 
 						break;
 
-					default: echo '<tr><td colspan="3">' . plugin_lang_get( 'unknown_setting', 'EmailReporting' ) . $p_name . ' -> level 2</td></tr>';
+					default:
+?>
+<td colspan="2">
+	<span class="red negative"><?php echo plugin_lang_get( 'unknown_setting', 'EmailReporting' ) . $p_name ?> -> level 2</span>
+</td>
+<?php
 				}
 
-				echo '</tr>';
+?>
+</tr>
+<?php
 
 				break;
 
@@ -873,11 +921,24 @@ if ( !function_exists( 'test_database_utf8' ) )
 				}
 				else
 				{
-					echo '<tr><td colspan="3"><span class="red">' . plugin_lang_get( 'function_not_found', 'EmailReporting' ) . ': ' . $t_function_name . '</span></td></tr>';
+?>
+<tr>
+	<td colspan="3">
+		<span class="red negative"><?php echo plugin_lang_get( 'function_not_found', 'EmailReporting' ) . ': ' . $t_function_name ?></span>
+	</td>
+</tr>
+<?php
 				}
 				break;
 
-			default: echo '<tr><td colspan="3">' . plugin_lang_get( 'unknown_setting', 'EmailReporting' ) . $p_name . ' -> level 1</td></tr>';
+			default:
+?>
+<tr>
+	<td colspan="3">
+		<span class="red negative"><?php echo plugin_lang_get( 'unknown_setting', 'EmailReporting' ) . $p_name ?> -> level 1</span>
+	</td>
+</tr>
+<?php
 		}
 	}
 
@@ -891,13 +952,21 @@ if ( !function_exists( 'test_database_utf8' ) )
 		{
 			$t_def = custom_field_get_definition( $t_field_id );
 
-			echo '<tr ' . helper_alternate_class( ) . '><td class="category">';
+?>
+<tr <?php echo helper_alternate_class() ?>>
+	<td class="category">
+<?php
 			ERP_print_documentation_link( $p_name );
-			echo ': ' . string_display( lang_get_defaulted( $t_def[ 'name' ] ) ) . '</td>';
-
-			echo '<td class="center" colspan="2">';
+			echo ': ' . string_display( lang_get_defaulted( $t_def[ 'name' ] ) );
+?>
+	</td>
+	<td colspan="2">
+<?php
 			ERP_print_custom_field_input( ( ( is_array( $p_sel_value ) && isset( $p_sel_value[ $t_field_id ] ) ) ? $p_sel_value[ $t_field_id ] : NULL ), $t_def );
-			echo '</td></tr>';
+?>
+	</td>
+</tr>
+<?php
 		}
 	}
 
@@ -997,7 +1066,7 @@ if ( !function_exists( 'test_database_utf8' ) )
 		}
 		else
 		{
-			echo '<option value="None" selected class="red">' . plugin_lang_get( 'openssl_unavailable', 'EmailReporting' ) . '</option>';
+			echo '<option value="None" selected class="red negative">' . plugin_lang_get( 'openssl_unavailable', 'EmailReporting' ) . '</option>';
 		}
 	}
 
@@ -1081,7 +1150,7 @@ if ( !function_exists( 'test_database_utf8' ) )
 
 				if ( !$t_user_exists || empty( $t_user_get_accessible_projects ) )
 				{
-					echo '<option value="' . $t_single_user_id . '" selected class="red">' . plugin_lang_get( 'missing_user', 'EmailReporting' ) . ': ' . $t_single_user_id . '</option>';
+					echo '<option value="' . $t_single_user_id . '" selected class="red negative">' . plugin_lang_get( 'missing_user', 'EmailReporting' ) . ': ' . $t_single_user_id . '</option>';
 				}
 			}
 		}

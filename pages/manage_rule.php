@@ -11,8 +11,17 @@ ERP_page_begin( $t_this_page );
 
 ERP_output_note_open();
 echo '<p>' . plugin_lang_get( 'rule_wildcards' ) . '<br />' . nl2br( plugin_lang_get( 'rule_wildcards_help' ) ) . '</p>';
+ERP_output_note_close();
+
+ERP_output_note_open();
 echo '<p>' . plugin_lang_get( 'rule_conditions' ) . '<br />' . nl2br( plugin_lang_get( 'rule_conditions_help' ) ) . '</p>';
+ERP_output_note_close();
+
+ERP_output_note_open();
 echo '<p>' . plugin_lang_get( 'rule_actions' ) . '<br />' . nl2br( plugin_lang_get( 'rule_actions_help' ) ) . '</p>';
+ERP_output_note_close();
+
+ERP_output_note_open();
 echo '<p>' . plugin_lang_get( 'rule_exceptions' ) . '<br />' . nl2br( plugin_lang_get( 'rule_exceptions_help' ) ) . '</p>';
 ERP_output_note_close();
 
