@@ -167,6 +167,8 @@ $s_plugin_EmailReporting_cond_issue_priority = 'Priorität';
 $s_plugin_EmailReporting_cond_issue_summary = 'Zusammenfassung';
 $s_plugin_EmailReporting_cond_issue_description = 'Beschreibung';
 
+$s_plugin_EmailReporting_act_issue_severity = 'Update severity'; /* @TODO Needs translation */
+$s_plugin_EmailReporting_act_issue_status = 'Update status'; /* @TODO Needs translation */
 $s_plugin_EmailReporting_act_issue_category = 'Kategorie aktualsieren';
 $s_plugin_EmailReporting_act_issue_tag = 'Tag hinzufügen';
 $s_plugin_EmailReporting_act_issue_custom_field = 'Benutzerdefiniertes Feld aktualisieren';
