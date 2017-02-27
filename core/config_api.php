@@ -128,6 +128,7 @@
 	function ERP_page_end( $p_page = '' )
 	{
 ?>
+<div class="space-10"></div>
 </div>
 <?php
 		// pre-MantisBT 2.0.x
@@ -235,6 +236,7 @@
 		if( access_has_global_level( config_get( 'manage_plugin_threshold' ) ) )
 		{
 ?>
+<div class="col-md-12 col-xs-12">
 <div class="space-10"></div>
 <div class="center">
 <div class="btn-toolbar inline">
@@ -269,6 +271,7 @@
 				}
 			}
 ?>
+</div>
 </div>
 </div>
 </div>
