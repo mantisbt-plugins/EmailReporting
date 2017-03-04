@@ -1061,7 +1061,7 @@ class ERP_mailbox_api
 		$this->show_memory_usage( 'Start processing attachments' );
 
 		# Add files
-		if ( $this->_allow_file_upload )
+		if ( $this->_allow_file_upload && bug_exists( $t_bug_id ) )
 		{
 			if ( count( $p_email[ 'X-Mantis-Parts' ] ) > 0 )
 			{
@@ -1152,6 +1152,10 @@ class ERP_mailbox_api
 			{
 				return( TRUE );
 			}
+		}
+		elseif ( !bug_exists( $p_bug_id ) )
+		{
+			return( $t_part_name . ' = given bug_id does not exist' . "\n" );
 		}
 		else
 		{
