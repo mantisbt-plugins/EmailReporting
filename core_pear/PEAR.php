@@ -75,7 +75,7 @@ $GLOBALS['_PEAR_error_handler_stack']    = array();
  * @author     Greg Beaver <cellog@php.net>
  * @copyright  1997-2006 The PHP Group
  * @license    http://opensource.org/licenses/bsd-license.php New BSD License
- * @version    Release: 1.10.1
+ * @version    Release: 1.10.3
  * @link       http://pear.php.net/package/PEAR
  * @see        PEAR_Error
  * @since      Class available since PHP 4.0.2
@@ -450,7 +450,7 @@ class PEAR
     }
 
     /**
-     * This method deletes all occurences of the specified element from
+     * This method deletes all occurrences of the specified element from
      * the expected error codes stack.
      *
      * @param  mixed $error_code error code that should be deleted
@@ -823,7 +823,7 @@ function _PEAR_call_destructors()
  * @author     Gregory Beaver <cellog@php.net>
  * @copyright  1997-2006 The PHP Group
  * @license    http://opensource.org/licenses/bsd-license.php New BSD License
- * @version    Release: 1.10.1
+ * @version    Release: 1.10.3
  * @link       http://pear.php.net/manual/en/core.pear.pear-error.php
  * @see        PEAR::raiseError(), PEAR::throwError()
  * @since      Class available since PHP 4.0.2
@@ -914,7 +914,8 @@ class PEAR_Error
             } else {
                 $format = $options;
             }
-            die(sprintf($format, $msg));
+            printf($format, $msg);
+            exit($code);
         }
 
         if ($this->mode & PEAR_ERROR_CALLBACK && is_callable($this->callback)) {

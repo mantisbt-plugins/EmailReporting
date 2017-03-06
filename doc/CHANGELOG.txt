@@ -2,6 +2,7 @@ Changelog:
 Jan 2017 - EmailReporting-0.10.0-DEV
 	- Officially compatible with MantisBT 2.x.x
 	- Drop support for MantisBT 1.2.x
+	- Updated PEAR packages: PEAR
 	- Fixed issue with css path in notification emails
 	- Added support for processing signed emails (#22153)
 	- Fixed "Email address without the domain name" option for user/real names (based on work from srh-hochschule-berlin)
