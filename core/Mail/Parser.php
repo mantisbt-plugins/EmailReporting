@@ -61,18 +61,18 @@ class ERP_Mail_Parser
 	private $_content;
 
 	private $_from;
+	private $_to;
+	private $_cc;
 	private $_subject;
 	private $_def_charset = 'auto';
 	private $_fallback_charset = 'ASCII';
 	private $_priority;
 	private $_messageid;
-	private $_references;
+	private $_references = array();
 	private $_inreplyto;
 	private $_body;
 	private $_parts = array();
 	private $_ctype = array();
-	private $_cc = array();
-	private $_to = array();
 
 	private $_mb_list_encodings = array();
 
@@ -396,6 +396,16 @@ class ERP_Mail_Parser
 		$this->_from = $this->process_header_encoding( $from );
 	}
 
+	private function setTo( $to )
+	{
+		$this->_to = $this->process_header_encoding( $to );
+	}
+
+	private function setCc( $cc )
+	{
+		$this->_cc = $this->process_header_encoding( $cc );
+	}
+
 	private function setSubject( $subject )
 	{
 		$this->_subject = $this->process_header_encoding( $subject );
@@ -422,24 +432,6 @@ class ERP_Mail_Parser
 	private function setInReplyTo( $p_inreplyto )
 	{
 		$this->_inreplyto = trim( $p_inreplyto );
-	}
-
-	private function setTo( $p_to )
-	{
-		$regex = '([\\w-+]+(?:\\.[\\w-+]+)*@(?:[\\w-]+\\.)+[a-zA-Z]{2,7})';
-		if( preg_match_all ( "/" . $regex . "/is", $p_to, $matches ) )
-		{
-			$this->_to = $matches[1];
-		}
-	}
-
-	private function setCc( $p_cc )
-	{
-		$regex = '([\\w-+]+(?:\\.[\\w-+]+)*@(?:[\\w-]+\\.)+[a-zA-Z]{2,7})';
-		if( preg_match_all ( "/" . $regex . "/is", $p_cc, $matches ) )
-		{
-			$this->_cc = $matches[1];
-		}
 	}
 
 	private function setPriority( $priority )

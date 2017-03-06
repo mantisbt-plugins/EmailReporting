@@ -42,7 +42,8 @@ class ERP_mailbox_api
 	private $_validated_email_list = array();
 
 	// Unable to use the MantisBT email_regex_simple because it doesn't capture the local and domain seperately anymore since MantisBT 1.3.x
-	private $_email_regex_simple="/([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]{1,64})@([a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)/";
+	// Removed the local part limit because we might actually want the longer email addresses and we won't be using it to scan large texts anyway
+	private $_email_regex_simple = "(?P<local>[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+)@(?P<domain>[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)";
 
 	private $_mail_add_bug_reports;
 	private $_mail_add_bugnotes;
@@ -681,13 +682,13 @@ class ERP_mailbox_api
 
 		$t_mp->parse();
 
-		$t_email[ 'From_parsed' ] = $this->parse_address( trim( $t_mp->from() ) );
+		$t_email[ 'From_parsed' ] = $this->parse_from_field( trim( $t_mp->from() ) );
 		$t_email[ 'Reporter_id' ] = $this->get_user( $t_email[ 'From_parsed' ] );
 
 		$t_email[ 'Subject' ] = trim( $t_mp->subject() );
 
-		$t_email[ 'To' ] = $t_mp->to();
-		$t_email[ 'Cc' ] = $t_mp->cc();
+		$t_email[ 'To' ] = $this->get_emailaddr_from_string( $t_mp->to() );
+		$t_email[ 'Cc' ] = $this->get_emailaddr_from_string( $t_mp->cc() );
 
 		$t_email[ 'X-Mantis-Body' ] = trim( $t_mp->body() );
 
@@ -1245,14 +1246,14 @@ class ERP_mailbox_api
 	}
 
 	# --------------------
-	# return the mailadress from the mail's 'From'
-	private function parse_address( $p_from_address )
+	# Return the emailaddress from the mail's 'From' field
+	private function parse_from_field( $p_from_address )
 	{
-		if ( preg_match( "/(?P<name>.*)<(?P<email>\S+@\S+)>$/u", $p_from_address, $matches ) )
+		if ( preg_match( '/^(?:(?P<name>.*)<|)(?P<email>' . $this->_email_regex_simple . ')(?:>|)$/u', trim( $p_from_address ), $match ) )
 		{
 			$v_from_address = array(
-				'name'	=> trim( $matches[ 'name' ], '"\' ' ),
-				'email'	=> trim( $matches[ 'email' ] ),
+				'name'	=> trim( $match[ 'name' ], '"\' ' ),
+				'email'	=> trim( $match[ 'email' ] ),
 				'From'	=> $p_from_address,
 			);
 		}
@@ -1269,6 +1270,24 @@ class ERP_mailbox_api
 	}
 
 	# --------------------
+	# Return all email addresses present in a string
+	# Generally used to parse email fields like to and cc
+	private function get_emailaddr_from_string( $p_addresses )
+	{
+		$v_addresses = array();
+
+		if ( preg_match_all( '/' . $this->_email_regex_simple . '/u', $p_addresses, $matches, PREG_SET_ORDER ) )
+		{
+			foreach( $matches AS $match )
+			{
+				$v_addresses[] = trim( $match[ 0 ] );
+			}
+		}
+
+		return( $v_addresses );
+	}
+
+	# --------------------
 	# return a valid username from an email address
 	private function prepare_username( $p_user_info )
 	{
@@ -1282,10 +1301,10 @@ class ERP_mailbox_api
 				break;
 
 			case 'email_no_domain':
-				if( preg_match( $this->_email_regex_simple, $p_user_info[ 'email' ], $t_check ) )
+				if( preg_match( '/' . $this->_email_regex_simple . '/', $p_user_info[ 'email' ], $t_check ) )
 				{
-					$t_local = $t_check[ 1 ];
-					$t_domain = $t_check[ 2 ];
+					$t_local = $t_check[ 'local' ];
+					$t_domain = $t_check[ 'domain' ];
 
 					$t_username = $t_local;
 				}
@@ -1345,10 +1364,10 @@ class ERP_mailbox_api
 				break;
 
 			case 'email_no_domain':
-				if( preg_match( $this->_email_regex_simple, $p_user_info[ 'email' ], $t_check ) )
+				if( preg_match( '/' . $this->_email_regex_simple . '/', $p_user_info[ 'email' ], $t_check ) )
 				{
-					$t_local = $t_check[ 1 ];
-					$t_domain = $t_check[ 2 ];
+					$t_local = $t_check[ 'local' ];
+					$t_domain = $t_check[ 'domain' ];
 
 					$t_realname = $t_local;
 				}
