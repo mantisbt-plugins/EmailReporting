@@ -355,7 +355,7 @@
 	# $p_other_description allows you to use another variable as the description of the link
 	function ERP_print_documentation_link( $p_a_name = '', $p_other_description = FALSE )
 	{
-		$t_a_name = preg_replace( '/[^a-z0-9_]/ui', '', $p_a_name );
+		$t_a_name = preg_replace( '/[^a-zA-Z0-9_]/u', '', $p_a_name );
 
 		if ( $p_other_description === FALSE )
 		{
@@ -367,9 +367,7 @@
 		}
 
 		echo plugin_lang_get( $t_description );
-?>
-<a href="http://www.mantisbt.org/wiki/doku.php/mantisbt:emailreporting#<?php echo $t_a_name ?>" target="_blank"> [?]</a>
-<?php
+		echo ' <a href="http://www.mantisbt.org/wiki/doku.php/mantisbt:emailreporting#' . $t_a_name . '" target="_blank">[?]</a>';
 	}
 
 	# This overwrites a specific configuration option for the current request
