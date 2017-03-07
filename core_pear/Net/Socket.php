@@ -26,7 +26,9 @@
  * @link      http://pear.php.net/packages/Net_Socket
  */
 
-require_once 'PEAR.php';
+// ERP-modification: Force load included PEAR packages
+//require_once 'PEAR.php';
+plugin_require_api( 'core_pear/PEAR.php' );
 
 define('NET_SOCKET_READ', 1);
 define('NET_SOCKET_WRITE', 2);

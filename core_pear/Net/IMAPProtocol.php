@@ -176,17 +176,15 @@ class Net_IMAPProtocol
          * Include the Auth_SASL package.  If the package is not available,
          * we disable the authentication methods that depend upon it.
          */
-        if ((@include_once 'Auth/SASL.php') == false) {
+		// ERP-modification: Force load included PEAR packages
+//        if ((@include_once 'Auth/SASL.php') == false)
+		plugin_require_api( 'core_pear/Auth/SASL.php' );
+        if (!class_exists('Auth_SASL')) {
             foreach ($this->supportedSASLAuthMethods as $SASLMethod) {
                 $pos = array_search($SASLMethod, $this->supportedAuthMethods);
                 unset($this->supportedAuthMethods[$pos]);
             }
         }
-    }
-    // BC
-    function Net_IMAPProtocol()
-    {
-        self::__construct();
     }
 
 

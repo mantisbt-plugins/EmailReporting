@@ -58,14 +58,6 @@ class Net_IMAP extends Net_IMAPProtocol
 */
         $this->_encoding = $encoding;
     }
-    // BC
-    function Net_IMAP($host = 'localhost',
-                      $port = 143, 
-                      $enableSTARTTLS = true,
-                      $encoding = 'ISO-8859-1')
-    {
-        self::__construct($host, $port, $enableSTARTTLS, $encoding);
-    }
 
 
 

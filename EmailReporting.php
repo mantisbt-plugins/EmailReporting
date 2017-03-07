@@ -255,12 +255,6 @@ class EmailReportingPlugin extends MantisPlugin
 	 */
 	function init()
 	{
-		$t_path = config_get_global( 'plugin_path' ) . plugin_get_current() . DIRECTORY_SEPARATOR . 'core_pear' . DIRECTORY_SEPARATOR;
-
-		if ( is_dir( $t_path ) )
-		{
-			set_include_path( get_include_path() . PATH_SEPARATOR . $t_path );
-		}
 	}
 
 	function events()
@@ -650,7 +644,8 @@ class EmailReportingPlugin extends MantisPlugin
 			$t_absolute_path			= config_get_global( 'absolute_path' );
 			$t_dir_script_filename		= dirname( $_SERVER['SCRIPT_FILENAME'] ) . DIRECTORY_SEPARATOR;
 
-			if ( strncasecmp( $t_path, 'http', 4 ) === 0 && $t_path !== $t_mail_mantisbt_url_fix &&
+			if ( strncasecmp( $t_path, 'http', 4 ) === 0 &&
+				$t_path !== $t_mail_mantisbt_url_fix &&
 				$t_absolute_path === $t_dir_script_filename )
 			{
 				plugin_config_set( 'mail_mantisbt_url_fix', $t_path );

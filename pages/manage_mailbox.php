@@ -55,7 +55,7 @@ if ( $f_mailbox_action === 'complete_test' )
 }
 
 // Loading this one here to throw a error if necessary and notifying the user of the issue
-include_once 'PEAR.php';
+plugin_require_api( 'core_pear/PEAR.php' );
 if ( !defined( 'PEAR_OS' ) )
 {
 	ERP_output_note_open();

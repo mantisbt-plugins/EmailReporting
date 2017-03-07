@@ -160,7 +160,9 @@ class Net_POP3
         * Include the Auth_SASL package.  If the package is not available,
         * we disable the authentication methods that depend upon it.
         */
-        @include_once 'Auth/SASL.php';
+		// ERP-modification: Force load included PEAR packages
+        //@include_once 'Auth/SASL.php';
+		plugin_require_api( 'core_pear/Auth/SASL.php' );
         if (!class_exists('Auth_SASL')) {
             if ($this->_debug){
                 echo "AUTH_SASL NOT PRESENT!\n";
@@ -173,11 +175,6 @@ class Net_POP3
                 unset($this->supportedAuthMethods[$pos]);
             }
         }
-    }
-    // BC
-    function Net_POP3()
-    {
-        self::__construct();
     }
 
 

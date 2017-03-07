@@ -43,7 +43,9 @@
 * @package Auth_SASL
 */
 
-require_once('PEAR.php');
+// ERP-modification: Force load included PEAR packages
+//require_once('PEAR.php');
+plugin_require_api( 'core_pear/PEAR.php' );
 
 class Auth_SASL
 {
@@ -113,7 +115,9 @@ class Auth_SASL
                 break;
         }
 
-        require_once($filename);
+		// ERP-modification: Force load included PEAR packages
+        //require_once($filename);
+		plugin_require_api( 'core_pear/' . $filename );
         if (isset($parameter))
             $obj = new $classname($parameter);
         else

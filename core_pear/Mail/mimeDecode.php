@@ -62,7 +62,9 @@
  *
  * This package depends on PEAR to raise errors.
  */
-require_once 'PEAR.php';
+// ERP-modification: Force load included PEAR packages
+//require_once 'PEAR.php';
+plugin_require_api( 'core_pear/PEAR.php' );
 
 
 /**

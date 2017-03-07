@@ -43,7 +43,9 @@
 * @package Auth_SASL
 */
 
-require_once('Auth/SASL/Common.php');
+// ERP-modification: Force load included PEAR packages
+//require_once('Auth/SASL/Common.php');
+plugin_require_api( 'core_pear/Auth/SASL/Common.php' );
 
 class Auth_SASL_DigestMD5 extends Auth_SASL_Common
 {
