@@ -60,7 +60,7 @@ class Auth_SASL
     *                             SCRAM-* (any mechanism of the SCRAM family)
     *                     Types are not case sensitive
     */
-    function &factory($type)
+    public static function factory($type)
     {
         switch (strtolower($type)) {
             case 'anonymous':
