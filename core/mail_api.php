@@ -855,6 +855,7 @@ class ERP_mailbox_api
 		{
 			// @TODO@ Disabled for now until we find a good solution on how to handle the reporters possible lack of access permissions
 //			access_ensure_bug_level( config_get( 'add_bugnote_threshold' ), $t_bug_id );
+//			access_can_reopen_bug
 
 			$t_description = $p_email[ 'X-Mantis-Body' ];
 
