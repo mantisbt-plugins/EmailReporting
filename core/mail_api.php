@@ -140,6 +140,14 @@ class ERP_mailbox_api
 		$this->_mp_options[ 'show_mem_usage' ]	= $this->_mail_debug_show_memory_usage;
 		$this->_mp_options[ 'parse_html' ]		= plugin_config_get( 'mail_parse_html' );
 
+		$this->_mp_options[ 'parse2markdown' ]	= OFF;
+		if ( plugin_is_loaded( 'MantisCoreFormatting' ) )
+		{
+			plugin_push_current( 'MantisCoreFormatting' );
+			$this->_mp_options[ 'parse2markdown' ] = plugin_config_get( 'process_markdown' );
+			plugin_pop_current();
+		}
+
 		$this->_allow_file_upload				= config_get( 'allow_file_upload' );
 		$this->_file_upload_method				= config_get( 'file_upload_method' );
 		$this->_email_separator1				= config_get( 'email_separator1' );

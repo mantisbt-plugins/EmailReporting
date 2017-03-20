@@ -3,10 +3,14 @@
 //require_once( 'Mail/mimeDecode.php' );
 plugin_require_api( 'core_pear/Mail/mimeDecode.php' );
 plugin_require_api( 'core/Mail/simple_html_dom.php');
+plugin_require_api( 'core/Mail/Markdownify/Converter.php');
+plugin_require_api( 'core/Mail/Markdownify/ConverterExtra.php');
+plugin_require_api( 'core/Mail/Markdownify/Parser.php');
 
 class ERP_Mail_Parser
 {
 	private $_parse_html = FALSE;
+	private $_parse2markdown = FALSE;
 	private $_encoding = 'UTF-8';
 	private $_add_attachments = TRUE;
 	private $_debug = FALSE;
@@ -56,6 +60,10 @@ class ERP_Mail_Parser
 	public function __construct( $options, $mailbox_starttime = NULL )
 	{
 		$this->_parse_html = $options[ 'parse_html' ];
+		if ( $this->_parse_html )
+		{
+			$this->_parse2markdown = $options[ 'parse2markdown' ];
+		}
 		$this->_add_attachments = $options[ 'add_attachments' ];
 		$this->_debug = $options[ 'debug' ];
 		$this->_show_mem_usage = $options[ 'show_mem_usage' ];
@@ -419,10 +427,19 @@ class ERP_Mail_Parser
 		}
 		elseif ( $this->_parse_html && 'text' === $this->_ctype['primary'] && 'html' === $this->_ctype['secondary'] )
 		{
-			$htmlToText = str_get_html( $body, true, true, $this->_encoding, false ); 
+			if ( $this->_parse2markdown )
+			{
+				$html2markdown = new Markdownify\ConverterExtra();
+				$html2markdown->setKeepHTML( false );
+				$this->_body = $html2markdown->parseString( $body );
+			}
+			else
+			{
+				$htmlToText = str_get_html( $body, true, true, $this->_encoding, false ); 
 
-			// extract text from HTML
-			$this->_body = $htmlToText->plaintext;
+				// extract text from HTML
+				$this->_body = $htmlToText->plaintext;
+			}
 		}
 		else
 		{
@@ -452,7 +469,7 @@ class ERP_Mail_Parser
 		{
 			$t_stop_part = FALSE;
 
-			// Let's select the plaintext body if we can find it
+			// We prefer the plaintext body if markdown is disabled. We prefer the html body if markdown is enabled
 			// It must only have 2 parts. Most likely one is text/html and one is text/plain
 			if (
 				count( $parts ) === 2 && !isset( $parts[ $i ]->parts ) && !isset( $parts[ $i+1 ]->parts ) &&
@@ -461,7 +478,8 @@ class ERP_Mail_Parser
 				strtolower( $parts[ $i ]->ctype_secondary ) !== strtolower( $parts[ $i+1 ]->ctype_secondary )
 			)
 			{
-				if ( strtolower( $parts[ $i ]->ctype_secondary ) !== 'plain' )
+				if ( ( strtolower( $parts[ $i ]->ctype_secondary ) === 'plain' && $this->_parse2markdown ) ||
+					( strtolower( $parts[ $i ]->ctype_secondary ) === 'html' && !$this->_parse2markdown ) )
 				{
 					$i++;
 				}
