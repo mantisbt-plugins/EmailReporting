@@ -431,7 +431,7 @@ class ERP_Mail_Parser
 			{
 				$html2markdown = new Markdownify\ConverterExtra();
 				$html2markdown->setKeepHTML( false );
-				$this->_body = $html2markdown->parseString( $body );
+				$this->_body = strip_tags( $html2markdown->parseString( $body ) );
 			}
 			else
 			{
