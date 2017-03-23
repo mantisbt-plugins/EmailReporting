@@ -1,0 +1,176 @@
+<?php
+$s_plugin_EmailReporting_plugin_title = 'Reportes por Email';
+$s_plugin_EmailReporting_plugin_description = 'Ofrece la funcionalidad de crear notas y realizar solicitudes por Email';
+$s_plugin_EmailReporting_plugin_author = 'Indy y varias personas despues de él.';
+
+$s_plugin_EmailReporting_manage = 'Administrar';
+$s_plugin_EmailReporting_manage_config = 'Administrar Opciones de Configuración';
+$s_plugin_EmailReporting_manage_mailbox = 'Administrar Buzones';
+$s_plugin_EmailReporting_manage_rule = 'Administrar Reglas';
+
+$s_plugin_EmailReporting_jobsetup = 'Para recolectar los emails de los buzones, necesitas agregar una tarea programada que ejecute el script. Puedes ejecutar el script desde 2 sitios pero solo uno trabajaria desde una tarea programada. Ambos realizan la misma tarea. Vé la documentación para ejemplos de como se pueden programar.';
+$s_plugin_EmailReporting_job_users = '<span class="negative">Advertencia</span>: It seems that the scheduled job is not run with the same user account as the webserver / PHP process. This could cause problems with attachments.<br />The SAPI for the scheduled job is most likely "cli".<br />The webserver runs under the following user account: ';
+
+$s_plugin_EmailReporting_mailbox_settings = 'Configuración de Buzón';
+$s_plugin_EmailReporting_mailbox_settings_imap = 'Configuración del Buzón IMAP.';
+$s_plugin_EmailReporting_mailbox_settings_issue = 'Configuración de fallas de buzón';
+$s_plugin_EmailReporting_problems = 'Para reiniciar una configuración, por favor borre la configuración desde la página "<a href="adm_config_report.php">Reporte de Configuración</a>".';
+
+$s_plugin_EmailReporting_rule_settings = 'Configuración de Reglas';
+$s_plugin_EmailReporting_rule_conditions = 'Condiciones';
+$s_plugin_EmailReporting_rule_actions = 'Acciones';
+$s_plugin_EmailReporting_rule_exceptions = 'Excepciones';
+
+$s_plugin_EmailReporting_attachment_feature_options = 'Configuración de Adjuntos';
+$s_plugin_EmailReporting_debug_options = 'Configuración de Depuración';
+$s_plugin_EmailReporting_default_texts_options = 'Configuración de textos por defecto';
+$s_plugin_EmailReporting_feature_options = 'Configuración de Caracteristicas';
+$s_plugin_EmailReporting_priority_feature_options = 'Configuración de caracteristica de prioridad';
+$s_plugin_EmailReporting_remove_reply_options = 'Configuración de respuestas';
+$s_plugin_EmailReporting_reporter_options = 'Configuración de reporte de solicitud';
+$s_plugin_EmailReporting_runtime_options = 'Configuración de ambiente de ejecución';
+$s_plugin_EmailReporting_security_options = 'Configuración de seguridad';
+$s_plugin_EmailReporting_strip_signature_feature_options = 'Configuración de borrado de firma (Experimental)';
+
+$s_plugin_EmailReporting_copy_of = 'Copiar de';
+$s_plugin_EmailReporting_directory_exists = 'Directorio encontrado';
+$s_plugin_EmailReporting_directory_unavailable = 'Advertencia: Directorio no encontrado';
+$s_plugin_EmailReporting_directory_writable = 'Directorio modificable';
+$s_plugin_EmailReporting_directory_unwritable = 'Advertencia: Directorio no modificable';
+
+$s_plugin_EmailReporting_mail_add_bug_reports = 'Crear nuevas solicitudes';
+$s_plugin_EmailReporting_mail_add_bugnotes = 'Agregar Notas';
+$s_plugin_EmailReporting_mail_add_complete_email = 'Agregar el correo como adjunto';
+$s_plugin_EmailReporting_mail_add_users_from_cc_to = 'Agregar usuarios asociados como Cc a la solicitud como monitores';
+$s_plugin_EmailReporting_mail_auto_signup = 'Crear nuevos usuarios automaticamente (Posible riesgo de seguridad!!)';
+$s_plugin_EmailReporting_mail_block_attachments_md5 = 'Bloquear adjunto que coincidan con estos hashes MD5';
+$s_plugin_EmailReporting_mail_block_attachments_logging = 'Registrar adjuntos bloqueados en la lista de  "Rejected files"';
+$s_plugin_EmailReporting_mail_bug_priority = 'Clasificar prioridades de la solicitud';
+$s_plugin_EmailReporting_mail_debug = 'Modo depuración';
+$s_plugin_EmailReporting_mail_debug_directory = 'Guardar el contenido del email en este directorio si el modo depuración esta activo';
+$s_plugin_EmailReporting_mail_debug_show_memory_usage = 'Mostrar uso de memoria en diferentes estados del proceso de email';
+$s_plugin_EmailReporting_mail_delete = 'Borrar correos procesados del buzón';
+$s_plugin_EmailReporting_mail_disposable_email_checker = 'Verificador de dirección de correo electrónico desechable de MantisBT';
+$s_plugin_EmailReporting_mail_email_receive_own = 'Permitir a los usuarios recibir notificaciones de sus propias acciones (No Aplica si email_receive_own = ON)';
+$s_plugin_EmailReporting_mail_fallback_mail_reporter = 'Habilitar usuario predeterminado';
+$s_plugin_EmailReporting_mail_max_email_body = 'Tamaño maximo permito de un correo para agregar una nota o descripción a la solicitud';
+$s_plugin_EmailReporting_mail_max_email_body_text = 'Usar este texto si la descripción o nota fue eliminada o truncada';
+$s_plugin_EmailReporting_mail_max_email_body_add_attach = 'Agregar la descripción completa o nota como adjunto en caso que este sea truncado';
+$s_plugin_EmailReporting_mail_nodescription = 'Usar este texto si no se encuentra descrición en el mensaje';
+$s_plugin_EmailReporting_mail_nosubject = 'Usar este texto si no se encontro asunto en el mensaje';
+$s_plugin_EmailReporting_mail_parse_html = 'Analizar los correos  HTML';
+$s_plugin_EmailReporting_mail_preferred_username = 'Nombre de usuario preferido para creación de nuevos usuarios';
+$s_plugin_EmailReporting_mail_preferred_realname = 'Nombre real preferido para la creación de nuevos usuarios';
+$s_plugin_EmailReporting_mail_remove_mantis_email = 'Eliminar MantisBT notification emails de las respuestas';
+$s_plugin_EmailReporting_mail_remove_replies = 'Eliminar todas las respuestas de las notas';
+$s_plugin_EmailReporting_mail_remove_replies_after = 'Usar este texto para identificar el inicio de una respuesta';
+$s_plugin_EmailReporting_mail_removed_reply_text = 'Usar este texto si las notas han sido eliminadas del email';
+$s_plugin_EmailReporting_mail_reporter_id = 'Usuario predeterminado para las solicitudes creadas por email';
+$s_plugin_EmailReporting_mail_rule_system = 'Reglas de sistema';
+$s_plugin_EmailReporting_mail_save_from = 'Escribir el email del usuario que envia la solicitud en el cuerpo del reporte o nota';
+$s_plugin_EmailReporting_mail_save_subject_in_note = 'Escribir el asunto del mensaje en la nota';
+$s_plugin_EmailReporting_mail_secured_script = 'Evitar que el script se ejecute desde el navegador web (Recomendado = "Sí")';
+$s_plugin_EmailReporting_mail_secured_ipaddr = 'Solo permitir el acceso a bug_report_mail desde esta dirección IP';
+$s_plugin_EmailReporting_mail_strip_gmail_style_replies = 'Elimiar estilo de respuesta de Gmail (Solo Ingles) de las notas (mail_remove_replies should be YES)';
+$s_plugin_EmailReporting_mail_strip_signature = 'Borrar firma del cuerpo del mensaje';
+$s_plugin_EmailReporting_mail_strip_signature_delim = 'Limitado por';
+$s_plugin_EmailReporting_mail_subject_id_regex = 'Qué tipo de búsqueda debe utilizarse para encontrar el id de la solicitud en el asunto';
+$s_plugin_EmailReporting_mail_use_bug_priority = 'Buscar en el campo prioridad de la cabecera del mensaje';
+$s_plugin_EmailReporting_mail_use_message_id = 'Usar Message-ID en la cabecera del email para identificar las notas';
+$s_plugin_EmailReporting_mail_use_reporter = 'Usar solo el informador por defecto para las solicitudes creadas por email';
+
+$s_plugin_EmailReporting_strict = 'Estricta';
+$s_plugin_EmailReporting_balanced = 'Balanceada';
+$s_plugin_EmailReporting_relaxed = 'Flexible';
+
+$s_plugin_EmailReporting_emailreporting = 'EmailReporting';
+$s_plugin_EmailReporting_mantisbt = 'MantisBT';
+
+$s_plugin_EmailReporting_newnote = 'Nueva Nota';
+$s_plugin_EmailReporting_newissue = 'Nueva Solicitud';
+$s_plugin_EmailReporting_newattachment = 'Nuevo Adjunto';
+
+$s_plugin_EmailReporting_name = 'Nombre';
+$s_plugin_EmailReporting_full_from = 'Full "From" address';
+$s_plugin_EmailReporting_email_address = 'Dirección Email';
+$s_plugin_EmailReporting_email_no_domain = 'Dirección Email sin nombre de dominio';
+$s_plugin_EmailReporting_from_ldap = 'De LDAP';
+
+$s_plugin_EmailReporting_mailboxes = 'Buzones';
+$s_plugin_EmailReporting_add_action = 'Agregar';
+$s_plugin_EmailReporting_copy_action = 'Copiar';
+$s_plugin_EmailReporting_edit_action = 'Editar';
+$s_plugin_EmailReporting_delete_action = 'Borrar';
+$s_plugin_EmailReporting_test_action = 'Probar';
+$s_plugin_EmailReporting_complete_test_action = 'Prueba completa';
+$s_plugin_EmailReporting_select_mailbox = 'Seleccionar buzón';
+$s_plugin_EmailReporting_update_configuration = 'Actualizar Configuración';
+
+$s_plugin_EmailReporting_enabled = 'Habilitado';
+$s_plugin_EmailReporting_disabled = 'Inhabilitado';
+$s_plugin_EmailReporting_description = 'Descripción';
+$s_plugin_EmailReporting_mailbox_type = 'Tipo de Buzón';
+$s_plugin_EmailReporting_hostname = 'Nombre del Servidor';
+$s_plugin_EmailReporting_port = 'Puerto TCP';
+$s_plugin_EmailReporting_encryption = 'Cifrado de conexión';
+$s_plugin_EmailReporting_ssl_cert_verify = 'Verificar certificado SSL';
+$s_plugin_EmailReporting_erp_username = 'Usuario';
+$s_plugin_EmailReporting_erp_password = 'Contraseña';
+$s_plugin_EmailReporting_auth_method = 'Metodo de autenticación';
+$s_plugin_EmailReporting_imap_basefolder = 'Directorio principal (opcional)';
+$s_plugin_EmailReporting_imap_createfolderstructure = 'Crear estructura de proyecto';
+$s_plugin_EmailReporting_project_id = 'Seleccionar un proyecto';
+$s_plugin_EmailReporting_global_category_id = 'Seleccionar una categoria';
+$s_plugin_EmailReporting_link_rules = 'Seleccionar reglas';
+
+$s_plugin_EmailReporting_mail_bug_priority_array_failure = 'El formato indicado no es un array aceptable.';
+$s_plugin_EmailReporting_recorddisabled = '* = Inhabilitado';
+$s_plugin_EmailReporting_mbstring_unavailable = '<span class="negative">Advertencia</span>: Extensión "PHP mbstring" no disponible. Esto puede causar problemas con la recepción de emails.';
+$s_plugin_EmailReporting_db_utf8_issue = 'Corrija cualquier problema de colación que se muestra a continuación, de lo contrario MantisBT puede devolver errores de consulta';
+$s_plugin_EmailReporting_missing_user = 'Usuario no encontrado, por favor seleccione otro.';
+$s_plugin_EmailReporting_openssl_unavailable = 'Extensión PHP OpenSSL no disponible';
+$s_plugin_EmailReporting_test_failure = 'Operación NO satisfactoria';
+$s_plugin_EmailReporting_test_success = 'Operación Satisfactoria';
+$s_plugin_EmailReporting_unknown_setting = 'Configuración no encontrada, Configuración ignorada';
+$s_plugin_EmailReporting_zero_records = 'No Disponible';
+$s_plugin_EmailReporting_function_not_found = 'Función no encontrada';
+$s_plugin_EmailReporting_input_name_not_allowed = 'El nombre de la variable seleccionado no esta permitido ya que podria causar conflictos con ciertas situaciones';
+$s_plugin_EmailReporting_pear_load_error = 'Falla al cargar pear.php. Esto puede ser a causa de configuraciones de seguridad (open_basedir) que no permita cargar el repositorio actual de PEAR';
+$s_plugin_EmailReporting_complete_test_action_note = '<span class="negative">Advertencia</span>: Esto pondrá a prueba total un solo buzón de correo, a diferencia de "Prueba" que sólo realiza las tareas que no cambian nada.
+Existen aún pequeñas diferencias en comparación con el trabajo programado (bug_report_mail.php). Por ejemplo una de las diferencias podría ser los usuarios que ejecuta el trabajo. Use con cuidado';
+
+$s_plugin_EmailReporting_rules = 'Reglas';
+$s_plugin_EmailReporting_select_rule = 'Seleccionar regla';
+
+$s_plugin_EmailReporting_rule_wildcards = 'Wildcards';
+$s_plugin_EmailReporting_rule_wildcards_help = '- Wildcard characters: * ?
+- If wildcard characters are not used an exact comparison will be applied';
+
+$s_plugin_EmailReporting_rule_conditions_help = 'NULL';
+
+$s_plugin_EmailReporting_rule_actions_help = '- "[any]" means the action in question will be ignored
+- Custom fields not connected to the project of the created issue will be ignored
+- Dropdown list in custom fields should contain an empty value if you want that option in the dropdown list. Otherwise a value will always be applied when the conditions specified are met.';
+
+$s_plugin_EmailReporting_rule_exceptions_help = 'NULL';
+
+$s_plugin_EmailReporting_cond_issue_creation_method = 'Metodo de cración de la solicitud';
+$s_plugin_EmailReporting_cond_mailbox = 'Aplicar a los buzones';
+$s_plugin_EmailReporting_cond_issue_issue_issuenote = 'Agregar nuevas solicitudes y / o notas';
+$s_plugin_EmailReporting_cond_issue_reporter = 'Informador de la Solicitud';
+$s_plugin_EmailReporting_cond_issue_project = 'Proyecto de la Solicitud';
+$s_plugin_EmailReporting_cond_issue_category = 'Categoria d ela Solicitud';
+$s_plugin_EmailReporting_cond_issue_priority = 'Prioridad de la Solicitud';
+$s_plugin_EmailReporting_cond_issue_summary = 'Resumen de la Solicitud';
+$s_plugin_EmailReporting_cond_issue_description = 'Descripción de la Solicitud';
+
+$s_plugin_EmailReporting_act_issue_severity = 'Update severity'; /* @TODO Needs translation */
+$s_plugin_EmailReporting_act_issue_status = 'Update status'; /* @TODO Needs translation */
+$s_plugin_EmailReporting_act_issue_category = 'Actualizar Categoria';
+$s_plugin_EmailReporting_act_issue_tag = 'Agregar etiquetas';
+$s_plugin_EmailReporting_act_issue_custom_field = 'Actualizar campo personalizado';
+
+$s_plugin_EmailReporting_excep_issue_summary = 'Resumen de Solicitud';
+$s_plugin_EmailReporting_excep_issue_description = 'Descripción de Solicitud';
+
+?>
