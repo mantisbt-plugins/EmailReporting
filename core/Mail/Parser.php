@@ -423,7 +423,7 @@ class ERP_Mail_Parser
 
 		if ( 'text' === $this->_ctype['primary'] &&	'plain' === $this->_ctype['secondary'] )
 		{
-			$this->_body = $body;
+			$this->_body = trim( $body );
 		}
 		elseif ( $this->_parse_html && 'text' === $this->_ctype['primary'] && 'html' === $this->_ctype['secondary'] )
 		{
@@ -431,14 +431,14 @@ class ERP_Mail_Parser
 			{
 				$html2markdown = new Markdownify\ConverterExtra();
 				$html2markdown->setKeepHTML( false );
-				$this->_body = strip_tags( $html2markdown->parseString( $body ) );
+				$this->_body = trim( str_replace( array( "\r\n\r\n\r\n", "\n\n\n", "\r\r\r" ), "\n\n", strip_tags( $html2markdown->parseString( $body ) ) ) );
 			}
 			else
 			{
 				$htmlToText = str_get_html( $body, true, true, $this->_encoding, false ); 
 
 				// extract text from HTML
-				$this->_body = $htmlToText->plaintext;
+				$this->_body = trim( $htmlToText->plaintext );
 			}
 		}
 		else
