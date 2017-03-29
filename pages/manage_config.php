@@ -59,10 +59,10 @@ elseif ( $t_results_utf_test = test_database_utf8() )
 }
 
 // Output scheduled job users warning box
-$t_job_users = plugin_config_get( 'job_users' );
+$t_job_users = (array) plugin_config_get( 'job_users' );
 $t_username = ERP_get_current_os_user();
 $t_file_upload_method = config_get( 'file_upload_method' );
-if ( count( array_diff( $t_job_users, array( $t_username ) ) ) > 0 && $t_file_upload_method == DISK )
+if ( count( array_diff( (array) $t_job_users, (array) $t_username ) ) > 0 && $t_file_upload_method == DISK )
 {
 	ERP_output_note_open();
 ?>
