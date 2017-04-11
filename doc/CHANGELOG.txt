@@ -18,6 +18,7 @@ Jan 2017 - EmailReporting-0.10.0-DEV
 	- Standardized the regex for email address searching/validation
 	- Added Spanish language file (provided by franksanabria)
 	- Fixed issue when job_users variable is not an array
+	- Fixed issue with PHP 7.1.x and PEAR Net_IMAP package
 
 Jan 2017 - EmailReporting-0.9.3.1
 	- Fixed issue with db_get_table and MantisBT 1.2.x (legacy issue)

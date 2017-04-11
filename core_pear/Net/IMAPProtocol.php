@@ -859,7 +859,8 @@ class Net_IMAPProtocol
     {
         $mailbox_name = $this->_createQuotedString($mailbox);
         $ret          = $this->_genericCommand('EXAMINE', $mailbox_name);
-        $parsed       = '';
+        // ERP-modification: Fixed issue with PHP 7.1.x
+        $parsed       = array();
 
         if (isset($ret['PARSED'])) {
             for ($i=0; $i<count($ret['PARSED']); $i++) {
