@@ -16,6 +16,7 @@ Jan 2017 - EmailReporting-0.10.0-DEV
 	- Fixed issue with non-existing reporter user resulting in APPLICATION ERROR #811
 	- Added check to see whether issue exists before adding attachments
 	- Standardized the regex for email address searching/validation
+	- Add support for converting html emails to markdown (MantisBT 2.1.x or later required)
 	- Added Spanish language file (provided by franksanabria)
 	- Fixed issue when job_users variable is not an array
 	- Fixed issue with PHP 7.1.x and PEAR Net_IMAP package
