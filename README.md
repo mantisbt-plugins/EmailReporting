@@ -22,7 +22,8 @@ EmailReporting v0.9.x:
 
 Optional:
 
-* PHP 7 is supported from EmailReporting 0.9.2 and higher
+* PHP 7.0 is supported from EmailReporting 0.9.2 and higher
+* PHP 7.1 is supported from EmailReporting 0.10.0-DEV and higher
 * MantisBT 1.3.x is supported from EmailReporting 0.9.2 and higher
 * Preliminary support for MantisBT 2.0.x is available from EmailReporting 0.9.3 and higher. This is not ready for production environments. Please report any issues encountered.
 * Full support for MantisBT 2.x.x is available from EmailReporting 0.10.0 and higher.
