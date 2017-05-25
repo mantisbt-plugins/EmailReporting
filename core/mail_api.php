@@ -765,6 +765,8 @@ class ERP_mailbox_api
 							{
 								user_set_realname( $t_reporter_id, $t_realname );
 							}
+
+							$this->custom_error( 'Reporter created: ' . $t_reporter_id . ' - ' . $p_parsed_from[ 'email' ], FALSE );
 						}
 					}
 
