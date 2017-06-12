@@ -1049,7 +1049,7 @@ class ERP_mailbox_api
 				history_log_event_special( $t_bug_id, BUG_ADD_RELATIONSHIP, $t_rel_type, $t_master_bug_id );
 
 				# Send the email notification
-				email_relationship_added( $t_master_bug_id, $t_bug_id, relationship_get_complementary_type( $t_rel_type ) );
+				email_relationship_added( $t_master_bug_id, $t_bug_id, relationship_get_complementary_type( $t_rel_type ), false );
 			}
 
 			helper_call_custom_function( 'issue_create_notify', array( $t_bug_id ) );
