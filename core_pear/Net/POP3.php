@@ -188,7 +188,9 @@ class Net_POP3
     */
     function _raiseError($msg, $code =-1)
     {
-        include_once 'PEAR.php';
+		// ERP-modification: Force load included PEAR packages
+		//include_once 'PEAR.php';
+		plugin_require_api( 'core_pear/PEAR.php' );
         return PEAR::raiseError($msg, $code);
     }
 
