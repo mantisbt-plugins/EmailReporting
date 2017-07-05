@@ -143,6 +143,10 @@ class ERP_Mail_Parser
 					return( $t_encode );
 				}
 			}
+
+			// Remove any invisible unicode control format characters
+			// https://www.fileformat.info/info/unicode/category/Cf/index.htm
+			$encode = preg_replace( '/\p{Cf}+/u', "", $encode );
 		}
 
 		return( $encode );
