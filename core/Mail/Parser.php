@@ -563,7 +563,7 @@ class ERP_Mail_Parser
 				$p[ 'name' ] = $p_alternative_name . ( ( strtolower( $part->ctype_secondary ) === 'plain' ) ? '.txt' : '.html' );
 			}
 
-			$p[ 'body' ] = $part->body;
+			$p[ 'body' ] = ( (isset($part->body)) ? $part->body : NULL );
 
 			if ( extension_loaded( 'mbstring' ) && !empty( $p[ 'name' ] ) )
 			{
