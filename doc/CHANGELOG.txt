@@ -23,6 +23,7 @@ Jan 2017 - EmailReporting-0.10.0-DEV
 	- Debug output will now show moment of new user creations
 	- Fix call to 'email_relationship_added' when incomming mail on fixed or closed bug
 	- Remove any invisible unicode control format characters from email body
+	- When bounce messages are processed, some attachments don't have any body
 
 Jan 2017 - EmailReporting-0.9.3.1
 	- Fixed issue with db_get_table and MantisBT 1.2.x (legacy issue)
