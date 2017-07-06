@@ -1126,7 +1126,7 @@ class ERP_mailbox_api
 	{
 		# Handle the file upload
 		$t_part_name = ( ( isset( $p_part[ 'name' ] ) ) ? trim( $p_part[ 'name' ] ) : NULL );
-		$t_strlen_body = strlen( $p_part[ 'body' ] );
+		$t_strlen_body = isset($p_part->body) ? strlen( $p_part[ 'body' ] ) : 0;
 
 		if ( is_blank( $t_part_name ) )
 		{
