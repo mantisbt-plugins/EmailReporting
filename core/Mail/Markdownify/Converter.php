@@ -789,14 +789,18 @@ class Converter
 
         if ($buffer == $tag['href'] && empty($tag['title'])) {
             // <http://example.com>
-            return '<' . $buffer . '>';
+            // ERP-modification: Use [ ] instead of < > so that we do not cause problems with strip_tags
+            //return '<' . $buffer . '>';
+            return '[' . $buffer . ']';
         }
 
         $bufferDecoded = $this->decode(trim($buffer));
         if (substr($tag['href'], 0, 7) == 'mailto:' && 'mailto:' . $bufferDecoded == $tag['href']) {
             if (is_null($tag['title'])) {
                 // <mail@example.com>
-                return '<' . $bufferDecoded . '>';
+                // ERP-modification: Use [ ] instead of < > so that we do not cause problems with strip_tags
+                //return '<' . $bufferDecoded . '>';
+                return '[' . $bufferDecoded . ']';
             }
             // [mail@example.com][1]
             // ...
