@@ -629,7 +629,16 @@ if ( !function_exists( 'test_database_utf8' ) )
 		// @TODO code verification needed for the new rule system
 		elseif ( is_array( $p_def_value ) &&
 			(
+				// Use $p_name index when not multiselect or custom
 				( !in_array( $p_type, array( 'dropdown_multiselect', 'dropdown_multiselect_any', 'custom' ), TRUE ) ) ||
+				// Use $p_name index when multiselect or custom
+				// and
+				//     $p_def_value is empty
+				//     or
+				//         $p_def_value has named indexes
+				//         or
+				//         $p_def_value has out of order numeric indexes
+				// This is because a multiselect array will use ordered numeric indexes which should stay as-is
 				( in_array( $p_type, array( 'dropdown_multiselect', 'dropdown_multiselect_any', 'custom' ), TRUE ) &&
 					(
 						count( $p_def_value ) === 0 ||
