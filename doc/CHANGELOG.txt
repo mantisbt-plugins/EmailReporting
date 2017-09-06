@@ -1,5 +1,5 @@
 Changelog:
-Sep 2017 - EmailReporting-0.10.0-DEV
+Sep 2017 - EmailReporting-0.10.0
 	- Officially compatible with MantisBT 2.x.x
 	- Drop support for MantisBT 1.2.x
 	- Updated PEAR packages: PEAR, Auth_SASL, Net_Socket
