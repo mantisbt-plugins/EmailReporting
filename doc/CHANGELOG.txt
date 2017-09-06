@@ -1,5 +1,5 @@
 Changelog:
-Jan 2017 - EmailReporting-0.10.0-DEV
+Sep 2017 - EmailReporting-0.10.0-DEV
 	- Officially compatible with MantisBT 2.x.x
 	- Drop support for MantisBT 1.2.x
 	- Updated PEAR packages: PEAR, Auth_SASL, Net_Socket
@@ -24,6 +24,7 @@ Jan 2017 - EmailReporting-0.10.0-DEV
 	- Fix call to 'email_relationship_added' when incomming mail on fixed or closed bug
 	- Remove any invisible unicode control format characters from email body
 	- When bounce messages are processed, some attachments don't have any body
+	- Fix issue with directory separators for MantisBT URL fix
 
 Jan 2017 - EmailReporting-0.9.3.1
 	- Fixed issue with db_get_table and MantisBT 1.2.x (legacy issue)
