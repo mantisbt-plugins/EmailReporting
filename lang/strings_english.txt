@@ -141,6 +141,7 @@ $s_plugin_EmailReporting_complete_test_action_note = '<span class="negative">War
 There are still minor differences compared to the scheduled job (bug_report_mail.php). For example one of the differences could be the useraccount that runs the job.
 
 Use with care';
+$s_plugin_EmailReporting_apisoap_error = '"api/soap/mc_file_api.php" is missing. EmailReporting requires this file to work.';
 
 $s_plugin_EmailReporting_rules = 'Rules';
 $s_plugin_EmailReporting_select_rule = 'Select rule';

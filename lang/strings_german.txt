@@ -141,6 +141,7 @@ $s_plugin_EmailReporting_complete_test_action_note = '<span class="negative">War
 Es gibt immernoch kleine Unterschiede zum zeitgesteuerten Job (bug_report_mail.php). Beispielsweise könnte das Benutzerkonto, unter der Job läuft, ein Anderes sein.
 
 Benutze diese Funktion mit Bedacht';
+$s_plugin_EmailReporting_apisoap_error = '"api/soap/mc_file_api.php" is missing. EmailReporting requires this file to work.'; @TODO
 
 $s_plugin_EmailReporting_rules = 'Regeln';
 $s_plugin_EmailReporting_select_rule = 'Regel selektieren';

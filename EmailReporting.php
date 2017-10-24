@@ -201,6 +201,14 @@ class EmailReportingPlugin extends MantisPlugin
 		// already present in the database will be available.
 		$t_mail_reporter_id = plugin_config_get( 'mail_reporter_id', 'Mail' );
 
+		if ( !@include_once( config_get_global( 'absolute_path' ) . 'api/soap/mc_file_api.php' ) )
+		{
+			# @todo returning false should trigger some error reporting, needs rethinking error_api
+			error_parameters( plugin_lang_get( 'apisoap_error' ) );
+			trigger_error( ERROR_PLUGIN_INSTALL_FAILED, ERROR ); 
+			return( FALSE );
+		};
+
 		if ( $t_mail_reporter_id === 'Mail' )
 		{
 			// The plugin variable path_erp is not yet available. So path_erp cannot be used here
