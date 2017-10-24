@@ -32,6 +32,7 @@ EmailReporting v0.8.4 and earlier versions:
 All versions:
 
 * Ability to set scheduled / cron jobs on the webserver
+* /api/soap/mc_file_api.php is required for EmailReporting to function properly
 
 Download
 ========
