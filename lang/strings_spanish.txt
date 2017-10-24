@@ -138,7 +138,7 @@ $s_plugin_EmailReporting_input_name_not_allowed = 'El nombre de la variable sele
 $s_plugin_EmailReporting_pear_load_error = 'Falla al cargar pear.php. Esto puede ser a causa de configuraciones de seguridad (open_basedir) que no permita cargar el repositorio actual de PEAR';
 $s_plugin_EmailReporting_complete_test_action_note = '<span class="negative">Advertencia</span>: Esto pondrá a prueba total un solo buzón de correo, a diferencia de "Prueba" que sólo realiza las tareas que no cambian nada.
 Existen aún pequeñas diferencias en comparación con el trabajo programado (bug_report_mail.php). Por ejemplo una de las diferencias podría ser los usuarios que ejecuta el trabajo. Use con cuidado';
-$s_plugin_EmailReporting_apisoap_error = '"api/soap/mc_file_api.php" is missing. EmailReporting requires this file to work.'; @TODO
+$s_plugin_EmailReporting_apisoap_error = '"api/soap/mc_file_api.php" no se puede encontrar. EmailReporting requiere este fichero para funcionar.';
 
 $s_plugin_EmailReporting_rules = 'Reglas';
 $s_plugin_EmailReporting_select_rule = 'Seleccionar regla';
