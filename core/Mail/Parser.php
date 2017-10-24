@@ -434,8 +434,11 @@ class ERP_Mail_Parser
 			if ( $this->_parse2markdown )
 			{
 				$html2markdown = new Markdownify\ConverterExtra();
-				$html2markdown->setKeepHTML( false );
-				$this->_body = trim( preg_replace( "/[\r\n](\s)*[\r\n](\s)*[\r\n]/", "\n\n", strip_tags( $html2markdown->parseString( $body ) ) ) );
+				$html2markdown->setKeepHTML( FALSE );
+				$this->_body = $html2markdown->parseString( $body );
+				$this->_body = strip_tags( $this->_body );
+				$this->_body = preg_replace( "/[\r\n](\s)*[\r\n](\s)*[\r\n]/", "\n\n", $this->_body );
+				$this->_body = trim( $this->_body );
 			}
 			else
 			{
