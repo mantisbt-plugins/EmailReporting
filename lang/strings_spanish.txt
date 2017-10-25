@@ -9,7 +9,7 @@ $s_plugin_EmailReporting_manage_mailbox = 'Administrar Buzones';
 $s_plugin_EmailReporting_manage_rule = 'Administrar Reglas';
 
 $s_plugin_EmailReporting_jobsetup = 'Para recolectar los emails de los buzones, necesitas agregar una tarea programada que ejecute el script. Puedes ejecutar el script desde 2 sitios pero solo uno trabajaria desde una tarea programada. Ambos realizan la misma tarea. Vé la documentación para ejemplos de como se pueden programar.';
-$s_plugin_EmailReporting_job_users = '<span class="negative">Advertencia</span>: It seems that the scheduled job is not run with the same user account as the webserver / PHP process. This could cause problems with attachments.<br />The SAPI for the scheduled job is most likely "cli".<br />The webserver runs under the following user account: ';
+$s_plugin_EmailReporting_job_users = '<span class="negative">Advertencia</span>: Parece que la tarea programada no se ejecuta con la misma cuenta de usuario que el webserver o proceso PHP. Esto puede causar problemas con los adjuntos.<br />The SAPI for the scheduled job is most likely "cli".<br />El webserver se ejecuta bajo la siguiente cuenta de usuario: ';
 
 $s_plugin_EmailReporting_mailbox_settings = 'Configuración de Buzón';
 $s_plugin_EmailReporting_mailbox_settings_imap = 'Configuración del Buzón IMAP.';
@@ -91,7 +91,7 @@ $s_plugin_EmailReporting_newissue = 'Nueva Solicitud';
 $s_plugin_EmailReporting_newattachment = 'Nuevo Adjunto';
 
 $s_plugin_EmailReporting_name = 'Nombre';
-$s_plugin_EmailReporting_full_from = 'Full "From" address';
+$s_plugin_EmailReporting_full_from = 'Dirección "From" completa';
 $s_plugin_EmailReporting_email_address = 'Dirección Email';
 $s_plugin_EmailReporting_email_no_domain = 'Dirección Email sin nombre de dominio';
 $s_plugin_EmailReporting_from_ldap = 'De LDAP';
@@ -143,9 +143,9 @@ $s_plugin_EmailReporting_apisoap_error = '"api/soap/mc_file_api.php" no se puede
 $s_plugin_EmailReporting_rules = 'Reglas';
 $s_plugin_EmailReporting_select_rule = 'Seleccionar regla';
 
-$s_plugin_EmailReporting_rule_wildcards = 'Wildcards';
-$s_plugin_EmailReporting_rule_wildcards_help = '- Wildcard characters: * ?
-- If wildcard characters are not used an exact comparison will be applied';
+$s_plugin_EmailReporting_rule_wildcards = 'Comodines';
+$s_plugin_EmailReporting_rule_wildcards_help = '- Carácter Comodín: * ?
+- Si el caracter comodín no es utilizado, se usará una comparación exacta.';
 
 $s_plugin_EmailReporting_rule_conditions_help = 'NULL';
 
@@ -165,8 +165,8 @@ $s_plugin_EmailReporting_cond_issue_priority = 'Prioridad de la Solicitud';
 $s_plugin_EmailReporting_cond_issue_summary = 'Resumen de la Solicitud';
 $s_plugin_EmailReporting_cond_issue_description = 'Descripción de la Solicitud';
 
-$s_plugin_EmailReporting_act_issue_severity = 'Update severity'; /* @TODO Needs translation */
-$s_plugin_EmailReporting_act_issue_status = 'Update status'; /* @TODO Needs translation */
+$s_plugin_EmailReporting_act_issue_severity = 'Actualizar severidad';
+$s_plugin_EmailReporting_act_issue_status = 'Actualizar estado';
 $s_plugin_EmailReporting_act_issue_category = 'Actualizar Categoria';
 $s_plugin_EmailReporting_act_issue_tag = 'Agregar etiquetas';
 $s_plugin_EmailReporting_act_issue_custom_field = 'Actualizar campo personalizado';
