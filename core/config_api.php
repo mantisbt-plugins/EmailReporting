@@ -1066,7 +1066,7 @@ if ( !function_exists( 'test_database_utf8' ) )
 			$t_supported_encryptions = array( 'None', 'SSL', 'SSLv2', 'SSLv3', 'TLS', 'TLSv1.0', 'TLSv1.1', 'TLSv1.2', 'STARTTLS' );
 			foreach ( $t_supported_encryptions AS $t_encryption )
 			{
-				if ( $t_encryption === 'None' || $t_encryption === 'STARTTLS' || in_array( strtolower( $t_encryption ), $t_socket_transports, TRUE ) )
+				if ( $t_encryption === 'None' || ( $t_encryption === 'STARTTLS' && function_exists('stream_socket_enable_crypto') ) || in_array( strtolower( $t_encryption ), $t_socket_transports, TRUE ) )
 				{
 					echo '<option';
 					check_selected( (string) $p_sel_value, $t_encryption );
