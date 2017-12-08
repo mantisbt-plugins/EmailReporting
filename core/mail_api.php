@@ -908,8 +908,8 @@ class ERP_mailbox_api
 					# have one feedback, assigned and submitted status.
 					if( config_get( 'reassign_on_feedback' ) &&
 						 $t_bug->status === config_get( 'bug_feedback_status' ) &&
-						 $t_bug->handler_id !== auth_get_current_user_id() &&
-						 $t_bug->reporter_id === auth_get_current_user_id() ) {
+						 $t_bug->handler_id !== (int) auth_get_current_user_id() &&
+						 $t_bug->reporter_id === (int) auth_get_current_user_id() ) {
 						if( $t_bug->handler_id !== NO_USER ) {
 							bug_set_field( $t_bug->id, 'status', config_get( 'bug_assigned_status' ) );
 						} else {

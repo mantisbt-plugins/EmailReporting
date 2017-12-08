@@ -3,6 +3,7 @@ Okt 2017 - EmailReporting-0.10.1
 	- Added error if, on installation, 'api/soap/mc_file_api.php' is missing
 	- Updated english and spanish language files
 	- STARTTLS encryption only shown when available
+	- Fix issue with bugnote not triggering reassign (#23708 & #23712)
 
 Sep 2017 - EmailReporting-0.10.0
 	- Officially compatible with MantisBT 2.x.x
