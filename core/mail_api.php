@@ -981,23 +981,19 @@ class ERP_mailbox_api
 
 			// @TODO@ Disabled for now but possibly needed for other future features
 			# Validate the custom fields before adding the bug.
-/*			$t_related_custom_field_ids = custom_field_get_linked_ids( $t_bug_data->project_id );
-			foreach( $t_related_custom_field_ids as $t_id )
-			{
+			$t_related_custom_field_ids = custom_field_get_linked_ids( $t_bug_data->project_id );
+/*			foreach( $t_related_custom_field_ids as $t_id ) {
 				$t_def = custom_field_get_definition( $t_id );
 
 				# Produce an error if the field is required but wasn't posted
-				if ( !gpc_isset_custom_field( $t_id, $t_def['type'] ) &&
-					( $t_def['require_report'] ||
-						$t_def['type'] == CUSTOM_FIELD_TYPE_ENUM ||
-						$t_def['type'] == CUSTOM_FIELD_TYPE_LIST ||
-						$t_def['type'] == CUSTOM_FIELD_TYPE_MULTILIST ||
-						$t_def['type'] == CUSTOM_FIELD_TYPE_RADIO ) ) {
+				if( !gpc_isset_custom_field( $t_id, $t_def['type'] )
+				   && $t_def['require_report']
+				) {
 					error_parameters( lang_get_defaulted( custom_field_get_field( $t_id, 'name' ) ) );
 					trigger_error( ERROR_EMPTY_FIELD, ERROR );
 				}
-				if ( !custom_field_validate( $t_id, gpc_get_custom_field( "custom_field_$t_id", $t_def['type'], NULL ) ) )
-				{
+
+				if( !custom_field_validate( $t_id, gpc_get_custom_field( 'custom_field_' . $t_id, $t_def['type'], null ) ) ) {
 					error_parameters( lang_get_defaulted( custom_field_get_field( $t_id, 'name' ) ) );
 					trigger_error( ERROR_CUSTOM_FIELD_INVALID_VALUE, ERROR );
 				}
@@ -1015,23 +1011,27 @@ class ERP_mailbox_api
 				$t_bug_data->process_mentions();
 			}
 
-			// @TODO@ Disabled for now but possibly needed for other future features
+			// @TODO@ Enabled for processing default values. Needs more work for other features
+			// - Handling of non default values not working
+			// - Error handling not working
 			# Handle custom field submission
-/*			foreach( $t_related_custom_field_ids as $t_id )
-{
-				# Do not set custom field value if user has no write access.
-				if( !custom_field_has_write_access( $t_id, $t_bug_id ) )
+			foreach ( $t_related_custom_field_ids as $t_id )
+			{
+				# Do not set custom field value if user has no write access
+				if ( !custom_field_has_write_access( $t_id, $t_bug_id ) )
 				{
 					continue;
 				}
 
 				$t_def = custom_field_get_definition( $t_id );
-				if( !custom_field_set_value( $t_id, $t_bug_id, gpc_get_custom_field( "custom_field_$t_id", $t_def['type'], '' ), false ) ) {
+				$t_default_value = custom_field_default_to_value( $t_def['default_value'], $t_def['type'] );
+				$t_value = $t_default_value; //gpc_get_custom_field( 'custom_field_' . $t_id, $t_def['type'], $t_default_value );
+				if ( !custom_field_set_value( $t_id, $t_bug_id, $t_value, /* log insert */ false ) )
 				{
-					error_parameters( lang_get_defaulted( custom_field_get_field( $t_id, 'name' ) ) );
-					trigger_error( ERROR_CUSTOM_FIELD_INVALID_VALUE, ERROR );
+//					error_parameters( lang_get_defaulted( custom_field_get_field( $t_id, 'name' ) ) );
+//					trigger_error( ERROR_CUSTOM_FIELD_INVALID_VALUE, ERROR );
 				}
-			}*/
+			}
 
 			// Lets link a readonly already existing bug to the newly created one
 			if ( !empty( $t_master_bug_id ) )

@@ -4,6 +4,7 @@ Okt 2017 - EmailReporting-0.10.1
 	- Updated english and spanish language files
 	- STARTTLS encryption only shown when available
 	- Fix issue with bugnote not triggering reassign (#23708 & #23712)
+	- Process default custom field values
 
 Sep 2017 - EmailReporting-0.10.0
 	- Officially compatible with MantisBT 2.x.x
