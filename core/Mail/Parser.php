@@ -336,14 +336,14 @@ class ERP_Mail_Parser
 			$this->setInReplyTo( $structure->headers[ 'in-reply-to' ] );
 		}
 
-		$t_body_charset = NULL;
-		if ( isset( $structure->ctype_parameters[ 'charset' ] ) )
-		{
-			$t_body_charset = $structure->ctype_parameters[ 'charset' ];
-		}
-
 		if ( isset( $structure->body ) )
 		{
+			$t_body_charset = NULL;
+			if ( isset( $structure->ctype_parameters[ 'charset' ] ) )
+			{
+				$t_body_charset = $structure->ctype_parameters[ 'charset' ];
+			}
+
 			$this->setBody( $structure->body, $structure->ctype_primary, $structure->ctype_secondary, $t_body_charset );
 		}
 
@@ -352,7 +352,10 @@ class ERP_Mail_Parser
 			$this->setParts( $structure->parts );
 		}
 
-		$this->setTo( $structure->headers[ 'to' ] );
+		if ( isset( $structure->headers[ 'to' ] ) )
+		{
+			$this->setTo( $structure->headers[ 'to' ] );
+		}
 
 		if ( isset( $structure->headers[ 'cc' ] ) )
 		{
