@@ -2,10 +2,17 @@
 
 //require_once( 'Mail/mimeDecode.php' );
 plugin_require_api( 'core_pear/Mail/mimeDecode.php' );
+
 plugin_require_api( 'core/Mail/simple_html_dom.php');
+
 plugin_require_api( 'core/Mail/Markdownify/Converter.php');
 plugin_require_api( 'core/Mail/Markdownify/ConverterExtra.php');
 plugin_require_api( 'core/Mail/Markdownify/Parser.php');
+
+plugin_require_api( 'core/Mail/EmailReplyParser/Parser/EmailParser.php');
+plugin_require_api( 'core/Mail/EmailReplyParser/Parser/FragmentDTO.php');
+plugin_require_api( 'core/Mail/EmailReplyParser/Email.php');
+plugin_require_api( 'core/Mail/EmailReplyParser/Fragment.php');
 
 class ERP_Mail_Parser
 {
