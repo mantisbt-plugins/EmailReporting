@@ -320,8 +320,15 @@ class ERP_Mail_Parser
 
 	private function parseStructure( &$structure )
 	{
-		$this->setFrom( $structure->headers[ 'from' ] );
-		$this->setSubject( $structure->headers[ 'subject' ] );
+		if ( isset( $structure->headers[ 'from' ] ) )
+		{
+			$this->setFrom( $structure->headers[ 'from' ] );
+		}
+
+		if ( isset( $structure->headers[ 'subject' ] ) )
+		{
+			$this->setSubject( $structure->headers[ 'subject' ] );
+		}
 
 		if ( isset( $structure->headers[ 'x-priority' ] ) )
 		{
@@ -437,7 +444,7 @@ class ERP_Mail_Parser
 
 		if ( 'text' === $this->_ctype['primary'] &&	'plain' === $this->_ctype['secondary'] )
 		{
-			$this->_body = trim( $body );
+			$this->_body = $body;
 		}
 		elseif ( $this->_parse_html && 'text' === $this->_ctype['primary'] && 'html' === $this->_ctype['secondary'] )
 		{
@@ -446,23 +453,24 @@ class ERP_Mail_Parser
 				$html2markdown = new Markdownify\ConverterExtra();
 				$html2markdown->setKeepHTML( FALSE );
 				$body = str_replace( '&lt;', '&amp;amp;lt;', str_replace( '&gt;', '&amp;amp;gt;', $body ) ); // Markdownify issue with &lt; &gt;. Otherwise strip_tags will remove them
-				$this->_body = $html2markdown->parseString( $body );
-				$this->_body = strip_tags( $this->_body );
-				$this->_body = preg_replace( "/[\r\n](\s)*[\r\n](\s)*[\r\n]/", "\n\n", $this->_body ); // Remove extra lines
-				$this->_body = trim( $this->_body );
+				$body = $html2markdown->parseString( $body );
+				$body = strip_tags( $body );
+				$this->_body = preg_replace( "/[\r\n](\s)*[\r\n](\s)*[\r\n]/", "\n\n", $body ); // Remove extra lines
 			}
 			else
 			{
 				$htmlToText = str_get_html( $body, true, true, $this->_encoding, false ); 
 
 				// extract text from HTML
-				$this->_body = trim( $htmlToText->plaintext );
+				$this->_body = $htmlToText->plaintext;
 			}
 		}
 		else
 		{
 			return( FALSE );
 		}
+
+		$this->_body = trim( $this->_body );
 
 		return( TRUE );
 	}
