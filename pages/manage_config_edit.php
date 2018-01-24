@@ -56,8 +56,21 @@ foreach ( $f_gpc AS $t_key => $t_value )
 	}
 }
 
-$t_mail_bug_priority = process_complex_value( $f_mail_bug_priority );
-if( is_array( $t_mail_bug_priority ) )
+try
+{
+	if( !empty( $f_mail_bug_priority ) )
+	{
+		$t_parser = new ConfigParser( $f_mail_bug_priority );
+		$t_mail_bug_priority = $t_parser->parse( ConfigParser::EXTRA_TOKENS_IGNORE );
+	}
+}
+catch (Exception $e)
+{
+	error_parameters( $f_mail_bug_priority, $e->getMessage() );
+	trigger_error( ERROR_CONFIG_OPT_BAD_SYNTAX, ERROR );
+}
+
+if( isset( $t_mail_bug_priority ) && is_array( $t_mail_bug_priority ) )
 {
 	if ( plugin_config_get( 'mail_bug_priority' ) !== $t_mail_bug_priority )
 	{
