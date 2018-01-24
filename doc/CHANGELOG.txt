@@ -6,6 +6,8 @@ Okt 2017 - EmailReporting-0.10.1
 	- Fix issue with bugnote not triggering reassign (#23708 & #23712)
 	- Process default custom field values
 	- Fix PHP 7.2 deprecated function in PEAR MimeDecode package
+	- Update Markdownify 2.2.2
+	- Fix Markdownify issue with &lt; and &gt; and strip_tags
 
 Sep 2017 - EmailReporting-0.10.0
 	- Officially compatible with MantisBT 2.x.x
