@@ -1629,8 +1629,8 @@ class ERP_mailbox_api
 	# @TODO@ Only returns a new body. Still need to do something with the replies and signatures
 	private function parse_email_body( $p_description )
 	{
-		// Lines starting with -- are seen as signatures. EmailReplyParser doesn't use them anyway
-		$t_description = preg_replace('/-{5}-*?\h?[ \w]+\h?-*-{5}/', '', $p_description );
+		// Lines starting with -- are seen as signatures. EmailReplyParser doesn't use "-----Original Message-----" anyway
+		$t_description = preg_replace('/-{5,6}\h?[ \w]+\h?-{5,6}/', '', $p_description );
 
 		$EmailBodyParser = new EmailReplyParser\Parser\EmailParser;
 		$bodyParsed = $EmailBodyParser->parse( $t_description );
