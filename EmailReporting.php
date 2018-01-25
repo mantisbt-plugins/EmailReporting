@@ -138,9 +138,6 @@ class EmailReportingPlugin extends MantisPlugin
 			# Remove everything after and including the remove_replies_after text
 			'mail_remove_replies'			=> OFF,
 
-			# Text which decides after (and including) which all content needs to be removed
-			'mail_remove_replies_after'		=> '-----Original Message-----',
-
 			# Use the following text when part of the email has been removed
 			'mail_removed_reply_text'		=> '[EmailReporting -> Removed part identified as reply]',
 
@@ -166,14 +163,8 @@ class EmailReportingPlugin extends MantisPlugin
 			# access to this IP address
 			'mail_secured_ipaddr'			=> '',
 
-			//Strip Gmail style replies from body of the message
-			'mail_strip_gmail_style_replies'=> OFF,
-
 			#Removes the signature that are delimited by mail_strip_signature_delim
 			'mail_strip_signature'			=> OFF,
-
-			#Removes the signature that are delimited by --
-			'mail_strip_signature_delim'	=> '--',
 
 			# Which regex should be used for finding the issue id in the subject
 			'mail_subject_id_regex'			=> 'strict',
@@ -203,7 +194,6 @@ class EmailReportingPlugin extends MantisPlugin
 
 		if ( !@include_once( config_get_global( 'absolute_path' ) . 'api/soap/mc_file_api.php' ) )
 		{
-			# @todo returning false should trigger some error reporting, needs rethinking error_api
 			error_parameters( plugin_lang_get( 'apisoap_error' ) );
 			trigger_error( ERROR_PLUGIN_INSTALL_FAILED, ERROR ); 
 			return( FALSE );
@@ -617,6 +607,19 @@ class EmailReportingPlugin extends MantisPlugin
 
 			plugin_config_set( 'config_version', 16 );
 		}
+
+/* @TODO@ - Only enable after this code becomes part of the master
+	Also document these deleted configs on the wiki */
+/*
+		if ( $t_config_version <= 16 )
+		{
+			plugin_config_delete( 'mail_strip_signature_delim' );
+			plugin_config_delete( 'mail_remove_replies_after' );
+			plugin_config_delete( 'mail_strip_gmail_style_replies' );
+
+			plugin_config_set( 'config_version', 17 );
+		}
+*/
 	}
 
 	/*

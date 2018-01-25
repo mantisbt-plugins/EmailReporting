@@ -23,6 +23,11 @@
 	plugin_require_api( 'core/config_api.php' );
 	plugin_require_api( 'core/Mail/Parser.php' );
 
+	plugin_require_api( 'core/EmailReplyParser/Parser/EmailParser.php');
+	plugin_require_api( 'core/EmailReplyParser/Parser/FragmentDTO.php');
+	plugin_require_api( 'core/EmailReplyParser/Email.php');
+	plugin_require_api( 'core/EmailReplyParser/Fragment.php');
+
 class ERP_mailbox_api
 {
 	private $_functionality_enabled = FALSE;
@@ -67,15 +72,12 @@ class ERP_mailbox_api
 	private $_mail_preferred_username;
 	private $_mail_preferred_realname;
 	private $_mail_remove_mantis_email;
-	private $_mail_remove_replies;
-	private $_mail_remove_replies_after;
+	private $_mail_remove_replies; /* @TODO Does nothing at the moment*/
 	private $_mail_removed_reply_text;
 	private $_mail_reporter_id;
 	private $_mail_save_from;
 	private $_mail_save_subject_in_note;
-	private $_mail_strip_gmail_style_replies;
-	private $_mail_strip_signature;
-	private $_mail_strip_signature_delim;
+	private $_mail_strip_signature; /* @TODO Does nothing at the moment*/
 	private $_mail_subject_id_regex;
 	private $_mail_use_bug_priority;
 	private $_mail_use_message_id;
@@ -122,14 +124,11 @@ class ERP_mailbox_api
 		$this->_mail_preferred_realname			= plugin_config_get( 'mail_preferred_realname' );
 		$this->_mail_remove_mantis_email		= plugin_config_get( 'mail_remove_mantis_email' );
 		$this->_mail_remove_replies				= plugin_config_get( 'mail_remove_replies' );
-		$this->_mail_remove_replies_after		= plugin_config_get( 'mail_remove_replies_after' );
 		$this->_mail_removed_reply_text			= plugin_config_get( 'mail_removed_reply_text' );
 		$this->_mail_reporter_id				= plugin_config_get( 'mail_reporter_id' );
 		$this->_mail_save_from					= plugin_config_get( 'mail_save_from' );
 		$this->_mail_save_subject_in_note		= plugin_config_get( 'mail_save_subject_in_note' );
-		$this->_mail_strip_gmail_style_replies	= plugin_config_get( 'mail_strip_gmail_style_replies' );
 		$this->_mail_strip_signature			= plugin_config_get( 'mail_strip_signature' );
-		$this->_mail_strip_signature_delim		= plugin_config_get( 'mail_strip_signature_delim' );
 		$this->_mail_subject_id_regex			= plugin_config_get( 'mail_subject_id_regex' );
 		$this->_mail_use_bug_priority			= plugin_config_get( 'mail_use_bug_priority' );
 		$this->_mail_use_message_id				= plugin_config_get( 'mail_use_message_id' );
@@ -869,8 +868,8 @@ class ERP_mailbox_api
 
 			$t_description = $p_email[ 'X-Mantis-Body' ];
 
-			$t_description = $this->identify_replies( $t_description );
-			$t_description = $this->strip_signature( $t_description );
+			$t_description = $this->identify_mantisbt_replies( $t_description );
+			$t_description = $this->parse_email_body( $t_description );
 			$t_description = $this->add_additional_info( 'note', $p_email, $t_description );
 			$t_description = $this->limit_body_size( 'note', $t_description, $p_email );
 
@@ -963,7 +962,7 @@ class ERP_mailbox_api
 			$t_bug_data->summary				= $p_email[ 'Subject' ];
 
 			$t_description = $p_email[ 'X-Mantis-Body' ];
-			$t_description = $this->strip_signature( $t_description );
+			$t_description = $this->parse_email_body( $t_description );
 			$t_description = $this->add_additional_info( 'issue', $p_email, $t_description );
 			$t_description = $this->limit_body_size( 'description', $t_description, $p_email );
 			$t_bug_data->description			= $t_description;
@@ -1582,25 +1581,10 @@ class ERP_mailbox_api
 	}
 
 	# --------------------
-	# Removes replies from mails
-	private function identify_replies( $p_description )
+	# Removes MantisBT email parts from replies
+	private function identify_mantisbt_replies( $p_description )
 	{
 		$t_description = $p_description;
-
-		if ( $this->_mail_remove_replies )
-		{
-			$t_first_occurence = stripos( $t_description, $this->_mail_remove_replies_after );
-			if ( $t_first_occurence !== FALSE )
-			{
-				$t_description = substr( $t_description, 0, $t_first_occurence );
-			}
-
-			//remove gmail style replies
-			if( $this->_mail_strip_gmail_style_replies )
-			{
-				$t_description = preg_replace( '/^\s*>?\s*On\b.*\bwrote:.*?/msU', "\n", $t_description );
-			}
-		}
 
 		if ( $this->_mail_remove_mantis_email )
 		{
@@ -1641,6 +1625,26 @@ class ERP_mailbox_api
 	}
 
 	# --------------------
+	# Process the body of an email to separate signatures and replies
+	# @TODO@ Only returns a new body. Still need to do something with the replies and signatures
+	private function parse_email_body( $p_description )
+	{
+		// Lines starting with -- are seen as signatures. EmailReplyParser doesn't use them anyway
+		$t_description = preg_replace('/-{5}-*?\h?[ \w]+\h?-*-{5}/', '', $p_description );
+
+		$EmailBodyParser = new EmailReplyParser\Parser\EmailParser;
+		$bodyParsed = $EmailBodyParser->parse( $t_description );
+		$bodyfragments = $bodyParsed->getFragments();
+
+		$visibleFragments = array_filter( $bodyfragments, function ( EmailReplyParser\Fragment $fragment )
+		{
+			return( !$fragment->isHidden() );
+		} );
+
+		return( rtrim( implode( "\n", $visibleFragments ) ) );
+	}
+
+	# --------------------
 	# Add additional info if enabled
 	private function add_additional_info( $p_type, &$p_email, $p_description )
 	{
@@ -1662,27 +1666,6 @@ class ERP_mailbox_api
 		}
 
 		return( $t_additional_info . $p_description );
-	}
-
-	# --------------------
-	# Strip signature from the mail body. Only removes the last part set by the delimiter
-	private function strip_signature( $p_description )
-	{
-		$t_description = $p_description;
-
-		if ( $this->_mail_strip_signature && strlen( trim( $this->_mail_strip_signature_delim ) ) > 1 )
-		{
-			$t_parts = preg_split( '/((?:\r|\n|\r\n)' . $this->_mail_strip_signature_delim . '\s*(?:\r|\n|\r\n))/', $t_description, -1, PREG_SPLIT_DELIM_CAPTURE );
-
-			if ( count( $t_parts ) > 2 ) // String should not start with the delimiter so that why we need at least 3 parts
-			{
-				array_pop( $t_parts );
-				array_pop( $t_parts );
-				$t_description = implode( '', $t_parts );
-			}
-		}
-
-		return( $t_description );
 	}
 
 	# --------------------
