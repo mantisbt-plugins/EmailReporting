@@ -9,11 +9,6 @@ plugin_require_api( 'core/Mail/Markdownify/Converter.php' );
 plugin_require_api( 'core/Mail/Markdownify/ConverterExtra.php' );
 plugin_require_api( 'core/Mail/Markdownify/Parser.php' );
 
-plugin_require_api( 'core/Mail/EmailReplyParser/Parser/EmailParser.php');
-plugin_require_api( 'core/Mail/EmailReplyParser/Parser/FragmentDTO.php');
-plugin_require_api( 'core/Mail/EmailReplyParser/Email.php');
-plugin_require_api( 'core/Mail/EmailReplyParser/Fragment.php');
-
 class ERP_Mail_Parser
 {
 	private $_parse_html = FALSE;
@@ -34,7 +29,7 @@ class ERP_Mail_Parser
 	private $_subject;
 	private $_def_charset = 'auto';
 	private $_fallback_charset = 'ASCII';
-	private $_priority;
+	private $_priority = NULL;
 	private $_messageid;
 	private $_references = array();
 	private $_inreplyto;
@@ -334,6 +329,14 @@ class ERP_Mail_Parser
 		{
 			$this->setPriority( $structure->headers[ 'x-priority' ] );
 		}
+		elseif ( isset( $structure->headers[ 'x-msmail-priority' ] ) )
+		{
+			$this->setPriority( $structure->headers[ 'x-msmail-priority' ] );
+		}
+		elseif ( isset( $structure->headers[ 'importance' ] ) )
+		{
+			$this->setPriority( $structure->headers[ 'importance' ] );
+		}
 
 		if ( isset( $structure->headers[ 'message-id' ] ) )
 		{
@@ -422,7 +425,10 @@ class ERP_Mail_Parser
 
 	private function setPriority( $priority )
 	{
-		$this->_priority = $priority;
+		if ( $this->_priority === NULL )
+		{
+			$this->_priority = $priority;
+		}
 	}
 
 	private function setContentType( $primary, $secondary )
