@@ -18,7 +18,7 @@ use EmailReplyParser\Fragment;
  */
 class EmailParser
 {
-    const QUOTE_REGEX = '/>+$/s';
+    const QUOTE_REGEX = '/^>+/s';
 
     /**
      * Regex to match signatures
@@ -35,6 +35,7 @@ class EmailParser
         '/^\s*(Le(?:(?!^>*\s*Le\b|\bécrit:).){0,1000}écrit :)$/ms', // Le DATE, NAME <EMAIL> a écrit :
         '/^\s*(El(?:(?!^>*\s*El\b|\bescribió:).){0,1000}escribió:)$/ms', // El DATE, NAME <EMAIL> escribió:
         '/^\s*(Il(?:(?!^>*\s*Il\b|\bscritto:).){0,1000}scritto:)$/ms', // Il DATE, NAME <EMAIL> ha scritto:
+        '/^[\S\s]+ (написа(л|ла|в)+)+:$/msu', // Everything before написал: not ending on wrote:
         '/^\s*(Op\s.+?schreef.+:)$/ms', // Il DATE, schreef NAME <EMAIL>:
         '/^\s*((W\sdniu|Dnia)\s.+?(pisze|napisał(\(a\))?):)$/msu', // W dniu DATE, NAME <EMAIL> pisze|napisał:
         '/^\s*(Den\s.+\sskrev\s.+:)$/m', // Den DATE skrev NAME <EMAIL>:
@@ -66,7 +67,7 @@ class EmailParser
      */
     public function parse($text)
     {
-        $text = str_replace("\r\n", "\n", $text);
+        $text = str_replace(array("\r\n", "\r"), "\n", $text);
 
         foreach ($this->quoteHeadersRegex as $regex) {
             if (preg_match($regex, $text, $matches)) {
@@ -75,22 +76,23 @@ class EmailParser
         }
 
         $fragment = null;
-        foreach (explode("\n", strrev($text)) as $line) {
-            $line = rtrim($line, "\n");
+        $text_array = explode("\n", $text);
+        while (($line = array_pop($text_array)) !== NULL) {
+            $line = ltrim($line, "\n");
 
             if (!$this->isSignature($line)) {
-                $line = ltrim($line);
+                $line = rtrim($line);
             }
 
             if ($fragment) {
-                $last = end($fragment->lines);
+                $first = reset($fragment->lines);
 
-                if ($this->isSignature($last)) {
+                if ($this->isSignature($first)) {
                     $fragment->isSignature = true;
                     $this->addFragment($fragment);
 
                     $fragment = null;
-                } elseif (empty($line) && $this->isQuoteHeader($last)) {
+                } elseif (empty($line) && $this->isQuoteHeader($first)) {
                     $fragment->isQuoted = true;
                     $this->addFragment($fragment);
 
@@ -109,7 +111,7 @@ class EmailParser
                 $fragment->isQuoted = $isQuoted;
             }
 
-            $fragment->lines[] = $line;
+            array_unshift($fragment->lines, $line);
         }
 
         if ($fragment) {
@@ -173,9 +175,9 @@ class EmailParser
     protected function createEmail(array $fragmentDTOs)
     {
         $fragments = array();
-        foreach (array_reverse($fragmentDTOs) as $fragment) {
+        foreach ($fragmentDTOs as $fragment) {
             $fragments[] = new Fragment(
-                preg_replace("/^\n/", '', strrev(implode("\n", $fragment->lines))),
+                preg_replace("/^\n/", '', implode("\n", $fragment->lines)),
                 $fragment->isHidden,
                 $fragment->isSignature,
                 $fragment->isQuoted
@@ -188,7 +190,7 @@ class EmailParser
     private function isQuoteHeader($line)
     {
         foreach ($this->quoteHeadersRegex as $regex) {
-            if (preg_match($regex, strrev($line))) {
+            if (preg_match($regex, $line)) {
                 return true;
             }
         }
@@ -198,7 +200,7 @@ class EmailParser
 
     private function isSignature($line)
     {
-        return preg_match($this->signatureRegex, strrev($line)) ? true : false;
+        return preg_match($this->signatureRegex, $line) ? true : false;
     }
 
     /**
@@ -233,6 +235,6 @@ class EmailParser
             $fragment->isHidden = true;
         }
 
-        $this->fragments[] = $fragment;
+        array_unshift($this->fragments, $fragment);
     }
 }
