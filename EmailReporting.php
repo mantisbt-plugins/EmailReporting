@@ -107,7 +107,7 @@ class EmailReportingPlugin extends MantisPlugin
 			# Enable fallback to mail reporter
 			'mail_fallback_mail_reporter'	=> ON,
 
-			# Maximum size of the description/note. Restricion needed for database limitations
+			# Maximum size of the description/note. Restriction needed for database limitations
 			# Older installations of MantisBT never had there description fields in MYSQL increased from TEXT to MEDIUMTEXT so TEXT is the default max
 			'mail_max_email_body'			=> 65535,
 
