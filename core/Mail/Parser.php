@@ -458,10 +458,10 @@ class ERP_Mail_Parser
 			{
 				$html2markdown = new Markdownify\ConverterExtra();
 				$html2markdown->setKeepHTML( FALSE );
-				$body = str_replace( '&lt;', '&amp;amp;lt;', str_replace( '&gt;', '&amp;amp;gt;', $body ) ); // Markdownify issue with &lt; &gt;. Otherwise strip_tags will remove them
+				$html2markdown->setaddCssClass( FALSE );
+				$html2markdown->setLinkPosition($html2markdown::LINK_IN_PARAGRAPH); 
 				$body = $html2markdown->parseString( $body );
-				$body = strip_tags( $body );
-				$this->_body = preg_replace( "/[\r\n](\s)*[\r\n](\s)*[\r\n]/", "\n\n", $body ); // Remove extra lines
+				$this->_body = $body;
 			}
 			else
 			{
