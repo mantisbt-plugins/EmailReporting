@@ -72,12 +72,12 @@ class ERP_mailbox_api
 	private $_mail_preferred_username;
 	private $_mail_preferred_realname;
 	private $_mail_remove_mantis_email;
-	private $_mail_remove_replies; /* @TODO Does nothing at the moment*/
+	private $_mail_remove_replies;
 	private $_mail_removed_reply_text;
 	private $_mail_reporter_id;
 	private $_mail_save_from;
 	private $_mail_save_subject_in_note;
-	private $_mail_strip_signature; /* @TODO Does nothing at the moment*/
+	private $_mail_strip_signature;
 	private $_mail_subject_id_regex;
 	private $_mail_use_bug_priority;
 	private $_mail_use_message_id;
@@ -1629,19 +1629,26 @@ class ERP_mailbox_api
 	# @TODO@ Only returns a new body. Still need to do something with the replies and signatures
 	private function parse_email_body( $p_description )
 	{
-		// Lines starting with -- are seen as signatures. EmailReplyParser doesn't use "-----Original Message-----" anyway
-		$t_description = preg_replace('/-{5,6}\h?[ \w]+\h?-{5,6}/', '', $p_description );
+		$t_description = $p_description;
 
-		$EmailBodyParser = new EmailReplyParser\Parser\EmailParser;
-		$bodyParsed = $EmailBodyParser->parse( $t_description );
-		$bodyfragments = $bodyParsed->getFragments();
-
-		$visibleFragments = array_filter( $bodyfragments, function ( EmailReplyParser\Fragment $fragment )
+		if ( $this->_mail_remove_replies || $this->_mail_strip_signature )
 		{
-			return( !$fragment->isHidden() );
-		} );
+			// Lines starting with -- are seen as signatures. EmailReplyParser doesn't use "-----Original Message-----" anyway
+			$t_description = preg_replace('/-{5,6}\h?[ \w]+\h?-{5,6}/', '', $t_description );
 
-		return( rtrim( implode( "\n", $visibleFragments ) ) );
+			$EmailBodyParser = new EmailReplyParser\Parser\EmailParser;
+			$bodyParsed = $EmailBodyParser->parse( $t_description );
+			$bodyfragments = $bodyParsed->getFragments();
+
+			$visibleFragments = array_filter( $bodyfragments, function ( EmailReplyParser\Fragment $fragment )
+			{
+				return( !$fragment->isHidden() );
+			} );
+
+			$t_description = rtrim( implode( "\n", $visibleFragments ) );
+		}
+
+		return( $t_description );
 	}
 
 	# --------------------
