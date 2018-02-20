@@ -8,7 +8,8 @@ Okt 2017 - EmailReporting-0.10.1
 	- Fix PHP 7.2 deprecated function in PEAR MimeDecode package
 	- Replace print_bracket_link (dropped from MantisBT 2.11)
 	- Update Markdownify 2.2.2
-	- Fix Markdownify issue with &lt; and &gt; and strip_tags
+	- Add EmailReplyParser library
+	- Retired old functionality now being handled by EmailReplyParser
 	- process_complex_value replaced with MantisBT ConfigParser to process mail_bug_priority form value
 	- Email priority will be taken from "X-MSMail-Priority" and "Importance" if "X-Priority" is not available
 
