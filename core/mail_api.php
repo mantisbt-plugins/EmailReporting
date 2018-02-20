@@ -1634,21 +1634,25 @@ class ERP_mailbox_api
 		if ( $this->_mail_remove_replies || $this->_mail_strip_signature )
 		{
 			// Lines starting with -- are seen as signatures. EmailReplyParser doesn't use "-----Original Message-----" anyway
-			$t_description = preg_replace('/-{5,6}\h?[ \w]+\h?-{5,6}/', '', $t_description );
+			$t_description = preg_replace('/(?:\\\\{1}---){1,2}-{0,2}\h?[ \S]+\h?(?:\\\\{1}---){1,2}-{0,2}/', '', $t_description );
 
 			$EmailBodyParser = new EmailReplyParser\Parser\EmailParser;
 			$bodyParsed = $EmailBodyParser->parse( $t_description );
 			$bodyfragments = $bodyParsed->getFragments();
 
-			$visibleFragments = array_filter( $bodyfragments, function ( EmailReplyParser\Fragment $fragment )
-			{
-				return( !$fragment->isHidden() );
-			} );
+			$selectedFragments = array_filter( $bodyfragments, 'selectFragments' );
 
-			$t_description = rtrim( implode( "\n", $visibleFragments ) );
+			$t_description = rtrim( implode( "\n", $selectedFragments ) );
 		}
 
 		return( $t_description );
+	}
+
+	# --------------------
+	# Select the fragments of interest to us
+	private function selectFragments( EmailReplyParser\Fragment $fragment )
+	{
+		return( !( $fragment->isEmpty() ) && !( $this->_mail_remove_replies && $fragment->isQuoted() ) && !( $this->_mail_strip_signature && $fragment->isSignature() ) );
 	}
 
 	# --------------------
