@@ -7,7 +7,7 @@ Okt 2017 - EmailReporting-0.10.1
 	- Process default custom field values
 	- Fix PHP 7.2 deprecated function in PEAR MimeDecode package
 	- Replace print_bracket_link (dropped from MantisBT 2.11)
-	- Update Markdownify 2.2.2
+	- Update Markdownify github master
 	- Add EmailReplyParser library
 	- Retired old functionality now being handled by EmailReplyParser
 	- process_complex_value replaced with MantisBT ConfigParser to process mail_bug_priority form value
