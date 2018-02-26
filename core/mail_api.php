@@ -1627,6 +1627,7 @@ class ERP_mailbox_api
 	# --------------------
 	# Process the body of an email to separate signatures and replies
 	# @TODO@ Only returns a new body. Still need to do something with the replies and signatures
+	# @TODO@ Should we remove replies for new issues and notes or only for notes?
 	private function parse_email_body( $p_description )
 	{
 		$t_description = $p_description;
