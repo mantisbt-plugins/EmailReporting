@@ -62,10 +62,7 @@ class ERP_Mail_Parser
 	public function __construct( $options, $mailbox_starttime = NULL )
 	{
 		$this->_parse_html = $options[ 'parse_html' ];
-		if ( $this->_parse_html )
-		{
-			$this->_process_markdown = $options[ 'process_markdown' ];
-		}
+		$this->_process_markdown = $options[ 'process_markdown' ];
 		$this->_add_attachments = $options[ 'add_attachments' ];
 		$this->_debug = $options[ 'debug' ];
 		$this->_show_mem_usage = $options[ 'show_mem_usage' ];
@@ -446,10 +443,19 @@ class ERP_Mail_Parser
 
 		$this->setContentType( $ctype_primary, $ctype_secondary );
 
+		$body = str_replace(array("\r\n", "\r"), "\n", $body);
 		$body = $this->process_body_encoding( $body, $charset );
 
 		if ( 'text' === $this->_ctype['primary'] &&	'plain' === $this->_ctype['secondary'] )
 		{
+			// We need to escape any markdown characters present for plaintext emails
+			if ( $this->_process_markdown )
+			{
+				$escapemarkdown = new Markdownify\Converter();
+				$escapeInText = $escapemarkdown->getescapeInText();
+				$body = preg_replace( $escapeInText['search'], $escapeInText['replace'], $body );
+			}
+
 			$this->_body = $body;
 		}
 		elseif ( $this->_parse_html && 'text' === $this->_ctype['primary'] && 'html' === $this->_ctype['secondary'] )
@@ -510,7 +516,7 @@ class ERP_Mail_Parser
 				strtolower( $parts[ $i ]->ctype_secondary ) !== strtolower( $parts[ $i+1 ]->ctype_secondary )
 			)
 			{
-				if ( ( strtolower( $parts[ $i ]->ctype_secondary ) === 'plain' && $this->_process_markdown ) ||
+				if ( ( strtolower( $parts[ $i ]->ctype_secondary ) === 'plain' && $this->_parse_html && $this->_process_markdown ) ||
 					( strtolower( $parts[ $i ]->ctype_secondary ) === 'html' && !$this->_process_markdown ) )
 				{
 					$i++;

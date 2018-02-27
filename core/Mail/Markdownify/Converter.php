@@ -184,13 +184,14 @@ class Converter
      * TODO: what's with block chars / sequences at the beginning of a block?
      */
     protected $escapeInText = [
-        '\*' => '\*',
-        '\_' => '\_',
+        '\*' => '\\\\*',
+        '_' => '\\\\_',
         '([-*_])([ ]{0,2}\1){2,}' => '\\\\$0', // hr
-        '`' => '\`', // code
-        '\[(.+)\](\s*\()' => '\[$1\]$2', // links: [text] (url) => [text\] (url)
-        '\[(.+)\](\s*)\[(.*)\]' => '\[$1\]$2\[$3\]', // links: [text][id] => [text\][id\]
-        '^#(#{0,5}) ' => '\#$1 ', // header
+        '`' => '\\\\`', // code
+        '\[(.+)\](\s*\()' => '\\\\[$1\\\\]$2', // links: [text] (url) => [text\] (url)
+        '\[(.+)\](\s*)\[(.*)\]' => '\\\\[$1\\\\]$2\\\\[$3\\\\]', // links: [text][id] => [text\][id\]
+        '^#(#{0,5}) ' => '\\\\#$1 ', // header
+        '^=(=*\h*)$' => '\\\\=$1', // header
     ];
 
     /**
@@ -254,7 +255,7 @@ class Converter
         $search = [];
         $replace = [];
         foreach ($this->escapeInText as $s => $r) {
-            array_push($search, '@(?<!\\\)' . $s . '@U');
+            array_push($search, '@(?<!\\\)' . $s . '@mU');
             array_push($replace, $r);
         }
         $this->escapeInText = [
@@ -300,6 +301,16 @@ class Converter
     public function setKeepHTML($keepHTML)
     {
         $this->keepHTML = $keepHTML;
+    }
+
+    /**
+     * return escapeInText
+     *
+     * @return array escapeInText
+     */
+    public function getescapeInText()
+    {
+        return $this->escapeInText;
     }
 
     /**
