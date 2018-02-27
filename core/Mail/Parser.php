@@ -12,7 +12,7 @@ plugin_require_api( 'core/Mail/Markdownify/Parser.php' );
 class ERP_Mail_Parser
 {
 	private $_parse_html = FALSE;
-	private $_parse2markdown = FALSE;
+	private $_process_markdown = FALSE;
 	private $_encoding = 'UTF-8';
 	private $_add_attachments = TRUE;
 	private $_debug = FALSE;
@@ -64,7 +64,7 @@ class ERP_Mail_Parser
 		$this->_parse_html = $options[ 'parse_html' ];
 		if ( $this->_parse_html )
 		{
-			$this->_parse2markdown = $options[ 'parse2markdown' ];
+			$this->_process_markdown = $options[ 'process_markdown' ];
 		}
 		$this->_add_attachments = $options[ 'add_attachments' ];
 		$this->_debug = $options[ 'debug' ];
@@ -454,7 +454,7 @@ class ERP_Mail_Parser
 		}
 		elseif ( $this->_parse_html && 'text' === $this->_ctype['primary'] && 'html' === $this->_ctype['secondary'] )
 		{
-			if ( $this->_parse2markdown )
+			if ( $this->_process_markdown )
 			{
 				$html2markdown = new Markdownify\ConverterExtra();
 				$html2markdown->setKeepHTML( FALSE );
@@ -510,8 +510,8 @@ class ERP_Mail_Parser
 				strtolower( $parts[ $i ]->ctype_secondary ) !== strtolower( $parts[ $i+1 ]->ctype_secondary )
 			)
 			{
-				if ( ( strtolower( $parts[ $i ]->ctype_secondary ) === 'plain' && $this->_parse2markdown ) ||
-					( strtolower( $parts[ $i ]->ctype_secondary ) === 'html' && !$this->_parse2markdown ) )
+				if ( ( strtolower( $parts[ $i ]->ctype_secondary ) === 'plain' && $this->_process_markdown ) ||
+					( strtolower( $parts[ $i ]->ctype_secondary ) === 'html' && !$this->_process_markdown ) )
 				{
 					$i++;
 				}
