@@ -139,13 +139,15 @@ class ERP_Mail_Parser
 
 				if ( $t_encode !== FALSE )
 				{
-					return( $t_encode );
+					$encode = $t_encode;
 				}
 			}
 
+			// Replace non-breakable space with normal space
+			$encode = str_replace( "\xC2\xA0" , ' ', $encode );
 			// Remove any invisible unicode control format characters
 			// https://www.fileformat.info/info/unicode/category/Cf/index.htm
-			$encode = preg_replace( '/\p{Cf}+/u', "", $encode );
+			$encode = preg_replace( '/\p{Cf}+/u', '', $encode );
 		}
 
 		return( $encode );
