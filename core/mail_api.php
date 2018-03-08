@@ -44,6 +44,7 @@ class ERP_mailbox_api
 	// Unable to use the MantisBT email_regex_simple because it doesn't capture the local and domain seperately anymore since MantisBT 1.3.x
 	// Removed the local part limit because we might actually want the longer email addresses and we won't be using it to scan large texts anyway
 	private $_email_regex_simple = "(?P<local>[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+)@(?P<domain>[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)";
+	private $_mail_max_email_summary = 128;
 
 	private $_mail_add_bug_reports;
 	private $_mail_add_bugnotes;
@@ -960,7 +961,7 @@ class ERP_mailbox_api
 			$t_bug_data->eta					= (int) config_get( 'default_bug_eta' );
 			$t_bug_data->resolution				= config_get( 'default_bug_resolution' );
 			$t_bug_data->status					= config_get( 'bug_submit_status' );
-			$t_bug_data->summary				= $p_email[ 'Subject' ];
+			$t_bug_data->summary				= substr( $p_email[ 'Subject' ], 0, $this->_mail_max_email_summary );
 
 			$t_description = $p_email[ 'X-Mantis-Body' ];
 			$t_description = $this->strip_signature( $t_description );
