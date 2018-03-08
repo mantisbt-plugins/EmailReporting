@@ -1073,7 +1073,7 @@ if ( !function_exists( 'test_database_utf8' ) )
 			$t_string = $row[ 'name' ];
 			if ( !empty( $row[ 'description' ] ) )
 			{
-				$t_string .= ' - ' . utf8_substr( $row[ 'description' ], 0, 20 );
+				$t_string .= ' - ' . mb_substr( $row[ 'description' ], 0, 20 );
 			}
 
 			echo '<option value="', $row[ 'id' ], '" title="', string_attribute( $row[ 'name' ] ), '"';
