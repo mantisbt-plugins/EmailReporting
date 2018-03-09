@@ -961,7 +961,7 @@ class ERP_mailbox_api
 			$t_bug_data->eta					= (int) config_get( 'default_bug_eta' );
 			$t_bug_data->resolution				= config_get( 'default_bug_resolution' );
 			$t_bug_data->status					= config_get( 'bug_submit_status' );
-			$t_bug_data->summary				= substr( $p_email[ 'Subject' ], 0, $this->_mail_max_email_summary );
+			$t_bug_data->summary				= mb_substr( $p_email[ 'Subject' ], 0, $this->_mail_max_email_summary );
 
 			$t_description = $p_email[ 'X-Mantis-Body' ];
 			$t_description = $this->strip_signature( $t_description );
@@ -1590,10 +1590,10 @@ class ERP_mailbox_api
 
 		if ( $this->_mail_remove_replies )
 		{
-			$t_first_occurence = stripos( $t_description, $this->_mail_remove_replies_after );
+			$t_first_occurence = mb_stripos( $t_description, $this->_mail_remove_replies_after );
 			if ( $t_first_occurence !== FALSE )
 			{
-				$t_description = substr( $t_description, 0, $t_first_occurence );
+				$t_description = mb_substr( $t_description, 0, $t_first_occurence );
 			}
 
 			//remove gmail style replies
@@ -1607,12 +1607,12 @@ class ERP_mailbox_api
 		{
 			# The pear mimeDecode.php seems to be removing the last "=" in some versions of the pear package.
 			# the version delivered with this package seems to be working OK though but just to be sure
-			$t_email_separator1 = substr( $this->_email_separator1, 0, -1 );
+			$t_email_separator1 = mb_substr( $this->_email_separator1, 0, -1 );
 
-			$t_first_occurence = strpos( $t_description, $t_email_separator1 );
-			if ( $t_first_occurence !== FALSE && substr_count( $t_description, $t_email_separator1, $t_first_occurence ) >= 5 )
+			$t_first_occurence = mb_strpos( $t_description, $t_email_separator1 );
+			if ( $t_first_occurence !== FALSE && mb_substr_count( $t_description, $t_email_separator1, $t_first_occurence ) >= 5 )
 			{
-				$t_description = substr( $t_description, 0, $t_first_occurence );
+				$t_description = mb_substr( $t_description, 0, $t_first_occurence );
 			}
 		}
 
@@ -1693,12 +1693,12 @@ class ERP_mailbox_api
 		$t_description = $p_description;
 
 		// Checking binary length since MySQL TEXT column is also binary sized
-		if ( strlen( $t_description ) > $this->_mail_max_email_body )
+		if ( mb_strlen( $t_description ) > $this->_mail_max_email_body )
 		{
 			$t_mail_max_email_body_text = "\n" . $this->_mail_max_email_body_text;
 			
 			// Decide on max length and truncate. Remove one extra character just to be sure
-			$t_description = substr( $t_description, 0, $this->_mail_max_email_body - strlen( $t_mail_max_email_body_text ) - 1 ) . $t_mail_max_email_body_text;
+			$t_description = mb_substr( $t_description, 0, $this->_mail_max_email_body - mb_strlen( $t_mail_max_email_body_text ) - 1 ) . $t_mail_max_email_body_text;
 
 			if ( $this->_mail_max_email_body_add_attach )
 			{
