@@ -8,6 +8,7 @@ Okt 2017 - EmailReporting-0.10.1
 	- Fix PHP 7.2 deprecated function in PEAR MimeDecode package
 	- Replace print_bracket_link (dropped from MantisBT 2.11)
 	- Limit the length of the summary (kallelix)
+	- Use mbstring functions where applicable
 	- Update Markdownify github master
 	- Add EmailReplyParser library
 	- Retired old functionality now being handled by EmailReplyParser
