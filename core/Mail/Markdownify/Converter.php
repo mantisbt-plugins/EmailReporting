@@ -184,14 +184,15 @@ class Converter
      * TODO: what's with block chars / sequences at the beginning of a block?
      */
     protected $escapeInText = [
-        '\*' => '\\\\*',
-        '_' => '\\\\_',
+        '\*' => '\\\\*', // *
+        '_' => '\\\\_', // _
+        '\|' => '\\\\|', // |
         '([-*_])([ ]{0,2}\1){2,}' => '\\\\$0', // hr
         '`' => '\\\\`', // code
         '\[(.+)\](\s*\()' => '\\\\[$1\\\\]$2', // links: [text] (url) => [text\] (url)
         '\[(.+)\](\s*)\[(.*)\]' => '\\\\[$1\\\\]$2\\\\[$3\\\\]', // links: [text][id] => [text\][id\]
-        '^#(#{0,5}) ' => '\\\\#$1 ', // header
-        '^=(=*\h*)$' => '\\\\=$1', // header
+        '^#(#{0,5}) ' => '\\\\#$1 ', // header #
+        '^=(=*\h*)$' => '\\\\=$1', // header =
     ];
 
     /**
@@ -407,7 +408,7 @@ class Converter
         }
         // cleanup
         $this->output = implode("\n", array_map('rtrim', explode("\n", $this->output)));
-        $this->output = rtrim(str_replace(array('&amp;', '&lt;', '&gt;'), array('&', '<', '>'), $this->output));
+        $this->output = rtrim(str_replace(['&amp;', '&lt;', '&gt;', '&nbsp;'], ['&', '<', '>', ' '], $this->output));
         // end parsing, flush stacked tags
         $this->flushFootnotes();
         $this->stack = [];
@@ -591,7 +592,7 @@ class Converter
                     $this->buffer();
                 } else {
                     // add stuff so cleanup just reverses this
-                    $this->out(str_replace('&lt;', '&amp;lt;', str_replace('&gt;', '&amp;gt;', $this->unbuffer())));
+                    $this->out(str_replace(['&lt;', '&gt;'], ['&amp;lt;', '&amp;gt;'], $this->unbuffer()));
                 }
             }
         }
