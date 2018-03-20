@@ -876,6 +876,7 @@ class ERP_mailbox_api
 
 			$t_project_id = bug_get_field( $t_bug_id, 'project_id' );
 			ERP_set_temporary_overwrite( 'project_override', $t_project_id );
+			helper_set_current_project( $t_project_id );
 
 			# Event integration
 			# Core mantis event already exists within bugnote_add function
@@ -938,6 +939,7 @@ class ERP_mailbox_api
 
 			$t_project_id = ( ( $p_overwrite_project_id === FALSE ) ? $this->_mailbox[ 'project_id' ] : $p_overwrite_project_id );
 			ERP_set_temporary_overwrite( 'project_override', $t_project_id );
+			helper_set_current_project( $t_project_id );
 
 			$t_bug_data = new BugData;
 
@@ -1115,6 +1117,7 @@ class ERP_mailbox_api
 		$this->add_msg_ids( $t_bug_id, $t_references );
 
 		ERP_set_temporary_overwrite( 'project_override', NULL );
+		helper_set_current_project( ALL_PROJECTS );
 
 		$this->show_memory_usage( 'Finished processing attachments' );
 	}
