@@ -66,7 +66,7 @@ Support
 ========
 Documentation
 -------------
-https://www.mantisbt.org/wiki/doku.php/mantisbt:emailreporting
+https://www.mantisbt.org/wiki/doku.php/mantisbt:plugins:emailreporting
 
 Forum
 -----
