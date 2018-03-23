@@ -18,7 +18,7 @@ class EmailReportingPlugin extends MantisPlugin
 
 		$this->author = plugin_lang_get( 'plugin_author' );
 		$this->contact = '';
-		$this->url = 'http://www.mantisbt.org/wiki/doku.php/mantisbt:emailreporting';
+		$this->url = 'http://www.mantisbt.org/wiki/doku.php/mantisbt:plugins:emailreporting';
 	}
 
 	/**
