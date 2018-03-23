@@ -883,8 +883,13 @@ class ERP_mailbox_api
 
 			if ( bug_is_resolved( $t_bug_id ) )
 			{
+				$t_existing_bug = bug_get( $t_bug_id, true );
+
 				# Reopen issue and add a bug note
 				bug_reopen( $t_bug_id, $t_description );
+
+				$t_updated_bug = bug_get( $t_bug_id, true );
+				event_signal( 'EVENT_UPDATE_BUG', array( $t_existing_bug, $t_updated_bug ) );
 			}
 			elseif ( !is_blank( $t_description ) )
 			{
