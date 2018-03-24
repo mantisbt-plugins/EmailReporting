@@ -19,6 +19,7 @@ Okt 2017 - EmailReporting-0.10.1
 	- Update HTTP permissions on the EmailReporting scripts folder
 	- Use mbstring functions where applicable
 	- Correct help link for MantisBT doku wiki EmailReporting page
+	- Removed realname validation (MantisBT 2.12 retired needed functions)
 
 Sep 2017 - EmailReporting-0.10.0
 	- Officially compatible with MantisBT 2.x.x
