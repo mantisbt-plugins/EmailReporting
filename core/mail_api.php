@@ -1692,7 +1692,6 @@ class ERP_mailbox_api
 	{
 		$t_description = $p_description;
 
-		// Checking binary length since MySQL TEXT column is also binary sized
 		if ( mb_strlen( $t_description ) > $this->_mail_max_email_body )
 		{
 			$t_mail_max_email_body_text = "\n" . $this->_mail_max_email_body_text;

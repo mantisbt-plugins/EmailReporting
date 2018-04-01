@@ -219,7 +219,7 @@ Mail_mimeDecode
 Net_IMAP
 Net_POP3
 Net_Socket
-core pear files (pear.php and pear5.php)
+core pear files
 
 All of these packages  are the latest available versions at the moment of 
 release of this plugin.
