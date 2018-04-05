@@ -1610,7 +1610,7 @@ class ERP_mailbox_api
 			$t_email_separator1 = mb_substr( $this->_email_separator1, 0, -1 );
 
 			$t_first_occurence = mb_strpos( $t_description, $t_email_separator1 );
-			if ( $t_first_occurence !== FALSE && mb_substr_count( $t_description, $t_email_separator1, $t_first_occurence ) >= 5 )
+			if ( $t_first_occurence !== FALSE && mb_substr_count( $t_description, $t_email_separator1 ) >= 5 )
 			{
 				$t_description = mb_substr( $t_description, 0, $t_first_occurence );
 			}
