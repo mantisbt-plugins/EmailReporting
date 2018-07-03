@@ -1649,7 +1649,7 @@ class ERP_mailbox_api
 			$bodyParsed = $EmailBodyParser->parse( $t_description );
 			$bodyfragments = $bodyParsed->getFragments();
 
-			$selectedFragments = array_filter( $bodyfragments, 'selectFragments' );
+			$selectedFragments = array_filter( $bodyfragments, array( $this, 'selectFragments' ) );
 
 			$t_description = rtrim( implode( "\n", $selectedFragments ) );
 		}
