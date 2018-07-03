@@ -328,6 +328,7 @@ class ERP_mailbox_api
 	private function process_pop3_mailbox()
 	{
 		$this->_mailserver = new Net_POP3();
+		$this->_mailserver->_timeout = 3;
 
 		$t_connectresult = $this->_mailserver->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ], $this->get_StreamContextOptions() );
 
@@ -379,6 +380,7 @@ class ERP_mailbox_api
 	{
 //		$this->_mailserver = new Net_IMAP( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ] );
 		$this->_mailserver = new Net_IMAP();
+		$this->_mailserver->setTimeout( 3 );
 
 		$this->_mailserver->setStreamContextOptions( $this->get_StreamContextOptions() );
 
