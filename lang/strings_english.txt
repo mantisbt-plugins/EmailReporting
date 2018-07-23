@@ -48,7 +48,7 @@ $s_plugin_EmailReporting_mail_block_attachments_logging = 'Log blocked attachmen
 $s_plugin_EmailReporting_mail_bug_priority = 'Classify bug priorities';
 $s_plugin_EmailReporting_mail_debug = 'Debug mode';
 $s_plugin_EmailReporting_mail_debug_directory = 'Save email contents to this directory if debug mode is activated';
-$s_plugin_EmailReporting_mail_debug_show_memory_usage = 'Show the memory usage in different stages of the email processing process';
+$s_plugin_EmailReporting_mail_debug_show_memory_usage = 'Show the memory usage at various stages of the email processing process';
 $s_plugin_EmailReporting_mail_delete = 'Delete processed email from the mailbox';
 $s_plugin_EmailReporting_mail_disposable_email_checker = 'Enable disposable email address checker of MantisBT';
 $s_plugin_EmailReporting_mail_email_receive_own = 'Should users receive emails for their own actions (N/A if email_receive_own = ON)';
