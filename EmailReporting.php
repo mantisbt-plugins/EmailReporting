@@ -608,9 +608,6 @@ class EmailReportingPlugin extends MantisPlugin
 			plugin_config_set( 'config_version', 16 );
 		}
 
-/* @TODO@ - Only enable after this code becomes part of the master
-	Also document these deleted configs on the wiki */
-/*
 		if ( $t_config_version <= 16 )
 		{
 			plugin_config_delete( 'mail_strip_signature_delim' );
@@ -619,7 +616,6 @@ class EmailReportingPlugin extends MantisPlugin
 
 			plugin_config_set( 'config_version', 17 );
 		}
-*/
 	}
 
 	/*
