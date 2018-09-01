@@ -1,5 +1,5 @@
 Changelog:
-Okt 2017 - EmailReporting-0.11.0
+Sep 2018 - EmailReporting-0.11.0
 	- Update Markdownify github master
 	- Add EmailReplyParser library
 	- Retired old functionality now being handled by EmailReplyParser
@@ -8,7 +8,7 @@ Okt 2017 - EmailReporting-0.11.0
 	- Add event signal for EVENT_UPDATE_BUG when issue is reopened
 	- Set timeouts for IMAP and POP3 connections
 
-Okt 2017 - EmailReporting-0.10.1
+May 2018 - EmailReporting-0.10.1
 	- Added error if, on installation, 'api/soap/mc_file_api.php' is missing
 	- Updated english and spanish language files
 	- STARTTLS encryption only shown when available
