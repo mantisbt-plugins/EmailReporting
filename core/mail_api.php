@@ -970,7 +970,6 @@ class ERP_mailbox_api
 			$t_bug_data->summary				= mb_substr( $p_email[ 'Subject' ], 0, $this->_mail_max_email_summary );
 
 			$t_description = $p_email[ 'X-Mantis-Body' ];
-			$t_description = $this->parse_email_body( $t_description );
 			$t_description = $this->add_additional_info( 'issue', $p_email, $t_description );
 			$t_description = $this->limit_body_size( 'description', $t_description, $p_email );
 			$t_bug_data->description			= $t_description;
@@ -1634,8 +1633,6 @@ class ERP_mailbox_api
 
 	# --------------------
 	# Process the body of an email to separate signatures and replies
-	# @TODO@ Only returns a new body. Still need to do something with the replies and signatures
-	# @TODO@ Should we remove replies for new issues and notes or only for notes?
 	private function parse_email_body( $p_description )
 	{
 		$t_description = $p_description;
