@@ -34,6 +34,24 @@ All versions:
 * Ability to set scheduled / cron jobs on the webserver
 * /api/soap/mc_file_api.php is required for EmailReporting to function properly
 
+Includes thirdparty packages
+============================
+
+PEAR
+----
+* [core pear files (pear.php and pear5.php)](https://pear.php.net)
+* [Auth_SASL](https://pear.php.net/package/Auth_SASL)
+* [Mail_mimeDecode](https://pear.php.net/package/Mail_mimeDecode)
+* [Net_IMAP](https://pear.php.net/package/Net_IMAP)
+* [Net_POP3](https://pear.php.net/package/Net_POP3)
+* [Net_Socket](https://pear.php.net/package/Net_Socket)
+
+Libraries
+---------
+* [PHP Simple HTML DOM Parser](http://sourceforge.net/projects/simplehtmldom/)
+* [Markdownify](https://github.com/Elephant418/Markdownify)
+* [EmailReplyParser](https://github.com/willdurand/EmailReplyParser)
+
 Download
 ========
 
@@ -41,7 +59,7 @@ The stable releases can be downloaded from the GitHub downloads page: https://gi
 The development versions are not meant for production environments. Use at your own risk
 
 Source code
-===========
+-----------
 EmailReporting plugin is hosted in GitHub along with other MantisBT plugins. GitHub URL: https://github.com/mantisbt-plugins/EmailReporting
 
 Support

@@ -93,7 +93,7 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 		$t_message .= plugin_lang_get( 'imap_basefolder' ) . ': ' . $t_mailbox_api->_mailbox[ 'imap_basefolder' ] . '<br />';
 	}
 
-	$t_message .= '<br />' . ( ( $t_is_custom_error ) ? nl2br( $t_result[ 'ERROR_MESSAGE' ] ) : ( ( PEAR::isError( $t_result ) ) ? 'Location: ' . $t_result->ERP_location . '<br />' . $t_result->toString() : NULL ) ) . '<br /><br />';
+	$t_message .= '<br />' . ( ( $t_is_custom_error ) ? nl2br( $t_result[ 'ERROR_MESSAGE' ] ) : ( ( PEAR::isError( $t_result ) ) ? 'Location: ' . $t_result->ERP_location . '<br />' . $t_result->toString() : NULL ) );
 
 	if ( ( $t_is_custom_error || PEAR::isError( $t_result ) ) )
 	{

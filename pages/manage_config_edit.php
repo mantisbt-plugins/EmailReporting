@@ -29,8 +29,6 @@ $f_gpc = array(
 	'mail_preferred_realname'		=> gpc_get_string( 'mail_preferred_realname' ),
 	'mail_remove_mantis_email'		=> gpc_get_int( 'mail_remove_mantis_email' ),
 	'mail_remove_replies'			=> gpc_get_int( 'mail_remove_replies' ),
-	'mail_strip_gmail_style_replies'=> gpc_get_int( 'mail_strip_gmail_style_replies' ),
-	'mail_remove_replies_after'		=> gpc_get_string( 'mail_remove_replies_after' ),
 	'mail_removed_reply_text'		=> gpc_get_string( 'mail_removed_reply_text' ),
 	'mail_reporter_id'				=> gpc_get_int( 'mail_reporter_id' ),
 	'mail_rule_system'				=> gpc_get_int( 'mail_rule_system' ),
@@ -39,7 +37,6 @@ $f_gpc = array(
 	'mail_secured_script'			=> gpc_get_int( 'mail_secured_script' ),
 	'mail_secured_ipaddr'			=> gpc_get_string( 'mail_secured_ipaddr' ),
 	'mail_strip_signature'			=> gpc_get_int( 'mail_strip_signature' ),
-	'mail_strip_signature_delim'	=> gpc_get_string( 'mail_strip_signature_delim' ),
 	'mail_subject_id_regex'			=> gpc_get_string( 'mail_subject_id_regex' ),
 	'mail_use_bug_priority'			=> gpc_get_int( 'mail_use_bug_priority' ),
 	'mail_use_message_id'			=> gpc_get_int( 'mail_use_message_id' ),
@@ -56,8 +53,21 @@ foreach ( $f_gpc AS $t_key => $t_value )
 	}
 }
 
-$t_mail_bug_priority = process_complex_value( $f_mail_bug_priority );
-if( is_array( $t_mail_bug_priority ) )
+try
+{
+	if( !empty( $f_mail_bug_priority ) )
+	{
+		$t_parser = new ConfigParser( $f_mail_bug_priority );
+		$t_mail_bug_priority = $t_parser->parse( ConfigParser::EXTRA_TOKENS_IGNORE );
+	}
+}
+catch (Exception $e)
+{
+	error_parameters( $f_mail_bug_priority, $e->getMessage() );
+	trigger_error( ERROR_CONFIG_OPT_BAD_SYNTAX, ERROR );
+}
+
+if( isset( $t_mail_bug_priority ) && is_array( $t_mail_bug_priority ) )
 {
 	if ( plugin_config_get( 'mail_bug_priority' ) !== $t_mail_bug_priority )
 	{

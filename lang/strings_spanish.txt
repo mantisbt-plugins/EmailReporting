@@ -63,7 +63,6 @@ $s_plugin_EmailReporting_mail_preferred_username = 'Nombre de usuario preferido 
 $s_plugin_EmailReporting_mail_preferred_realname = 'Nombre real preferido para la creación de nuevos usuarios';
 $s_plugin_EmailReporting_mail_remove_mantis_email = 'Eliminar MantisBT notification emails de las respuestas';
 $s_plugin_EmailReporting_mail_remove_replies = 'Eliminar todas las respuestas de las notas';
-$s_plugin_EmailReporting_mail_remove_replies_after = 'Usar este texto para identificar el inicio de una respuesta';
 $s_plugin_EmailReporting_mail_removed_reply_text = 'Usar este texto si las notas han sido eliminadas del email';
 $s_plugin_EmailReporting_mail_reporter_id = 'Usuario predeterminado para las solicitudes creadas por email';
 $s_plugin_EmailReporting_mail_rule_system = 'Reglas de sistema';
@@ -71,9 +70,7 @@ $s_plugin_EmailReporting_mail_save_from = 'Escribir el email del usuario que env
 $s_plugin_EmailReporting_mail_save_subject_in_note = 'Escribir el asunto del mensaje en la nota';
 $s_plugin_EmailReporting_mail_secured_script = 'Evitar que el script se ejecute desde el navegador web (Recomendado = "Sí")';
 $s_plugin_EmailReporting_mail_secured_ipaddr = 'Solo permitir el acceso a bug_report_mail desde esta dirección IP';
-$s_plugin_EmailReporting_mail_strip_gmail_style_replies = 'Elimiar estilo de respuesta de Gmail (Solo Ingles) de las notas (mail_remove_replies should be YES)';
 $s_plugin_EmailReporting_mail_strip_signature = 'Borrar firma del cuerpo del mensaje';
-$s_plugin_EmailReporting_mail_strip_signature_delim = 'Limitado por';
 $s_plugin_EmailReporting_mail_subject_id_regex = 'Qué tipo de búsqueda debe utilizarse para encontrar el id de la solicitud en el asunto';
 $s_plugin_EmailReporting_mail_use_bug_priority = 'Buscar en el campo prioridad de la cabecera del mensaje';
 $s_plugin_EmailReporting_mail_use_message_id = 'Usar Message-ID en la cabecera del email para identificar las notas';

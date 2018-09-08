@@ -158,7 +158,6 @@ ERP_output_table_close();
 
 ERP_output_table_open( 'strip_signature_feature_options' );
 ERP_output_config_option( 'mail_strip_signature', 'boolean' );
-ERP_output_config_option( 'mail_strip_signature_delim', 'string' );
 ERP_output_table_close();
 
 ERP_output_table_open( 'default_texts_options' );
@@ -168,8 +167,6 @@ ERP_output_table_close();
 
 ERP_output_table_open( 'remove_reply_options' );
 ERP_output_config_option( 'mail_remove_replies', 'boolean' );
-ERP_output_config_option( 'mail_remove_replies_after', 'string_multiline' );
-ERP_output_config_option( 'mail_strip_gmail_style_replies', 'boolean' );
 ERP_output_config_option( 'mail_remove_mantis_email', 'boolean' );
 ERP_output_config_option( 'mail_removed_reply_text', 'string' );
 ERP_output_table_close();

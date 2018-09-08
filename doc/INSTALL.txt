@@ -216,21 +216,26 @@ possible fields you added with the EVENT_ERP_OUTPUT_MAILBOX_FIELDS event
 Included PEAR packages within this distribution are:
 Auth_SASL
 Mail_mimeDecode
-Net_POP3
 Net_IMAP
+Net_POP3
 Net_Socket
-core pear files (pear.php and pear5.php)
+core pear files
 
-All of these packages (except for Net_IMAP, see below) are the latest
-available versions at the moment of release of this plugin. If you don't
-need these PEAR packages you can delete the whole core_pear directory.
-
-Net_IMAP 1.0.3 is forced since 1.1.0 does not work with this plugin
-because of a bug. Therefore it is not present in the core_pear directory.
+All of these packages  are the latest available versions at the moment of 
+release of this plugin.
 
 PHP Simple HTML DOM Parser - http://sourceforge.net/projects/simplehtmldom/
 This package is not a PEAR package but is included to convert html content to
 text content.
+
+Markdownify - https://github.com/Elephant418/Markdownify
+This package is not a PEAR package but is included to convert html content to
+Markdown which is supported since MantisBT 2.1.0.
+
+EmailReplyParser - https://github.com/willdurand/EmailReplyParser
+This package is not a PEAR package but is included to separate replies and 
+signatures from the actual email body. This has resulted in the retirement of 
+comparable functionality in the EmailReporting core.
 
 
 PHP extensions:

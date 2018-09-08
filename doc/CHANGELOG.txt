@@ -1,4 +1,13 @@
 Changelog:
+Sep 2018 - EmailReporting-0.11.0
+	- Update Markdownify github master
+	- Add EmailReplyParser library
+	- Retired old functionality now being handled by EmailReplyParser
+	- process_complex_value replaced with MantisBT ConfigParser to process mail_bug_priority form value
+	- Email priority will be taken from "X-MSMail-Priority" and "Importance" if "X-Priority" is not available
+	- Add event signal for EVENT_UPDATE_BUG when issue is reopened
+	- Set timeouts for IMAP and POP3 connections
+
 May 2018 - EmailReporting-0.10.1
 	- Added error if, on installation, 'api/soap/mc_file_api.php' is missing
 	- Updated english and spanish language files

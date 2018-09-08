@@ -11,7 +11,7 @@ class EmailReportingPlugin extends MantisPlugin
 		$this->description = plugin_lang_get( 'plugin_description' );
 		$this->page = 'manage_config';
 
-		$this->version = '0.10.1';
+		$this->version = '0.11.0-DEV';
 		$this->requires = array(
 			'MantisCore' => '1.3.0, <2.99.99',
 		);
@@ -107,7 +107,7 @@ class EmailReportingPlugin extends MantisPlugin
 			# Enable fallback to mail reporter
 			'mail_fallback_mail_reporter'	=> ON,
 
-			# Maximum size of the description/note. Restricion needed for database limitations
+			# Maximum size of the description/note. Restriction needed for database limitations
 			# Older installations of MantisBT never had there description fields in MYSQL increased from TEXT to MEDIUMTEXT so TEXT is the default max
 			'mail_max_email_body'			=> 65535,
 
@@ -138,9 +138,6 @@ class EmailReportingPlugin extends MantisPlugin
 			# Remove everything after and including the remove_replies_after text
 			'mail_remove_replies'			=> OFF,
 
-			# Text which decides after (and including) which all content needs to be removed
-			'mail_remove_replies_after'		=> '-----Original Message-----',
-
 			# Use the following text when part of the email has been removed
 			'mail_removed_reply_text'		=> '[EmailReporting -> Removed part identified as reply]',
 
@@ -166,14 +163,8 @@ class EmailReportingPlugin extends MantisPlugin
 			# access to this IP address
 			'mail_secured_ipaddr'			=> '',
 
-			//Strip Gmail style replies from body of the message
-			'mail_strip_gmail_style_replies'=> OFF,
-
 			#Removes the signature that are delimited by mail_strip_signature_delim
 			'mail_strip_signature'			=> OFF,
-
-			#Removes the signature that are delimited by --
-			'mail_strip_signature_delim'	=> '--',
 
 			# Which regex should be used for finding the issue id in the subject
 			'mail_subject_id_regex'			=> 'strict',
@@ -203,7 +194,6 @@ class EmailReportingPlugin extends MantisPlugin
 
 		if ( !@include_once( config_get_global( 'absolute_path' ) . 'api/soap/mc_file_api.php' ) )
 		{
-			# @todo returning false should trigger some error reporting, needs rethinking error_api
 			error_parameters( plugin_lang_get( 'apisoap_error' ) );
 			trigger_error( ERROR_PLUGIN_INSTALL_FAILED, ERROR ); 
 			return( FALSE );
@@ -616,6 +606,15 @@ class EmailReportingPlugin extends MantisPlugin
 			ERP_mailbox_api::clean_references_for_deleted_issues();
 
 			plugin_config_set( 'config_version', 16 );
+		}
+
+		if ( $t_config_version <= 16 )
+		{
+			plugin_config_delete( 'mail_strip_signature_delim' );
+			plugin_config_delete( 'mail_remove_replies_after' );
+			plugin_config_delete( 'mail_strip_gmail_style_replies' );
+
+			plugin_config_set( 'config_version', 17 );
 		}
 	}
 
