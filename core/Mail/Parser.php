@@ -57,6 +57,7 @@ class ERP_Mail_Parser
 			'ks_c_5601-1987' => 'UHC',
 			'ks_c_5601-1989' => 'UHC',
 			'us-ascii' => 'ASCII',
+			'big5' => 'BIG-5',
 	);
 
 	public function __construct( $options, $mailbox_starttime = NULL )
