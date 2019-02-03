@@ -1534,15 +1534,23 @@ class ERP_mailbox_api
 			{
 				if ( !is_blank( $t_ref ) )
 				{
-					// Check whether the msg_id is already in the database table
-					$t_bug_id = $this->get_bug_id_from_references( $t_ref );
-
-					if( $t_bug_id === FALSE )
+					// ignore references longer then 255 characters as they are most likely malformed
+					if ( strlen( $t_ref ) > 255 )
 					{
-						// Add the Message-ID to the table for future reference
-						$t_query = 'INSERT INTO ' . plugin_table( 'msgids' ) . '( issue_id, msg_id ) VALUES'
-								. ' (' . db_param() . ', ' . db_param() . ')';
-						db_query_bound( $t_query, array( (int)$p_bug_id, $t_ref ) );
+						custom_error( 'Reference id encountered thats longer then 255 characters. It will be ignored' );
+					}
+					else
+					{
+						// Check whether the msg_id is already in the database table (incase its under a different bug id)
+						$t_bug_id = $this->get_bug_id_from_references( $t_ref );
+
+						if( $t_bug_id === FALSE )
+						{
+							// Add the Message-ID to the table for future reference
+							$t_query = 'INSERT INTO ' . plugin_table( 'msgids' ) . '( issue_id, msg_id ) VALUES'
+									. ' (' . db_param() . ', ' . db_param() . ')';
+							db_query_bound( $t_query, array( (int)$p_bug_id, $t_ref ) );
+						}
 					}
 				}
 			}

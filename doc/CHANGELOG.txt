@@ -8,6 +8,8 @@ Sep 2018 - EmailReporting-0.11.0
 	- Add event signal for EVENT_UPDATE_BUG when issue is reopened
 	- Set timeouts for IMAP and POP3 connections
 	- Fix issue with big5 charset
+	- Fix for issue with reference parsing (#25433)
+	- Limited max length of message id (#25433)
 
 May 2018 - EmailReporting-0.10.1
 	- Added error if, on installation, 'api/soap/mc_file_api.php' is missing
