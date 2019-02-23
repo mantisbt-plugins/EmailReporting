@@ -58,6 +58,7 @@ class ERP_Mail_Parser
 			'ks_c_5601-1989' => 'UHC',
 			'us-ascii' => 'ASCII',
 			'big5' => 'BIG-5',
+			'windows-1257' => 'ISO-8859-13', // not perfect but should do the job
 	);
 
 	public function __construct( $options, $mailbox_starttime = NULL )
