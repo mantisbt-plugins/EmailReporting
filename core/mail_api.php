@@ -443,13 +443,17 @@ class ERP_mailbox_api
 
 											if ( !$this->pear_error( 'Retrieve list of messages', $t_ListMsgs ) )
 											{
+												$t_flags = $this->_mailserver->getFlags();
+
 												while ( $t_Msg = array_pop( $t_ListMsgs ) )
 												{
-													$t_isDeleted = $this->isDeleted( $t_Msg[ 'msg_id' ] );
+													$t_isDeleted = $this->isDeleted( $t_Msg[ 'msg_id' ], $t_flags );
 
 													if ( $this->pear_error( 'Check email deleted flag', $t_isDeleted ) )
 													{
-														$t_isDeleted = FALSE;
+														// Should we stop processing if the flag cannot be verified or process the email?
+														// Let's ignore the email and hope the check works on the next run
+														$t_isDeleted = TRUE;
 													}
 
 													if ( $t_isDeleted === TRUE )
@@ -645,28 +649,28 @@ class ERP_mailbox_api
 	# Check whether a email is deleted
 	# for IMAP only function
 	# Handles a workaround for problems with Net_IMAP 1.1.x with the hasFlag function (isDeleted uses that function)
-	private function isDeleted( $message_nro )
+	private function isDeleted( $p_msg_id, &$p_flags )
 	{
 //		return $this->hasFlag($message_nro, '\Deleted');
 		$flag = '\Deleted';
 
-		if ( ( $resp = $this->_mailserver->getFlags( $message_nro ) ) instanceOf PEAR_Error )
+		if ( $p_flags instanceOf PEAR_Error )
 		{
-			return $resp;
+			return $p_flags;
 		}
 
-		if ( isset( $resp[ 0 ] ) )
+		if ( isset( $p_flags[ $p_msg_id ] ) )
 		{
-			if ( is_array( $resp[ 0 ] ) )
+			if ( is_array( $p_flags[ $p_msg_id ] ) )
 			{
-				if ( in_array( $flag, $resp[ 0 ] ) )
+				if ( in_array( $flag, $p_flags[ $p_msg_id ] ) )
 				{
-					return true;
+					return TRUE;
 				}
 			}
 		}
 
-		return false;
+		return FALSE;
 	}
 
 	# --------------------

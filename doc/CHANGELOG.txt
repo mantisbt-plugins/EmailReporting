@@ -11,6 +11,7 @@ Sep 2018 - EmailReporting-0.11.0
 	- Fix for issue with reference parsing (#25433)
 	- Limited max length of message id (#25433)
 	- Add support for Windows-1257 charset
+	- Enable the caching of IMAP flags
 
 May 2018 - EmailReporting-0.10.1
 	- Added error if, on installation, 'api/soap/mc_file_api.php' is missing

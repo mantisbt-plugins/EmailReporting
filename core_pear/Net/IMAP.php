@@ -1898,7 +1898,9 @@ class Net_IMAP extends Net_IMAPProtocol
         if (isset($ret['PARSED'])) {
             foreach ($ret['PARSED'] as $msg_flags) {
                 if (isset($msg_flags['EXT']['FLAGS'])) {
-                    $flags[] = $msg_flags['EXT']['FLAGS'];
+// ERP-modification: Need to know the NRO so that EmailReporting can cache the results
+//                    $flags[] = $msg_flags['EXT']['FLAGS'];
+                    $flags[$msg_flags['NRO']] = $msg_flags['EXT']['FLAGS'];
                 }
             }
         }
