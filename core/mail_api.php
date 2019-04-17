@@ -536,35 +536,20 @@ class ERP_mailbox_api
 	# Needed a workaround to sort IMAP emails in a certain order
 	private function getListing()
 	{
-		$t_ListMsgs = NULL;
+		$t_ListMsgs = $this->_mailserver->getListing();
 
-		if ( $this->_mailbox[ 'mailbox_type' ] === 'IMAP' )
+		if ( !PEAR::isError( $t_ListMsgs ) )
 		{
-			$t_getSummary = $this->_mailserver->getSummary();
-
-			if ( !$this->pear_error( 'IMAP Get folder info', $t_getSummary ) )
+			if ( $this->_mailbox[ 'mailbox_type' ] === 'IMAP' )
 			{
-				$t_nummsg = count( $t_getSummary );
-				$t_ListMsgs = array();
-				for ( $i = 0; $i < $t_nummsg; $i++ )
-				{
-					$t_getSummary[ $i ][ 'DATE' ] = strtotime( $t_getSummary[ $i ][ 'DATE' ] );
-					// If strtotime fails we default back to the current time. 
-					if ( $t_getSummary[ $i ][ 'DATE' ] === FALSE )
-					{
-						$t_getSummary[ $i ][ 'DATE' ] = time();
-					}
-
-					$t_ListMsgs[ $t_getSummary[ $i ][ 'DATE' ] ] = array( 'msg_id' => (int) $t_getSummary[ $i ][ 'MSG_NUM' ] );
-				}
-
-				krsort( $t_ListMsgs );
+				$t_ListMsgs = array_column( $t_ListMsgs, NULL, 'uidl' );
 			}
-		}
+			else
+			{
+				$t_ListMsgs = array_column( $t_ListMsgs, NULL, 'msg_id' );
+			}
 
-		if ( $t_ListMsgs === NULL )
-		{
-			$t_ListMsgs = $this->_mailserver->getListing();
+			krsort( $t_ListMsgs );
 		}
 
 		return( $t_ListMsgs );
