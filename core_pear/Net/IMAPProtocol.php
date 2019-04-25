@@ -2793,6 +2793,7 @@ class Net_IMAPProtocol
             break;
 
         default:
+            // ERP-modification: BEGIN IMAP Performance optimizations
             $startsWithBody = $str[0] == 'B'
               && ($this->_getSubstr($str, 0, 5) == 'BODY['
                   || $this->_getSubstr($str, 0, 5) == 'BODY.');
@@ -2817,6 +2818,7 @@ class Net_IMAPProtocol
                     $pos++;
                 }
             }
+            // ERP-modification: END IMAP Performance optimizations
             //Advance the string
             if ($pos == 0) {
                 $content_size = 1;
