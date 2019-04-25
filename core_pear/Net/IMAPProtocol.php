@@ -2793,24 +2793,27 @@ class Net_IMAPProtocol
             break;
 
         default:
+            $startsWithBody = $str[0] == 'B'
+              && ($this->_getSubstr($str, 0, 5) == 'BODY['
+                  || $this->_getSubstr($str, 0, 5) == 'BODY.');
             for ($pos = 0; $pos < $len; $pos++) {
-                if ($this->_getSubstr($str, 0, 5) == 'BODY[' 
-                    || $this->_getSubstr($str, 0, 5) == 'BODY.') {
-                    if ($str[$pos] == ']') {
+                $c = $str[$pos];
+                if ($startsWithBody) {
+                    if ($c == ']') {
                         $pos++;
                         break;
                     }
-                } elseif ($str[$pos] == ' ' 
-                          || $str[$pos] == "\r" 
-                          || $str[$pos] == ')' 
-                          || $str[$pos] == '(' 
-                          || $str[$pos] == "\n" ) {
+                } elseif ($c == ' '
+                          || $c == "\r"
+                          || $c == ')'
+                          || $c == '('
+                          || $c == "\n" ) {
                     break;
                 }
-                if ($str[$pos] == "\\" && $str[$pos + 1 ] == ' ') {
+                if ($str[$pos] == '\\' && $str[$pos + 1 ] == ' ') {
                     $pos++;
                 }
-                if ($str[$pos] == "\\" && $str[$pos + 1 ] == "\\") {
+                if ($str[$pos] == '\\' && $str[$pos + 1 ] == '\\') {
                     $pos++;
                 }
             }
