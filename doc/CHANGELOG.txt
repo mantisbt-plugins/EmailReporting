@@ -1,5 +1,5 @@
 Changelog:
-Sep 2018 - EmailReporting-0.11.0
+May 2019 - EmailReporting-0.11.0
 	- Update Markdownify github master
 	- Add EmailReplyParser library
 	- Retired old functionality now being handled by EmailReplyParser
