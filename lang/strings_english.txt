@@ -38,7 +38,7 @@ $s_plugin_EmailReporting_directory_unavailable = 'Warning: directory not found';
 $s_plugin_EmailReporting_directory_writable = 'Directory writable';
 $s_plugin_EmailReporting_directory_unwritable = 'Warning: directory not writable';
 
-$s_plugin_EmailReporting_mail_add_bug_reports = 'Create new issues';
+$s_plugin_EmailReporting_mail_add_bug_reports = 'Add new issues';
 $s_plugin_EmailReporting_mail_add_bugnotes = 'Add notes';
 $s_plugin_EmailReporting_mail_add_complete_email = 'Add the complete email into the attachments';
 $s_plugin_EmailReporting_mail_add_users_from_cc_to = 'Add users to issue monitoring list from Cc and To fields in mail header';
@@ -65,6 +65,7 @@ $s_plugin_EmailReporting_mail_remove_mantis_email = 'Remove MantisBT notificatio
 $s_plugin_EmailReporting_mail_remove_replies = 'Remove all replies from notes';
 $s_plugin_EmailReporting_mail_removed_reply_text = 'Use this text if replies have been removed from the email';
 $s_plugin_EmailReporting_mail_reporter_id = 'The default / fallback reporter user for issues created by email';
+$s_plugin_EmailReporting_mail_respect_permissions = 'Check user permissions';
 $s_plugin_EmailReporting_mail_rule_system = 'Rule system';
 $s_plugin_EmailReporting_mail_save_from = 'Write the sender of the email into the issue report/note';
 $s_plugin_EmailReporting_mail_save_subject_in_note = 'Write the subject of the email in the note';

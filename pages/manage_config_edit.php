@@ -31,6 +31,7 @@ $f_gpc = array(
 	'mail_remove_replies'			=> gpc_get_int( 'mail_remove_replies' ),
 	'mail_removed_reply_text'		=> gpc_get_string( 'mail_removed_reply_text' ),
 	'mail_reporter_id'				=> gpc_get_int( 'mail_reporter_id' ),
+	'mail_respect_permissions'		=> gpc_get_int( 'mail_respect_permissions' ),
 	'mail_rule_system'				=> gpc_get_int( 'mail_rule_system' ),
 	'mail_save_from'				=> gpc_get_int( 'mail_save_from' ),
 	'mail_save_subject_in_note'		=> gpc_get_int( 'mail_save_subject_in_note' ),
