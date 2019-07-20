@@ -1090,7 +1090,7 @@ class ERP_mailbox_api
 			if ( count( $p_email[ 'X-Mantis-Parts' ] ) > 0 )
 			{
 				# Check attachment permissions
-				if( !$this->_mail_respect_permissions || file_allow_bug_upload( $t_bug_id, $p_email[ 'Reporter_id' ] ) )
+				if( !$this->_mail_respect_permissions || file_allow_bug_upload( $t_bug_id ) )
 				{
 					$t_rejected_files = NULL;
 
