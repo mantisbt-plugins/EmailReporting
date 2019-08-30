@@ -584,6 +584,10 @@ class ERP_mailbox_api
 
 		unset( $t_msg );
 
+		if ( $t_email[ 'Is-Auto-Reply' ] ) {
+			return( FALSE );
+		}
+		
 		$this->show_memory_usage( 'Parsed single email' );
 
 		$this->save_message_to_file( 'parsed_msg', $t_email );
@@ -692,6 +696,8 @@ class ERP_mailbox_api
 		$t_email[ 'X-Mantis-Body' ] = trim( $t_mp->body() );
 
 		$t_email[ 'X-Mantis-Parts' ] = $t_mp->parts();
+
+		$t_email[ 'Is-Auto-Reply' ] = $t_mp->is_auto_reply();
 
 		if ( $this->_mail_add_complete_email )
 		{

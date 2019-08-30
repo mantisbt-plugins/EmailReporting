@@ -36,6 +36,7 @@ class ERP_Mail_Parser
 	private $_body;
 	private $_parts = array();
 	private $_ctype = array();
+	private $_is_auto_replay;
 
 	private $_mb_list_encodings = array();
 
@@ -314,6 +315,11 @@ class ERP_Mail_Parser
 		return( $this->_parts );
 	}
 
+	public function is_auto_reply()
+	{
+		return( $this->_is_auto_replay );
+	}
+
 	private function parseStructure( &$structure )
 	{
 		if ( isset( $structure->headers[ 'from' ] ) )
@@ -379,6 +385,19 @@ class ERP_Mail_Parser
 		{
 			$this->setCc( $structure->headers[ 'cc' ] );
 		}
+
+		/**
+		 * check if the email is an out of the office auto reply by checking the following fields:
+		 * X-Auto-Response-Suppress = All
+		 * X-Autoreply
+		 * X-Autorespond
+		 * auto-submitted with a value of "auto-replied"
+		 */
+		$this->_is_auto_replay = ( ( isset( $structure->headers[ 'x-auto-response-suppress' ] ) &&  $structure->headers[ 'x-auto-response-suppress' ] == 'All' ) 
+				|| isset( $structure->headers[ 'x-autoreply' ] )
+			 	|| isset( $structure->headers[ 'x-autorespond' ] )
+			 	|| ( isset( $structure->headers[ 'auto-submitted' ] ) && $structure->headers[ 'auto-submitted' ] == 'auto-replied' )
+		 );
 	}
 
 	private function setFrom( $from )
