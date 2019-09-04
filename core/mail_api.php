@@ -585,7 +585,7 @@ class ERP_mailbox_api
 		unset( $t_msg );
 
 		if ( $t_email[ 'Is-Auto-Reply' ] ) {
-			return( FALSE );
+			return( TRUE );
 		}
 		
 		$this->show_memory_usage( 'Parsed single email' );
