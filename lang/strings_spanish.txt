@@ -53,6 +53,7 @@ $s_plugin_EmailReporting_mail_delete = 'Borrar correos procesados del buzón';
 $s_plugin_EmailReporting_mail_disposable_email_checker = 'Verificador de dirección de correo electrónico desechable de MantisBT';
 $s_plugin_EmailReporting_mail_email_receive_own = 'Permitir a los usuarios recibir notificaciones de sus propias acciones (No Aplica si email_receive_own = ON)';
 $s_plugin_EmailReporting_mail_fallback_mail_reporter = 'Habilitar usuario predeterminado';
+$s_plugin_EmailReporting_mail_ignore_auto_replies = 'Ignore auto-reply emails'; /* TODO Need translation */
 $s_plugin_EmailReporting_mail_max_email_body = 'Tamaño maximo permito de un correo para agregar una nota o descripción a la solicitud';
 $s_plugin_EmailReporting_mail_max_email_body_text = 'Usar este texto si la descripción o nota fue eliminada o truncada';
 $s_plugin_EmailReporting_mail_max_email_body_add_attach = 'Agregar la descripción completa o nota como adjunto en caso que este sea truncado';

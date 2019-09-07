@@ -15,6 +15,7 @@ Jul 2019 - EmailReporting-0.11.0
 	- Optimized IMAP email sorting
 	- IMAP performance optimization (Daveid #25701)
 	- Add permission checks for issues, notes and attachments
+	- Add functionality to ignore auto-reply emails
 
 May 2018 - EmailReporting-0.10.1
 	- Added error if, on installation, 'api/soap/mc_file_api.php' is missing

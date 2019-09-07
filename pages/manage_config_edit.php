@@ -19,6 +19,7 @@ $f_gpc = array(
 	'mail_disposable_email_checker'	=> gpc_get_int( 'mail_disposable_email_checker' ),
 	'mail_email_receive_own'		=> gpc_get_int( 'mail_email_receive_own' ),
 	'mail_fallback_mail_reporter'	=> gpc_get_int( 'mail_fallback_mail_reporter' ),
+	'mail_ignore_auto_replies'		=> gpc_get_int( 'mail_ignore_auto_replies' ),
 	'mail_max_email_body'			=> gpc_get_int( 'mail_max_email_body' ),
 	'mail_max_email_body_text'		=> gpc_get_string( 'mail_max_email_body_text' ),
 	'mail_max_email_body_add_attach'=> gpc_get_int( 'mail_max_email_body_add_attach' ),

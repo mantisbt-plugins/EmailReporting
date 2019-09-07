@@ -167,6 +167,7 @@ ERP_output_config_option( 'mail_nodescription', 'string' );
 ERP_output_table_close();
 
 ERP_output_table_open( 'remove_reply_options' );
+ERP_output_config_option( 'mail_ignore_auto_replies', 'boolean' );
 ERP_output_config_option( 'mail_remove_replies', 'boolean' );
 ERP_output_config_option( 'mail_remove_mantis_email', 'boolean' );
 ERP_output_config_option( 'mail_removed_reply_text', 'string' );

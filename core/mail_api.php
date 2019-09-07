@@ -65,6 +65,7 @@ class ERP_mailbox_api
 	private $_mail_delete;
 	private $_mail_disposable_email_checker;
 	private $_mail_fallback_mail_reporter;
+	private $_mail_ignore_auto_replies;
 	private $_mail_max_email_body;
 	private $_mail_max_email_body_text;
 	private $_mail_max_email_body_add_attach;
@@ -117,6 +118,7 @@ class ERP_mailbox_api
 		$this->_mail_delete						= plugin_config_get( 'mail_delete' );
 		$this->_mail_disposable_email_checker	= plugin_config_get( 'mail_disposable_email_checker' );
 		$this->_mail_fallback_mail_reporter		= plugin_config_get( 'mail_fallback_mail_reporter' );
+		$this->_mail_ignore_auto_replies		= plugin_config_get( 'mail_ignore_auto_replies' );
 		$this->_mail_max_email_body				= plugin_config_get( 'mail_max_email_body' );
 		$this->_mail_max_email_body_text		= plugin_config_get( 'mail_max_email_body_text' );
 		$this->_mail_max_email_body_add_attach	= plugin_config_get( 'mail_max_email_body_add_attach' );
@@ -586,10 +588,6 @@ class ERP_mailbox_api
 
 		unset( $t_msg );
 
-		if ( $t_email[ 'Is-Auto-Reply' ] ) {
-			return( TRUE );
-		}
-		
 		$this->show_memory_usage( 'Parsed single email' );
 
 		$this->save_message_to_file( 'parsed_msg', $t_email );
@@ -600,7 +598,15 @@ class ERP_mailbox_api
 			// We don't need to validate the email address if it is an existing user (existing user also needs to be set as the reporter of the issue)
 			if ( $t_email[ 'Reporter_id' ] !== $this->_mail_reporter_id || $this->validate_email_address( $t_email[ 'From_parsed' ][ 'email' ] ) )
 			{
-				$this->add_bug( $t_email, $p_overwrite_project_id );
+				// Ignore the email if it is an auto-reply
+				if ( $this->_mail_ignore_auto_replies && $t_email[ 'Is-Auto-Reply' ] )
+				{
+					$this->custom_error( 'Email is marked as an auto-reply and has been ignored.' );
+				}
+				else
+				{
+					$this->add_bug( $t_email, $p_overwrite_project_id );
+				}
 			}
 			else
 			{
