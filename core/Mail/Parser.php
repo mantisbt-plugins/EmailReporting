@@ -388,14 +388,13 @@ class ERP_Mail_Parser
 
 		/*
 		 * check if the email is an out of the office auto reply by checking the following fields:
-		 * X-Auto-Response-Suppress = All
 		 * X-Autoreply
 		 * X-Autorespond
 		 * auto-submitted with a value of "auto-replied"
+		 * Based on: https://www.jitbit.com/maxblog/18-detecting-outlook-autoreplyout-of-office-emails-and-x-auto-response-suppress-header/
 		*/
 		if (
-			( isset( $structure->headers[ 'x-auto-response-suppress' ] ) &&  $structure->headers[ 'x-auto-response-suppress' ] == 'All' )
-			|| isset( $structure->headers[ 'x-autoreply' ] )
+			isset( $structure->headers[ 'x-autoreply' ] )
 			|| isset( $structure->headers[ 'x-autorespond' ] )
 			|| ( isset( $structure->headers[ 'auto-submitted' ] ) && $structure->headers[ 'auto-submitted' ] == 'auto-replied' )
 		)
