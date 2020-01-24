@@ -112,7 +112,8 @@ class EmailReportingPlugin extends MantisPlugin
 
 			# Maximum size of the description/note. Restriction needed for database limitations
 			# Older installations of MantisBT never had there description fields in MYSQL increased from TEXT to MEDIUMTEXT so TEXT is the default max
-			'mail_max_email_body'			=> 65535,
+			# Max is actually < 2^16 (=65535) but the email table also requires some extra space so thats why 60000 is chosen
+			'mail_max_email_body'			=> 60000,
 
 			# Use the following text when part of the email has been truncated
 			'mail_max_email_body_text'		=> '[EmailReporting -> Email body truncated]',
