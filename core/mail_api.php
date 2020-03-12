@@ -904,7 +904,7 @@ class ERP_mailbox_api
 				if ( !$this->_mail_respect_permissions || access_has_bug_level( config_get( 'add_bugnote_threshold' ), $t_bug_id ) )
 				{
 					# Add a bug note
-					$t_bugnote_id = bugnote_add( $t_bug_id, $t_description );
+					$t_bugnote_id = bugnote_add( $t_bug_id, $t_description, '0:00', config_get( 'default_bugnote_view_status' ) == VS_PRIVATE );
 
 					// MantisBT 1.3.x function
 					// reassign_on_feedback only needs to be done here incase of MantisBT 1.3.x
