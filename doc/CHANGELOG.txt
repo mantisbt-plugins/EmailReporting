@@ -17,6 +17,7 @@ Jul 2019 - EmailReporting-0.11.0
 	- Add permission checks for issues, notes and attachments
 	- Add functionality to ignore auto-reply emails
 	- Changed default max body length from 65535 to 60000 because of issues with email table
+	- Link notes and attachments
 
 May 2018 - EmailReporting-0.10.1
 	- Added error if, on installation, 'api/soap/mc_file_api.php' is missing

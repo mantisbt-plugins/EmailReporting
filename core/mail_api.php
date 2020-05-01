@@ -866,6 +866,7 @@ class ERP_mailbox_api
 			$t_bug_id = FALSE;
 		}
 
+		$t_bugnote_id = NULL;
 		if ( $t_bug_id !== FALSE && !bug_is_readonly( $t_bug_id ) )
 		{
 			$t_project_id = bug_get_field( $t_bug_id, 'project_id' );
@@ -886,11 +887,16 @@ class ERP_mailbox_api
 			$t_bug = bug_get( $t_bug_id, true );
 			if ( bug_is_resolved( $t_bug_id ) && ( !$this->_mail_respect_permissions || access_can_reopen_bug( $t_bug ) ) )
 			{
-				# Reopen issue and add a bug note
-				bug_reopen( $t_bug_id, $t_description );
+				if ( !is_blank( $t_description ) )
+				{
+					# Reopen issue and add a bug note
+					$t_bugnote_id = bugnote_add( $t_bug_id, $t_description, '0:00', false, BUGNOTE, '', null, false );
+					bugnote_process_mentions( $t_bug_id, $t_bugnote_id, $t_description );
+					bug_reopen( $t_bug_id );
 
-				$t_updated_bug = bug_get( $t_bug_id, true );
-				event_signal( 'EVENT_UPDATE_BUG', array( $t_bug, $t_updated_bug ) );
+					$t_updated_bug = bug_get( $t_bug_id, true );
+					event_signal( 'EVENT_UPDATE_BUG', array( $t_bug, $t_updated_bug ) );
+				}
 			}
 			elseif ( !is_blank( $t_description ) )
 			{
@@ -1108,7 +1114,7 @@ class ERP_mailbox_api
 
 					while ( $t_part = array_shift( $p_email[ 'X-Mantis-Parts' ] ) )
 					{
-						$t_file_rejected = $this->add_file( $t_bug_id, $t_part );
+						$t_file_rejected = $this->add_file( $t_bug_id, $t_part, $t_bugnote_id );
 
 						if ( $t_file_rejected !== TRUE )
 						{
@@ -1155,7 +1161,7 @@ class ERP_mailbox_api
 	# --------------------
 	# Very dirty: Adds a file to a bug.
 	# returns true on success and the filename with reason on error
-	private function add_file( $p_bug_id, &$p_part )
+	private function add_file( $p_bug_id, &$p_part, $p_bugnote_id = NULL )
 	{
 		# Handle the file upload
 		$t_part_name = ( ( isset( $p_part[ 'name' ] ) ) ? trim( $p_part[ 'name' ] ) : NULL );
@@ -1213,7 +1219,12 @@ class ERP_mailbox_api
 				$t_opt_name = $t_file_number . '-';
 			}
 
-			mci_file_add( $p_bug_id, $t_opt_name . $t_part_name, $p_part[ 'body' ], $p_part[ 'ctype' ], 'bug' );
+			$t_attachment_id = mci_file_add( $p_bug_id, $t_opt_name . $t_part_name, $p_part[ 'body' ], $p_part[ 'ctype' ], 'bug' );
+
+			if ( function_exists( 'file_link_to_bugnote' ) && is_numeric( $t_attachment_id ) && $t_attachment_id > 0 && $p_bugnote_id !== NULL )
+			{
+				file_link_to_bugnote( $t_attachment_id, $p_bugnote_id );
+			}
 		}
 
 		return( TRUE );
