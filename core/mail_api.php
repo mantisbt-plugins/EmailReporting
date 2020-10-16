@@ -1583,7 +1583,7 @@ class ERP_mailbox_api
 					// ignore references longer then 255 characters as they are most likely malformed
 					if ( strlen( $t_ref ) > 255 )
 					{
-						custom_error( 'Reference id encountered thats longer then 255 characters. It will be ignored' );
+						$this->custom_error( 'Reference id encountered thats longer then 255 characters. It will be ignored' );
 					}
 					else
 					{
