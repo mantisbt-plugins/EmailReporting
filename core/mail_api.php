@@ -989,7 +989,12 @@ class ERP_mailbox_api
 
 				$t_bug_data->steps_to_reproduce		= config_get( 'default_bug_steps_to_reproduce' );
 				$t_bug_data->additional_information	= config_get( 'default_bug_additional_info' );
-				$t_bug_data->due_date				= date_get_null();
+				
+				$t_bug_due_date_writable 			= access_has_project_level( config_get( 'due_date_update_threshold' ), helper_get_current_project(), auth_get_current_user_id() );
+				$t_bug_data->due_date				= date_strtotime( config_get( 'due_date_default' ) );
+				if( !$t_bug_due_date_writable || $t_bug_data->due_date == '' ) {
+					$t_bug_data->due_date = date_get_null();
+				}
 
 				$t_bug_data->project_id				= $t_project_id;
 

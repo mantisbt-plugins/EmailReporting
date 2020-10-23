@@ -1,4 +1,6 @@
 Changelog:
+May 2020 - Default Due Dates are now reflected in newly created bugs
+
 Jul 2019 - EmailReporting-0.11.0
 	- Update Markdownify github master
 	- Add EmailReplyParser library
