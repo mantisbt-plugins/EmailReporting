@@ -1536,7 +1536,7 @@ class ERP_mailbox_api
 			foreach( $p_references AS $t_reference ) 
 			{
 				$query = 'SELECT issue_id FROM ' . plugin_table( 'msgids' ) . ' WHERE msg_id=' . db_param();
-				$t_bug_id = db_result( db_query_bound( $query, array( $t_reference ), 1 ) );
+				$t_bug_id = db_result( db_query( $query, array( $t_reference ), 1 ) );
 
 				if( $t_bug_id !== FALSE ) 
 				{
@@ -1555,7 +1555,7 @@ class ERP_mailbox_api
 		$t_ref_ids = array();
 
 		$query = 'SELECT msg_id FROM ' . plugin_table( 'msgids' ) . ' WHERE issue_id=' . db_param();
-		$t_result = db_query_bound( $query, array( (int)$p_bug_id ) );
+		$t_result = db_query( $query, array( (int)$p_bug_id ) );
 
 		while( $t_row = db_fetch_array( $t_result ) )
 		{
@@ -1595,7 +1595,7 @@ class ERP_mailbox_api
 							// Add the Message-ID to the table for future reference
 							$t_query = 'INSERT INTO ' . plugin_table( 'msgids' ) . '( issue_id, msg_id ) VALUES'
 									. ' (' . db_param() . ', ' . db_param() . ')';
-							db_query_bound( $t_query, array( (int)$p_bug_id, $t_ref ) );
+							db_query( $t_query, array( (int)$p_bug_id, $t_ref ) );
 						}
 					}
 				}
@@ -1609,7 +1609,7 @@ class ERP_mailbox_api
 	public static function delete_references_for_bug_id( $p_bug_id )
 	{
 		$t_query = 'DELETE FROM ' . plugin_table( 'msgids' ) . ' WHERE issue_id = ' . db_param();
-		db_query_bound( $t_query, array( (int)$p_bug_id ) );
+		db_query( $t_query, array( (int)$p_bug_id ) );
 	}
 
 	# --------------------
@@ -1619,7 +1619,7 @@ class ERP_mailbox_api
 	{
 		$t_query = 'DELETE FROM ' . plugin_table( 'msgids' ) . ' WHERE NOT EXISTS'
 				. '( SELECT 1 FROM ' . db_get_table( 'bug' ) . ' B WHERE B.id = issue_id )';
-		db_query_bound( $t_query );
+		db_query( $t_query );
 	}
 
 	# --------------------

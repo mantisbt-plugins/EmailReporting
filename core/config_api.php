@@ -472,7 +472,7 @@ if ( !function_exists( 'test_database_utf8' ) )
 		$t_field_type      = 'type';
 
  		// table collation/character set check
-		$result = db_query_bound( 'SHOW TABLE STATUS' );
+		$result = db_query( 'SHOW TABLE STATUS' );
 		while( $row = db_fetch_array( $result ) ) {
 			$row = array_change_key_case( $row, CASE_LOWER );
 			if( $row[$t_field_comment] !== 'VIEW' ) {
@@ -482,7 +482,7 @@ if ( !function_exists( 'test_database_utf8' ) )
 
 		foreach( db_get_table_list() as $t_table ) {
 			if( db_table_exists( $t_table ) ) {
-				$result = db_query_bound( 'SHOW FULL FIELDS FROM ' . $t_table );
+				$result = db_query( 'SHOW FULL FIELDS FROM ' . $t_table );
 				while( $row = db_fetch_array( $result ) ) {
 					$row = array_change_key_case( $row, CASE_LOWER );
 					if ( $row[$t_field_collation] === null ) {
@@ -576,7 +576,7 @@ if ( !function_exists( 'test_database_utf8' ) )
 
 			case 'radio_buttons':
 ?>
-<tr <?php echo helper_alternate_class() ?>>
+<tr>
 	<td class="center" colspan="3">
 <?php
 
@@ -620,7 +620,7 @@ if ( !function_exists( 'test_database_utf8' ) )
 			case 'dropdown_multiselect':
 			case 'dropdown_multiselect_any':
 ?>
-<tr <?php echo helper_alternate_class() ?>>
+<tr>
 	<td class="category width-50">
 <?php
 				ERP_print_documentation_link( $p_name );
@@ -854,7 +854,7 @@ if ( !function_exists( 'test_database_utf8' ) )
 			$t_def = custom_field_get_definition( $t_field_id );
 
 ?>
-<tr <?php echo helper_alternate_class() ?>>
+<tr>
 	<td class="category">
 <?php
 			ERP_print_documentation_link( $p_name );
