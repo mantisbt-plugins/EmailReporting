@@ -890,7 +890,7 @@ class ERP_mailbox_api
 				if ( !is_blank( $t_description ) )
 				{
 					# Reopen issue and add a bug note
-					$t_bugnote_id = bugnote_add( $t_bug_id, $t_description, '0:00', false, BUGNOTE, '', null, false );
+					$t_bugnote_id = bugnote_add( $t_bug_id, $t_description, '0:00', config_get( 'default_bugnote_view_status' ) == VS_PRIVATE, BUGNOTE, '', null, false );
 					bugnote_process_mentions( $t_bug_id, $t_bugnote_id, $t_description );
 					bug_reopen( $t_bug_id );
 
