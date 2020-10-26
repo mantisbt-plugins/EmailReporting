@@ -53,6 +53,7 @@ plugin_require_api( 'core_pear/Net/Socket.php' );
 * For usage see the example script
 */
 
+// ERP-modification: Case insensitive parameter deprecated
 define('NET_POP3_STATE_DISCONNECTED',  1);
 define('NET_POP3_STATE_AUTHORISATION', 2);
 define('NET_POP3_STATE_TRANSACTION',   4);
