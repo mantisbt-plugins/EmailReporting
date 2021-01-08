@@ -39,7 +39,7 @@ if ( !extension_loaded( 'mbstring' ) )
 }
 
 // Output utf8 info box
-elseif ( $t_results_utf_test = test_database_utf8() )
+elseif ( $t_results_utf_test = ERP_test_database_utf8() )
 {
 	ERP_output_note_open();
 ?>

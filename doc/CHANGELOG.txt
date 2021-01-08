@@ -21,6 +21,7 @@ Changelog:
 	- Default Due Dates are now reflected in newly created bugs (hnuestedt)
 	- Corrected various deprecated error messages for PHP 7.4.x and MantisBT 2.25.0
 	- Set default bugnote view status
+	- Updated UTF8 database checks (Based on MantisBT 2.25)
 
 May 2018 - EmailReporting-0.10.1
 	- Added error if, on installation, 'api/soap/mc_file_api.php' is missing
