@@ -1312,7 +1312,7 @@ class ERP_mailbox_api
 	# Return the emailaddress from the mail's 'From' field
 	private function parse_from_field( $p_from_address )
 	{
-		if ( preg_match( '/^(?:(?P<name>.*)<|)(?P<email>' . $this->_email_regex_simple . ')(?:>|)$/u', trim( $p_from_address ), $match ) )
+		if ( preg_match( '/^(?:(?P<name>.*?)<|)(?P<email>' . $this->_email_regex_simple . ')(?:>|)/u', trim( $p_from_address ), $match ) )
 		{
 			$v_from_address = array(
 				'name'	=> trim( $match[ 'name' ], '"\' ' ),
