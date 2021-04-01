@@ -313,6 +313,10 @@ class EmailReportingPlugin extends MantisPlugin
 	 */
 	function ERP_manage_emailreporting_menu( )
 	{
+		if( !access_has_project_level( config_get( 'manage_plugin_threshold' ) ) ) {
+			return array();
+		}
+
 		return array( '<a href="' . plugin_page( 'manage_mailbox' ) . '">' . plugin_lang_get( 'manage' ) . ' ' . plugin_lang_get( 'plugin_title' ) . '</a>', );
 	}
 
