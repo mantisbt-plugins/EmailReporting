@@ -430,10 +430,10 @@ class ERP_Mail_Parser
 
 	private function setReferences( $p_references )
 	{
-		// Some email clients or servers malform the references mime header. They mix comma and space as separators while it should have been a space
-		$t_references = str_replace( '>,<', '> <', $p_references );
-		$t_references = explode( ' ', $t_references );
-		$references = array_map( 'trim', $t_references );
+		// Some email servers mishandle the references header and split one ID over multiple lines causing an extra space
+		$t_references = str_replace( ' ', '', $p_references );
+		preg_match_all( '/<\S*?>/m', $t_references, $t_matches );
+		$references = array_map( 'trim', $t_matches[ 0 ] );
 
 		$this->_references = $references;
 	}

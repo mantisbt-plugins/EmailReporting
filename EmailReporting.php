@@ -627,6 +627,14 @@ class EmailReportingPlugin extends MantisPlugin
 
 			plugin_config_set( 'config_version', 17 );
 		}
+
+		if ( $t_config_version <= 17 )
+		{
+			$t_query = 'DELETE FROM ' . plugin_table( 'msgids' ) . ' WHERE msg_id NOT LIKE ' . db_param();
+			db_query( $t_query, array( '<%>' ) );
+
+			plugin_config_set( 'config_version', 18 );
+		}
 	}
 
 	/*
