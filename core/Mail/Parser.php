@@ -474,7 +474,7 @@ class ERP_Mail_Parser
 		$body = str_replace(array("\r\n", "\r"), "\n", $body);
 		$body = $this->process_body_encoding( $body, $charset );
 
-		if ( 'text' === $this->_ctype['primary'] &&	'plain' === $this->_ctype['secondary'] )
+		if ( 'text' === $this->_ctype['primary'] && 'plain' === $this->_ctype['secondary'] )
 		{
 			// We need to escape any markdown characters present for plaintext emails
 			if ( $this->_process_markdown )
