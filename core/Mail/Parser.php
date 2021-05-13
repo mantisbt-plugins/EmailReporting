@@ -387,16 +387,18 @@ class ERP_Mail_Parser
 		}
 
 		/*
-		 * check if the email is an out of the office auto reply by checking the following fields:
-		 * X-Autoreply
-		 * X-Autorespond
-		 * auto-submitted with a value of "auto-replied"
-		 * Based on: https://www.jitbit.com/maxblog/18-detecting-outlook-autoreplyout-of-office-emails-and-x-auto-response-suppress-header/
+		 * check if the email is an out of office auto reply:
+		 * Based on:
+		 * - https://www.jitbit.com/maxblog/18-detecting-outlook-autoreplyout-of-office-emails-and-x-auto-response-suppress-header/
+		 * - https://stackoverflow.com/questions/9426801/detect-auto-reply-emails-programmatically
+		 * - https://www.arp242.net/autoreply.html
 		*/
 		if (
 			isset( $structure->headers[ 'x-autoreply' ] )
 			|| isset( $structure->headers[ 'x-autorespond' ] )
-			|| ( isset( $structure->headers[ 'auto-submitted' ] ) && $structure->headers[ 'auto-submitted' ] == 'auto-replied' )
+			|| isset( $structure->headers[ 'x-ag-autoreply' ] )
+			|| ( isset( $structure->headers[ 'auto-submitted' ] ) && $structure->headers[ 'auto-submitted' ] !== 'no' )
+			|| ( isset( $structure->headers[ 'precedence' ] ) && $structure->headers[ 'precedence' ] === 'auto_reply' )
 		)
 		{
 			$this->setAutoReply( TRUE );
