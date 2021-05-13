@@ -632,6 +632,8 @@ class EmailReportingPlugin extends MantisPlugin
 		{
 			$t_query = 'DELETE FROM ' . plugin_table( 'msgids' ) . ' WHERE msg_id NOT LIKE ' . db_param();
 			db_query( $t_query, array( '<%>' ) );
+			$t_query = 'DELETE FROM ' . plugin_table( 'msgids' ) . ' WHERE msg_id LIKE ' . db_param();
+			db_query( $t_query, array( '<% %>' ) );
 
 			plugin_config_set( 'config_version', 18 );
 		}
