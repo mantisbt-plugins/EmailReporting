@@ -85,6 +85,10 @@ class ERP_mailbox_api
 	private $_mail_use_bug_priority;
 	private $_mail_use_message_id;
 	private $_mail_use_reporter;
+	private $_mail_notify_reporter;
+	private $_mail_notify_project_users;
+	private $_mail_notify_custom_emails;
+	private $_mail_notify_custom_emails_addresses;
 
 	private $_mp_options = array();
 
@@ -138,6 +142,10 @@ class ERP_mailbox_api
 		$this->_mail_use_bug_priority			= plugin_config_get( 'mail_use_bug_priority' );
 		$this->_mail_use_message_id				= plugin_config_get( 'mail_use_message_id' );
 		$this->_mail_use_reporter				= plugin_config_get( 'mail_use_reporter' );
+		$this->_mail_notify_reporter			= plugin_config_get( 'mail_notify_reporter' );
+		$this->_mail_notify_project_users		= plugin_config_get( 'mail_notify_project_users' );
+		$this->_mail_notify_custom_emails		= plugin_config_get( 'mail_notify_custom_emails' );
+		$this->_mail_notify_custom_emails_addresses = plugin_config_get( 'mail_notify_custom_emails_addresses' );
 
 		$this->_mp_options[ 'add_attachments' ]	= config_get( 'allow_file_upload' );
 		$this->_mp_options[ 'debug' ]			= $this->_mail_debug;
@@ -1089,6 +1097,8 @@ class ERP_mailbox_api
 				event_signal( 'EVENT_REPORT_BUG', array( $t_bug_data, $t_bug_id ) );
 
 				email_bug_added( $t_bug_id );
+
+				$this->notify_bug_added( $t_bug_data, $p_email );
 			}
 			else
 			{
@@ -1910,6 +1920,82 @@ class ERP_mailbox_api
 		}
 
 		return null;
+	}
+
+	# --------------------
+	# Notifies the sender address a new bug was created
+	private function notify_bug_added( $bugData, $email )
+	{
+		$senderEmailName = $email['From_parsed']['name'];
+		$senderEmailAddr = $email['From_parsed']['email'];
+		$bugId = $bugData->id;
+		$bugTitle = $bugData->summary;
+		$bugContent = $bugData->description;
+		$bugUsersEmails = email_collect_recipients($bugId, 'new');
+
+		if ($this->_mail_notify_reporter) {
+			// Notify sender
+			$mailSubject =
+				plugin_lang_get('notify_reporter_bug_added_subject_bugcreated') .
+				" #$bugId.";
+			$mailBody =
+				plugin_lang_get('notify_reporter_bug_added_body_dear') .
+				" $senderEmailName, " .
+				plugin_lang_get('notify_reporter_bug_added_body_bugcreated_1') .
+				" \"$bugTitle\" " .
+				plugin_lang_get('notify_reporter_bug_added_body_bugcreated_2') .
+				" #$bugId.";
+
+			// Add mail to mantis output queue
+			email_store($senderEmailAddr, $mailSubject, $mailBody);
+		}
+
+		// Notify user-defined static emails list
+		$addressesToNotify = [];
+		if ($this->_mail_notify_custom_emails)
+			$addressesToNotify = $this->parseCustomNotificationAddresses();
+
+		// Notify project users
+		if ($this->_mail_notify_project_users) {
+			foreach ($bugUsersEmails as $bugUserId => $bugUserEmail) {
+				// Do not send to reporter
+				if ($bugUserEmail === $senderEmailAddr)
+					continue;
+				$addressesToNotify[] = $bugUserEmail;
+			}
+		}
+
+		foreach ($addressesToNotify as $atn) {
+			$mailSubject =
+				plugin_lang_get('notify_dev_bug_added_subject_bugcreated') .
+				" #$bugId.";
+			$mailBody =
+				plugin_lang_get('notify_dev_bug_added_body_bugcreated_1') .
+				" #$bugId " .
+				plugin_lang_get('notify_dev_bug_added_body_bugcreated_2') .
+				" \"$bugTitle\" " .
+				plugin_lang_get('notify_dev_bug_added_body_bugcreated_3') .
+				" $senderEmailName ($senderEmailAddr).\n\n" .
+				plugin_lang_get('notify_dev_bug_added_body_bugcreated_4') . "\n" .
+				$bugContent;
+
+			// Add mail to mantis output queue
+			email_store($atn, $mailSubject, $mailBody);
+		}
+	}
+
+	private function parseCustomNotificationAddresses()
+	{
+		$addresses = explode(',', $this->_mail_notify_custom_emails_addresses);
+		// Validate emails
+		foreach ($addresses as $i => $addr) {
+			$taddr = trim($addr);
+			if (!email_is_valid($taddr)) {
+				plugin_log_event('Ignoring invalid custom email address ' . $taddr);
+				unset($addresses[$i]);
+			}
+		}
+		return $addresses;
 	}
 }
 

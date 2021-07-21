@@ -31,6 +31,7 @@ $s_plugin_EmailReporting_reporter_options = 'Konfigurationsoptionen für Ticketr
 $s_plugin_EmailReporting_runtime_options = 'Konfigurationsoptionen für Laufzeit';
 $s_plugin_EmailReporting_security_options = 'Konfigurationsoptionen für Sicherheit';
 $s_plugin_EmailReporting_strip_signature_feature_options = 'Konfigurationsoptionen zur Entfernung von Signaturen (experimentell)';
+$s_plugin_EmailReporting_notifications_options = 'Email notification options';
 
 $s_plugin_EmailReporting_copy_of = 'Kopie von';
 $s_plugin_EmailReporting_directory_exists = 'Order gefunden';
@@ -77,6 +78,10 @@ $s_plugin_EmailReporting_mail_subject_id_regex = 'Wie soll die TicketID im Betre
 $s_plugin_EmailReporting_mail_use_bug_priority = 'Suche nach der Priorität im Header';
 $s_plugin_EmailReporting_mail_use_message_id = 'Benutze die Message-ID im Header um Notizen zu identifizieren';
 $s_plugin_EmailReporting_mail_use_reporter = 'Benutze nur den Standard Reporter zur Erstellung von Tickets';
+$s_plugin_EmailReporting_mail_notify_reporter = 'Send email to reporter to acknownledge bug creation';
+$s_plugin_EmailReporting_mail_notify_project_users = 'Send email to project users when a bug is created by reporter email';
+$s_plugin_EmailReporting_mail_notify_custom_emails = 'Send email to following email addresses when a bug is created by reporter email';
+$s_plugin_EmailReporting_mail_notify_custom_emails_addresses = 'Comma separated static list of email addresses to be notified';
 
 $s_plugin_EmailReporting_strict = 'Strikt';
 $s_plugin_EmailReporting_balanced = 'Ausgewogen';
@@ -175,5 +180,15 @@ $s_plugin_EmailReporting_act_issue_custom_field = 'Benutzerdefiniertes Feld aktu
 
 $s_plugin_EmailReporting_excep_issue_summary = 'Zusammenfassung';
 $s_plugin_EmailReporting_excep_issue_description = 'Beschreibung';
+
+$s_plugin_EmailReporting_notify_reporter_bug_added_subject_bugcreated = 'Received bug report';
+$s_plugin_EmailReporting_notify_reporter_bug_added_body_dear = 'Dear';
+$s_plugin_EmailReporting_notify_reporter_bug_added_body_bugcreated_1 = 'we received your bug report';
+$s_plugin_EmailReporting_notify_reporter_bug_added_body_bugcreated_2 = 'and created issue';
+$s_plugin_EmailReporting_notify_dev_bug_added_subject_bugcreated = 'Received bug report';
+$s_plugin_EmailReporting_notify_dev_bug_added_body_bugcreated_1 = 'Issue';
+$s_plugin_EmailReporting_notify_dev_bug_added_body_bugcreated_2 = 'was created due to email report';
+$s_plugin_EmailReporting_notify_dev_bug_added_body_bugcreated_3 = 'from';
+$s_plugin_EmailReporting_notify_dev_bug_added_body_bugcreated_4 = 'The content of the issue is:';
 
 ?>

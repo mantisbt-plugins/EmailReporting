@@ -173,6 +173,13 @@ ERP_output_config_option( 'mail_remove_mantis_email', 'boolean' );
 ERP_output_config_option( 'mail_removed_reply_text', 'string' );
 ERP_output_table_close();
 
+ERP_output_table_open( 'notifications_options' );
+ERP_output_config_option( 'mail_notify_reporter', 'boolean' );
+ERP_output_config_option( 'mail_notify_project_users', 'boolean' );
+ERP_output_config_option( 'mail_notify_custom_emails', 'boolean' );
+ERP_output_config_option( 'mail_notify_custom_emails_addresses', 'string_multiline' );
+ERP_output_table_close();
+
 ERP_output_table_open( 'debug_options' );
 ERP_output_config_option( 'mail_debug', 'boolean' );
 ERP_output_config_option( 'mail_debug_directory', 'directory_string' );

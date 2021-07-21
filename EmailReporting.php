@@ -2,6 +2,7 @@
 
 class EmailReportingPlugin extends MantisPlugin
 {
+
 	/**
 	 *  A method that populates the plugin information and minimum requirements.
 	 */
@@ -186,6 +187,18 @@ class EmailReportingPlugin extends MantisPlugin
 
 			// Whether to identify notes using Message-ID in the mail header
 			'mail_use_message_id'			=> ON,
+
+			// Whether the reporter should be acknownledged for the ticket creation
+			'mail_notify_reporter'			=> OFF,
+
+			// Wether the project users should receive an email notifying the ticket was created due to email reporting
+			'mail_notify_project_users'		=> OFF,
+
+			// Wether the users specified in mail_notify_custom_emails_addresses should be notified
+			'mail_notify_custom_emails'		=> OFF,
+
+			// Comma separated list of email address to notify
+			'mail_notify_custom_emails_addresses' => 'example1@email.com, example2@email.com',
 		);
 	}
 
