@@ -31,7 +31,7 @@ $s_plugin_EmailReporting_reporter_options = 'Configuración de reporte de solici
 $s_plugin_EmailReporting_runtime_options = 'Configuración de ambiente de ejecución';
 $s_plugin_EmailReporting_security_options = 'Configuración de seguridad';
 $s_plugin_EmailReporting_strip_signature_feature_options = 'Configuración de borrado de firma (Experimental)';
-$s_plugin_EmailReporting_notifications_options = 'Email notification options';
+$s_plugin_EmailReporting_notifications_options = 'Opciones de notificación por correo electrónico';
 
 $s_plugin_EmailReporting_copy_of = 'Copiar de';
 $s_plugin_EmailReporting_directory_exists = 'Directorio encontrado';
@@ -78,10 +78,10 @@ $s_plugin_EmailReporting_mail_subject_id_regex = 'Qué tipo de búsqueda debe ut
 $s_plugin_EmailReporting_mail_use_bug_priority = 'Buscar en el campo prioridad de la cabecera del mensaje';
 $s_plugin_EmailReporting_mail_use_message_id = 'Usar Message-ID en la cabecera del email para identificar las notas';
 $s_plugin_EmailReporting_mail_use_reporter = 'Usar solo el informador por defecto para las solicitudes creadas por email';
-$s_plugin_EmailReporting_mail_notify_reporter = 'Send email to reporter to acknownledge bug creation';
-$s_plugin_EmailReporting_mail_notify_project_users = 'Send email to project users when a bug is created by reporter email';
-$s_plugin_EmailReporting_mail_notify_custom_emails = 'Send email to following email addresses when a bug is created by reporter email';
-$s_plugin_EmailReporting_mail_notify_custom_emails_addresses = 'Comma separated static list of email addresses to be notified';
+$s_plugin_EmailReporting_mail_notify_reporter = 'Envíe correo electrónico al reportero para reconocer la creación de errores';
+$s_plugin_EmailReporting_mail_notify_project_users = 'Envíe un correo electrónico al reportero para confirmar la creación del error ';
+$s_plugin_EmailReporting_mail_notify_custom_emails = 'Envíe un correo electrónico a las siguientes direcciones de correo electrónico cuando el correo electrónico del reportero cree un error ';
+$s_plugin_EmailReporting_mail_notify_custom_emails_addresses = 'Lista estática de direcciones de correo electrónico, separados por comas, que deben ser notificados';
 
 $s_plugin_EmailReporting_strict = 'Estricta';
 $s_plugin_EmailReporting_balanced = 'Balanceada';
@@ -178,8 +178,8 @@ $s_plugin_EmailReporting_act_issue_custom_field = 'Actualizar campo personalizad
 $s_plugin_EmailReporting_excep_issue_summary = 'Resumen de Solicitud';
 $s_plugin_EmailReporting_excep_issue_description = 'Descripción de Solicitud';
 
-$s_plugin_EmailReporting_notify_reporter_bug_added_subject = '[%bugid%] Segnalazione ricevuta';
-$s_plugin_EmailReporting_notify_reporter_bug_added_body = 'La segnalazione è stata ricevuta e sarà lavorata prima possibile. Puoi usare il codice %bugid% per farvi riferimento in futuro. Rispondendo a questa email e lasciando %emailaddr% tra i destinatari e [%buid%] nell'oggetto puoi aggiungere ulteriori informazioni.';
+$s_plugin_EmailReporting_notify_reporter_bug_added_subject = '[%bugid%] Informe recibido';
+$s_plugin_EmailReporting_notify_reporter_bug_added_body = 'El informe ha sido recibido y será procesado lo antes posible. Puede utilizar el código %bugid% para consultarlo en el futuro. Si responde a este correo electrónico y deja %emailaddr% en los destinatarios y [%buid%] en el asunto, puede agregar más información.';
 
 
 ?>
