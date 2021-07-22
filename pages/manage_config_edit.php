@@ -44,7 +44,6 @@ $f_gpc = array(
 	'mail_use_message_id'			=> gpc_get_int( 'mail_use_message_id' ),
 	'mail_use_reporter'				=> gpc_get_int( 'mail_use_reporter' ),
 	'mail_notify_reporter'			=> gpc_get_int( 'mail_notify_reporter' ),
-	'mail_notify_project_users'		=> gpc_get_int( 'mail_notify_project_users' ),
 	'mail_notify_custom_emails'		=> gpc_get_int( 'mail_notify_custom_emails' ),
 	'mail_notify_custom_emails_addresses' => gpc_get_string( 'mail_notify_custom_emails_addresses' ),
 );

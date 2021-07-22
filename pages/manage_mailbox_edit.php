@@ -14,6 +14,7 @@ if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailb
 	$t_mailbox = array(
 		'enabled'				=> gpc_get_int( 'enabled', ON ),
 		'description'			=> gpc_get_string( 'description', '' ),
+		'address'				=> gpc_get_string( 'address', '' ),
 		'mailbox_type'			=> gpc_get_string( 'mailbox_type' ),
 		'hostname'				=> gpc_get_string( 'hostname', '' ),
 		'port'					=> gpc_get_string( 'port', '' ),
@@ -79,6 +80,7 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 	$t_message .= plugin_lang_get( ( ( $t_is_custom_error || PEAR::isError( $t_result ) ) ? 'test_failure' : 'test_success' ) ) . '<br /><br />';
 
 	$t_message .= plugin_lang_get( 'description' ) . ': ' . $t_mailbox_api->_mailbox[ 'description' ] . '<br />';
+	$t_message .= plugin_lang_get( 'address' ) . ': ' . $t_mailbox_api->_mailbox[ 'address' ] . '<br />';
 	$t_message .= plugin_lang_get( 'mailbox_type' ) . ': ' . $t_mailbox_api->_mailbox[ 'mailbox_type' ] . '<br />';
 	$t_message .= plugin_lang_get( 'hostname' ) . ': ' . $t_mailbox_api->_mailbox[ 'hostname' ] . '<br />';
 	$t_message .= plugin_lang_get( 'port' ) . ': ' . $t_mailbox_api->_mailbox[ 'port' ] . '<br />';

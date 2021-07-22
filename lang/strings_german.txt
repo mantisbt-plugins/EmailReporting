@@ -79,7 +79,6 @@ $s_plugin_EmailReporting_mail_use_bug_priority = 'Suche nach der Priorität im H
 $s_plugin_EmailReporting_mail_use_message_id = 'Benutze die Message-ID im Header um Notizen zu identifizieren';
 $s_plugin_EmailReporting_mail_use_reporter = 'Benutze nur den Standard Reporter zur Erstellung von Tickets';
 $s_plugin_EmailReporting_mail_notify_reporter = 'Senden Sie eine E-Mail an den Reporter, um die Fehlererstellung zu bestätigen';
-$s_plugin_EmailReporting_mail_notify_project_users = 'E-Mail an Projekt Benutzer senden, wenn ein Fehler durch die E-Mail des Reporters erstellt wird';
 $s_plugin_EmailReporting_mail_notify_custom_emails = 'Senden Sie eine E-Mail an die folgenden E-Mail-Adressen, wenn ein Fehler durch eine Melder-E-Mail generiert wird';
 $s_plugin_EmailReporting_mail_notify_custom_emails_addresses = 'Durch Kommas getrennte statische Liste von E-Mail-Adressen, die benachrichtigt werden sollen';
 
@@ -113,6 +112,7 @@ $s_plugin_EmailReporting_update_configuration = 'Aktualisiere die Konfiguration'
 $s_plugin_EmailReporting_enabled = 'Aktivieren';
 $s_plugin_EmailReporting_disabled = 'Deaktivieren';
 $s_plugin_EmailReporting_description = 'Beschreibung';
+$s_plugin_EmailReporting_address = 'E-Mail-Adresse';
 $s_plugin_EmailReporting_mailbox_type = 'Mailboxtyp';
 $s_plugin_EmailReporting_hostname = 'Hostname';
 $s_plugin_EmailReporting_port = 'TCP Port (optional)';

@@ -79,7 +79,6 @@ $s_plugin_EmailReporting_mail_use_bug_priority = 'Buscar en el campo prioridad d
 $s_plugin_EmailReporting_mail_use_message_id = 'Usar Message-ID en la cabecera del email para identificar las notas';
 $s_plugin_EmailReporting_mail_use_reporter = 'Usar solo el informador por defecto para las solicitudes creadas por email';
 $s_plugin_EmailReporting_mail_notify_reporter = 'Envíe correo electrónico al reportero para reconocer la creación de errores';
-$s_plugin_EmailReporting_mail_notify_project_users = 'Envíe un correo electrónico al reportero para confirmar la creación del error ';
 $s_plugin_EmailReporting_mail_notify_custom_emails = 'Envíe un correo electrónico a las siguientes direcciones de correo electrónico cuando el correo electrónico del reportero cree un error ';
 $s_plugin_EmailReporting_mail_notify_custom_emails_addresses = 'Lista estática de direcciones de correo electrónico, separados por comas, que deben ser notificados';
 
@@ -113,6 +112,7 @@ $s_plugin_EmailReporting_update_configuration = 'Actualizar Configuración';
 $s_plugin_EmailReporting_enabled = 'Habilitado';
 $s_plugin_EmailReporting_disabled = 'Inhabilitado';
 $s_plugin_EmailReporting_description = 'Descripción';
+$s_plugin_EmailReporting_address = 'Dirección de correo electrónico.';
 $s_plugin_EmailReporting_mailbox_type = 'Tipo de Buzón';
 $s_plugin_EmailReporting_hostname = 'Nombre del Servidor';
 $s_plugin_EmailReporting_port = 'Puerto TCP';

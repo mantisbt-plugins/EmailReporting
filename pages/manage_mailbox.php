@@ -73,6 +73,7 @@ if ( !defined( 'PEAR_OS' ) )
 ERP_output_table_open( 'mailbox_settings' );
 ERP_output_config_option( 'enabled', 'boolean', $t_mailbox );
 ERP_output_config_option( 'description', 'string', $t_mailbox );
+ERP_output_config_option( 'address', 'string', $t_mailbox );
 ERP_output_config_option( 'mailbox_type', 'dropdown', $t_mailbox, 'print_descriptions_option_list', array( 'IMAP', 'POP3' ) );
 ERP_output_config_option( 'hostname', 'string', $t_mailbox );
 ERP_output_config_option( 'port', 'string', $t_mailbox );

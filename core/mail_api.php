@@ -86,7 +86,6 @@ class ERP_mailbox_api
 	private $_mail_use_message_id;
 	private $_mail_use_reporter;
 	private $_mail_notify_reporter;
-	private $_mail_notify_project_users;
 	private $_mail_notify_custom_emails;
 	private $_mail_notify_custom_emails_addresses;
 
@@ -143,7 +142,6 @@ class ERP_mailbox_api
 		$this->_mail_use_message_id				= plugin_config_get( 'mail_use_message_id' );
 		$this->_mail_use_reporter				= plugin_config_get( 'mail_use_reporter' );
 		$this->_mail_notify_reporter			= plugin_config_get( 'mail_notify_reporter' );
-		$this->_mail_notify_project_users		= plugin_config_get( 'mail_notify_project_users' );
 		$this->_mail_notify_custom_emails		= plugin_config_get( 'mail_notify_custom_emails' );
 		$this->_mail_notify_custom_emails_addresses = plugin_config_get( 'mail_notify_custom_emails_addresses' );
 
@@ -1926,64 +1924,105 @@ class ERP_mailbox_api
 	# Notifies the sender address a new bug was created
 	private function notify_bug_added( $bugData, $email )
 	{
-		$senderEmailName = $email['From_parsed']['name'];
-		$senderEmailAddr = $email['From_parsed']['email'];
-		$bugId = $bugData->id;
-		$bugTitle = $bugData->summary;
-		$bugContent = $bugData->description;
-		$bugUsersEmails = email_collect_recipients($bugId, 'new');
-
 		if ($this->_mail_notify_reporter) {
 			// Notify sender
 			$mailSubject =
-				plugin_lang_get('notify_reporter_bug_added_subject_bugcreated') .
-				" #$bugId.";
+				$this->fillPlaceholders(
+					plugin_lang_get('notify_reporter_bug_added_subject'),
+					$email,
+					$bugData,
+				);
 			$mailBody =
-				plugin_lang_get('notify_reporter_bug_added_body_dear') .
-				" $senderEmailName, " .
-				plugin_lang_get('notify_reporter_bug_added_body_bugcreated_1') .
-				" \"$bugTitle\" " .
-				plugin_lang_get('notify_reporter_bug_added_body_bugcreated_2') .
-				" #$bugId.";
+				$this->fillPlaceholders(
+					plugin_lang_get('notify_reporter_bug_added_body'),
+					$email,
+					$bugData,
+				);
+
+			$senderEmailAddr = $email['From_parsed']['email'];
+
+			// Collect all To and Cc address to keep it on the answer email
+			$ccAddr = [];
+			foreach ($email['To'] as $to) {
+				// Do not place plugin email in cc to avoid loops
+				if ($to === $this->getPluginEmailAddr())
+					continue;
+				$ccAddr[] = $to;
+			}
+			foreach ($email['Cc'] as $cc) {
+				$ccAddr[] = $cc;
+			}
+			$headers = [
+				'Cc' => implode(',', $ccAddr),
+				'From' => $this->getPluginEmailAddr(),
+			];
 
 			// Add mail to mantis output queue
-			email_store($senderEmailAddr, $mailSubject, $mailBody);
+			email_store($senderEmailAddr, $mailSubject, $mailBody, $headers);
 		}
 
 		// Notify user-defined static emails list
-		$addressesToNotify = [];
-		if ($this->_mail_notify_custom_emails)
+		if ($this->_mail_notify_custom_emails) {
 			$addressesToNotify = $this->parseCustomNotificationAddresses();
 
-		// Notify project users
-		if ($this->_mail_notify_project_users) {
-			foreach ($bugUsersEmails as $bugUserId => $bugUserEmail) {
-				// Do not send to reporter
-				if ($bugUserEmail === $senderEmailAddr)
-					continue;
-				$addressesToNotify[] = $bugUserEmail;
+			foreach ($addressesToNotify as $atn) {
+				$mailSubject =
+					$this->fillPlaceholders(
+						plugin_lang_get('notify_staticlist_bug_added_subject'),
+						$email,
+						$bugData,
+					);
+				$mailBody =
+					$this->fillPlaceholders(
+						plugin_lang_get('notify_staticlist_bug_added_body'),
+						$email,
+						$bugData,
+					);
+
+				$headers = [
+					'From' => $this->getPluginEmailAddr(),
+				];
+
+				// Add mail to mantis output queue
+				email_store($atn, $mailSubject, $mailBody, $headers);
 			}
-		}
-
-		foreach ($addressesToNotify as $atn) {
-			$mailSubject =
-				plugin_lang_get('notify_dev_bug_added_subject_bugcreated') .
-				" #$bugId.";
-			$mailBody =
-				plugin_lang_get('notify_dev_bug_added_body_bugcreated_1') .
-				" #$bugId " .
-				plugin_lang_get('notify_dev_bug_added_body_bugcreated_2') .
-				" \"$bugTitle\" " .
-				plugin_lang_get('notify_dev_bug_added_body_bugcreated_3') .
-				" $senderEmailName ($senderEmailAddr).\n\n" .
-				plugin_lang_get('notify_dev_bug_added_body_bugcreated_4') . "\n" .
-				$bugContent;
-
-			// Add mail to mantis output queue
-			email_store($atn, $mailSubject, $mailBody);
 		}
 	}
 
+	# --------------------
+	# Fills the placeholders with data from the issue
+	# Supported placeholders:
+	#   %bugid% Mantis numeric bug identifier
+	#   %bugtitle% Bug title
+	#   %reporteremail% Reporter email address
+	#   %reportername% Reporter name
+	#   %emailaddr% Plugin's monitored email address that received the report
+	private function fillPlaceholders($template, $email, $bugData) {
+		return str_replace([
+			'%bugid%',
+			'%bugtitle%',
+			'%reporteremail%',
+			'%reportername%',
+			'%emailaddr%',
+		],
+		[
+			$bugData->id,
+			$bugData->summary,
+			$email['From_parsed']['email'],
+			$email['From_parsed']['name'],
+			$this->getPluginEmailAddr(),
+		],
+		$template);
+	}
+
+	# --------------------
+	# Returns the plugin email address which received the current email
+	private function getPluginEmailAddr() {
+		return $this->_mailbox['address'];
+	}
+
+	# --------------------
+	# Parses user defined addresses, verify its validity and returns it as a list
 	private function parseCustomNotificationAddresses()
 	{
 		$addresses = explode(',', $this->_mail_notify_custom_emails_addresses);
