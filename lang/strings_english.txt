@@ -78,7 +78,7 @@ $s_plugin_EmailReporting_mail_subject_id_regex = 'What kind of search should be 
 $s_plugin_EmailReporting_mail_use_bug_priority = 'Look for priority header field';
 $s_plugin_EmailReporting_mail_use_message_id = 'Use Message-ID in Mail header to identify notes';
 $s_plugin_EmailReporting_mail_use_reporter = 'Use only default reporter user for issues created by email';
-$s_plugin_EmailReporting_mail_notify_reporter = 'Send email to reporter to acknownledge bug creation';
+$s_plugin_EmailReporting_mail_notify_reporter = 'Send email to reporter to acknowledge bug creation';
 $s_plugin_EmailReporting_mail_notify_project_users = 'Send email to project users when a bug is created by reporter email';
 $s_plugin_EmailReporting_mail_notify_custom_emails = 'Send email to following email addresses when a bug is created by reporter email';
 $s_plugin_EmailReporting_mail_notify_custom_emails_addresses = 'Comma separated static list of email addresses to be notified';
@@ -181,7 +181,10 @@ $s_plugin_EmailReporting_act_issue_custom_field = 'Update custom field';
 $s_plugin_EmailReporting_excep_issue_summary = 'Issue summary';
 $s_plugin_EmailReporting_excep_issue_description = 'Issue description';
 
-$s_plugin_EmailReporting_notify_reporter_bug_added_subject = '[%bugid%] Segnalazione ricevuta';
-$s_plugin_EmailReporting_notify_reporter_bug_added_body = 'La segnalazione è stata ricevuta e sarà lavorata prima possibile. Puoi usare il codice %bugid% per farvi riferimento in futuro. Rispondendo a questa email e lasciando %emailaddr% tra i destinatari e [%buid%] nell'oggetto puoi aggiungere ulteriori informazioni.';
+$s_plugin_EmailReporting_notify_reporter_bug_added_subject = '[%bugid%] Report received';
+$s_plugin_EmailReporting_notify_reporter_bug_added_body = 'The report has been received and will be processed as soon as possible. You can use the code %bugid% as a reference in the future. By answering this email and leaving %emailaddr% in the recipients and [%bugid%] as subject, you can add more informations.';
+
+$s_plugin_EmailReporting_notify_staticlist_bug_added_subject = '[%bugid%] has been created after an email report';
+$s_plugin_EmailReporting_notify_staticlist_bug_added_body = '%bugtitle% report was received by %reporteremail% and will be processed as soon as possible. You can use the code %bugid% as a reference. You can use the code %bugid% as a reference in the future. By answering this email and leaving %emailaddr% in the recipients and [%bugid%] as subject, you can add more informations.';
 
 ?>
