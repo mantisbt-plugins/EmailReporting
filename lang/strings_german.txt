@@ -182,6 +182,9 @@ $s_plugin_EmailReporting_excep_issue_summary = 'Zusammenfassung';
 $s_plugin_EmailReporting_excep_issue_description = 'Beschreibung';
 
 $s_plugin_EmailReporting_notify_reporter_bug_added_subject = '[%bugid%] Bericht erhalten';
-$s_plugin_EmailReporting_notify_reporter_bug_added_body = 'Die Bericht ist eingegangen und wird schnellstmöglich bearbeitet. Sie können in Zukunft den Code %bugid% als Referenz verwenden. Wenn Sie diese E-Mail beantworten und %emailaddr% in den Empfängern und [%buid%] als Betreff belassen, können Sie weitere Informationen hinzufügen.';
+$s_plugin_EmailReporting_notify_reporter_bug_added_body = 'Die Bericht ist eingegangen und wird schnellstmöglich bearbeitet. Sie können in Zukunft den Code %bugid% als Referenz verwenden. Wenn Sie diese E-Mail beantworten und %emailaddr% in den Empfängern und [%bugid%] als Betreff belassen, können Sie weitere Informationen hinzufügen.';
+
+$s_plugin_EmailReporting_notify_staticlist_bug_added_subject = '[%bugid%] wurde nach einer E-Mail-Benachrichtigung erstellt';
+$s_plugin_EmailReporting_notify_staticlist_bug_added_body = 'Der Bericht %bugtitle% von %reporteremail%  ist eingegangen und wird so schnell wie möglich bearbeitet. Sie können in Zukunft den Code %bugid% als Referenz verwenden. Wenn Sie diese E-Mail beantworten und %emailaddr% in den Empfängern und [%bugid%] als Betreff belassen, können Sie weitere Informationen hinzufügen.';
 
 ?>

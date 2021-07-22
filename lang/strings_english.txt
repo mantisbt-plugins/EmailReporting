@@ -182,6 +182,9 @@ $s_plugin_EmailReporting_excep_issue_summary = 'Issue summary';
 $s_plugin_EmailReporting_excep_issue_description = 'Issue description';
 
 $s_plugin_EmailReporting_notify_reporter_bug_added_subject = '[%bugid%] Report received';
-$s_plugin_EmailReporting_notify_reporter_bug_added_body = 'The report has been received and will be processed as soon as possible. You can use the code %bugid% as a reference in the future. By answering this email and leaving %emailaddr% in the recipients and [%buid%] as subject, you can add more informations.';
+$s_plugin_EmailReporting_notify_reporter_bug_added_body = 'The report has been received and will be processed as soon as possible. You can use the code %bugid% as a reference in the future. By answering this email and leaving %emailaddr% in the recipients and [%bugid%] as subject, you can add more informations.';
+
+$s_plugin_EmailReporting_notify_staticlist_bug_added_subject = '[%bugid%] has been created after an email report';
+$s_plugin_EmailReporting_notify_staticlist_bug_added_body = '%bugtitle% report was received by %reporteremail% and will be processed as soon as possible. You can use the code %bugid% as a reference. You can use the code %bugid% as a reference in the future. By answering this email and leaving %emailaddr% in the recipients and [%bugid%] as subject, you can add more informations.';
 
 ?>
