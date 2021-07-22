@@ -183,5 +183,3 @@ $s_plugin_EmailReporting_excep_issue_description = 'Issue description';
 
 $s_plugin_EmailReporting_notify_reporter_bug_added_subject = '[%bugid%] Segnalazione ricevuta';
 $s_plugin_EmailReporting_notify_reporter_bug_added_body = 'La segnalazione è stata ricevuta e sarà lavorata prima possibile. Puoi usare il codice %bugid% per farvi riferimento in futuro. Rispondendo a questa email e lasciando %emailaddr% tra i destinatari e [%buid%] nell'oggetto puoi aggiungere ulteriori informazioni.';
-
-?>

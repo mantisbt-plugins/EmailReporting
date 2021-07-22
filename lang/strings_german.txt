@@ -181,14 +181,7 @@ $s_plugin_EmailReporting_act_issue_custom_field = 'Benutzerdefiniertes Feld aktu
 $s_plugin_EmailReporting_excep_issue_summary = 'Zusammenfassung';
 $s_plugin_EmailReporting_excep_issue_description = 'Beschreibung';
 
-$s_plugin_EmailReporting_notify_reporter_bug_added_subject_bugcreated = 'Received bug report';
-$s_plugin_EmailReporting_notify_reporter_bug_added_body_dear = 'Dear';
-$s_plugin_EmailReporting_notify_reporter_bug_added_body_bugcreated_1 = 'we received your bug report';
-$s_plugin_EmailReporting_notify_reporter_bug_added_body_bugcreated_2 = 'and created issue';
-$s_plugin_EmailReporting_notify_dev_bug_added_subject_bugcreated = 'Received bug report';
-$s_plugin_EmailReporting_notify_dev_bug_added_body_bugcreated_1 = 'Issue';
-$s_plugin_EmailReporting_notify_dev_bug_added_body_bugcreated_2 = 'was created due to email report';
-$s_plugin_EmailReporting_notify_dev_bug_added_body_bugcreated_3 = 'from';
-$s_plugin_EmailReporting_notify_dev_bug_added_body_bugcreated_4 = 'The content of the issue is:';
+$s_plugin_EmailReporting_notify_reporter_bug_added_subject = '[%bugid%] Segnalazione ricevuta';
+$s_plugin_EmailReporting_notify_reporter_bug_added_body = 'La segnalazione è stata ricevuta e sarà lavorata prima possibile. Puoi usare il codice %bugid% per farvi riferimento in futuro. Rispondendo a questa email e lasciando %emailaddr% tra i destinatari e [%buid%] nell'oggetto puoi aggiungere ulteriori informazioni.';
 
 ?>
