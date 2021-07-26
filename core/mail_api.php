@@ -700,6 +700,7 @@ class ERP_mailbox_api
 		$t_mp->parse();
 
 		$t_email[ 'From_parsed' ] = $this->parse_from_field( trim( $t_mp->from() ) );
+		$t_email[ 'Date_parsed' ] = $this->parse_date_field( trim( $t_mp->date() ) );
 		$t_email[ 'Reporter_id' ] = $this->get_user( $t_email[ 'From_parsed' ] );
 
 		$t_email[ 'Subject' ] = trim( $t_mp->subject() );
@@ -1338,6 +1339,13 @@ class ERP_mailbox_api
 		}
 
 		return( $v_from_address );
+	}
+
+	# --------------------
+	# Return the date from the mail's 'Date' field
+	private function parse_date_field( $p_date )
+	{
+		return strtotime($p_date);
 	}
 
 	# --------------------
@@ -1990,6 +1998,12 @@ class ERP_mailbox_api
 	}
 
 	# --------------------
+	# Apply "mail" type quotation to a text (prepends > to any line)
+	private function quoteMailText($text) {
+		return preg_replace('/^/m', '> ', $text);
+	}
+
+	# --------------------
 	# Fills the placeholders with data from the issue
 	# Supported placeholders:
 	#   %bugid% Mantis numeric bug identifier
@@ -2004,6 +2018,9 @@ class ERP_mailbox_api
 			'%reporteremail%',
 			'%reportername%',
 			'%emailaddr%',
+			'%emailsubject%',
+			'%emailbody%',
+			'%emaildate%',
 		],
 		[
 			$bugData->id,
@@ -2011,6 +2028,9 @@ class ERP_mailbox_api
 			$email['From_parsed']['email'],
 			$email['From_parsed']['name'],
 			$this->getPluginEmailAddr(),
+			$email['Subject'],
+			$this->quoteMailText($email['X-Mantis-Body']),
+			strftime("%d/%m/%y %R", $email['Date_parsed'])
 		],
 		$template);
 	}

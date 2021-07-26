@@ -181,8 +181,13 @@ $s_plugin_EmailReporting_act_issue_custom_field = 'Update custom field';
 $s_plugin_EmailReporting_excep_issue_summary = 'Riepilogo issue';
 $s_plugin_EmailReporting_excep_issue_description = 'Descrizione issue';
 
-$s_plugin_EmailReporting_notify_reporter_bug_added_subject = '[%bugid%] Segnalazione ricevuta';
-$s_plugin_EmailReporting_notify_reporter_bug_added_body = 'La segnalazione è stata ricevuta e sarà lavorata prima possibile. Puoi usare il codice %bugid% per farvi riferimento in futuro. Rispondendo a questa email e lasciando %emailaddr% tra i destinatari e [%bugid%] nell\'oggetto puoi aggiungere ulteriori informazioni.';
+$s_plugin_EmailReporting_notify_reporter_bug_added_subject = 'Re: [%bugid%] %emailsubject%';
+$s_plugin_EmailReporting_notify_reporter_bug_added_body = 'La segnalazione è stata ricevuta e sarà lavorata prima possibile. Puoi usare il codice %bugid% per farvi riferimento in futuro.
+
+Rispondendo a questa email e lasciando tra i destinatari %emailaddr% e [%bugid%] nell\'oggetto puoi aggiungere ulteriori informazioni.
+
+Il %emaildate%, %reportername% <%reporteremail%> ha scritto:
+%emailbody%';
 
 $s_plugin_EmailReporting_notify_staticlist_bug_added_subject = '[%bugid%] è stato creato in seguito a segnalazione via email';
 $s_plugin_EmailReporting_notify_staticlist_bug_added_body = 'È stata ricevuta la segnalazione %bugtitle% da %reporteremail% e sarà lavorata prima possibile. Puoi usare il codice %bugid% per farvi riferimento. Rispondendo a questa email e lasciando %emailaddr% tra i destinatari e [%bugid%] nell\'oggetto puoi aggiungere un commento.';

@@ -23,6 +23,7 @@ class ERP_Mail_Parser
 	private $_file;
 	private $_content;
 
+	private $_date;
 	private $_from;
 	private $_to;
 	private $_cc;
@@ -270,6 +271,11 @@ class ERP_Mail_Parser
 		return( $this->_from );
 	}
 
+	public function date()
+	{
+		return( $this->_date );
+	}
+
 	public function to()
 	{
 		return( $this->_to );
@@ -325,6 +331,11 @@ class ERP_Mail_Parser
 		if ( isset( $structure->headers[ 'from' ] ) )
 		{
 			$this->setFrom( $structure->headers[ 'from' ] );
+		}
+
+		if ( isset( $structure->headers[ 'date' ] ) )
+		{
+			$this->setDate( $structure->headers[ 'date' ] );
 		}
 
 		if ( isset( $structure->headers[ 'subject' ] ) )
@@ -408,6 +419,11 @@ class ERP_Mail_Parser
 	private function setFrom( $from )
 	{
 		$this->_from = $this->process_header_encoding( $from );
+	}
+
+	private function setDate( $date )
+	{
+		$this->_date = $this->process_header_encoding( $date );
 	}
 
 	private function setTo( $to )
