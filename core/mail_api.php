@@ -1984,7 +1984,7 @@ class ERP_mailbox_api
 			}
 
 			$headers = [
-				'Cc' => implode(',', $ccAddr),
+				'Cc' => implode(', ', $ccAddr),
 				'Reply-To' => $this->getPluginEmailAddr(),
 			];
 
