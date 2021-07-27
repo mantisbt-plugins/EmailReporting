@@ -80,7 +80,7 @@ $s_plugin_EmailReporting_mail_use_message_id = 'Use Message-ID in Mail header to
 $s_plugin_EmailReporting_mail_use_reporter = 'Use only default reporter user for issues created by email';
 $s_plugin_EmailReporting_mail_notify_reporter = 'Send email to reporter to acknowledge bug creation';
 $s_plugin_EmailReporting_mail_notify_developers = 'Project developers receive the acknowledge mail as CC';
-$s_plugin_EmailReporting_mail_notify_custom_emails = 'Send email to following email addresses when a bug is created by reporter email';
+$s_plugin_EmailReporting_mail_notify_custom_emails = 'Add the following email addresses in CC when replying to reporter email';
 $s_plugin_EmailReporting_mail_notify_custom_emails_addresses = 'Comma separated static list of email addresses to be notified';
 
 $s_plugin_EmailReporting_strict = 'Strict';
@@ -185,7 +185,8 @@ $s_plugin_EmailReporting_excep_issue_description = 'Issue description';
 $s_plugin_EmailReporting_notify_reporter_bug_added_subject = '[%bugid%] Report received';
 $s_plugin_EmailReporting_notify_reporter_bug_added_body = 'The report has been received and will be processed as soon as possible. You can use the code %bugid% as a reference in the future. By answering this email and leaving %emailaddr% in the recipients and [%bugid%] as subject, you can add more informations.';
 
-$s_plugin_EmailReporting_notify_staticlist_bug_added_subject = '[%bugid%] has been created after an email report';
-$s_plugin_EmailReporting_notify_staticlist_bug_added_body = '%bugtitle% report was received by %reporteremail% and will be processed as soon as possible. You can use the code %bugid% as a reference in the future. By answering this email and leaving %emailaddr% in the recipients and [%bugid%] as subject, you can add more informations.';
+$s_plugin_EmailReporting_mailbox_settings_notifications_options = '	Email notification options';
+$s_plugin_EmailReporting_custom_emails = 'Add the following email addresses in CC when replying to reporter email';
+$s_plugin_EmailReporting_custom_emails_addresses = 'Lista estática separada por comas de direcciones de correo electrónico a notificar (se agregarán a las definidas en la configuración general)';
 
 ?>

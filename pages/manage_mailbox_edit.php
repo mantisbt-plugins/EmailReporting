@@ -25,6 +25,8 @@ if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailb
 		'auth_method'			=> gpc_get_string( 'auth_method' ),
 		'project_id'			=> gpc_get_int( 'project_id' ),
 		'global_category_id'	=> gpc_get_int( 'global_category_id' ),
+		'custom_emails' => gpc_get_string( 'custom_emails', '' ),
+		'custom_emails_addresses' => gpc_get_string( 'custom_emails_addresses', '' ),
 //		'link_rules'			=> gpc_get_int_array( 'link_rules', array() ),
 	);
 
@@ -89,6 +91,8 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 	$t_message .= plugin_lang_get( 'erp_username' ) . ': ' . $t_mailbox_api->_mailbox[ 'erp_username' ] . '<br />';
 	$t_message .= plugin_lang_get( 'erp_password' ) . ': ******' . '<br />';
 	$t_message .= plugin_lang_get( 'auth_method' ) . ': ' . $t_mailbox_api->_mailbox[ 'auth_method' ] . '<br />';
+	$t_message .= plugin_lang_get( 'custom_emails' ) . ': ' . $t_mailbox_api->_mailbox[ 'custom_emails' ] . '<br />';
+	$t_message .= plugin_lang_get( 'custom_emails_addresses' ) . ': ' . $t_mailbox_api->_mailbox[ 'custom_emails_addresses' ] . '<br />';
 
 	if ( $t_mailbox_api->_mailbox[ 'mailbox_type' ] === 'IMAP' )
 	{

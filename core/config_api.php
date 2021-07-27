@@ -13,6 +13,8 @@
 			'encryption'			=> 'None',
 			'ssl_cert_verify'		=> ON,
 			'auth_method'			=> 'USER',
+			'custom_emails'			=> OFF,
+			'custom_emails_addresses' => '',
 		);
 
 		return( $t_mailbox );

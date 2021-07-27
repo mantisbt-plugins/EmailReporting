@@ -80,8 +80,8 @@ $s_plugin_EmailReporting_mail_use_message_id = 'Usa l\'ID messaggio nell\'header
 $s_plugin_EmailReporting_mail_use_reporter = 'Usa solo l\'utente reporter predefinito per i problemi creati tramite email';
 $s_plugin_EmailReporting_mail_notify_reporter = 'Invia un\'email al reporter per confermare la creazione del bug';
 $s_plugin_EmailReporting_mail_notify_developers = 'Metti in cc gli sviluppatori presenti nel progetto a cui viene aggiunto il bug';
-$s_plugin_EmailReporting_mail_notify_custom_emails = 'Invia e-mail ai seguenti indirizzi e-mail quando viene creato un bug dall\'e-mail del reporter';
-$s_plugin_EmailReporting_mail_notify_custom_emails_addresses = 'Elenco statico di indirizzi email da notificare separati da virgole';
+$s_plugin_EmailReporting_mail_notify_custom_emails = 'Metti in cc i seguenti indirizzi e-mail quando viene creato un bug dall\'e-mail del reporter';
+$s_plugin_EmailReporting_mail_notify_custom_emails_addresses = 'Elenco statico di indirizzi email da mettere in cc separati da virgole';
 
 $s_plugin_EmailReporting_strict = 'Rigoroso';
 $s_plugin_EmailReporting_balanced = 'Bilanciato';
@@ -190,7 +190,8 @@ Rispondendo a questa email e lasciando tra i destinatari %emailaddr% e [%bugid%]
 Il %emaildate%, %reportername% <%reporteremail%> ha scritto:
 %emailbody%';
 
-$s_plugin_EmailReporting_notify_staticlist_bug_added_subject = '[%bugid%] è stato creato in seguito a segnalazione via email';
-$s_plugin_EmailReporting_notify_staticlist_bug_added_body = 'È stata ricevuta la segnalazione %bugtitle% da %reporteremail% e sarà lavorata prima possibile. Puoi usare il codice %bugid% per farvi riferimento. Rispondendo a questa email e lasciando %emailaddr% tra i destinatari e [%bugid%] nell\'oggetto puoi aggiungere un commento.';
+$s_plugin_EmailReporting_mailbox_settings_notifications_options = 'Opzioni di notifica email';
+$s_plugin_EmailReporting_custom_emails = 'Aggiungi i seguenti indirizzi e-mail in cc quando si risponde all\'e-mail del reporter';
+$s_plugin_EmailReporting_custom_emails_addresses = 'Elenco statico di indirizzi email da notificare separati da virgole (vengono aggiunti a quelli definiti nella configurazione generale)';
 
 ?>

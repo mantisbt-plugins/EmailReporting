@@ -198,7 +198,7 @@ class ERP_mailbox_api
 	public function process_mailbox( $p_mailbox )
 	{
 		$this->_mailbox_starttime = ERP_get_timestamp();
-		
+
 		$this->_mailbox = $p_mailbox + ERP_get_default_mailbox();
 
 		if ( $this->_functionality_enabled )
@@ -998,7 +998,7 @@ class ERP_mailbox_api
 
 				$t_bug_data->steps_to_reproduce		= config_get( 'default_bug_steps_to_reproduce' );
 				$t_bug_data->additional_information	= config_get( 'default_bug_additional_info' );
-				
+
 				$t_fields = config_get( 'bug_report_page_fields' );
 				$t_fields = columns_filter_disabled( $t_fields );
 				$t_update_due_date = in_array( 'due_date', $t_fields ) && access_has_project_level( config_get( 'due_date_update_threshold' ), helper_get_current_project(), auth_get_current_user_id() );
@@ -1953,25 +1953,34 @@ class ERP_mailbox_api
 
 			// Collect all To and Cc address to keep it on the answer email
 			$ccAddr = [];
-			foreach ($email['To'] as $to) {
-				// Do not place plugin email in cc to avoid loops
-				if ($to === $this->getPluginEmailAddr())
-					continue;
-				$ccAddr[] = $to;
-			}
-			foreach ($email['Cc'] as $cc) {
-				$ccAddr[] = $cc;
-			}
+			// Never place plugin email in cc to avoid loops
+			$exclude = [$this->getPluginEmailAddr(), $senderEmailAddr];
+
+			foreach ($email['To'] as $to)
+				$this->addUnique($to, $ccAddr, $exclude);
+
+			foreach ($email['Cc'] as $cc)
+				$this->addUnique($cc, $ccAddr, $exclude);
 
 			if ($this->_mail_notify_developers) {
 				// Notify project users
 				$bugUsersEmails = email_collect_recipients($bugData->id, 'new');
-				foreach ($bugUsersEmails as $bugUserId => $bugUserEmail) {
-					// Do not send to reporter
-					if ($bugUserEmail === $senderEmailAddr)
-						continue;
-					$ccAddr[] = $bugUserEmail;
-				}
+				foreach ($bugUsersEmails as $bugUserId => $bugUserEmail)
+					$this->addUnique($bugUserEmail, $ccAddr, $exclude);
+			}
+
+			if ($this->_mail_notify_custom_emails) {
+				// Notify custom email addresses
+				$addressesToNotify = $this->parseCustomNotificationAddresses($this->_mail_notify_custom_emails_addresses);
+				foreach ($addressesToNotify as $atn)
+					$this->addUnique($atn, $ccAddr, $exclude);
+			}
+
+			// Notify per-mailbox custom email addresses
+			if ($this->_mailbox['custom_emails']) {
+				$addressesToNotify = $this->parseCustomNotificationAddresses($this->_mailbox['custom_emails_addresses']);
+				foreach ($addressesToNotify as $atn)
+					$this->addUnique($atn, $ccAddr, $exclude);
 			}
 
 			$headers = [
@@ -1983,32 +1992,21 @@ class ERP_mailbox_api
 			email_store($senderEmailAddr, $mailSubject, $mailBody, $headers);
 		}
 
-		// Notify user-defined static emails list
-		if ($this->_mail_notify_custom_emails) {
-			$addressesToNotify = $this->parseCustomNotificationAddresses();
+	}
 
-			foreach ($addressesToNotify as $atn) {
-				$mailSubject =
-					$this->fillPlaceholders(
-						plugin_lang_get('notify_staticlist_bug_added_subject'),
-						$email,
-						$bugData,
-					);
-				$mailBody =
-					$this->fillPlaceholders(
-						plugin_lang_get('notify_staticlist_bug_added_body'),
-						$email,
-						$bugData,
-					);
-
-				$headers = [
-					'Reply-To' => $this->getPluginEmailAddr(),
-				];
-
-				// Add mail to mantis output queue
-				email_store($atn, $mailSubject, $mailBody, $headers);
+	# --------------------
+	# Adds the value to array only if not already present nor in exclude list
+	private function addUnique($value, &$array, $exclude = null) {
+		if ($exclude) {
+			foreach ($exclude as $ex) {
+				if ($value === $ex)
+					return;
 			}
 		}
+
+		if (in_array($value, $array))
+			return;
+		$array[] = $value;
 	}
 
 	# --------------------
@@ -2057,9 +2055,9 @@ class ERP_mailbox_api
 
 	# --------------------
 	# Parses user defined addresses, verify its validity and returns it as a list
-	private function parseCustomNotificationAddresses()
+	private function parseCustomNotificationAddresses($addressesCSV)
 	{
-		$addresses = explode(',', $this->_mail_notify_custom_emails_addresses);
+		$addresses = explode(',', $addressesCSV);
 		// Validate emails
 		foreach ($addresses as $i => $addr) {
 			$taddr = trim($addr);

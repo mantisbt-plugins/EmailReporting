@@ -650,6 +650,24 @@ class EmailReportingPlugin extends MantisPlugin
 
 			plugin_config_set( 'config_version', 18 );
 		}
+
+		if ( $t_config_version <= 18 )
+		{
+			$t_mailboxes = plugin_config_get( 'mailboxes', array() );
+			$t_indexes = array(
+				'custom_emails' => 'custom_emails',
+				'custom_emails_addresses' => 'custom_emails_addresses',
+			);
+
+			foreach ( $t_mailboxes AS $t_key => $t_array )
+			{
+				$t_mailboxes[ $t_key ] = $this->ERP_update_indexes( $t_array, $t_indexes );
+			}
+
+			plugin_config_set( 'mailboxes', $t_mailboxes );
+
+			plugin_config_set( 'config_version', 19 );
+		}
 	}
 
 	/*
