@@ -79,6 +79,7 @@ $s_plugin_EmailReporting_mail_use_bug_priority = 'Buscar en el campo prioridad d
 $s_plugin_EmailReporting_mail_use_message_id = 'Usar Message-ID en la cabecera del email para identificar las notas';
 $s_plugin_EmailReporting_mail_use_reporter = 'Usar solo el informador por defecto para las solicitudes creadas por email';
 $s_plugin_EmailReporting_mail_notify_reporter = 'Envíe correo electrónico al reportero para reconocer la creación de errores';
+$s_plugin_EmailReporting_mail_notify_developers = 'Los desarrolladores de proyectos reciben el correo de confirmación como CC';
 $s_plugin_EmailReporting_mail_notify_custom_emails = 'Envíe un correo electrónico a las siguientes direcciones de correo electrónico cuando el correo electrónico del reportero cree un error ';
 $s_plugin_EmailReporting_mail_notify_custom_emails_addresses = 'Lista estática de direcciones de correo electrónico, separados por comas, que deben ser notificados';
 

@@ -86,6 +86,7 @@ class ERP_mailbox_api
 	private $_mail_use_message_id;
 	private $_mail_use_reporter;
 	private $_mail_notify_reporter;
+	private $_mail_notify_developers;
 	private $_mail_notify_custom_emails;
 	private $_mail_notify_custom_emails_addresses;
 
@@ -142,6 +143,7 @@ class ERP_mailbox_api
 		$this->_mail_use_message_id				= plugin_config_get( 'mail_use_message_id' );
 		$this->_mail_use_reporter				= plugin_config_get( 'mail_use_reporter' );
 		$this->_mail_notify_reporter			= plugin_config_get( 'mail_notify_reporter' );
+		$this->_mail_notify_developers			= plugin_config_get( 'mail_notify_developers' );
 		$this->_mail_notify_custom_emails		= plugin_config_get( 'mail_notify_custom_emails' );
 		$this->_mail_notify_custom_emails_addresses = plugin_config_get( 'mail_notify_custom_emails_addresses' );
 
@@ -1960,6 +1962,18 @@ class ERP_mailbox_api
 			foreach ($email['Cc'] as $cc) {
 				$ccAddr[] = $cc;
 			}
+
+			if ($this->_mail_notify_developers) {
+				// Notify project users
+				$bugUsersEmails = email_collect_recipients($bugData->id, 'new');
+				foreach ($bugUsersEmails as $bugUserId => $bugUserEmail) {
+					// Do not send to reporter
+					if ($bugUserEmail === $senderEmailAddr)
+						continue;
+					$ccAddr[] = $bugUserEmail;
+				}
+			}
+
 			$headers = [
 				'Cc' => implode(',', $ccAddr),
 				'From' => $this->getPluginEmailAddr(),

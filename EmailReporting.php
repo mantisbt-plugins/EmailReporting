@@ -191,6 +191,9 @@ class EmailReportingPlugin extends MantisPlugin
 			// Whether the reporter should be acknownledged for the ticket creation
 			'mail_notify_reporter'			=> OFF,
 
+			// Wether the project developers should received ack email as CC
+			'mail_notify_developers'		=> OFF,
+
 			// Wether the users specified in mail_notify_custom_emails_addresses should be notified
 			'mail_notify_custom_emails'		=> OFF,
 

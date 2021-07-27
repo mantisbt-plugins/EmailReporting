@@ -1,5 +1,5 @@
 <?php
-$s_plugin_EmailReporting_plugin_title = 'Segnalazione email';
+$s_plugin_EmailReporting_plugin_title = 'Email Reporting';
 $s_plugin_EmailReporting_plugin_description = 'Offre la funzionalità di aggiungere issues e note via email';
 $s_plugin_EmailReporting_plugin_author = 'Indy e varie persone dopo di lui.';
 
@@ -79,6 +79,7 @@ $s_plugin_EmailReporting_mail_use_bug_priority = 'Cerca nel campo header con pri
 $s_plugin_EmailReporting_mail_use_message_id = 'Usa l\'ID messaggio nell\'header della posta per identificare le note';
 $s_plugin_EmailReporting_mail_use_reporter = 'Usa solo l\'utente reporter predefinito per i problemi creati tramite email';
 $s_plugin_EmailReporting_mail_notify_reporter = 'Invia un\'email al reporter per confermare la creazione del bug';
+$s_plugin_EmailReporting_mail_notify_developers = 'Metti in cc gli sviluppatori presenti nel progetto a cui viene aggiunto il bug';
 $s_plugin_EmailReporting_mail_notify_custom_emails = 'Invia e-mail ai seguenti indirizzi e-mail quando viene creato un bug dall\'e-mail del reporter';
 $s_plugin_EmailReporting_mail_notify_custom_emails_addresses = 'Elenco statico di indirizzi email da notificare separati da virgole';
 
