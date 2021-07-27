@@ -1976,7 +1976,7 @@ class ERP_mailbox_api
 
 			$headers = [
 				'Cc' => implode(',', $ccAddr),
-				'From' => $this->getPluginEmailAddr(),
+				'Reply-To' => $this->getPluginEmailAddr(),
 			];
 
 			// Add mail to mantis output queue
@@ -2002,7 +2002,7 @@ class ERP_mailbox_api
 					);
 
 				$headers = [
-					'From' => $this->getPluginEmailAddr(),
+					'Reply-To' => $this->getPluginEmailAddr(),
 				];
 
 				// Add mail to mantis output queue
