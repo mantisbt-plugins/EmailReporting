@@ -96,8 +96,8 @@ ERP_output_config_option( 'global_category_id', 'dropdown', $t_mailbox, 'print_g
 ERP_output_table_close();
 
 ERP_output_table_open( 'mailbox_settings_notifications_options' );
-ERP_output_config_option( 'custom_emails', 'boolean', false );
-ERP_output_config_option( 'custom_emails_addresses', 'string_multiline', '' );
+ERP_output_config_option( 'custom_emails', 'boolean', $t_mailbox );
+ERP_output_config_option( 'custom_emails_addresses', 'string_multiline', $t_mailbox );
 ERP_output_table_close();
 
 event_signal( 'EVENT_ERP_OUTPUT_MAILBOX_FIELDS', $f_select_mailbox );

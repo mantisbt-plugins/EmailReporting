@@ -2005,7 +2005,7 @@ class ERP_mailbox_api
 
 		if (in_array($value, $array))
 			return;
-		$array[] = $value;
+		$array[] = trim($value);
 	}
 
 	# --------------------
