@@ -1984,12 +1984,11 @@ class ERP_mailbox_api
 			}
 
 			$headers = [
-				'Cc' => implode(', ', $ccAddr),
 				'Reply-To' => $this->getPluginEmailAddr(),
 			];
 
 			// Add mail to mantis output queue
-			email_store($senderEmailAddr, $mailSubject, $mailBody, $headers);
+			email_store($senderEmailAddr, $mailSubject, $mailBody, $headers, true, $ccAddr);
 		}
 
 	}
