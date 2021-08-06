@@ -11,6 +11,7 @@
 	require_api( 'bug_api.php' );
 	require_api( 'bugnote_api.php' );
 	require_api( 'user_api.php' );
+	require_api( 'project_api.php' );
 	require_api( 'file_api.php' );
 
 	require_once( config_get_global( 'absolute_path' ) . 'api/soap/mc_file_api.php' );
@@ -765,7 +766,6 @@ class ERP_mailbox_api
 							$t_reporter_name = $t_new_reporter_name;
 
 							$t_realname = $this->prepare_realname( $p_parsed_from, $t_reporter_name );
-
 							if ( $t_realname !== FALSE )
 							{
 								user_set_realname( $t_reporter_id, $t_realname );
@@ -872,6 +872,14 @@ class ERP_mailbox_api
 			$t_project_id = bug_get_field( $t_bug_id, 'project_id' );
 			ERP_set_temporary_overwrite( 'project_override', $t_project_id );
 
+			# Assign project to the user if he isn't assigned to the project
+			# TODO move elsewhere ?
+			if(!array_key_exists($t_project_id, user_get_assigned_projects($p_email['Reporter_id'])))
+			{
+				project_add_user($t_project_id, $p_email['Reporter_id'], 25);
+				$this->custom_error( 'Reporter ' . $p_email['Reporter_id'] . ' added to the project ' . $t_project_id . ' with access level reporter', FALSE);
+			}
+
 			$t_description = $p_email[ 'X-Mantis-Body' ];
 
 			$t_description = $this->identify_mantisbt_replies( $t_description );
@@ -943,6 +951,14 @@ class ERP_mailbox_api
 		{
 			$t_project_id = ( ( $p_overwrite_project_id === FALSE ) ? $this->_mailbox[ 'project_id' ] : $p_overwrite_project_id );
 			ERP_set_temporary_overwrite( 'project_override', $t_project_id );
+
+			# Assign project to the user if he isn't assigned to the project
+			# TODO move elsewhere ?
+			if(!array_key_exists($t_project_id, user_get_assigned_projects($p_email['Reporter_id'])))
+			{
+				project_add_user($t_project_id, $p_email['Reporter_id'], 25);
+				$this->custom_error( 'Reporter ' . $p_email['Reporter_id'] . ' added to the project ' . $t_project_id . ' with access level reporter', FALSE);
+			}
 
 			# Check issue permissions
 			if ( !$this->_mail_respect_permissions || access_has_project_level( config_get('report_bug_threshold' ) ) )
