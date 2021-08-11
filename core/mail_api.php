@@ -703,6 +703,7 @@ class ERP_mailbox_api
 
 		$t_email[ 'From_parsed' ] = $this->parse_from_field( trim( $t_mp->from() ) );
 		$t_email[ 'Date_parsed' ] = $this->parse_date_field( trim( $t_mp->date() ) );
+		$t_email[ 'Date' ] = trim( $t_mp->date() );
 		$t_email[ 'Reporter_id' ] = $this->get_user( $t_email[ 'From_parsed' ] );
 
 		$t_email[ 'Subject' ] = trim( $t_mp->subject() );
@@ -1344,10 +1345,11 @@ class ERP_mailbox_api
 	}
 
 	# --------------------
-	# Return the date from the mail's 'Date' field
+	# Try to parse the date from the mail's 'Date' field.
+	# Returns a DateTime object on success or "false" on failure.
 	private function parse_date_field( $p_date )
 	{
-		return strtotime($p_date);
+		return \DateTime::createFromFormat(\DateTime::RFC2822, $p_date);
 	}
 
 	# --------------------
@@ -2041,7 +2043,7 @@ class ERP_mailbox_api
 			$this->getPluginEmailAddr(),
 			$email['Subject'],
 			$this->quoteMailText($email['X-Mantis-Body']),
-			strftime("%d/%m/%y %R", $email['Date_parsed'])
+			$email['Date_parsed'] ? strftime("%d/%m/%y %R", $email['Date_parsed']) : $email['Date']
 		],
 		$template);
 	}
