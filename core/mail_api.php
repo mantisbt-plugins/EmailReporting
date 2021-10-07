@@ -553,8 +553,9 @@ class ERP_mailbox_api
 				$t_ListMsgs = array_column( $t_ListMsgs, NULL, 'msg_id' );
 			}
 
-			krsort( $t_ListMsgs );
 		}
+
+		krsort( $t_ListMsgs );
 
 		return( $t_ListMsgs );
 	}
