@@ -561,8 +561,9 @@ class ERP_mailbox_api
 				$t_ListMsgs = array_column( $t_ListMsgs, NULL, 'msg_id' );
 			}
 
-			krsort( $t_ListMsgs );
 		}
+
+		krsort( $t_ListMsgs );
 
 		return( $t_ListMsgs );
 	}
@@ -1232,14 +1233,31 @@ class ERP_mailbox_api
 		{
 			$t_file_number = 0;
 			$t_opt_name = '';
-
-			while ( !file_is_name_unique( $t_opt_name . $t_part_name, $p_bug_id ) )
+			$t_dot_index = strripos( $t_part_name, '.' );
+			if( $t_dot_index === false )
 			{
-				$t_file_number++;
-				$t_opt_name = $t_file_number . '-';
+				$t_extension = '';
+				$t_file_name = $t_part_name;
+			}
+			else
+			{
+				$t_extension = substr( $t_part_name, $t_dot_index, strlen( $t_part_name ) - $t_dot_index );
+				$t_file_name = substr( $t_part_name, 0, $t_dot_index );
 			}
 
-			$t_attachment_id = mci_file_add( $p_bug_id, $t_opt_name . $t_part_name, $p_part[ 'body' ], $p_part[ 'ctype' ], 'bug' );
+			// check max length filename. Shorten if necessary. Leave room for file number.
+			if ( strlen( $t_file_name ) > 245 )
+			{
+				$t_file_name = substr( $t_file_name, 0, ( 245 - strlen( $t_extension ) ) );
+			}
+
+			while ( !file_is_name_unique( $t_file_name . $t_opt_name . $t_extension, $p_bug_id ) )
+			{
+				$t_file_number++;
+				$t_opt_name = '-' . $t_file_number;
+			}
+
+			$t_attachment_id = mci_file_add( $p_bug_id, $t_file_name . $t_opt_name . $t_extension, $p_part[ 'body' ], $p_part[ 'ctype' ], 'bug' );
 
 			if ( function_exists( 'file_link_to_bugnote' ) && is_numeric( $t_attachment_id ) && $t_attachment_id > 0 && $p_bugnote_id !== NULL )
 			{

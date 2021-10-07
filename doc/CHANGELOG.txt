@@ -25,6 +25,10 @@ Changelog:
 	- Handle "on behalf of" from fields properly
 	- Added condition for showing EmailReporting menu
 	- Fix reference message ID split over multiple lines (seanm)
+	- Remove maximum length password field
+	- Add max attachment name length check (#29148)
+	- Adjust file naming to use a suffix instead of a prefix (default MantisBT method)
+	- Fix sorting POP3 emails
 	- Added support for reporter acknownledge email
 
 May 2018 - EmailReporting-0.10.1
