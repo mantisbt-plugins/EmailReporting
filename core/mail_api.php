@@ -1234,7 +1234,7 @@ class ERP_mailbox_api
 			}
 
 			// check max length filename. Shorten if necessary. Leave room for file number.
-			if ( strlen( $t_file_name ) > 245 )
+			if ( strlen( $t_file_name ) > ( 245 - strlen( $t_extension ) ) )
 			{
 				$t_file_name = substr( $t_file_name, 0, ( 245 - strlen( $t_extension ) ) );
 			}
