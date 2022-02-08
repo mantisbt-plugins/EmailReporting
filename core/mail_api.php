@@ -2007,6 +2007,13 @@ class ERP_mailbox_api
 				'Reply-To' => $this->getPluginEmailAddr(),
 			];
 
+			// Add In-Reply-To and first Reference (only if Message-ID is present in the received email)
+			if ($email['Message-ID']) {
+				// TODO: Why does Mantis add the hostname to In-Reply-To header? See email_api.php:1418
+				// $headers['In-Reply-To'] = $email['Message-ID'];
+				$headers['References'] = $email['Message-ID'];
+			}
+
 			// Add mail to mantis output queue
 			email_store($senderEmailAddr, $mailSubject, $mailBody, $headers, true, $ccAddr);
 		}
