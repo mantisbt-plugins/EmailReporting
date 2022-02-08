@@ -182,10 +182,10 @@ $s_plugin_EmailReporting_act_issue_custom_field = 'Update custom field';
 $s_plugin_EmailReporting_excep_issue_summary = 'Riepilogo issue';
 $s_plugin_EmailReporting_excep_issue_description = 'Descrizione issue';
 
-$s_plugin_EmailReporting_notify_reporter_bug_added_subject = 'Re: [%projectname% %leadingzerosbugid%] %emailsubject%';
+$s_plugin_EmailReporting_notify_reporter_bug_added_subject = 'Re: [%bugid%] %emailsubject%';
 $s_plugin_EmailReporting_notify_reporter_bug_added_body = 'La segnalazione è stata ricevuta e sarà lavorata prima possibile. Puoi usare il codice %bugid% per farvi riferimento in futuro.
 
-Rispondendo a questa email e lasciando tra i destinatari %emailaddr% e [%projectname% %leadingzerosbugid%] nell\'oggetto puoi aggiungere ulteriori informazioni.
+Rispondendo a questa email e lasciando tra i destinatari %emailaddr% e [%bugid%] nell\'oggetto puoi aggiungere ulteriori informazioni.
 
 Il %emaildate%, %reportername% <%reporteremail%> ha scritto:
 %emailbody%';

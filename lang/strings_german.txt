@@ -182,8 +182,8 @@ $s_plugin_EmailReporting_act_issue_custom_field = 'Benutzerdefiniertes Feld aktu
 $s_plugin_EmailReporting_excep_issue_summary = 'Zusammenfassung';
 $s_plugin_EmailReporting_excep_issue_description = 'Beschreibung';
 
-$s_plugin_EmailReporting_notify_reporter_bug_added_subject = '[%projectname% %leadingzerosbugid%] Bericht erhalten';
-$s_plugin_EmailReporting_notify_reporter_bug_added_body = 'Die Bericht ist eingegangen und wird schnellstmöglich bearbeitet. Sie können in Zukunft den Code %bugid% als Referenz verwenden. Wenn Sie diese E-Mail beantworten und %emailaddr% in den Empfängern und [%projectname% %leadingzerosbugid%] als Betreff belassen, können Sie weitere Informationen hinzufügen.';
+$s_plugin_EmailReporting_notify_reporter_bug_added_subject = '[%bugid%] Bericht erhalten';
+$s_plugin_EmailReporting_notify_reporter_bug_added_body = 'Die Bericht ist eingegangen und wird schnellstmöglich bearbeitet. Sie können in Zukunft den Code %bugid% als Referenz verwenden. Wenn Sie diese E-Mail beantworten und %emailaddr% in den Empfängern und [%bugid%] als Betreff belassen, können Sie weitere Informationen hinzufügen.';
 
 $s_plugin_EmailReporting_mailbox_settings_notifications_options = 'E-Mail-Benachrichtigungsoptionen';
 $s_plugin_EmailReporting_custom_emails = 'Fügen Sie die folgenden E-Mail-Adressen in CC hinzu, wenn Sie auf die E-Mail eines Reporters antworten';
