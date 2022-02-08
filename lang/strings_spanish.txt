@@ -179,8 +179,8 @@ $s_plugin_EmailReporting_act_issue_custom_field = 'Actualizar campo personalizad
 $s_plugin_EmailReporting_excep_issue_summary = 'Resumen de Solicitud';
 $s_plugin_EmailReporting_excep_issue_description = 'Descripción de Solicitud';
 
-$s_plugin_EmailReporting_notify_reporter_bug_added_subject = '[%bugid%] Informe recibido';
-$s_plugin_EmailReporting_notify_reporter_bug_added_body = 'El informe ha sido recibido y será procesado lo antes posible. Puede utilizar el código %bugid% para consultarlo en el futuro. Si responde a este correo electrónico y deja %emailaddr% en los destinatarios y [%bugid%] en el asunto, puede agregar más información.';
+$s_plugin_EmailReporting_notify_reporter_bug_added_subject = '[%projectname% %leadingzerosbugid%] Informe recibido';
+$s_plugin_EmailReporting_notify_reporter_bug_added_body = 'El informe ha sido recibido y será procesado lo antes posible. Puede utilizar el código %bugid% para consultarlo en el futuro. Si responde a este correo electrónico y deja %emailaddr% en los destinatarios y [%projectname% %leadingzerosbugid%] en el asunto, puede agregar más información.';
 
 $s_plugin_EmailReporting_mailbox_settings_notifications_options = 'Opciones de notificación por correo electrónico';
 $s_plugin_EmailReporting_custom_emails = 'Agregue las siguientes direcciones de correo electrónico en CC al responder al correo electrónico del informante';

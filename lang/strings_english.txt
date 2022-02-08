@@ -182,8 +182,8 @@ $s_plugin_EmailReporting_act_issue_custom_field = 'Update custom field';
 $s_plugin_EmailReporting_excep_issue_summary = 'Issue summary';
 $s_plugin_EmailReporting_excep_issue_description = 'Issue description';
 
-$s_plugin_EmailReporting_notify_reporter_bug_added_subject = '[%bugid%] Report received';
-$s_plugin_EmailReporting_notify_reporter_bug_added_body = 'The report has been received and will be processed as soon as possible. You can use the code %bugid% as a reference in the future. By answering this email and leaving %emailaddr% in the recipients and [%bugid%] as subject, you can add more informations.';
+$s_plugin_EmailReporting_notify_reporter_bug_added_subject = '[%projectname% %leadingzerosbugid%] Report received';
+$s_plugin_EmailReporting_notify_reporter_bug_added_body = 'The report has been received and will be processed as soon as possible. You can use the code %bugid% as a reference in the future. By answering this email and leaving %emailaddr% in the recipients and [%projectname% %leadingzerosbugid%] as subject, you can add more informations.';
 
 $s_plugin_EmailReporting_mailbox_settings_notifications_options = '	Email notification options';
 $s_plugin_EmailReporting_custom_emails = 'Add the following email addresses in CC when replying to reporter email';

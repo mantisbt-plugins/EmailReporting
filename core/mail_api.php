@@ -2038,13 +2038,17 @@ class ERP_mailbox_api
 	# Fills the placeholders with data from the issue
 	# Supported placeholders:
 	#   %bugid% Mantis numeric bug identifier
+	#   %leadingzerosbugid% Mantis numeric bug identifier, with leading zeros
+	#     (as presented in the issue's ID field)
 	#   %bugtitle% Bug title
 	#   %reporteremail% Reporter email address
 	#   %reportername% Reporter name
 	#   %emailaddr% Plugin's monitored email address that received the report
+	#   %projectname% Name of the project the bug is assigned to
 	private function fillPlaceholders($template, $email, $bugData) {
 		return str_replace([
 			'%bugid%',
+			'%leadingzerosbugid%',
 			'%bugtitle%',
 			'%reporteremail%',
 			'%reportername%',
@@ -2052,16 +2056,19 @@ class ERP_mailbox_api
 			'%emailsubject%',
 			'%emailbody%',
 			'%emaildate%',
+			'%projectname%',
 		],
 		[
 			$bugData->id,
+			sprintf('%07d', $bugData->id),
 			$bugData->summary,
 			$email['From_parsed']['email'],
 			$email['From_parsed']['name'],
 			$this->getPluginEmailAddr(),
 			$email['Subject'],
 			$this->quoteMailText($email['X-Mantis-Body']),
-			$email['Date_parsed'] ? strftime("%d/%m/%y %R", $email['Date_parsed']) : $email['Date']
+			$email['Date_parsed'] ? strftime("%d/%m/%y %R", $email['Date_parsed']) : $email['Date'],
+			project_get_name($bugData->project_id),
 		],
 		$template);
 	}
