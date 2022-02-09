@@ -143,6 +143,8 @@ class ERP_mailbox_api
 		$this->_mail_use_message_id				= plugin_config_get( 'mail_use_message_id' );
 		$this->_mail_use_reporter				= plugin_config_get( 'mail_use_reporter' );
 		$this->_mail_notify_reporter			= plugin_config_get( 'mail_notify_reporter' );
+		$this->_mail_notify_header_inreplyto	= plugin_config_get( 'mail_notify_header_inreplyto' );
+		$this->_mail_notify_header_references	= plugin_config_get( 'mail_notify_header_references' );
 		$this->_mail_notify_developers			= plugin_config_get( 'mail_notify_developers' );
 		$this->_mail_notify_custom_emails		= plugin_config_get( 'mail_notify_custom_emails' );
 		$this->_mail_notify_custom_emails_addresses = plugin_config_get( 'mail_notify_custom_emails_addresses' );
@@ -2009,9 +2011,12 @@ class ERP_mailbox_api
 
 			// Add In-Reply-To and first Reference (only if Message-ID is present in the received email)
 			if ($email['Message-ID']) {
-				// TODO: Why does Mantis add the hostname to In-Reply-To header? See email_api.php:1418
-				// $headers['In-Reply-To'] = $email['Message-ID'];
-				$headers['References'] = $email['Message-ID'];
+				if ($this->_mail_notify_header_inreplyto) {
+					$headers['In-Reply-To'] = $email['Message-ID'];
+				}
+				if ($this->_mail_notify_header_references) {
+					$headers['References'] = $email['Message-ID'];
+				}
 			}
 
 			// Add mail to mantis output queue

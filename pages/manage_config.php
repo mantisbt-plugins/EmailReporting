@@ -175,6 +175,8 @@ ERP_output_table_close();
 
 ERP_output_table_open( 'notifications_options' );
 ERP_output_config_option( 'mail_notify_reporter', 'boolean' );
+ERP_output_config_option( 'mail_notify_header_inreplyto', 'boolean' );
+ERP_output_config_option( 'mail_notify_header_references', 'boolean' );
 ERP_output_config_option( 'mail_notify_developers', 'boolean' );
 ERP_output_config_option( 'mail_notify_custom_emails', 'boolean' );
 ERP_output_config_option( 'mail_notify_custom_emails_addresses', 'string_multiline' );
