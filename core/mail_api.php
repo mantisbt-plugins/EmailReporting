@@ -2028,14 +2028,14 @@ class ERP_mailbox_api
 					$t_hostname = $t_address[1];
 				}
 			}
-			$genMessageId = '<' . time() .'-' . md5($bugData->id . $senderEmailAddr) . '@' . $t_hostname . '>';
+			$genMessageId = time() .'-' . md5($bugData->id . $senderEmailAddr) . '@' . $t_hostname;
 			$headers['Message-ID'] = $genMessageId;
 
 			// Add mail to mantis output queue
 			email_store($senderEmailAddr, $mailSubject, $mailBody, $headers, true, $ccAddr);
 
 			//Add the sent message-id to the database
-			$this->add_msg_ids($bugData->id, [$genMessageId]);
+			$this->add_msg_ids($bugData->id, ["<$genMessageId>"]);
 		}
 
 	}
