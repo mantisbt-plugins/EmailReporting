@@ -2019,8 +2019,23 @@ class ERP_mailbox_api
 				}
 			}
 
+			// Generate unique messageId. We set our own instead of allowing the provider to generate one, so we can save it in the issue.
+			if( isset( $_SERVER['SERVER_NAME'] ) ) {
+				$t_hostname = $_SERVER['SERVER_NAME'];
+			} else {
+				$t_address = explode( '@', config_get( 'from_email' ) );
+				if( isset( $t_address[1] ) ) {
+					$t_hostname = $t_address[1];
+				}
+			}
+			$genMessageId = '<' . time() .'-' . md5($bugData->id . $senderEmailAddr) . '@' . $t_hostname . '>';
+			$headers['Message-ID'] = $genMessageId;
+
 			// Add mail to mantis output queue
 			email_store($senderEmailAddr, $mailSubject, $mailBody, $headers, true, $ccAddr);
+
+			//Add the sent message-id to the database
+			$this->add_msg_ids($bugData->id, [$genMessageId]);
 		}
 
 	}
