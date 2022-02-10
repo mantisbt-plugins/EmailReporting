@@ -197,4 +197,13 @@ $s_plugin_EmailReporting_mailbox_settings_notifications_options = 'Opzioni di no
 $s_plugin_EmailReporting_custom_emails = 'Aggiungi i seguenti indirizzi e-mail in cc quando si risponde all\'e-mail del reporter';
 $s_plugin_EmailReporting_custom_emails_addresses = 'Elenco statico di indirizzi email da notificare separati da virgole (vengono aggiunti a quelli definiti nella configurazione generale)';
 
+
+$s_plugin_EmailReporting_mail_created_reason_bugnotes_disabled = 'L\'aggiunta di note è disabilitata nelle impostazioni';
+$s_plugin_EmailReporting_mail_created_reason_add_issues_enabled = 'La creazione di issues è abilitata nelle impostazioni';
+$s_plugin_EmailReporting_mail_created_reason_no_bugid = 'Non è stato possibile risalire al bug id dall\'oggetto o dal Message-ID';
+$s_plugin_EmailReporting_mail_created_reason_readonly = 'Il bug %bugid% è in sola lettura';
+$s_plugin_EmailReporting_mail_created_reason_reporter_has_permission = 'L\'utente reporter ha il permesso di creare issue';
+$s_plugin_EmailReporting_mail_created_reason_no_permissions_check = 'Il controllo permessi dell\'utente è disabilitato';
+$s_plugin_EmailReporting_mail_created_reason_intro = 'È stato creato un nuovo bug poiché';
+
 ?>

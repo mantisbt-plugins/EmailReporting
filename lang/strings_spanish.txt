@@ -186,6 +186,6 @@ $s_plugin_EmailReporting_notify_reporter_bug_added_body = 'El informe ha sido re
 
 $s_plugin_EmailReporting_mailbox_settings_notifications_options = 'Opciones de notificación por correo electrónico';
 $s_plugin_EmailReporting_custom_emails = 'Agregue las siguientes direcciones de correo electrónico en CC al responder al correo electrónico del informante';
-$s_plugin_EmailReporting_custom_emails_addresses = 'Elenco statico di indirizzi email da notificare separati da virgole (vengono aggiunti a quelli definiti nella configurazione generale)';
+$s_plugin_EmailReporting_custom_emails_addresses = 'Lista estática separada por comas de direcciones de correo electrónico a notificar (se agregarán a las definidas en la configuración general)';
 
 ?>

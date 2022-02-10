@@ -882,7 +882,7 @@ class ERP_mailbox_api
 		else
 		{
 			$t_bug_id = FALSE;
-			$new_bug_reasons[] = 'Adding bugnotes is disabled in settings';
+			$new_bug_reasons[] = plugin_lang_get( 'mail_created_reason_bugnotes_disabled' );
 		}
 
 		$t_bugnote_id = NULL;
@@ -960,12 +960,12 @@ class ERP_mailbox_api
 		}
 		elseif ( $this->_mail_add_bug_reports )
 		{
-			$new_bug_reasons[] = "Add new issues is enabled in settings";
+			$new_bug_reasons[] = plugin_lang_get( 'mail_created_reason_add_issues_enabled' );
 
 			if( ! $t_bug_id ) {
-				$new_bug_reasons[] = 'Could not obtain bug id from subject or Message-ID';
+				$new_bug_reasons[] = plugin_lang_get( 'mail_created_reason_no_bugid' );
 			} else if( bug_is_readonly( $t_bug_id ) ) {
-				$new_bug_reasons[] = "Bug ${t_bug_id} is readonly";
+				$new_bug_reasons[] = str_replace('%bugid%', $t_bug_id, plugin_lang_get( 'mail_created_reason_readonly' ));
 			}
 
 			$t_project_id = ( ( $p_overwrite_project_id === FALSE ) ? $this->_mailbox[ 'project_id' ] : $p_overwrite_project_id );
@@ -974,13 +974,11 @@ class ERP_mailbox_api
 			# Check issue permissions
 			if ( !$this->_mail_respect_permissions || access_has_project_level( config_get('report_bug_threshold' ) ) )
 			{
-				$new_bug_reasons[] = $this->_mail_respect_permissions ? "Reporter user has permission to Report bug" : "User permissions check is disabled";
+				$new_bug_reasons[] = plugin_lang_get( $this->_mail_respect_permissions ? "mail_created_reason_reporter_has_permission" : "mail_created_reason_no_permissions_check" );
 
 				$t_master_bug_id = NULL;
 				if ( $t_bug_id !== FALSE && bug_is_readonly( $t_bug_id ) )
 				{
-					$new_bug_reasons[] = "Bug ${t_bug_id} is readonly";
-
 					$t_master_bug_id = $t_bug_id;
 
 					// Issues beyond the readonly border will not be reopened and will result in a new issue with a relationship to the old one
