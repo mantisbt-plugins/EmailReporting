@@ -2,6 +2,7 @@
 
 class EmailReportingPlugin extends MantisPlugin
 {
+
 	/**
 	 *  A method that populates the plugin information and minimum requirements.
 	 */
@@ -162,6 +163,9 @@ class EmailReportingPlugin extends MantisPlugin
 			# Write the subject of the email in the note
 			'mail_save_subject_in_note'		=> OFF,
 
+			# Write the reasons a new bug was created instead of add note to existing one in the additional info field
+			'mail_save_created_reason_in_additional_info'		=> ON,
+
 			# Do you want to secure the EmailReporting script so that it cannot be invoked
 			# via a webserver?
 			'mail_secured_script'			=> ON,
@@ -186,6 +190,24 @@ class EmailReportingPlugin extends MantisPlugin
 
 			// Whether to identify notes using Message-ID in the mail header
 			'mail_use_message_id'			=> ON,
+
+			// Whether the reporter should be acknownledged for the ticket creation
+			'mail_notify_reporter'			=> OFF,
+
+			// Whether the acknownledgement email should include reporter's email MessageID in In-Reply-To
+			'mail_notify_header_inreplyto'	=> ON,
+
+			// Whether the acknownledgement email should include reporter's email MessageID in References
+			'mail_notify_header_references'	=> OFF,
+
+			// Wether the project developers should received ack email as CC
+			'mail_notify_developers'		=> OFF,
+
+			// Wether the users specified in mail_notify_custom_emails_addresses should be notified
+			'mail_notify_custom_emails'		=> OFF,
+
+			// Comma separated list of email address to notify
+			'mail_notify_custom_emails_addresses' => 'example1@email.com, example2@email.com',
 		);
 	}
 
@@ -637,6 +659,7 @@ class EmailReportingPlugin extends MantisPlugin
 
 			plugin_config_set( 'config_version', 18 );
 		}
+
 	}
 
 	/*

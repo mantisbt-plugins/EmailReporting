@@ -31,6 +31,7 @@ $s_plugin_EmailReporting_reporter_options = 'Konfigurationsoptionen für Ticketr
 $s_plugin_EmailReporting_runtime_options = 'Konfigurationsoptionen für Laufzeit';
 $s_plugin_EmailReporting_security_options = 'Konfigurationsoptionen für Sicherheit';
 $s_plugin_EmailReporting_strip_signature_feature_options = 'Konfigurationsoptionen zur Entfernung von Signaturen (experimentell)';
+$s_plugin_EmailReporting_notifications_options = 'E-Mail-Benachrichtigungsoptionen ';
 
 $s_plugin_EmailReporting_copy_of = 'Kopie von';
 $s_plugin_EmailReporting_directory_exists = 'Order gefunden';
@@ -77,6 +78,12 @@ $s_plugin_EmailReporting_mail_subject_id_regex = 'Wie soll die TicketID im Betre
 $s_plugin_EmailReporting_mail_use_bug_priority = 'Suche nach der Priorität im Header';
 $s_plugin_EmailReporting_mail_use_message_id = 'Benutze die Message-ID im Header um Notizen zu identifizieren';
 $s_plugin_EmailReporting_mail_use_reporter = 'Benutze nur den Standard Reporter zur Erstellung von Tickets';
+$s_plugin_EmailReporting_mail_notify_reporter = 'Senden Sie eine E-Mail an den Reporter, um die Fehlererstellung zu bestätigen';
+$s_plugin_EmailReporting_mail_notify_header_inreplyto = 'Fügen Sie die E-Mail-Nachrichten-ID des Melders in den In-Reply-To-Header der Bestätigungsnachricht ein';
+$s_plugin_EmailReporting_mail_notify_header_references = 'Fügen Sie die E-Mail-Nachrichten-ID des Berichterstatters in den Referenzkopf der Bestätigungsnachricht ein';
+$s_plugin_EmailReporting_mail_notify_developers = 'Projektentwickler erhalten die Bestätigungsmail als CC';
+$s_plugin_EmailReporting_mail_notify_custom_emails = 'Fügen Sie die folgenden E-Mail-Adressen in CC hinzu, wenn Sie auf die E-Mail eines Reporters antworten';
+$s_plugin_EmailReporting_mail_notify_custom_emails_addresses = 'Durch Kommas getrennte statische Liste von E-Mail-Adressen, die benachrichtigt werden sollen';
 
 $s_plugin_EmailReporting_strict = 'Strikt';
 $s_plugin_EmailReporting_balanced = 'Ausgewogen';
@@ -108,6 +115,7 @@ $s_plugin_EmailReporting_update_configuration = 'Aktualisiere die Konfiguration'
 $s_plugin_EmailReporting_enabled = 'Aktivieren';
 $s_plugin_EmailReporting_disabled = 'Deaktivieren';
 $s_plugin_EmailReporting_description = 'Beschreibung';
+$s_plugin_EmailReporting_address = 'E-Mail-Adresse';
 $s_plugin_EmailReporting_mailbox_type = 'Mailboxtyp';
 $s_plugin_EmailReporting_hostname = 'Hostname';
 $s_plugin_EmailReporting_port = 'TCP Port (optional)';
@@ -176,4 +184,10 @@ $s_plugin_EmailReporting_act_issue_custom_field = 'Benutzerdefiniertes Feld aktu
 $s_plugin_EmailReporting_excep_issue_summary = 'Zusammenfassung';
 $s_plugin_EmailReporting_excep_issue_description = 'Beschreibung';
 
+$s_plugin_EmailReporting_notify_reporter_bug_added_subject = '[%bugid%] Bericht erhalten';
+$s_plugin_EmailReporting_notify_reporter_bug_added_body = 'Die Bericht ist eingegangen und wird schnellstmöglich bearbeitet. Sie können in Zukunft den Code %bugid% als Referenz verwenden. Wenn Sie diese E-Mail beantworten und %emailaddr% in den Empfängern und [%bugid%] als Betreff belassen, können Sie weitere Informationen hinzufügen.';
+
+$s_plugin_EmailReporting_mailbox_settings_notifications_options = 'E-Mail-Benachrichtigungsoptionen';
+$s_plugin_EmailReporting_custom_emails = 'Fügen Sie die folgenden E-Mail-Adressen in CC hinzu, wenn Sie auf die E-Mail eines Reporters antworten';
+$s_plugin_EmailReporting_custom_emails_addresses = 'Durch Kommas getrennte statische Liste der zu benachrichtigenden E-Mail-Adressen (wird zu den in der allgemeinen Konfiguration definierten hinzugefügt)';
 ?>

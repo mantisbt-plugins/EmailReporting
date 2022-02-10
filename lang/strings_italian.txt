@@ -1,0 +1,209 @@
+<?php
+$s_plugin_EmailReporting_plugin_title = 'Email Reporting';
+$s_plugin_EmailReporting_plugin_description = 'Offre la funzionalità di aggiungere issues e note via email';
+$s_plugin_EmailReporting_plugin_author = 'Indy e varie persone dopo di lui.';
+
+$s_plugin_EmailReporting_manage = 'Gestione';
+$s_plugin_EmailReporting_manage_config = 'Gestisci le opzioni di configurazione ';
+$s_plugin_EmailReporting_manage_mailbox = 'Gestisci mailbox';
+$s_plugin_EmailReporting_manage_rule = 'Gestisci regole';
+
+$s_plugin_EmailReporting_jobsetup = 'Per raccogliere le email dalle caselle di posta è necessario aggiungere un cron job programmato che esegue uno script. Puoi eseguire lo script da 2 posizioni ma solo l\'opzione 1 funzionerà come cron programmato. Entrambe eseguono le stesse task. Guardare la documentazione per esempi su come programmarli.';
+$s_plugin_EmailReporting_job_users = '<span class="negative">Attenzione</span>: Sembra che il cron job programmato non è eseguito con lo stesso account utente del webserver / processo PHP. Questo può causare problemi con gli allegati. <br />La SAPI per il processo programmato è molto probabilmente "cli".<br />The webserver viene eseguito con il seguente user: ';
+
+$s_plugin_EmailReporting_mailbox_settings = 'Impostazioni mailbox';
+$s_plugin_EmailReporting_mailbox_settings_imap = 'Impostazioni mailbox IMAP ';
+$s_plugin_EmailReporting_mailbox_settings_issue = 'Impostazioni issue mailbox';
+$s_plugin_EmailReporting_problems = 'Per resettare la configurazione delle opzioni ai valori di default, per favore cancella la configurazione opzioni in questione dalla pagina "<a href="adm_config_report.php">Report di configurazione</a>" page.';
+
+$s_plugin_EmailReporting_rule_settings = 'Impostazioni regole';
+$s_plugin_EmailReporting_rule_conditions = 'Condizioni';
+$s_plugin_EmailReporting_rule_actions = 'Azioni';
+$s_plugin_EmailReporting_rule_exceptions = 'Eccezioni';
+
+$s_plugin_EmailReporting_attachment_feature_options = 'Opzioni configurazione allegati';
+$s_plugin_EmailReporting_debug_options = 'Opzioni configurazione debug';
+$s_plugin_EmailReporting_default_texts_options = 'Opzioni configurazione testo di defualt';
+$s_plugin_EmailReporting_feature_options = 'Opzioni configurazione features';
+$s_plugin_EmailReporting_priority_feature_options = 'Opzione configurazione feature di priorità';
+$s_plugin_EmailReporting_remove_reply_options = 'Rimuovi opzioni configurazione di risposta';
+$s_plugin_EmailReporting_reporter_options = 'Opzioni configurazione segnalazione di issue';
+$s_plugin_EmailReporting_runtime_options = 'Opzioni configurazione runtime';
+$s_plugin_EmailReporting_security_options = 'Opzioni configurazione di sicurezza';
+$s_plugin_EmailReporting_strip_signature_feature_options = 'Opzioni configurazione per la rimozione della firma (sperimentale)';
+$s_plugin_EmailReporting_notifications_options = 'Opzioni di notifica email';
+
+$s_plugin_EmailReporting_copy_of = 'Copia da';
+$s_plugin_EmailReporting_directory_exists = 'Directory trovata';
+$s_plugin_EmailReporting_directory_unavailable = 'Attenzione: directory non trovata';
+$s_plugin_EmailReporting_directory_writable = 'Directory scrivibile';
+$s_plugin_EmailReporting_directory_unwritable = 'Attenzione: directory non scrivibile';
+
+$s_plugin_EmailReporting_mail_add_bug_reports = 'Aggiungi nuove issue';
+$s_plugin_EmailReporting_mail_add_bugnotes = 'Aggiungi note';
+$s_plugin_EmailReporting_mail_add_complete_email = 'Aggiungi l\'email completa negli allegati';
+$s_plugin_EmailReporting_mail_add_users_from_cc_to = 'Aggiungi utenti alla lista di monitoraggio issue dai campi Destinatario e Cc nell\'header della mail';
+$s_plugin_EmailReporting_mail_auto_signup = 'Registra automaticamente nuovi utenti (possibile rischio per la sicurezza, vedi documentazione!)';
+$s_plugin_EmailReporting_mail_block_attachments_md5 = 'Bloccare allegati che corrispondono a questi hash MD5';
+$s_plugin_EmailReporting_mail_block_attachments_logging = 'Logga allegati bloccati nella lista "File Rifiutati"';
+$s_plugin_EmailReporting_mail_bug_priority = 'Classificare priorità bug';
+$s_plugin_EmailReporting_mail_debug = 'Debug mode';
+$s_plugin_EmailReporting_mail_debug_directory = 'Salvare contenuto email in questa directory se la debug mode è attivata';
+$s_plugin_EmailReporting_mail_debug_show_memory_usage = 'Mostra l\'utilizzo della memoria nelle varie fasi del processo di elaborazione email';
+$s_plugin_EmailReporting_mail_delete = 'Cancella email processate dalla mailbox';
+$s_plugin_EmailReporting_mail_disposable_email_checker = 'Abilita il controllo degli indirizzi email usa e getta di MantisBT';
+$s_plugin_EmailReporting_mail_email_receive_own = 'Permettere agli utenti di ricevere email circa le proprie operazioni (N/A se email_receive_own = ON) ';
+$s_plugin_EmailReporting_mail_fallback_mail_reporter = 'Abilita il fallback al reporter di default';
+$s_plugin_EmailReporting_mail_ignore_auto_replies = 'Ignora email di risposta automatica';
+$s_plugin_EmailReporting_mail_max_email_body = 'Dimensione massima della descrizione o della nota aggiunta alla issue';
+$s_plugin_EmailReporting_mail_max_email_body_text = 'Aggiungi questo testo se la descrizione o la nota è stata troncata';
+$s_plugin_EmailReporting_mail_max_email_body_add_attach = 'Aggiungi la descrizione completa o la nota come allegato nel caso sia stata troncata';
+$s_plugin_EmailReporting_mail_nodescription = 'Utilizzare questo testo se non viene trovata alcuna descrizione nell\'e-mail';
+$s_plugin_EmailReporting_mail_nosubject = 'Usa questo testo se non viene trovato alcun oggetto nell\'e-mail';
+$s_plugin_EmailReporting_mail_parse_html = 'Analizza le email HTML ';
+$s_plugin_EmailReporting_mail_preferred_username = 'Username preferito per la creazione di nuovi utenti';
+$s_plugin_EmailReporting_mail_preferred_realname = 'Nome preferito per la creazione di nuovi utenti';
+$s_plugin_EmailReporting_mail_remove_mantis_email = 'Remove MantisBT notification emails from replies';
+$s_plugin_EmailReporting_mail_remove_replies = 'Rimuovi tutte le risposte dalle note';
+$s_plugin_EmailReporting_mail_removed_reply_text = 'Usa questo testo se le risposte sono state rimosse dall\'email';
+$s_plugin_EmailReporting_mail_reporter_id = 'L\'utente reporter di default / fallback per issue create tramite email';
+$s_plugin_EmailReporting_mail_respect_permissions = 'Controlla i permessi dell\'utente';
+$s_plugin_EmailReporting_mail_rule_system = 'Regole di sistema';
+$s_plugin_EmailReporting_mail_save_from = 'Scrivi il mittente dell\'e-mail nel rapporto/nota del problema';
+$s_plugin_EmailReporting_mail_save_subject_in_note = 'Scrivi l\'oggetto dell\'email nella nota';
+$s_plugin_EmailReporting_mail_save_created_reason_in_additional_info = 'Scrivi le ragioni per cui è stato creato un nuovo bug invece di aggiungere una nota';
+$s_plugin_EmailReporting_mail_secured_script = 'Blocca l\'esecuzione di questo script attraverso un webserver (recommended = "Yes")';
+$s_plugin_EmailReporting_mail_secured_ipaddr = 'Consenti l\'accesso a bug_report_mail solo da questo indirizzo IP';
+$s_plugin_EmailReporting_mail_strip_signature = 'Elimina la firma dal corpo dell\'email';
+$s_plugin_EmailReporting_mail_subject_id_regex = 'Che tipo di ricerca dovrebbe essere utilizzata per trovare l\'ID della issue nell\'oggetto ';
+$s_plugin_EmailReporting_mail_use_bug_priority = 'Cerca nel campo header con priorità';
+$s_plugin_EmailReporting_mail_use_message_id = 'Usa l\'ID messaggio nell\'header della posta per identificare le note';
+$s_plugin_EmailReporting_mail_use_reporter = 'Usa solo l\'utente reporter predefinito per i problemi creati tramite email';
+$s_plugin_EmailReporting_mail_notify_reporter = 'Invia un\'email al reporter per confermare la creazione del bug';
+$s_plugin_EmailReporting_mail_notify_header_inreplyto = 'Includi il Message-ID della mail del reporter nell\'header In-Reply-To della risposta';
+$s_plugin_EmailReporting_mail_notify_header_references = 'Includi il Message-ID della mail del reporter nell\'header References della risposta';
+$s_plugin_EmailReporting_mail_notify_developers = 'Metti in cc gli sviluppatori presenti nel progetto a cui viene aggiunto il bug';
+$s_plugin_EmailReporting_mail_notify_custom_emails = 'Metti in cc i seguenti indirizzi e-mail quando viene creato un bug dall\'e-mail del reporter';
+$s_plugin_EmailReporting_mail_notify_custom_emails_addresses = 'Elenco statico di indirizzi email da mettere in cc separati da virgole';
+
+$s_plugin_EmailReporting_strict = 'Rigoroso';
+$s_plugin_EmailReporting_balanced = 'Bilanciato';
+$s_plugin_EmailReporting_relaxed = 'Leggero';
+
+$s_plugin_EmailReporting_emailreporting = 'EmailReporting';
+$s_plugin_EmailReporting_mantisbt = 'MantisBT';
+
+$s_plugin_EmailReporting_newnote = 'Nuova nota';
+$s_plugin_EmailReporting_newissue = 'Nuova issue';
+$s_plugin_EmailReporting_newattachment = 'Nuovo allegato';
+
+$s_plugin_EmailReporting_name = 'Nome';
+$s_plugin_EmailReporting_full_from = 'Completo "From" indirizzo';
+$s_plugin_EmailReporting_email_address = 'Indirizzo email';
+$s_plugin_EmailReporting_email_no_domain = 'Indirizzo email senza il nome del dominio';
+$s_plugin_EmailReporting_from_ldap = 'Da LDAP';
+
+$s_plugin_EmailReporting_mailboxes = 'Mailboxes';
+$s_plugin_EmailReporting_add_action = 'Aggiungi';
+$s_plugin_EmailReporting_copy_action = 'Copia';
+$s_plugin_EmailReporting_edit_action = 'Modifica';
+$s_plugin_EmailReporting_delete_action = 'Cancella';
+$s_plugin_EmailReporting_test_action = 'Testa';
+$s_plugin_EmailReporting_complete_test_action = 'Test completo';
+$s_plugin_EmailReporting_select_mailbox = 'Seleziona mailbox';
+$s_plugin_EmailReporting_update_configuration = 'Aggiorna configurazione';
+
+$s_plugin_EmailReporting_enabled = 'Abilita';
+$s_plugin_EmailReporting_disabled = 'Disabilita';
+$s_plugin_EmailReporting_description = 'Descrizione';
+$s_plugin_EmailReporting_address = 'Indirizzo email';
+$s_plugin_EmailReporting_mailbox_type = 'Tipo mailbox';
+$s_plugin_EmailReporting_hostname = 'Hostname';
+$s_plugin_EmailReporting_port = 'porta TCP (opzionale)';
+$s_plugin_EmailReporting_encryption = 'Crittografia della connessione';
+$s_plugin_EmailReporting_ssl_cert_verify = 'Verifica certificato SSL';
+$s_plugin_EmailReporting_erp_username = 'Username';
+$s_plugin_EmailReporting_erp_password = 'Password';
+$s_plugin_EmailReporting_auth_method = 'Metodo di autenticazione';
+$s_plugin_EmailReporting_imap_basefolder = 'Cartella base (opzionale)';
+$s_plugin_EmailReporting_imap_createfolderstructure = 'Crea la struttura delle sottocartelle del progetto';
+$s_plugin_EmailReporting_project_id = 'Seleziona un progetto';
+$s_plugin_EmailReporting_global_category_id = 'Seleziona una categoria';
+$s_plugin_EmailReporting_link_rules = 'Seleziona regole';
+
+$s_plugin_EmailReporting_mail_bug_priority_array_failure = 'Il formato specificato non è un array accettabile.';
+$s_plugin_EmailReporting_recorddisabled = '* = Disabilitato';
+$s_plugin_EmailReporting_mbstring_unavailable = '<span class="negative">Attenzione</span>: Estensione PHP mbstring non disponibile. Questo può causare problemi nel ricevere email.';
+$s_plugin_EmailReporting_db_utf8_issue = 'Si prega di correggere eventuali problemi di confronto mostrati di seguito altrimenti MantisBT potrebbe restituire errori nelle query.';
+$s_plugin_EmailReporting_missing_user = 'L\'utente selezionato non è stato trovato. Selezionane uno nuovo.';
+$s_plugin_EmailReporting_openssl_unavailable = 'Estensione PHP OpenSSL non disponibile';
+$s_plugin_EmailReporting_test_failure = 'Operazione NON riuscita';
+$s_plugin_EmailReporting_test_success = 'Operation riuscita';
+$s_plugin_EmailReporting_unknown_setting = 'Rilevata impostazione sconosciuta. Impostazione ignorata: ';
+$s_plugin_EmailReporting_zero_records = 'Nessuno disponibile';
+$s_plugin_EmailReporting_function_not_found = 'Funzione non trovata';
+$s_plugin_EmailReporting_input_name_not_allowed = 'Il nome della variabile selezionata non è consentito in quanto potrebbe causare conflitti in determinate situazioni';
+$s_plugin_EmailReporting_pear_load_error = 'Impossibile caricare pear.php. Ciò potrebbe essere dovuto al fatto che le impostazioni di sicurezza (open_basedir) non consentono il caricamento del repository PEAR esistente';
+$s_plugin_EmailReporting_complete_test_action_note = '<span class="negative">Warning</span>: Questo testerà una singola casella di posta nel modo più completo possibile a differenza di "Test" che eseguirà solo le attività che non modificano nulla. 
+
+Ci sono ancora piccole differenze rispetto al cron job programmato (bug_report_mail.php). Ad esempio, una delle differenze potrebbe essere l\'account utente che esegue il cron job.
+
+Utilizzare con cautela';
+$s_plugin_EmailReporting_apisoap_error = 'Manca "api/soap/mc_file_api.php". EmailReporting richiede questo file per funzionare.';
+
+$s_plugin_EmailReporting_rules = 'Regole';
+$s_plugin_EmailReporting_select_rule = 'Seleziona regola';
+
+$s_plugin_EmailReporting_rule_wildcards = 'Wildcards';
+$s_plugin_EmailReporting_rule_wildcards_help = '- Caratteri wildcard: * ?
+- Se i caratteri wildcard non sono utilizzati, verrà applicato un confronto esatto';
+
+$s_plugin_EmailReporting_rule_conditions_help = 'NULL';
+
+$s_plugin_EmailReporting_rule_actions_help = '- "[any]" significa che l\'azione in questione verrà ignorata
+- I campi personalizzati non collegati al progetto della issue creata saranno ignorati
+- L\'elenco a discesa nei custom fields dovrebbe contenere un valore vuoto se vuoi tale opzione nell\'elenco a discesa. In caso contrario, verrà sempre applicato un valore quando le condizioni specificate sono soddisfatte.';
+
+$s_plugin_EmailReporting_rule_exceptions_help = 'NULL';
+
+$s_plugin_EmailReporting_cond_issue_creation_method = 'Metodo di creazione issue';
+$s_plugin_EmailReporting_cond_mailbox = 'Applicare alle mailboxes';
+$s_plugin_EmailReporting_cond_issue_issue_issuenote = 'Applicare a nuove issue e/o note';
+$s_plugin_EmailReporting_cond_issue_reporter = 'Reporter issue';
+$s_plugin_EmailReporting_cond_issue_project = 'Progetto issue';
+$s_plugin_EmailReporting_cond_issue_category = 'Categoria issue';
+$s_plugin_EmailReporting_cond_issue_priority = 'Priorità issue';
+$s_plugin_EmailReporting_cond_issue_summary = 'Riepilogo issue';
+$s_plugin_EmailReporting_cond_issue_description = 'Descrizione issue';
+
+$s_plugin_EmailReporting_act_issue_severity = 'Update severity';
+$s_plugin_EmailReporting_act_issue_status = 'Update status';
+$s_plugin_EmailReporting_act_issue_category = 'Update categoria';
+$s_plugin_EmailReporting_act_issue_tag = 'Aggiungi tags';
+$s_plugin_EmailReporting_act_issue_custom_field = 'Update custom field';
+
+$s_plugin_EmailReporting_excep_issue_summary = 'Riepilogo issue';
+$s_plugin_EmailReporting_excep_issue_description = 'Descrizione issue';
+
+$s_plugin_EmailReporting_notify_reporter_bug_added_subject = 'Re: [%bugid%] %emailsubject%';
+$s_plugin_EmailReporting_notify_reporter_bug_added_body = 'La segnalazione è stata ricevuta e sarà lavorata prima possibile. Puoi usare il codice %bugid% per farvi riferimento in futuro.
+
+Rispondendo a questa email e lasciando tra i destinatari %emailaddr% e [%bugid%] nell\'oggetto puoi aggiungere ulteriori informazioni.
+
+Il %emaildate%, %reportername% <%reporteremail%> ha scritto:
+%emailbody%';
+
+$s_plugin_EmailReporting_mailbox_settings_notifications_options = 'Opzioni di notifica email';
+$s_plugin_EmailReporting_custom_emails = 'Aggiungi i seguenti indirizzi e-mail in cc quando si risponde all\'e-mail del reporter';
+$s_plugin_EmailReporting_custom_emails_addresses = 'Elenco statico di indirizzi email da notificare separati da virgole (vengono aggiunti a quelli definiti nella configurazione generale)';
+
+
+$s_plugin_EmailReporting_mail_created_reason_bugnotes_disabled = 'L\'aggiunta di note è disabilitata nelle impostazioni';
+$s_plugin_EmailReporting_mail_created_reason_add_issues_enabled = 'La creazione di issues è abilitata nelle impostazioni';
+$s_plugin_EmailReporting_mail_created_reason_no_bugid = 'Non è stato possibile risalire al bug id dall\'oggetto o dal Message-ID';
+$s_plugin_EmailReporting_mail_created_reason_readonly = 'Il bug %bugid% è in sola lettura';
+$s_plugin_EmailReporting_mail_created_reason_reporter_has_permission = 'L\'utente reporter ha il permesso di creare issue';
+$s_plugin_EmailReporting_mail_created_reason_no_permissions_check = 'Il controllo permessi dell\'utente è disabilitato';
+$s_plugin_EmailReporting_mail_created_reason_intro = 'È stato creato un nuovo bug poiché';
+
+?>

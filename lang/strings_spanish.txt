@@ -31,6 +31,7 @@ $s_plugin_EmailReporting_reporter_options = 'Configuración de reporte de solici
 $s_plugin_EmailReporting_runtime_options = 'Configuración de ambiente de ejecución';
 $s_plugin_EmailReporting_security_options = 'Configuración de seguridad';
 $s_plugin_EmailReporting_strip_signature_feature_options = 'Configuración de borrado de firma (Experimental)';
+$s_plugin_EmailReporting_notifications_options = 'Opciones de notificación por correo electrónico';
 
 $s_plugin_EmailReporting_copy_of = 'Copiar de';
 $s_plugin_EmailReporting_directory_exists = 'Directorio encontrado';
@@ -77,6 +78,12 @@ $s_plugin_EmailReporting_mail_subject_id_regex = 'Qué tipo de búsqueda debe ut
 $s_plugin_EmailReporting_mail_use_bug_priority = 'Buscar en el campo prioridad de la cabecera del mensaje';
 $s_plugin_EmailReporting_mail_use_message_id = 'Usar Message-ID en la cabecera del email para identificar las notas';
 $s_plugin_EmailReporting_mail_use_reporter = 'Usar solo el informador por defecto para las solicitudes creadas por email';
+$s_plugin_EmailReporting_mail_notify_reporter = 'Envíe correo electrónico al reportero para reconocer la creación de errores';
+$s_plugin_EmailReporting_mail_notify_header_inreplyto = 'Incluya el ID del mensaje del correo del reportero en el encabezado En-Reply-To del mensaje de confirmación';
+$s_plugin_EmailReporting_mail_notify_header_references = 'Incluya el ID de mensaje del correo del reportero en el encabezado Referencies del mensaje de confirmación';
+$s_plugin_EmailReporting_mail_notify_developers = 'Los desarrolladores de proyectos reciben el correo de confirmación como CC';
+$s_plugin_EmailReporting_mail_notify_custom_emails = 'Agregue las siguientes direcciones de correo electrónico en CC al responder al correo electrónico del informante';
+$s_plugin_EmailReporting_mail_notify_custom_emails_addresses = 'Lista estática de direcciones de correo electrónico, separados por comas, que deben ser notificados';
 
 $s_plugin_EmailReporting_strict = 'Estricta';
 $s_plugin_EmailReporting_balanced = 'Balanceada';
@@ -108,6 +115,7 @@ $s_plugin_EmailReporting_update_configuration = 'Actualizar Configuración';
 $s_plugin_EmailReporting_enabled = 'Habilitado';
 $s_plugin_EmailReporting_disabled = 'Inhabilitado';
 $s_plugin_EmailReporting_description = 'Descripción';
+$s_plugin_EmailReporting_address = 'Dirección de correo electrónico.';
 $s_plugin_EmailReporting_mailbox_type = 'Tipo de Buzón';
 $s_plugin_EmailReporting_hostname = 'Nombre del Servidor';
 $s_plugin_EmailReporting_port = 'Puerto TCP';
@@ -172,5 +180,12 @@ $s_plugin_EmailReporting_act_issue_custom_field = 'Actualizar campo personalizad
 
 $s_plugin_EmailReporting_excep_issue_summary = 'Resumen de Solicitud';
 $s_plugin_EmailReporting_excep_issue_description = 'Descripción de Solicitud';
+
+$s_plugin_EmailReporting_notify_reporter_bug_added_subject = '[%bugid%] Informe recibido';
+$s_plugin_EmailReporting_notify_reporter_bug_added_body = 'El informe ha sido recibido y será procesado lo antes posible. Puede utilizar el código %bugid% para consultarlo en el futuro. Si responde a este correo electrónico y deja %emailaddr% en los destinatarios y [%bugid%] en el asunto, puede agregar más información.';
+
+$s_plugin_EmailReporting_mailbox_settings_notifications_options = 'Opciones de notificación por correo electrónico';
+$s_plugin_EmailReporting_custom_emails = 'Agregue las siguientes direcciones de correo electrónico en CC al responder al correo electrónico del informante';
+$s_plugin_EmailReporting_custom_emails_addresses = 'Lista estática separada por comas de direcciones de correo electrónico a notificar (se agregarán a las definidas en la configuración general)';
 
 ?>

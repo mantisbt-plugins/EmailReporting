@@ -31,6 +31,7 @@ $s_plugin_EmailReporting_reporter_options = 'Issue reporter configuration option
 $s_plugin_EmailReporting_runtime_options = 'Runtime configuration options';
 $s_plugin_EmailReporting_security_options = 'Security configuration options';
 $s_plugin_EmailReporting_strip_signature_feature_options = 'Strip signature configuration options (Experimental)';
+$s_plugin_EmailReporting_notifications_options = 'Email notification options';
 
 $s_plugin_EmailReporting_copy_of = 'Copy of';
 $s_plugin_EmailReporting_directory_exists = 'Directory found';
@@ -70,6 +71,7 @@ $s_plugin_EmailReporting_mail_respect_permissions = 'Check user permissions';
 $s_plugin_EmailReporting_mail_rule_system = 'Rule system';
 $s_plugin_EmailReporting_mail_save_from = 'Write the sender of the email into the issue report/note';
 $s_plugin_EmailReporting_mail_save_subject_in_note = 'Write the subject of the email in the note';
+$s_plugin_EmailReporting_mail_save_created_reason_in_additional_info = 'Write the reasons a new bug was created instead of add note to existing one';
 $s_plugin_EmailReporting_mail_secured_script = 'Block this script from running via a webserver (recommended = "Yes")';
 $s_plugin_EmailReporting_mail_secured_ipaddr = 'Only allow access to bug_report_mail from this IP address';
 $s_plugin_EmailReporting_mail_strip_signature = 'Strip signature from email body';
@@ -77,6 +79,12 @@ $s_plugin_EmailReporting_mail_subject_id_regex = 'What kind of search should be 
 $s_plugin_EmailReporting_mail_use_bug_priority = 'Look for priority header field';
 $s_plugin_EmailReporting_mail_use_message_id = 'Use Message-ID in Mail header to identify notes';
 $s_plugin_EmailReporting_mail_use_reporter = 'Use only default reporter user for issues created by email';
+$s_plugin_EmailReporting_mail_notify_reporter = 'Send email to reporter to acknowledge bug creation';
+$s_plugin_EmailReporting_mail_notify_header_inreplyto = 'Include reporter\'s mail Message-ID in acknowledge message In-Reply-To header';
+$s_plugin_EmailReporting_mail_notify_header_references = 'Include reporter\'s mail Message-ID in acknowledge message References header';
+$s_plugin_EmailReporting_mail_notify_developers = 'Project developers receive the acknowledge mail as CC';
+$s_plugin_EmailReporting_mail_notify_custom_emails = 'Add the following email addresses in CC when replying to reporter email';
+$s_plugin_EmailReporting_mail_notify_custom_emails_addresses = 'Comma separated static list of email addresses to be notified';
 
 $s_plugin_EmailReporting_strict = 'Strict';
 $s_plugin_EmailReporting_balanced = 'Balanced';
@@ -108,6 +116,7 @@ $s_plugin_EmailReporting_update_configuration = 'Update configuration';
 $s_plugin_EmailReporting_enabled = 'Enabled';
 $s_plugin_EmailReporting_disabled = 'Disabled';
 $s_plugin_EmailReporting_description = 'Description';
+$s_plugin_EmailReporting_address = 'Email address';
 $s_plugin_EmailReporting_mailbox_type = 'Mailbox type';
 $s_plugin_EmailReporting_hostname = 'Hostname';
 $s_plugin_EmailReporting_port = 'TCP port (optional)';
@@ -176,4 +185,18 @@ $s_plugin_EmailReporting_act_issue_custom_field = 'Update custom field';
 $s_plugin_EmailReporting_excep_issue_summary = 'Issue summary';
 $s_plugin_EmailReporting_excep_issue_description = 'Issue description';
 
+$s_plugin_EmailReporting_notify_reporter_bug_added_subject = '[%bugid%] Report received';
+$s_plugin_EmailReporting_notify_reporter_bug_added_body = 'The report has been received and will be processed as soon as possible. You can use the code %bugid% as a reference in the future. By answering this email and leaving %emailaddr% in the recipients and [%bugid%] as subject, you can add more informations.';
+
+$s_plugin_EmailReporting_mailbox_settings_notifications_options = '	Email notification options';
+$s_plugin_EmailReporting_custom_emails = 'Add the following email addresses in CC when replying to reporter email';
+$s_plugin_EmailReporting_custom_emails_addresses = 'Static of comma-separated email address to be notified (will be added to the ones defined in global config)';
+
+$s_plugin_EmailReporting_mail_created_reason_bugnotes_disabled = 'Adding bugnotes is disabled in settings';
+$s_plugin_EmailReporting_mail_created_reason_add_issues_enabled = 'Add new issues is enabled in settings';
+$s_plugin_EmailReporting_mail_created_reason_no_bugid = 'Could not obtain bug id from subject or Message-ID';
+$s_plugin_EmailReporting_mail_created_reason_readonly = 'Bug %bugid% is readonly';
+$s_plugin_EmailReporting_mail_created_reason_reporter_has_permission = 'Reporter user has permission to Report bug';
+$s_plugin_EmailReporting_mail_created_reason_no_permissions_check = 'User permissions check is disabled';
+$s_plugin_EmailReporting_mail_created_reason_intro = 'A new bug was create because';
 ?>

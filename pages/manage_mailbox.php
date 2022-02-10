@@ -73,6 +73,7 @@ if ( !defined( 'PEAR_OS' ) )
 ERP_output_table_open( 'mailbox_settings' );
 ERP_output_config_option( 'enabled', 'boolean', $t_mailbox );
 ERP_output_config_option( 'description', 'string', $t_mailbox );
+ERP_output_config_option( 'address', 'string', $t_mailbox );
 ERP_output_config_option( 'mailbox_type', 'dropdown', $t_mailbox, 'print_descriptions_option_list', array( 'IMAP', 'POP3' ) );
 ERP_output_config_option( 'hostname', 'string', $t_mailbox );
 ERP_output_config_option( 'port', 'string', $t_mailbox );
@@ -92,6 +93,11 @@ ERP_output_table_open( 'mailbox_settings_issue' );
 ERP_output_config_option( 'project_id', 'dropdown', $t_mailbox, 'print_projects_option_list' );
 ERP_output_config_option( 'global_category_id', 'dropdown', $t_mailbox, 'print_global_category_option_list' );
 //ERP_output_config_option( 'link_rules', 'dropdown_multiselect', $t_mailbox, 'print_descriptions_option_list', $t_rules ); // Should we use this here or from the rules page?
+ERP_output_table_close();
+
+ERP_output_table_open( 'mailbox_settings_notifications_options' );
+ERP_output_config_option( 'custom_emails', 'boolean', $t_mailbox );
+ERP_output_config_option( 'custom_emails_addresses', 'string_multiline', $t_mailbox );
 ERP_output_table_close();
 
 event_signal( 'EVENT_ERP_OUTPUT_MAILBOX_FIELDS', $f_select_mailbox );

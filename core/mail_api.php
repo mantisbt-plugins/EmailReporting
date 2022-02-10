@@ -80,11 +80,16 @@ class ERP_mailbox_api
 	private $_mail_respect_permissions;
 	private $_mail_save_from;
 	private $_mail_save_subject_in_note;
+	private $_mail_save_created_reason_in_additional_info;
 	private $_mail_strip_signature;
 	private $_mail_subject_id_regex;
 	private $_mail_use_bug_priority;
 	private $_mail_use_message_id;
 	private $_mail_use_reporter;
+	private $_mail_notify_reporter;
+	private $_mail_notify_developers;
+	private $_mail_notify_custom_emails;
+	private $_mail_notify_custom_emails_addresses;
 
 	private $_mp_options = array();
 
@@ -133,11 +138,18 @@ class ERP_mailbox_api
 		$this->_mail_respect_permissions		= plugin_config_get( 'mail_respect_permissions' );
 		$this->_mail_save_from					= plugin_config_get( 'mail_save_from' );
 		$this->_mail_save_subject_in_note		= plugin_config_get( 'mail_save_subject_in_note' );
+		$this->_mail_save_created_reason_in_additional_info		= plugin_config_get( 'mail_save_created_reason_in_additional_info' );
 		$this->_mail_strip_signature			= plugin_config_get( 'mail_strip_signature' );
 		$this->_mail_subject_id_regex			= plugin_config_get( 'mail_subject_id_regex' );
 		$this->_mail_use_bug_priority			= plugin_config_get( 'mail_use_bug_priority' );
 		$this->_mail_use_message_id				= plugin_config_get( 'mail_use_message_id' );
 		$this->_mail_use_reporter				= plugin_config_get( 'mail_use_reporter' );
+		$this->_mail_notify_reporter			= plugin_config_get( 'mail_notify_reporter' );
+		$this->_mail_notify_header_inreplyto	= plugin_config_get( 'mail_notify_header_inreplyto' );
+		$this->_mail_notify_header_references	= plugin_config_get( 'mail_notify_header_references' );
+		$this->_mail_notify_developers			= plugin_config_get( 'mail_notify_developers' );
+		$this->_mail_notify_custom_emails		= plugin_config_get( 'mail_notify_custom_emails' );
+		$this->_mail_notify_custom_emails_addresses = plugin_config_get( 'mail_notify_custom_emails_addresses' );
 
 		$this->_mp_options[ 'add_attachments' ]	= config_get( 'allow_file_upload' );
 		$this->_mp_options[ 'debug' ]			= $this->_mail_debug;
@@ -190,7 +202,7 @@ class ERP_mailbox_api
 	public function process_mailbox( $p_mailbox )
 	{
 		$this->_mailbox_starttime = ERP_get_timestamp();
-		
+
 		$this->_mailbox = $p_mailbox + ERP_get_default_mailbox();
 
 		if ( $this->_functionality_enabled )
@@ -695,6 +707,8 @@ class ERP_mailbox_api
 		$t_mp->parse();
 
 		$t_email[ 'From_parsed' ] = $this->parse_from_field( trim( $t_mp->from() ) );
+		$t_email[ 'Date_parsed' ] = $this->parse_date_field( trim( $t_mp->date() ) );
+		$t_email[ 'Date' ] = trim( $t_mp->date() );
 		$t_email[ 'Reporter_id' ] = $this->get_user( $t_email[ 'From_parsed' ] );
 
 		$t_email[ 'Subject' ] = trim( $t_mp->subject() );
@@ -858,6 +872,9 @@ class ERP_mailbox_api
 		// Add Message-ID, to have all references, and in case the email is duplicated
 		$t_references[] = $p_email['Message-ID'];
 
+		// Reasons a new bug was created instead of add note to existing one
+		$new_bug_reasons = [];
+
 		if ( $this->_mail_add_bugnotes )
 		{
 			$t_bug_id = $this->mail_is_a_bugnote( $p_email[ 'Subject' ], $t_references );
@@ -865,6 +882,7 @@ class ERP_mailbox_api
 		else
 		{
 			$t_bug_id = FALSE;
+			$new_bug_reasons[] = plugin_lang_get( 'mail_created_reason_bugnotes_disabled' );
 		}
 
 		$t_bugnote_id = NULL;
@@ -942,12 +960,22 @@ class ERP_mailbox_api
 		}
 		elseif ( $this->_mail_add_bug_reports )
 		{
+			$new_bug_reasons[] = plugin_lang_get( 'mail_created_reason_add_issues_enabled' );
+
+			if( ! $t_bug_id ) {
+				$new_bug_reasons[] = plugin_lang_get( 'mail_created_reason_no_bugid' );
+			} else if( bug_is_readonly( $t_bug_id ) ) {
+				$new_bug_reasons[] = str_replace('%bugid%', $t_bug_id, plugin_lang_get( 'mail_created_reason_readonly' ));
+			}
+
 			$t_project_id = ( ( $p_overwrite_project_id === FALSE ) ? $this->_mailbox[ 'project_id' ] : $p_overwrite_project_id );
 			ERP_set_temporary_overwrite( 'project_override', $t_project_id );
 
 			# Check issue permissions
 			if ( !$this->_mail_respect_permissions || access_has_project_level( config_get('report_bug_threshold' ) ) )
 			{
+				$new_bug_reasons[] = plugin_lang_get( $this->_mail_respect_permissions ? "mail_created_reason_reporter_has_permission" : "mail_created_reason_no_permissions_check" );
+
 				$t_master_bug_id = NULL;
 				if ( $t_bug_id !== FALSE && bug_is_readonly( $t_bug_id ) )
 				{
@@ -989,8 +1017,12 @@ class ERP_mailbox_api
 				$t_bug_data->description			= $t_description;
 
 				$t_bug_data->steps_to_reproduce		= config_get( 'default_bug_steps_to_reproduce' );
-				$t_bug_data->additional_information	= config_get( 'default_bug_additional_info' );
-				
+				if( $this->_mail_save_created_reason_in_additional_info && ! empty( $new_bug_reasons ) ) {
+					$t_bug_data->additional_information	= "A new bug was create because: " . implode(', ', $new_bug_reasons) . "\n" . config_get( 'default_bug_additional_info' );
+				} else {
+					$t_bug_data->additional_information	= config_get( 'default_bug_additional_info' );
+				}
+
 				$t_fields = config_get( 'bug_report_page_fields' );
 				$t_fields = columns_filter_disabled( $t_fields );
 				$t_update_due_date = in_array( 'due_date', $t_fields ) && access_has_project_level( config_get( 'due_date_update_threshold' ), helper_get_current_project(), auth_get_current_user_id() );
@@ -1090,6 +1122,8 @@ class ERP_mailbox_api
 				event_signal( 'EVENT_REPORT_BUG', array( $t_bug_data, $t_bug_id ) );
 
 				email_bug_added( $t_bug_id );
+
+				$this->notify_bug_added( $t_bug_data, $p_email );
 			}
 			else
 			{
@@ -1351,6 +1385,14 @@ class ERP_mailbox_api
 	}
 
 	# --------------------
+	# Try to parse the date from the mail's 'Date' field.
+	# Returns a DateTime object on success or "false" on failure.
+	private function parse_date_field( $p_date )
+	{
+		return \DateTime::createFromFormat(\DateTime::RFC2822, $p_date);
+	}
+
+	# --------------------
 	# Return all email addresses present in a string
 	# Generally used to parse email fields like to and cc
 	private function get_emailaddr_from_string( $p_addresses )
@@ -1488,9 +1530,17 @@ class ERP_mailbox_api
 	{
 		$t_bug_id = $this->get_bug_id_from_subject( $p_mail_subject );
 
-		if ( $t_bug_id !== FALSE && bug_exists( $t_bug_id ) )
+		if ( $t_bug_id !== FALSE )
 		{
-			return( $t_bug_id );
+			if ( bug_exists( $t_bug_id ) )
+			{
+				echo("Found bug id $t_bug_id in subject\n");
+				return( $t_bug_id );
+			} else {
+				echo("Found bug id $t_bug_id in subject, but does not exists in mantis!\n");
+			}
+		} else {
+			echo("No bug id found in subject\n");
 		}
 
 		//Get the ids from Mail References(header)
@@ -1500,6 +1550,7 @@ class ERP_mailbox_api
 		{
 			if( bug_exists( $t_bug_id ) )
 			{
+				echo("Found bug id $t_bug_id via References\n");
 				return( $t_bug_id );
 			}
 			else
@@ -1928,6 +1979,169 @@ class ERP_mailbox_api
 		}
 
 		return null;
+	}
+
+	# --------------------
+	# Notifies the sender address a new bug was created
+	private function notify_bug_added( $bugData, $email )
+	{
+		if ($this->_mail_notify_reporter) {
+			// Notify sender
+			$mailSubject =
+				$this->fillPlaceholders(
+					plugin_lang_get('notify_reporter_bug_added_subject'),
+					$email,
+					$bugData,
+				);
+			$mailBody =
+				$this->fillPlaceholders(
+					plugin_lang_get('notify_reporter_bug_added_body'),
+					$email,
+					$bugData,
+				);
+
+			$senderEmailAddr = $email['From_parsed']['email'];
+
+			// Collect all To and Cc address to keep it on the answer email
+			$ccAddr = [];
+			// Never place plugin email in cc to avoid loops
+			$exclude = [$this->getPluginEmailAddr(), $senderEmailAddr];
+
+			foreach ($email['To'] as $to)
+				$this->addUnique($to, $ccAddr, $exclude);
+
+			foreach ($email['Cc'] as $cc)
+				$this->addUnique($cc, $ccAddr, $exclude);
+
+			if ($this->_mail_notify_developers) {
+				// Notify project users
+				$bugUsersEmails = email_collect_recipients($bugData->id, 'new');
+				foreach ($bugUsersEmails as $bugUserId => $bugUserEmail)
+					$this->addUnique($bugUserEmail, $ccAddr, $exclude);
+			}
+
+			if ($this->_mail_notify_custom_emails) {
+				// Notify custom email addresses
+				$addressesToNotify = $this->parseCustomNotificationAddresses($this->_mail_notify_custom_emails_addresses);
+				foreach ($addressesToNotify as $atn)
+					$this->addUnique($atn, $ccAddr, $exclude);
+			}
+
+			// Notify per-mailbox custom email addresses
+			if ($this->_mailbox['custom_emails']) {
+				$addressesToNotify = $this->parseCustomNotificationAddresses($this->_mailbox['custom_emails_addresses']);
+				foreach ($addressesToNotify as $atn)
+					$this->addUnique($atn, $ccAddr, $exclude);
+			}
+
+			$headers = [
+				'Reply-To' => $this->getPluginEmailAddr(),
+			];
+
+			// Add In-Reply-To and first Reference (only if Message-ID is present in the received email)
+			if ($email['Message-ID']) {
+				if ($this->_mail_notify_header_inreplyto) {
+					$headers['In-Reply-To'] = $email['Message-ID'];
+				}
+				if ($this->_mail_notify_header_references) {
+					$headers['References'] = $email['Message-ID'];
+				}
+			}
+
+			// Generate unique messageId. We set our own instead of allowing the provider to generate one, so we can save it in the issue.
+			if( isset( $_SERVER['SERVER_NAME'] ) ) {
+				$t_hostname = $_SERVER['SERVER_NAME'];
+			} else {
+				$t_address = explode( '@', config_get( 'from_email' ) );
+				if( isset( $t_address[1] ) ) {
+					$t_hostname = $t_address[1];
+				}
+			}
+			$genMessageId = time() .'-' . md5($bugData->id . $senderEmailAddr) . '@' . $t_hostname;
+			$headers['Message-ID'] = $genMessageId;
+
+			// Add mail to mantis output queue
+			email_store($senderEmailAddr, $mailSubject, $mailBody, $headers, true, $ccAddr);
+
+			//Add the sent message-id to the database
+			$this->add_msg_ids($bugData->id, ["<$genMessageId>"]);
+		}
+
+	}
+
+	# --------------------
+	# Adds the value to array only if not already present nor in exclude list
+	private function addUnique($value, &$array, $exclude = null) {
+		if ($exclude) {
+			foreach ($exclude as $ex) {
+				if ($value === $ex)
+					return;
+			}
+		}
+
+		if (in_array($value, $array))
+			return;
+		$array[] = trim($value);
+	}
+
+	# --------------------
+	# Apply "mail" type quotation to a text (prepends > to any line)
+	private function quoteMailText($text) {
+		return preg_replace('/^/m', '> ', $text);
+	}
+
+	# --------------------
+	# Fills the placeholders with data from the issue
+	# Supported placeholders:
+	#   %bugid% Mantis numeric bug identifier
+	#   %bugtitle% Bug title
+	#   %reporteremail% Reporter email address
+	#   %reportername% Reporter name
+	#   %emailaddr% Plugin's monitored email address that received the report
+	private function fillPlaceholders($template, $email, $bugData) {
+		return str_replace([
+			'%bugid%',
+			'%bugtitle%',
+			'%reporteremail%',
+			'%reportername%',
+			'%emailaddr%',
+			'%emailsubject%',
+			'%emailbody%',
+			'%emaildate%',
+		],
+		[
+			$bugData->id,
+			$bugData->summary,
+			$email['From_parsed']['email'],
+			$email['From_parsed']['name'],
+			$this->getPluginEmailAddr(),
+			$email['Subject'],
+			$this->quoteMailText($email['X-Mantis-Body']),
+			$email['Date_parsed'] ? strftime("%d/%m/%y %R", $email['Date_parsed']) : $email['Date']
+		],
+		$template);
+	}
+
+	# --------------------
+	# Returns the plugin email address which received the current email
+	private function getPluginEmailAddr() {
+		return $this->_mailbox['address'];
+	}
+
+	# --------------------
+	# Parses user defined addresses, verify its validity and returns it as a list
+	private function parseCustomNotificationAddresses($addressesCSV)
+	{
+		$addresses = explode(',', $addressesCSV);
+		// Validate emails
+		foreach ($addresses as $i => $addr) {
+			$taddr = trim($addr);
+			if (!email_is_valid($taddr)) {
+				plugin_log_event('Ignoring invalid custom email address ' . $taddr);
+				unset($addresses[$i]);
+			}
+		}
+		return $addresses;
 	}
 }
 
