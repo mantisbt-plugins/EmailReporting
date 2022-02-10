@@ -71,6 +71,7 @@ $s_plugin_EmailReporting_mail_respect_permissions = 'Controlla i permessi dell\'
 $s_plugin_EmailReporting_mail_rule_system = 'Regole di sistema';
 $s_plugin_EmailReporting_mail_save_from = 'Scrivi il mittente dell\'e-mail nel rapporto/nota del problema';
 $s_plugin_EmailReporting_mail_save_subject_in_note = 'Scrivi l\'oggetto dell\'email nella nota';
+$s_plugin_EmailReporting_mail_save_created_reason_in_additional_info = 'Scrivi le ragioni per cui è stato creato un nuovo bug invece di aggiungere una nota';
 $s_plugin_EmailReporting_mail_secured_script = 'Blocca l\'esecuzione di questo script attraverso un webserver (recommended = "Yes")';
 $s_plugin_EmailReporting_mail_secured_ipaddr = 'Consenti l\'accesso a bug_report_mail solo da questo indirizzo IP';
 $s_plugin_EmailReporting_mail_strip_signature = 'Elimina la firma dal corpo dell\'email';

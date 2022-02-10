@@ -80,6 +80,7 @@ class ERP_mailbox_api
 	private $_mail_respect_permissions;
 	private $_mail_save_from;
 	private $_mail_save_subject_in_note;
+	private $_mail_save_created_reason_in_additional_info;
 	private $_mail_strip_signature;
 	private $_mail_subject_id_regex;
 	private $_mail_use_bug_priority;
@@ -137,6 +138,7 @@ class ERP_mailbox_api
 		$this->_mail_respect_permissions		= plugin_config_get( 'mail_respect_permissions' );
 		$this->_mail_save_from					= plugin_config_get( 'mail_save_from' );
 		$this->_mail_save_subject_in_note		= plugin_config_get( 'mail_save_subject_in_note' );
+		$this->_mail_save_created_reason_in_additional_info		= plugin_config_get( 'mail_save_created_reason_in_additional_info' );
 		$this->_mail_strip_signature			= plugin_config_get( 'mail_strip_signature' );
 		$this->_mail_subject_id_regex			= plugin_config_get( 'mail_subject_id_regex' );
 		$this->_mail_use_bug_priority			= plugin_config_get( 'mail_use_bug_priority' );
@@ -870,6 +872,9 @@ class ERP_mailbox_api
 		// Add Message-ID, to have all references, and in case the email is duplicated
 		$t_references[] = $p_email['Message-ID'];
 
+		// Reasons a new bug was created instead of add note to existing one
+		$new_bug_reasons = [];
+
 		if ( $this->_mail_add_bugnotes )
 		{
 			$t_bug_id = $this->mail_is_a_bugnote( $p_email[ 'Subject' ], $t_references );
@@ -877,6 +882,7 @@ class ERP_mailbox_api
 		else
 		{
 			$t_bug_id = FALSE;
+			$new_bug_reasons[] = 'Adding bugnotes is disabled in settings';
 		}
 
 		$t_bugnote_id = NULL;
@@ -954,15 +960,27 @@ class ERP_mailbox_api
 		}
 		elseif ( $this->_mail_add_bug_reports )
 		{
+			$new_bug_reasons[] = "Add new issues is enabled in settings";
+
+			if( ! $t_bug_id ) {
+				$new_bug_reasons[] = 'Could not obtain bug id from subject or Message-ID';
+			} else if( bug_is_readonly( $t_bug_id ) ) {
+				$new_bug_reasons[] = "Bug ${t_bug_id} is readonly";
+			}
+
 			$t_project_id = ( ( $p_overwrite_project_id === FALSE ) ? $this->_mailbox[ 'project_id' ] : $p_overwrite_project_id );
 			ERP_set_temporary_overwrite( 'project_override', $t_project_id );
 
 			# Check issue permissions
 			if ( !$this->_mail_respect_permissions || access_has_project_level( config_get('report_bug_threshold' ) ) )
 			{
+				$new_bug_reasons[] = $this->_mail_respect_permissions ? "Reporter user has permission to Report bug" : "User permissions check is disabled";
+
 				$t_master_bug_id = NULL;
 				if ( $t_bug_id !== FALSE && bug_is_readonly( $t_bug_id ) )
 				{
+					$new_bug_reasons[] = "Bug ${t_bug_id} is readonly";
+
 					$t_master_bug_id = $t_bug_id;
 
 					// Issues beyond the readonly border will not be reopened and will result in a new issue with a relationship to the old one
@@ -1001,7 +1019,11 @@ class ERP_mailbox_api
 				$t_bug_data->description			= $t_description;
 
 				$t_bug_data->steps_to_reproduce		= config_get( 'default_bug_steps_to_reproduce' );
-				$t_bug_data->additional_information	= config_get( 'default_bug_additional_info' );
+				if( $this->_mail_save_created_reason_in_additional_info && ! empty( $new_bug_reasons ) ) {
+					$t_bug_data->additional_information	= "A new bug was create because: " . implode(', ', $new_bug_reasons) . "\n" . config_get( 'default_bug_additional_info' );
+				} else {
+					$t_bug_data->additional_information	= config_get( 'default_bug_additional_info' );
+				}
 
 				$t_fields = config_get( 'bug_report_page_fields' );
 				$t_fields = columns_filter_disabled( $t_fields );

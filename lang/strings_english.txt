@@ -71,6 +71,7 @@ $s_plugin_EmailReporting_mail_respect_permissions = 'Check user permissions';
 $s_plugin_EmailReporting_mail_rule_system = 'Rule system';
 $s_plugin_EmailReporting_mail_save_from = 'Write the sender of the email into the issue report/note';
 $s_plugin_EmailReporting_mail_save_subject_in_note = 'Write the subject of the email in the note';
+$s_plugin_EmailReporting_mail_save_created_reason_in_additional_info = 'Write the reasons a new bug was created instead of add note to existing one';
 $s_plugin_EmailReporting_mail_secured_script = 'Block this script from running via a webserver (recommended = "Yes")';
 $s_plugin_EmailReporting_mail_secured_ipaddr = 'Only allow access to bug_report_mail from this IP address';
 $s_plugin_EmailReporting_mail_strip_signature = 'Strip signature from email body';

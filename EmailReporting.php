@@ -163,6 +163,9 @@ class EmailReportingPlugin extends MantisPlugin
 			# Write the subject of the email in the note
 			'mail_save_subject_in_note'		=> OFF,
 
+			# Write the reasons a new bug was created instead of add note to existing one in the additional info field
+			'mail_save_created_reason_in_additional_info'		=> ON,
+
 			# Do you want to secure the EmailReporting script so that it cannot be invoked
 			# via a webserver?
 			'mail_secured_script'			=> ON,

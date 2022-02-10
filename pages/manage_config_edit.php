@@ -36,6 +36,7 @@ $f_gpc = array(
 	'mail_rule_system'				=> gpc_get_int( 'mail_rule_system' ),
 	'mail_save_from'				=> gpc_get_int( 'mail_save_from' ),
 	'mail_save_subject_in_note'		=> gpc_get_int( 'mail_save_subject_in_note' ),
+	'mail_save_created_reason_in_additional_info'	=> gpc_get_int( 'mail_save_created_reason_in_additional_info' ),
 	'mail_secured_script'			=> gpc_get_int( 'mail_secured_script' ),
 	'mail_secured_ipaddr'			=> gpc_get_string( 'mail_secured_ipaddr' ),
 	'mail_strip_signature'			=> gpc_get_int( 'mail_strip_signature' ),
