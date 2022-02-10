@@ -1530,9 +1530,17 @@ class ERP_mailbox_api
 	{
 		$t_bug_id = $this->get_bug_id_from_subject( $p_mail_subject );
 
-		if ( $t_bug_id !== FALSE && bug_exists( $t_bug_id ) )
+		if ( $t_bug_id !== FALSE )
 		{
-			return( $t_bug_id );
+			if ( bug_exists( $t_bug_id ) )
+			{
+				echo("Found bug id $t_bug_id in subject\n");
+				return( $t_bug_id );
+			} else {
+				echo("Found bug id $t_bug_id in subject, but does not exists in mantis!\n");
+			}
+		} else {
+			echo("No bug id found in subject\n");
 		}
 
 		//Get the ids from Mail References(header)
@@ -1542,6 +1550,7 @@ class ERP_mailbox_api
 		{
 			if( bug_exists( $t_bug_id ) )
 			{
+				echo("Found bug id $t_bug_id via References\n");
 				return( $t_bug_id );
 			}
 			else
