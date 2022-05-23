@@ -1234,9 +1234,10 @@ class ERP_mailbox_api
 			}
 
 			// check max length filename. Shorten if necessary. Leave room for file number.
-			if ( strlen( $t_file_name ) > ( 245 - strlen( $t_extension ) ) )
+			$t_max_length = ( ( defined( 'DB_FIELD_SIZE_FILENAME' ) ) ? DB_FIELD_SIZE_FILENAME : 250 ) - 5;
+			if ( strlen( $t_file_name ) > ( $t_max_length - strlen( $t_extension ) ) )
 			{
-				$t_file_name = substr( $t_file_name, 0, ( 245 - strlen( $t_extension ) ) );
+				$t_file_name = substr( $t_file_name, 0, ( $t_max_length - strlen( $t_extension ) ) );
 			}
 
 			while ( !file_is_name_unique( $t_file_name . $t_opt_name . $t_extension, $p_bug_id ) )
