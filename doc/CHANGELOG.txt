@@ -1,5 +1,6 @@
 Changelog:
 ??? - EmailReporting-0.11.0
+	- PHP 8.x.x base64_decode deprecation fix
 	- Update Markdownify github master
 	- Add EmailReplyParser library
 	- Retired old functionality now being handled by EmailReplyParser

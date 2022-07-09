@@ -802,7 +802,7 @@ if ( !function_exists( 'check_is_collation_utf8' ) )
 					case 'string_password':
 ?>
 <td colspan="2">
-	<input class="input-sm" <?php echo helper_get_tab_index() ?> type="password" size="64" name="<?php echo $t_input_name ?>" value="<?php echo string_attribute( base64_decode( $t_value ) ) ?>"/>
+	<input class="input-sm" <?php echo helper_get_tab_index() ?> type="password" size="64" name="<?php echo $t_input_name ?>" value="<?php echo string_attribute( base64_decode( (string) $t_value ) ) ?>"/>
 </td>
 <?php
 
