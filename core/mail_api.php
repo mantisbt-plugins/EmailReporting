@@ -694,15 +694,15 @@ class ERP_mailbox_api
 
 		$t_mp->parse();
 
-		$t_email[ 'From_parsed' ] = $this->parse_from_field( trim( $t_mp->from() ) );
+		$t_email[ 'From_parsed' ] = $this->parse_from_field( trim( (string)$t_mp->from() ) );
 		$t_email[ 'Reporter_id' ] = $this->get_user( $t_email[ 'From_parsed' ] );
 
-		$t_email[ 'Subject' ] = trim( $t_mp->subject() );
+		$t_email[ 'Subject' ] = trim( (string)$t_mp->subject() );
 
 		$t_email[ 'To' ] = $this->get_emailaddr_from_string( $t_mp->to() );
 		$t_email[ 'Cc' ] = $this->get_emailaddr_from_string( $t_mp->cc() );
 
-		$t_email[ 'X-Mantis-Body' ] = trim( $t_mp->body() );
+		$t_email[ 'X-Mantis-Body' ] = trim( (string)$t_mp->body() );
 
 		$t_email[ 'X-Mantis-Parts' ] = $t_mp->parts();
 
@@ -1173,7 +1173,7 @@ class ERP_mailbox_api
 	private function add_file( $p_bug_id, &$p_part, $p_bugnote_id = NULL )
 	{
 		# Handle the file upload
-		$t_part_name = ( ( isset( $p_part[ 'name' ] ) ) ? trim( $p_part[ 'name' ] ) : NULL );
+		$t_part_name = ( ( isset( $p_part[ 'name' ] ) ) ? trim( (string)$p_part[ 'name' ] ) : NULL );
 		$t_strlen_body = strlen( $p_part[ 'body' ] );
 
 		if ( is_blank( $t_part_name ) )
@@ -1271,7 +1271,7 @@ class ERP_mailbox_api
 		$t_project_name = preg_replace( "/&(.)(acute|cedil|circ|ring|tilde|uml);/", "$1", $t_project_name );
 		$t_project_name = preg_replace( "/([^A-Za-z0-9 ]+)/", "-", html_entity_decode( $t_project_name ) );
 		$t_project_name = preg_replace( "/(\.+)/", ".", $t_project_name );
-		$t_project_name = trim( $t_project_name, "-. " );
+		$t_project_name = trim( (string)$t_project_name, "-. " );
 
 		return( $t_project_name );
 	}
@@ -1331,11 +1331,11 @@ class ERP_mailbox_api
 	# Return the emailaddress from the mail's 'From' field
 	private function parse_from_field( $p_from_address )
 	{
-		if ( preg_match( '/^(?:(?P<name>.*?)<|)(?P<email>' . $this->_email_regex_simple . ')(?:>|)/u', trim( $p_from_address ), $match ) )
+		if ( preg_match( '/^(?:(?P<name>.*?)<|)(?P<email>' . $this->_email_regex_simple . ')(?:>|)/u', trim( (string)$p_from_address ), $match ) )
 		{
 			$v_from_address = array(
-				'name'	=> trim( $match[ 'name' ], '"\' ' ),
-				'email'	=> trim( $match[ 'email' ] ),
+				'name'	=> trim( (string)$match[ 'name' ], '"\' ' ),
+				'email'	=> trim( (string)$match[ 'email' ] ),
 				'From'	=> $p_from_address,
 			);
 		}
@@ -1358,11 +1358,11 @@ class ERP_mailbox_api
 	{
 		$v_addresses = array();
 
-		if ( preg_match_all( '/' . $this->_email_regex_simple . '/u', $p_addresses, $matches, PREG_SET_ORDER ) )
+		if ( preg_match_all( '/' . $this->_email_regex_simple . '/u', (string)$p_addresses, $matches, PREG_SET_ORDER ) )
 		{
 			foreach( $matches AS $match )
 			{
-				$v_addresses[] = trim( $match[ 0 ] );
+				$v_addresses[] = trim( (string)$match[ 0 ] );
 			}
 		}
 
@@ -1721,7 +1721,7 @@ class ERP_mailbox_api
 
 			$selectedFragments = array_filter( $bodyfragments, array( $this, 'selectFragments' ) );
 
-			$t_description = rtrim( implode( "\n", $selectedFragments ) );
+			$t_description = rtrim( (string)implode( "\n", $selectedFragments ) );
 		}
 
 		return( $t_description );

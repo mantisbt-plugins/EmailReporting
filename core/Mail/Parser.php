@@ -427,7 +427,7 @@ class ERP_Mail_Parser
 
 	private function setMessageId( $p_messageid )
 	{
-		$this->_messageid = trim( $p_messageid );
+		$this->_messageid = trim( (string)$p_messageid );
 	}
 
 	private function setReferences( $p_references )
@@ -442,7 +442,7 @@ class ERP_Mail_Parser
 
 	private function setInReplyTo( $p_inreplyto )
 	{
-		$this->_inreplyto = trim( $p_inreplyto );
+		$this->_inreplyto = trim( (string)$p_inreplyto );
 	}
 
 	private function setPriority( $priority )
@@ -512,7 +512,7 @@ class ERP_Mail_Parser
 			return( FALSE );
 		}
 
-		$this->_body = trim( $this->_body );
+		$this->_body = trim( (string)$this->_body );
 
 		return( TRUE );
 	}
