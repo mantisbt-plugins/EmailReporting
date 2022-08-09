@@ -380,122 +380,171 @@
 	}
 
 	/**
-	 * Copy of the function in /admin/check.php (MantisBT 1.2.19)
+	 * Copy of the function in /admin/check/check_api.php (MantisBT 2.25)
 	 * ERP - Removed the global variable
 	 * ERP - Changed output method
 	 */
 	/**
-	 * Check the DB colation if its MySQL
+	 * Print Check Test Result
+	 * @param integer $p_result One of BAD|GOOD|WARN.
+	 * @return void
 	 */
-if ( !function_exists( 'print_test_result' ) )
-{
-	function print_test_result( $p_result ) {
+	function ERP_check_print_test_result( $p_result ) {
 		$t_output = NULL;
 
-		switch ( $p_result ) {
+		switch( $p_result ) {
 			case BAD:
-				$t_output .= '<td bgcolor="#ff0088">BAD</td>';
+				$t_output .= "\t\t" . '<td class="alert alert-danger">FAIL</td>' . "\n";
 				break;
 			case GOOD:
-				$t_output .= '<td bgcolor="#00ff88">GOOD</td>';
+				$t_output .= "\t\t" . '<td class="alert alert-success">PASS</td>' . "\n";
 				break;
 			case WARN:
-				$t_output .= '<td bgcolor="#E56717">WARN</td>';
+				$t_output .= "\t\t" . '<td class="alert alert-warning">WARN</td>' . "\n";
 				break;
 		}
 
 		return $t_output;
 	}
-}
 
 	/**
-	 * Copy of the function in /admin/check.php (MantisBT 1.2.19)
-	 * ERP - Changed global $f_showall to local variable and forced it to FALSE
+	 * Copy of the function in /admin/check/check_api.php (MantisBT 2.25)
+	 * ERP - Changed global $g_showall to local variable and forced it to FALSE
+	 * ERP - suppress p_pass return value
 	 * ERP - Changed output method
 	 */
 	/**
-	 * Check the DB colation if its MySQL
+	 * Print Check Test Row
+	 * @param string  $p_description Description.
+	 * @param boolean $p_pass        Whether test passed.
+	 * @param string  $p_info        Information.
+	 * @return boolean
 	 */
-if ( !function_exists( 'print_test_row' ) )
-{
-	function print_test_row( $p_description, $p_pass, $p_info = null ) {
+	function ERP_check_print_test_row( $p_description, $p_pass, $p_info = null ) {
 		$t_output = NULL;
 
-		$f_showall = FALSE;
-		if ( $f_showall == false && $p_pass == true ) {
-			return $t_output;
+		$g_show_all = FALSE;
+		$t_unhandled = FALSE;//check_unhandled_errors_exist();
+		if( !$g_show_all && $p_pass && !$t_unhandled ) {
+			return NULL;//$p_pass;
 		}
-		$t_output .= '<tr><td bgcolor="#ffffff">' .$p_description;
-		if( $p_info != null) {
-			if( is_array( $p_info ) ) {
-				if( isset( $p_info[$p_pass] ) ) {
-					$t_output .= '<br /><i>' . $p_info[$p_pass] . '</i>';
-				}
-			} else {
-				$t_output .= '<br /><i>' . $p_info . '</i>';
+
+		$t_output .= "\t<tr>\n\t\t<td>$p_description";
+		if( $p_info !== null ) {
+			if( is_array( $p_info ) && isset( $p_info[$p_pass] ) ) {
+				$t_output .= '<br /><em>' . $p_info[$p_pass] . '</em>';
+			} else if( !is_array( $p_info ) ) {
+				$t_output .= '<br /><em>' . $p_info . '</em>';
 			}
 		}
-		$t_output .= '</td>';
+		$t_output .= "</td>\n";
 
-		if( $p_pass ) {
-			$t_output .= print_test_result( GOOD );
+		if( $p_pass && !$t_unhandled ) {
+			$t_result = GOOD;
+		} elseif( $t_unhandled == E_DEPRECATED ) {
+			$t_result = WARN;
 		} else {
-			$t_output .= print_test_result( BAD );
+			$t_result = BAD;
 		}
+		$t_output .= ERP_check_print_test_result( $t_result );
+		$t_output .= "\t</tr>\n";
 
-		$t_output .= '</tr>';
+		if( $t_unhandled ) {
+			ERP_check_print_error_rows();
+		}
+//		return $p_pass;
 
 		return $t_output;
+	}
+
+	/**
+	 * Copy of the function in /admin/check/check_api.php (MantisBT 2.25)
+	 */
+	/**
+	 * Verifies that the given collation is UTF-8
+	 * @param string $p_collation
+	 * @return boolean True if UTF-8
+	 */
+if ( !function_exists( 'check_is_collation_utf8' ) )
+{
+	function check_is_collation_utf8( $p_collation ) {
+		return substr( $p_collation, 0, 4 ) === 'utf8';
 	}
 }
 
 	/**
-	 * Copy of the function in /admin/check.php (MantisBT 1.2.19)
+	 * Copy of the code in /admin/check/check_database_inc.php (MantisBT 2.25)
 	 * ERP - Changed output method
+	 * ERP - Changed config variable method
 	 */
 	/**
 	 * Check the DB colation if its MySQL
 	 */
-if ( !function_exists( 'test_database_utf8' ) )
-{
-	function test_database_utf8() {
+	function ERP_test_database_utf8() {
 		$t_output = NULL;
 
-		if ( !db_is_mysql() ) {
-			return $t_output ;
-		}
+		$t_table_prefix = config_get_global( 'db_table_prefix' );
+		$t_table_suffix = config_get_global( 'db_table_suffix' );
 
-		$t_field_name      = 'name';
-		$t_field_comment   = 'comment';
-		$t_field_collation = 'collation';
-		$t_field_field     = 'field';
-		$t_field_type      = 'type';
+		if( db_is_mysql() ) {
+			# Check DB's default collation
+			$t_query = 'SELECT default_collation_name
+				FROM information_schema.schemata
+				WHERE schema_name = ' . db_param();
+			$t_collation = db_result( db_query( $t_query, array( config_get_global( 'database_name' ) ) ) );
+			$t_output .= ERP_check_print_test_row(
+				'Database default collation is UTF-8',
+				check_is_collation_utf8( $t_collation ),
+				array( false => 'Database is using '
+					. htmlentities( $t_collation )
+					. ' collation where UTF-8 collation is required.' )
+			);
 
- 		// table collation/character set check
-		$result = db_query_bound( 'SHOW TABLE STATUS' );
-		while( $row = db_fetch_array( $result ) ) {
-			$row = array_change_key_case( $row, CASE_LOWER );
-			if( $row[$t_field_comment] !== 'VIEW' ) {
-				$t_output .= print_test_row( 'Checking Table Collation is utf8 for ' . $row[$t_field_name] . '....', substr( $row[$t_field_collation], 0, 5 ) === 'utf8_', $row[$t_field_collation] );
+			$t_table_regex = '/^'
+				. preg_quote( $t_table_prefix, '/' ) . '.+?'
+				. preg_quote( $t_table_suffix, '/' ) . '$/';
+
+			$t_result = db_query( 'SHOW TABLE STATUS' );
+			while( $t_row = db_fetch_array( $t_result ) ) {
+				if( $t_row['comment'] !== 'VIEW' &&
+					preg_match( $t_table_regex, $t_row['name'] )
+				) {
+					$t_output .= ERP_check_print_test_row(
+						'Table <em>' . htmlentities( $t_row['name'] ) . '</em> is using UTF-8 collation',
+						check_is_collation_utf8( $t_row['collation'] ),
+						array( false => 'Table ' . htmlentities( $t_row['name'] )
+							. ' is using ' . htmlentities( $t_row['collation'] )
+							. ' collation where UTF-8 collation is required.' )
+					);
+				}
 			}
-		}
 
-		foreach( db_get_table_list() as $t_table ) {
-			if( db_table_exists( $t_table ) ) {
-				$result = db_query_bound( 'SHOW FULL FIELDS FROM ' . $t_table );
-				while( $row = db_fetch_array( $result ) ) {
-					$row = array_change_key_case( $row, CASE_LOWER );
-					if ( $row[$t_field_collation] === null ) {
-						continue;
+			foreach( db_get_table_list() as $t_table ) {
+				if( preg_match( $t_table_regex, $t_table ) ) {
+					$t_result = db_query( 'SHOW FULL FIELDS FROM ' . $t_table );
+					while( $t_row = db_fetch_array( $t_result ) ) {
+						if( $t_row['collation'] === null ) {
+							continue;
+						}
+						$t_output .= ERP_check_print_test_row(
+							'Text column <em>' . htmlentities( $t_row['field'] )
+							. '</em> of type <em>' . $t_row['type']
+							. '</em> on table <em>' . htmlentities( $t_table )
+							. '</em> is using UTF-8 collation',
+							check_is_collation_utf8( $t_row['collation'] ),
+							array( false => 'Text column ' . htmlentities( $t_row['field'] )
+								. ' of type ' . $t_row['type']
+								. ' on table ' . htmlentities( $t_table )
+								. ' is using ' . htmlentities( $t_row['collation'] )
+								. ' collation where UTF-8 collation is required.' )
+						);
 					}
-					$t_output .= print_test_row( 'Checking Non-null Column Collation in ' . $t_table . ' is utf8 for ' . $row[$t_field_field] . '....', substr( $row[$t_field_collation], 0, 5 ) === 'utf8_', $row[$t_field_collation] . ' ( ' . $row[$t_field_type] . ')' );
 				}
 			}
 		}
 
 		return $t_output ;
 	}
-}
 
 	# --------------------
 	# output a configuration option
@@ -576,7 +625,7 @@ if ( !function_exists( 'test_database_utf8' ) )
 
 			case 'radio_buttons':
 ?>
-<tr <?php echo helper_alternate_class() ?>>
+<tr>
 	<td class="center" colspan="3">
 <?php
 
@@ -620,7 +669,7 @@ if ( !function_exists( 'test_database_utf8' ) )
 			case 'dropdown_multiselect':
 			case 'dropdown_multiselect_any':
 ?>
-<tr <?php echo helper_alternate_class() ?>>
+<tr>
 	<td class="category width-50">
 <?php
 				ERP_print_documentation_link( $p_name );
@@ -753,7 +802,7 @@ if ( !function_exists( 'test_database_utf8' ) )
 					case 'string_password':
 ?>
 <td colspan="2">
-	<input class="input-sm" <?php echo helper_get_tab_index() ?> type="password" size="64" maxlength="50" name="<?php echo $t_input_name ?>" value="<?php echo string_attribute( base64_decode( $t_value ) ) ?>"/>
+	<input class="input-sm" <?php echo helper_get_tab_index() ?> type="password" size="64" name="<?php echo $t_input_name ?>" value="<?php echo string_attribute( base64_decode( (string) $t_value ) ) ?>"/>
 </td>
 <?php
 
@@ -854,7 +903,7 @@ if ( !function_exists( 'test_database_utf8' ) )
 			$t_def = custom_field_get_definition( $t_field_id );
 
 ?>
-<tr <?php echo helper_alternate_class() ?>>
+<tr>
 	<td class="category">
 <?php
 			ERP_print_documentation_link( $p_name );

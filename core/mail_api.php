@@ -65,6 +65,7 @@ class ERP_mailbox_api
 	private $_mail_delete;
 	private $_mail_disposable_email_checker;
 	private $_mail_fallback_mail_reporter;
+	private $_mail_ignore_auto_replies;
 	private $_mail_max_email_body;
 	private $_mail_max_email_body_text;
 	private $_mail_max_email_body_add_attach;
@@ -76,6 +77,7 @@ class ERP_mailbox_api
 	private $_mail_remove_replies;
 	private $_mail_removed_reply_text;
 	private $_mail_reporter_id;
+	private $_mail_respect_permissions;
 	private $_mail_save_from;
 	private $_mail_save_subject_in_note;
 	private $_mail_strip_signature;
@@ -116,6 +118,7 @@ class ERP_mailbox_api
 		$this->_mail_delete						= plugin_config_get( 'mail_delete' );
 		$this->_mail_disposable_email_checker	= plugin_config_get( 'mail_disposable_email_checker' );
 		$this->_mail_fallback_mail_reporter		= plugin_config_get( 'mail_fallback_mail_reporter' );
+		$this->_mail_ignore_auto_replies		= plugin_config_get( 'mail_ignore_auto_replies' );
 		$this->_mail_max_email_body				= plugin_config_get( 'mail_max_email_body' );
 		$this->_mail_max_email_body_text		= plugin_config_get( 'mail_max_email_body_text' );
 		$this->_mail_max_email_body_add_attach	= plugin_config_get( 'mail_max_email_body_add_attach' );
@@ -127,6 +130,7 @@ class ERP_mailbox_api
 		$this->_mail_remove_replies				= plugin_config_get( 'mail_remove_replies' );
 		$this->_mail_removed_reply_text			= plugin_config_get( 'mail_removed_reply_text' );
 		$this->_mail_reporter_id				= plugin_config_get( 'mail_reporter_id' );
+		$this->_mail_respect_permissions		= plugin_config_get( 'mail_respect_permissions' );
 		$this->_mail_save_from					= plugin_config_get( 'mail_save_from' );
 		$this->_mail_save_subject_in_note		= plugin_config_get( 'mail_save_subject_in_note' );
 		$this->_mail_strip_signature			= plugin_config_get( 'mail_strip_signature' );
@@ -549,8 +553,9 @@ class ERP_mailbox_api
 				$t_ListMsgs = array_column( $t_ListMsgs, NULL, 'msg_id' );
 			}
 
-			krsort( $t_ListMsgs );
 		}
+
+		krsort( $t_ListMsgs );
 
 		return( $t_ListMsgs );
 	}
@@ -594,7 +599,15 @@ class ERP_mailbox_api
 			// We don't need to validate the email address if it is an existing user (existing user also needs to be set as the reporter of the issue)
 			if ( $t_email[ 'Reporter_id' ] !== $this->_mail_reporter_id || $this->validate_email_address( $t_email[ 'From_parsed' ][ 'email' ] ) )
 			{
-				$this->add_bug( $t_email, $p_overwrite_project_id );
+				// Ignore the email if it is an auto-reply
+				if ( $this->_mail_ignore_auto_replies && $t_email[ 'Is-Auto-Reply' ] )
+				{
+					$this->custom_error( 'Email is marked as an auto-reply and has been ignored.' );
+				}
+				else
+				{
+					$this->add_bug( $t_email, $p_overwrite_project_id );
+				}
 			}
 			else
 			{
@@ -681,17 +694,19 @@ class ERP_mailbox_api
 
 		$t_mp->parse();
 
-		$t_email[ 'From_parsed' ] = $this->parse_from_field( trim( $t_mp->from() ) );
+		$t_email[ 'From_parsed' ] = $this->parse_from_field( trim( (string)$t_mp->from() ) );
 		$t_email[ 'Reporter_id' ] = $this->get_user( $t_email[ 'From_parsed' ] );
 
-		$t_email[ 'Subject' ] = trim( $t_mp->subject() );
+		$t_email[ 'Subject' ] = trim( (string)$t_mp->subject() );
 
 		$t_email[ 'To' ] = $this->get_emailaddr_from_string( $t_mp->to() );
 		$t_email[ 'Cc' ] = $this->get_emailaddr_from_string( $t_mp->cc() );
 
-		$t_email[ 'X-Mantis-Body' ] = trim( $t_mp->body() );
+		$t_email[ 'X-Mantis-Body' ] = trim( (string)$t_mp->body() );
 
 		$t_email[ 'X-Mantis-Parts' ] = $t_mp->parts();
+
+		$t_email[ 'Is-Auto-Reply' ] = $t_mp->is_auto_reply();
 
 		if ( $this->_mail_add_complete_email )
 		{
@@ -852,11 +867,11 @@ class ERP_mailbox_api
 			$t_bug_id = FALSE;
 		}
 
+		$t_bugnote_id = NULL;
 		if ( $t_bug_id !== FALSE && !bug_is_readonly( $t_bug_id ) )
 		{
-			// @TODO@ Disabled for now until we find a good solution on how to handle the reporters possible lack of access permissions
-//			access_ensure_bug_level( config_get( 'add_bugnote_threshold' ), $t_bug_id );
-//			access_can_reopen_bug
+			$t_project_id = bug_get_field( $t_bug_id, 'project_id' );
+			ERP_set_temporary_overwrite( 'project_override', $t_project_id );
 
 			$t_description = $p_email[ 'X-Mantis-Body' ];
 
@@ -865,199 +880,228 @@ class ERP_mailbox_api
 			$t_description = $this->add_additional_info( 'note', $p_email, $t_description );
 			$t_description = $this->limit_body_size( 'note', $t_description, $p_email );
 
-			$t_project_id = bug_get_field( $t_bug_id, 'project_id' );
-			ERP_set_temporary_overwrite( 'project_override', $t_project_id );
-
 			# Event integration
 			# Core mantis event already exists within bugnote_add function
 			$t_description = event_signal( 'EVENT_ERP_BUGNOTE_DATA', $t_description, $t_bug_id );
 
-			if ( bug_is_resolved( $t_bug_id ) )
+			# Check reopen permissions
+			$t_bug = bug_get( $t_bug_id, true );
+			if ( bug_is_resolved( $t_bug_id ) && ( !$this->_mail_respect_permissions || access_can_reopen_bug( $t_bug ) ) )
 			{
-				$t_existing_bug = bug_get( $t_bug_id, true );
+				if ( !is_blank( $t_description ) )
+				{
+					# Reopen issue and add a bug note
+					$t_bugnote_id = bugnote_add( $t_bug_id, $t_description, '0:00', config_get( 'default_bugnote_view_status' ) == VS_PRIVATE, BUGNOTE, '', null, false );
+					bugnote_process_mentions( $t_bug_id, $t_bugnote_id, $t_description );
+					bug_reopen( $t_bug_id );
 
-				# Reopen issue and add a bug note
-				bug_reopen( $t_bug_id, $t_description );
-
-				$t_updated_bug = bug_get( $t_bug_id, true );
-				event_signal( 'EVENT_UPDATE_BUG', array( $t_existing_bug, $t_updated_bug ) );
+					$t_updated_bug = bug_get( $t_bug_id, true );
+					event_signal( 'EVENT_UPDATE_BUG', array( $t_bug, $t_updated_bug ) );
+				}
 			}
 			elseif ( !is_blank( $t_description ) )
 			{
-				# Add a bug note
-				$t_bugnote_id = bugnote_add( $t_bug_id, $t_description );
-
-				// MantisBT 1.3.x function
-				// reassign_on_feedback only needs to be done here incase of MantisBT 1.3.x
-				if ( function_exists( 'bugnote_process_mentions' ) )
+				# Check note permissions
+				if ( !$this->_mail_respect_permissions || access_has_bug_level( config_get( 'add_bugnote_threshold' ), $t_bug_id ) )
 				{
-					$t_bug = bug_get( $t_bug_id, true );
+					# Add a bug note
+					$t_bugnote_id = bugnote_add( $t_bug_id, $t_description, '0:00', config_get( 'default_bugnote_view_status' ) == VS_PRIVATE );
 
-					# Process the mentions in the added note
-					bugnote_process_mentions( $t_bug->id, $t_bugnote_id, $t_description );
+					// MantisBT 1.3.x function
+					// reassign_on_feedback only needs to be done here incase of MantisBT 1.3.x
+					if ( function_exists( 'bugnote_process_mentions' ) )
+					{
+						# Process the mentions in the added note
+						bugnote_process_mentions( $t_bug->id, $t_bugnote_id, $t_description );
 
-					/* Code based on MantisBT 1.3.4 */
-					# Handle the reassign on feedback feature. Note that this feature generally
-					# won't work very well with custom workflows as it makes a lot of assumptions
-					# that may not be true. It assumes you don't have any statuses in the workflow
-					# between 'bug_submit_status' and 'bug_feedback_status'. It assumes you only
-					# have one feedback, assigned and submitted status.
-					if( config_get( 'reassign_on_feedback' ) &&
-						 $t_bug->status === config_get( 'bug_feedback_status' ) &&
-						 $t_bug->handler_id !== (int) auth_get_current_user_id() &&
-						 $t_bug->reporter_id === (int) auth_get_current_user_id() ) {
-						if( $t_bug->handler_id !== NO_USER ) {
-							bug_set_field( $t_bug->id, 'status', config_get( 'bug_assigned_status' ) );
-						} else {
-							bug_set_field( $t_bug->id, 'status', config_get( 'bug_submit_status' ) );
+						/* Code based on MantisBT 1.3.4 */
+						# Handle the reassign on feedback feature. Note that this feature generally
+						# won't work very well with custom workflows as it makes a lot of assumptions
+						# that may not be true. It assumes you don't have any statuses in the workflow
+						# between 'bug_submit_status' and 'bug_feedback_status'. It assumes you only
+						# have one feedback, assigned and submitted status.
+						if( config_get( 'reassign_on_feedback' ) &&
+							 $t_bug->status === config_get( 'bug_feedback_status' ) &&
+							 $t_bug->handler_id !== (int) auth_get_current_user_id() &&
+							 $t_bug->reporter_id === (int) auth_get_current_user_id() ) {
+							if( $t_bug->handler_id !== NO_USER ) {
+								bug_set_field( $t_bug->id, 'status', config_get( 'bug_assigned_status' ) );
+							} else {
+								bug_set_field( $t_bug->id, 'status', config_get( 'bug_submit_status' ) );
+							}
 						}
 					}
+				}
+				else
+				{
+					// Access denied for adding new notes / reopen issue
+					$this->custom_error( 'Access denied for adding notes. Email ignored.' . "\n" );
+					return;
 				}
 			}
 		}
 		elseif ( $this->_mail_add_bug_reports )
 		{
-			// @TODO@ Disabled for now until we find a good solution on how to handle the reporters possible lack of access permissions
-//			access_ensure_project_level( config_get('report_bug_threshold' ) );
-
-			$t_master_bug_id = NULL;
-			if ( $t_bug_id !== FALSE && bug_is_readonly( $t_bug_id ) )
-			{
-				$t_master_bug_id = $t_bug_id;
-
-				// Issues beyond the readonly border will not be reopened and will result in a new issue with a relationship to the old one
-				// This requires us to relink the references to the new issue by first cleaning up the old ones
-				ERP_mailbox_api::delete_references_for_bug_id( $t_master_bug_id );
-			}
-
-			$this->fix_empty_fields( $p_email );
-
 			$t_project_id = ( ( $p_overwrite_project_id === FALSE ) ? $this->_mailbox[ 'project_id' ] : $p_overwrite_project_id );
 			ERP_set_temporary_overwrite( 'project_override', $t_project_id );
 
-			$t_bug_data = new BugData;
-
-			$t_bug_data->build					= '';
-			$t_bug_data->platform				= '';
-			$t_bug_data->os						= '';
-			$t_bug_data->os_build				= '';
-			$t_bug_data->version				= '';
-			$t_bug_data->profile_id				= 0;
-			$t_bug_data->handler_id				= 0;
-			$t_bug_data->view_state				= (int) config_get( 'default_bug_view_status' );
-
-			$t_bug_data->category_id			= (int) $this->_mailbox[ 'global_category_id' ];
-			$t_bug_data->reproducibility		= (int) config_get( 'default_bug_reproducibility' );
-			$t_bug_data->severity				= (int) config_get( 'default_bug_severity' );
-
-			$t_priority = $this->verify_priority( $p_email[ 'Priority' ] );
-			$t_bug_data->priority				= (int) $t_priority;
-			$t_bug_data->projection				= (int) config_get( 'default_bug_projection' );
-			$t_bug_data->eta					= (int) config_get( 'default_bug_eta' );
-			$t_bug_data->resolution				= config_get( 'default_bug_resolution' );
-			$t_bug_data->status					= config_get( 'bug_submit_status' );
-			$t_bug_data->summary				= mb_substr( $p_email[ 'Subject' ], 0, $this->_mail_max_email_summary );
-
-			$t_description = $p_email[ 'X-Mantis-Body' ];
-			$t_description = $this->add_additional_info( 'issue', $p_email, $t_description );
-			$t_description = $this->limit_body_size( 'description', $t_description, $p_email );
-			$t_bug_data->description			= $t_description;
-
-			$t_bug_data->steps_to_reproduce		= config_get( 'default_bug_steps_to_reproduce' );
-			$t_bug_data->additional_information	= config_get( 'default_bug_additional_info' );
-			$t_bug_data->due_date				= date_get_null();
-
-			$t_bug_data->project_id				= $t_project_id;
-
-			$t_bug_data->reporter_id			= $p_email[ 'Reporter_id' ];
-
-			// This function might do stuff that EmailReporting cannot handle. Disabled
-			//helper_call_custom_function( 'issue_create_validate', array( $t_bug_data ) );
-
-			// @TODO@ Disabled for now but possibly needed for other future features
-			# Validate the custom fields before adding the bug.
-			$t_related_custom_field_ids = custom_field_get_linked_ids( $t_bug_data->project_id );
-/*			foreach( $t_related_custom_field_ids as $t_id ) {
-				$t_def = custom_field_get_definition( $t_id );
-
-				# Produce an error if the field is required but wasn't posted
-				if( !gpc_isset_custom_field( $t_id, $t_def['type'] )
-				   && $t_def['require_report']
-				) {
-					error_parameters( lang_get_defaulted( custom_field_get_field( $t_id, 'name' ) ) );
-					trigger_error( ERROR_EMPTY_FIELD, ERROR );
-				}
-
-				if( !custom_field_validate( $t_id, gpc_get_custom_field( 'custom_field_' . $t_id, $t_def['type'], null ) ) ) {
-					error_parameters( lang_get_defaulted( custom_field_get_field( $t_id, 'name' ) ) );
-					trigger_error( ERROR_CUSTOM_FIELD_INVALID_VALUE, ERROR );
-				}
-			}*/
-
-			# Allow plugins to pre-process bug data
-			$t_bug_data = event_signal( 'EVENT_REPORT_BUG_DATA', $t_bug_data );
-			$t_bug_data = event_signal( 'EVENT_ERP_REPORT_BUG_DATA', $t_bug_data );
-
-			# Create the bug
-			$t_bug_id = $t_bug_data->create();
-			// MantisBT 1.3.x function
-			if ( method_exists( $t_bug_data, 'process_mentions' ) )
+			# Check issue permissions
+			if ( !$this->_mail_respect_permissions || access_has_project_level( config_get('report_bug_threshold' ) ) )
 			{
-				$t_bug_data->process_mentions();
-			}
-
-			// @TODO@ Enabled for processing default values. Needs more work for other features
-			// - Handling of non default values not working
-			// - Error handling not working
-			# Handle custom field submission
-			foreach ( $t_related_custom_field_ids as $t_id )
-			{
-				# Do not set custom field value if user has no write access
-				if ( !custom_field_has_write_access( $t_id, $t_bug_id ) )
+				$t_master_bug_id = NULL;
+				if ( $t_bug_id !== FALSE && bug_is_readonly( $t_bug_id ) )
 				{
-					continue;
+					$t_master_bug_id = $t_bug_id;
+
+					// Issues beyond the readonly border will not be reopened and will result in a new issue with a relationship to the old one
+					// This requires us to relink the references to the new issue by first cleaning up the old ones
+					ERP_mailbox_api::delete_references_for_bug_id( $t_master_bug_id );
 				}
 
-				$t_def = custom_field_get_definition( $t_id );
-				$t_default_value = custom_field_default_to_value( $t_def['default_value'], $t_def['type'] );
-				$t_value = $t_default_value; //gpc_get_custom_field( 'custom_field_' . $t_id, $t_def['type'], $t_default_value );
-				if ( !custom_field_set_value( $t_id, $t_bug_id, $t_value, /* log insert */ false ) )
+				$this->fix_empty_fields( $p_email );
+
+				$t_bug_data = new BugData;
+
+				$t_bug_data->build					= '';
+				$t_bug_data->platform				= '';
+				$t_bug_data->os						= '';
+				$t_bug_data->os_build				= '';
+				$t_bug_data->version				= '';
+				$t_bug_data->profile_id				= 0;
+				$t_bug_data->handler_id				= 0;
+				$t_bug_data->view_state				= (int) config_get( 'default_bug_view_status' );
+
+				$t_bug_data->category_id			= (int) $this->_mailbox[ 'global_category_id' ];
+				$t_bug_data->reproducibility		= (int) config_get( 'default_bug_reproducibility' );
+				$t_bug_data->severity				= (int) config_get( 'default_bug_severity' );
+
+				$t_priority = $this->verify_priority( $p_email[ 'Priority' ] );
+				$t_bug_data->priority				= (int) $t_priority;
+				$t_bug_data->projection				= (int) config_get( 'default_bug_projection' );
+				$t_bug_data->eta					= (int) config_get( 'default_bug_eta' );
+				$t_bug_data->resolution				= config_get( 'default_bug_resolution' );
+				$t_bug_data->status					= config_get( 'bug_submit_status' );
+				$t_bug_data->summary				= mb_substr( $p_email[ 'Subject' ], 0, $this->_mail_max_email_summary );
+
+				$t_description = $p_email[ 'X-Mantis-Body' ];
+				$t_description = $this->add_additional_info( 'issue', $p_email, $t_description );
+				$t_description = $this->limit_body_size( 'description', $t_description, $p_email );
+				$t_bug_data->description			= $t_description;
+
+				$t_bug_data->steps_to_reproduce		= config_get( 'default_bug_steps_to_reproduce' );
+				$t_bug_data->additional_information	= config_get( 'default_bug_additional_info' );
+				
+				$t_fields = config_get( 'bug_report_page_fields' );
+				$t_fields = columns_filter_disabled( $t_fields );
+				$t_update_due_date = in_array( 'due_date', $t_fields ) && access_has_project_level( config_get( 'due_date_update_threshold' ), helper_get_current_project(), auth_get_current_user_id() );
+				$t_bug_data->due_date				= date_strtotime( config_get( 'due_date_default' ) );
+				if( ( $this->_mail_respect_permissions && !$t_update_due_date ) || $t_bug_data->due_date === '' )
 				{
-//					error_parameters( lang_get_defaulted( custom_field_get_field( $t_id, 'name' ) ) );
-//					trigger_error( ERROR_CUSTOM_FIELD_INVALID_VALUE, ERROR );
+					$t_bug_data->due_date			= date_get_null();
 				}
-			}
 
-			// Lets link a readonly already existing bug to the newly created one
-			if ( !empty( $t_master_bug_id ) )
+				$t_bug_data->project_id				= $t_project_id;
+
+				$t_bug_data->reporter_id			= $p_email[ 'Reporter_id' ];
+
+				// This function might do stuff that EmailReporting cannot handle. Disabled
+				//helper_call_custom_function( 'issue_create_validate', array( $t_bug_data ) );
+
+				// @TODO@ Disabled for now but possibly needed for other future features
+				# Validate the custom fields before adding the bug.
+				$t_related_custom_field_ids = custom_field_get_linked_ids( $t_bug_data->project_id );
+/*
+				foreach( $t_related_custom_field_ids as $t_id ) {
+					$t_def = custom_field_get_definition( $t_id );
+
+					# Produce an error if the field is required but wasn't posted
+					if( !gpc_isset_custom_field( $t_id, $t_def['type'] )
+					   && $t_def['require_report']
+					) {
+						error_parameters( lang_get_defaulted( custom_field_get_field( $t_id, 'name' ) ) );
+						trigger_error( ERROR_EMPTY_FIELD, ERROR );
+					}
+
+					if( !custom_field_validate( $t_id, gpc_get_custom_field( 'custom_field_' . $t_id, $t_def['type'], null ) ) ) {
+						error_parameters( lang_get_defaulted( custom_field_get_field( $t_id, 'name' ) ) );
+						trigger_error( ERROR_CUSTOM_FIELD_INVALID_VALUE, ERROR );
+					}
+				}
+*/
+
+				# Allow plugins to pre-process bug data
+				$t_bug_data = event_signal( 'EVENT_REPORT_BUG_DATA', $t_bug_data );
+				$t_bug_data = event_signal( 'EVENT_ERP_REPORT_BUG_DATA', $t_bug_data );
+
+				# Create the bug
+				$t_bug_id = $t_bug_data->create();
+				// MantisBT 1.3.x function
+				if ( method_exists( $t_bug_data, 'process_mentions' ) )
+				{
+					$t_bug_data->process_mentions();
+				}
+
+				// @TODO@ Enabled for processing default values. Needs more work for other features
+				// - Handling of non default values not working
+				// - Error handling not working
+				# Handle custom field submission
+				foreach ( $t_related_custom_field_ids as $t_id )
+				{
+					# Do not set custom field value if user has no write access
+					if ( !custom_field_has_write_access( $t_id, $t_bug_id ) )
+					{
+						continue;
+					}
+
+					$t_def = custom_field_get_definition( $t_id );
+					$t_default_value = custom_field_default_to_value( $t_def['default_value'], $t_def['type'] );
+					$t_value = $t_default_value; //gpc_get_custom_field( 'custom_field_' . $t_id, $t_def['type'], $t_default_value );
+					if ( !custom_field_set_value( $t_id, $t_bug_id, $t_value, /* log insert */ false ) )
+					{
+/*
+						error_parameters( lang_get_defaulted( custom_field_get_field( $t_id, 'name' ) ) );
+						trigger_error( ERROR_CUSTOM_FIELD_INVALID_VALUE, ERROR );
+*/
+					}
+				}
+
+				// Lets link a readonly already existing bug to the newly created one
+				if ( !empty( $t_master_bug_id ) )
+				{
+					$t_rel_type = BUG_RELATED;
+
+					# update master bug last updated
+					bug_update_date( $t_master_bug_id );
+
+					# Add the relationship
+					relationship_add( $t_bug_id, $t_master_bug_id, $t_rel_type );
+
+					# Add log line to the history (both issues)
+					history_log_event_special( $t_master_bug_id, BUG_ADD_RELATIONSHIP, relationship_get_complementary_type( $t_rel_type ), $t_bug_id );
+					history_log_event_special( $t_bug_id, BUG_ADD_RELATIONSHIP, $t_rel_type, $t_master_bug_id );
+
+					# Send the email notification
+					email_relationship_added( $t_master_bug_id, $t_bug_id, relationship_get_complementary_type( $t_rel_type ), false );
+				}
+
+				helper_call_custom_function( 'issue_create_notify', array( $t_bug_id ) );
+
+				# Allow plugins to post-process bug data with the new bug ID
+				event_signal( 'EVENT_REPORT_BUG', array( $t_bug_data, $t_bug_id ) );
+
+				email_bug_added( $t_bug_id );
+			}
+			else
 			{
-				$t_rel_type = BUG_RELATED;
-
-				# update master bug last updated
-				bug_update_date( $t_master_bug_id );
-
-				# Add the relationship
-				relationship_add( $t_bug_id, $t_master_bug_id, $t_rel_type );
-
-				# Add log line to the history (both issues)
-				history_log_event_special( $t_master_bug_id, BUG_ADD_RELATIONSHIP, relationship_get_complementary_type( $t_rel_type ), $t_bug_id );
-				history_log_event_special( $t_bug_id, BUG_ADD_RELATIONSHIP, $t_rel_type, $t_master_bug_id );
-
-				# Send the email notification
-				email_relationship_added( $t_master_bug_id, $t_bug_id, relationship_get_complementary_type( $t_rel_type ), false );
+				// Access denied for adding new issues
+				$this->custom_error( 'Access denied for adding new issues. Email ignored.' . "\n" );
+				return;
 			}
-
-			helper_call_custom_function( 'issue_create_notify', array( $t_bug_id ) );
-
-			# Allow plugins to post-process bug data with the new bug ID
-			event_signal( 'EVENT_REPORT_BUG', array( $t_bug_data, $t_bug_id ) );
-
-			email_bug_added( $t_bug_id );
 		}
 		else
 		{
 			// Not allowed to add issues and not allowed / able to add notes. Need to stop processing
-			$this->custom_error( 'Not allowed to create a new issue. Email ignored' );
+			$this->custom_error( 'Not allowed to create a new issue. Email ignored.' );
 			return;
 		}
 
@@ -1072,33 +1116,42 @@ class ERP_mailbox_api
 		{
 			if ( count( $p_email[ 'X-Mantis-Parts' ] ) > 0 )
 			{
-				$t_rejected_files = NULL;
-
-				while ( $t_part = array_shift( $p_email[ 'X-Mantis-Parts' ] ) )
+				# Check attachment permissions
+				if( !$this->_mail_respect_permissions || file_allow_bug_upload( $t_bug_id ) )
 				{
-					$t_file_rejected = $this->add_file( $t_bug_id, $t_part );
+					$t_rejected_files = NULL;
 
-					if ( $t_file_rejected !== TRUE )
+					while ( $t_part = array_shift( $p_email[ 'X-Mantis-Parts' ] ) )
 					{
-						$t_rejected_files .= $t_file_rejected;
+						$t_file_rejected = $this->add_file( $t_bug_id, $t_part, $t_bugnote_id );
+
+						if ( $t_file_rejected !== TRUE )
+						{
+							$t_rejected_files .= $t_file_rejected;
+						}
+					}
+
+					if ( $t_rejected_files !== NULL )
+					{
+						$t_part = array(
+							'name' => 'Rejected files.txt',
+							'ctype' => 'text/plain',
+							'body' => 'List of rejected files' . "\n\n" . $t_rejected_files,
+						);
+
+						$t_reject_rejected_files = $this->add_file( $t_bug_id, $t_part );
+
+						if ( $t_reject_rejected_files !== TRUE )
+						{
+							$t_part[ 'body' ] .= $t_reject_rejected_files;
+							$this->custom_error( 'Failed to add "' . $t_part[ 'name' ] . '" to the issue. See below for all errors.' . "\n" . $t_part[ 'body' ] );
+						}
 					}
 				}
-
-				if ( $t_rejected_files !== NULL )
+				else
 				{
-					$t_part = array(
-						'name' => 'Rejected files.txt',
-						'ctype' => 'text/plain',
-						'body' => 'List of rejected files' . "\n\n" . $t_rejected_files,
-					);
-
-					$t_reject_rejected_files = $this->add_file( $t_bug_id, $t_part );
-
-					if ( $t_reject_rejected_files !== TRUE )
-					{
-						$t_part[ 'body' ] .= $t_reject_rejected_files;
-						$this->custom_error( 'Failed to add "' . $t_part[ 'name' ] . '" to the issue. See below for all errors.' . "\n" . $t_part[ 'body' ] );
-					}
+					// Access denied for adding new attachments. No 'return' since its possible a new note or issue was allowed
+					$this->custom_error( 'Access denied for uploading files. Email (partially) ignored.' . "\n" );
 				}
 			}
 		}
@@ -1117,10 +1170,10 @@ class ERP_mailbox_api
 	# --------------------
 	# Very dirty: Adds a file to a bug.
 	# returns true on success and the filename with reason on error
-	private function add_file( $p_bug_id, &$p_part )
+	private function add_file( $p_bug_id, &$p_part, $p_bugnote_id = NULL )
 	{
 		# Handle the file upload
-		$t_part_name = ( ( isset( $p_part[ 'name' ] ) ) ? trim( $p_part[ 'name' ] ) : NULL );
+		$t_part_name = ( ( isset( $p_part[ 'name' ] ) ) ? trim( (string)$p_part[ 'name' ] ) : NULL );
 		$t_strlen_body = strlen( $p_part[ 'body' ] );
 
 		if ( is_blank( $t_part_name ) )
@@ -1168,14 +1221,37 @@ class ERP_mailbox_api
 		{
 			$t_file_number = 0;
 			$t_opt_name = '';
-
-			while ( !file_is_name_unique( $t_opt_name . $t_part_name, $p_bug_id ) )
+			$t_dot_index = strripos( $t_part_name, '.' );
+			if( $t_dot_index === false )
 			{
-				$t_file_number++;
-				$t_opt_name = $t_file_number . '-';
+				$t_extension = '';
+				$t_file_name = $t_part_name;
+			}
+			else
+			{
+				$t_extension = substr( $t_part_name, $t_dot_index, strlen( $t_part_name ) - $t_dot_index );
+				$t_file_name = substr( $t_part_name, 0, $t_dot_index );
 			}
 
-			mci_file_add( $p_bug_id, $t_opt_name . $t_part_name, $p_part[ 'body' ], $p_part[ 'ctype' ], 'bug' );
+			// check max length filename. Shorten if necessary. Leave room for file number.
+			$t_max_length = ( ( defined( 'DB_FIELD_SIZE_FILENAME' ) ) ? DB_FIELD_SIZE_FILENAME : 250 ) - 5;
+			if ( strlen( $t_file_name ) > ( $t_max_length - strlen( $t_extension ) ) )
+			{
+				$t_file_name = substr( $t_file_name, 0, ( $t_max_length - strlen( $t_extension ) ) );
+			}
+
+			while ( !file_is_name_unique( $t_file_name . $t_opt_name . $t_extension, $p_bug_id ) )
+			{
+				$t_file_number++;
+				$t_opt_name = '-' . $t_file_number;
+			}
+
+			$t_attachment_id = mci_file_add( $p_bug_id, $t_file_name . $t_opt_name . $t_extension, $p_part[ 'body' ], $p_part[ 'ctype' ], 'bug' );
+
+			if ( function_exists( 'file_link_to_bugnote' ) && is_numeric( $t_attachment_id ) && $t_attachment_id > 0 && $p_bugnote_id !== NULL )
+			{
+				file_link_to_bugnote( $t_attachment_id, $p_bugnote_id );
+			}
 		}
 
 		return( TRUE );
@@ -1195,7 +1271,7 @@ class ERP_mailbox_api
 		$t_project_name = preg_replace( "/&(.)(acute|cedil|circ|ring|tilde|uml);/", "$1", $t_project_name );
 		$t_project_name = preg_replace( "/([^A-Za-z0-9 ]+)/", "-", html_entity_decode( $t_project_name ) );
 		$t_project_name = preg_replace( "/(\.+)/", ".", $t_project_name );
-		$t_project_name = trim( $t_project_name, "-. " );
+		$t_project_name = trim( (string)$t_project_name, "-. " );
 
 		return( $t_project_name );
 	}
@@ -1255,11 +1331,11 @@ class ERP_mailbox_api
 	# Return the emailaddress from the mail's 'From' field
 	private function parse_from_field( $p_from_address )
 	{
-		if ( preg_match( '/^(?:(?P<name>.*)<|)(?P<email>' . $this->_email_regex_simple . ')(?:>|)$/u', trim( $p_from_address ), $match ) )
+		if ( preg_match( '/^(?:(?P<name>.*?)<|)(?P<email>' . $this->_email_regex_simple . ')(?:>|)/u', trim( (string)$p_from_address ), $match ) )
 		{
 			$v_from_address = array(
-				'name'	=> trim( $match[ 'name' ], '"\' ' ),
-				'email'	=> trim( $match[ 'email' ] ),
+				'name'	=> trim( (string)$match[ 'name' ], '"\' ' ),
+				'email'	=> trim( (string)$match[ 'email' ] ),
 				'From'	=> $p_from_address,
 			);
 		}
@@ -1282,11 +1358,11 @@ class ERP_mailbox_api
 	{
 		$v_addresses = array();
 
-		if ( preg_match_all( '/' . $this->_email_regex_simple . '/u', $p_addresses, $matches, PREG_SET_ORDER ) )
+		if ( preg_match_all( '/' . $this->_email_regex_simple . '/u', (string)$p_addresses, $matches, PREG_SET_ORDER ) )
 		{
 			foreach( $matches AS $match )
 			{
-				$v_addresses[] = trim( $match[ 0 ] );
+				$v_addresses[] = trim( (string)$match[ 0 ] );
 			}
 		}
 
@@ -1479,7 +1555,7 @@ class ERP_mailbox_api
 			foreach( $p_references AS $t_reference ) 
 			{
 				$query = 'SELECT issue_id FROM ' . plugin_table( 'msgids' ) . ' WHERE msg_id=' . db_param();
-				$t_bug_id = db_result( db_query_bound( $query, array( $t_reference ), 1 ) );
+				$t_bug_id = db_result( db_query( $query, array( $t_reference ), 1 ) );
 
 				if( $t_bug_id !== FALSE ) 
 				{
@@ -1498,7 +1574,7 @@ class ERP_mailbox_api
 		$t_ref_ids = array();
 
 		$query = 'SELECT msg_id FROM ' . plugin_table( 'msgids' ) . ' WHERE issue_id=' . db_param();
-		$t_result = db_query_bound( $query, array( (int)$p_bug_id ) );
+		$t_result = db_query( $query, array( (int)$p_bug_id ) );
 
 		while( $t_row = db_fetch_array( $t_result ) )
 		{
@@ -1526,7 +1602,7 @@ class ERP_mailbox_api
 					// ignore references longer then 255 characters as they are most likely malformed
 					if ( strlen( $t_ref ) > 255 )
 					{
-						custom_error( 'Reference id encountered thats longer then 255 characters. It will be ignored' );
+						$this->custom_error( 'Reference id encountered thats longer then 255 characters. It will be ignored' );
 					}
 					else
 					{
@@ -1538,7 +1614,7 @@ class ERP_mailbox_api
 							// Add the Message-ID to the table for future reference
 							$t_query = 'INSERT INTO ' . plugin_table( 'msgids' ) . '( issue_id, msg_id ) VALUES'
 									. ' (' . db_param() . ', ' . db_param() . ')';
-							db_query_bound( $t_query, array( (int)$p_bug_id, $t_ref ) );
+							db_query( $t_query, array( (int)$p_bug_id, $t_ref ) );
 						}
 					}
 				}
@@ -1552,7 +1628,7 @@ class ERP_mailbox_api
 	public static function delete_references_for_bug_id( $p_bug_id )
 	{
 		$t_query = 'DELETE FROM ' . plugin_table( 'msgids' ) . ' WHERE issue_id = ' . db_param();
-		db_query_bound( $t_query, array( (int)$p_bug_id ) );
+		db_query( $t_query, array( (int)$p_bug_id ) );
 	}
 
 	# --------------------
@@ -1562,7 +1638,7 @@ class ERP_mailbox_api
 	{
 		$t_query = 'DELETE FROM ' . plugin_table( 'msgids' ) . ' WHERE NOT EXISTS'
 				. '( SELECT 1 FROM ' . db_get_table( 'bug' ) . ' B WHERE B.id = issue_id )';
-		db_query_bound( $t_query );
+		db_query( $t_query );
 	}
 
 	# --------------------
@@ -1645,7 +1721,7 @@ class ERP_mailbox_api
 
 			$selectedFragments = array_filter( $bodyfragments, array( $this, 'selectFragments' ) );
 
-			$t_description = rtrim( implode( "\n", $selectedFragments ) );
+			$t_description = rtrim( (string)implode( "\n", $selectedFragments ) );
 		}
 
 		return( $t_description );

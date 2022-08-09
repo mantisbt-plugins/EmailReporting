@@ -1,5 +1,7 @@
 Changelog:
-Jul 2019 - EmailReporting-0.11.0
+??? - EmailReporting-0.11.0
+	- PHP 8.x.x base64_decode deprecation fix
+	- PHP 8.1.x deprecation fixes
 	- Update Markdownify github master
 	- Add EmailReplyParser library
 	- Retired old functionality now being handled by EmailReplyParser
@@ -14,6 +16,21 @@ Jul 2019 - EmailReporting-0.11.0
 	- Enable the caching of IMAP flags
 	- Optimized IMAP email sorting
 	- IMAP performance optimization (Daveid #25701)
+	- Add permission checks for issues, notes and attachments
+	- Add functionality to ignore auto-reply emails
+	- Changed default max body length from 65535 to 60000 because of issues with email table
+	- Link notes and attachments
+	- Default Due Dates are now reflected in newly created bugs (hnuestedt)
+	- Corrected various deprecated error messages for PHP 7.4.x and MantisBT 2.25.0
+	- Set default bugnote view status
+	- Updated UTF8 database checks (Based on MantisBT 2.25)
+	- Handle "on behalf of" from fields properly
+	- Added condition for showing EmailReporting menu
+	- Fix reference message ID split over multiple lines (seanm)
+	- Remove maximum length password field
+	- Add max attachment name length check (#29148)
+	- Adjust file naming to use a suffix instead of a prefix (default MantisBT method)
+	- Fix sorting POP3 emails
 
 May 2018 - EmailReporting-0.10.1
 	- Added error if, on installation, 'api/soap/mc_file_api.php' is missing

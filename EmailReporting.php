@@ -107,9 +107,13 @@ class EmailReportingPlugin extends MantisPlugin
 			# Enable fallback to mail reporter
 			'mail_fallback_mail_reporter'	=> ON,
 
+			# Ignore auto-reply emails
+			'mail_ignore_auto_replies'		=> ON,
+
 			# Maximum size of the description/note. Restriction needed for database limitations
 			# Older installations of MantisBT never had there description fields in MYSQL increased from TEXT to MEDIUMTEXT so TEXT is the default max
-			'mail_max_email_body'			=> 65535,
+			# Max is actually < 2^16 (=65535) but the email table also requires some extra space so thats why 60000 is chosen
+			'mail_max_email_body'			=> 60000,
 
 			# Use the following text when part of the email has been truncated
 			'mail_max_email_body_text'		=> '[EmailReporting -> Email body truncated]',
@@ -145,6 +149,9 @@ class EmailReportingPlugin extends MantisPlugin
 			# Also used for fallback if a user is not found in database
 			# Mail is just the default name which will be converted to a user id during installation
 			'mail_reporter_id'				=> 'Mail',
+
+			# Should EmailReporting check whether or not the user has enough permissions?
+			'mail_respect_permissions'		=> OFF,
 
 			# Is the rule system enabled
 			'mail_rule_system'				=> OFF,
@@ -306,6 +313,10 @@ class EmailReportingPlugin extends MantisPlugin
 	 */
 	function ERP_manage_emailreporting_menu( )
 	{
+		if( !access_has_project_level( config_get( 'manage_plugin_threshold' ) ) ) {
+			return array();
+		}
+
 		return array( '<a href="' . plugin_page( 'manage_mailbox' ) . '">' . plugin_lang_get( 'manage' ) . ' ' . plugin_lang_get( 'plugin_title' ) . '</a>', );
 	}
 
@@ -615,6 +626,16 @@ class EmailReportingPlugin extends MantisPlugin
 			plugin_config_delete( 'mail_strip_gmail_style_replies' );
 
 			plugin_config_set( 'config_version', 17 );
+		}
+
+		if ( $t_config_version <= 17 )
+		{
+			$t_query = 'DELETE FROM ' . plugin_table( 'msgids' ) . ' WHERE msg_id NOT LIKE ' . db_param();
+			db_query( $t_query, array( '<%>' ) );
+			$t_query = 'DELETE FROM ' . plugin_table( 'msgids' ) . ' WHERE msg_id LIKE ' . db_param();
+			db_query( $t_query, array( '<% %>' ) );
+
+			plugin_config_set( 'config_version', 18 );
 		}
 	}
 

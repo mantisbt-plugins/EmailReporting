@@ -39,7 +39,7 @@ if ( !extension_loaded( 'mbstring' ) )
 }
 
 // Output utf8 info box
-elseif ( $t_results_utf_test = test_database_utf8() )
+elseif ( $t_results_utf_test = ERP_test_database_utf8() )
 {
 	ERP_output_note_open();
 ?>
@@ -131,6 +131,7 @@ ERP_output_config_option( 'mail_auto_signup', 'boolean' );
 ERP_output_config_option( 'mail_preferred_username', 'dropdown', NULL, 'print_descriptions_option_list', array( 'name', 'email_address', 'email_no_domain', 'from_ldap' ) );
 ERP_output_config_option( 'mail_preferred_realname', 'dropdown', NULL, 'print_descriptions_option_list', array( 'name', 'email_address', 'email_no_domain', 'from_ldap', 'full_from' ) );
 ERP_output_config_option( 'mail_disposable_email_checker', 'boolean' );
+ERP_output_config_option( 'mail_respect_permissions', 'boolean' );
 ERP_output_table_close();
 
 ERP_output_table_open( 'feature_options' );
@@ -166,6 +167,7 @@ ERP_output_config_option( 'mail_nodescription', 'string' );
 ERP_output_table_close();
 
 ERP_output_table_open( 'remove_reply_options' );
+ERP_output_config_option( 'mail_ignore_auto_replies', 'boolean' );
 ERP_output_config_option( 'mail_remove_replies', 'boolean' );
 ERP_output_config_option( 'mail_remove_mantis_email', 'boolean' );
 ERP_output_config_option( 'mail_removed_reply_text', 'string' );

@@ -53,6 +53,7 @@ $s_plugin_EmailReporting_mail_delete = 'Borrar correos procesados del buzón';
 $s_plugin_EmailReporting_mail_disposable_email_checker = 'Verificador de dirección de correo electrónico desechable de MantisBT';
 $s_plugin_EmailReporting_mail_email_receive_own = 'Permitir a los usuarios recibir notificaciones de sus propias acciones (No Aplica si email_receive_own = ON)';
 $s_plugin_EmailReporting_mail_fallback_mail_reporter = 'Habilitar usuario predeterminado';
+$s_plugin_EmailReporting_mail_ignore_auto_replies = 'Ignorar correos electrónicos de respuesta automática';
 $s_plugin_EmailReporting_mail_max_email_body = 'Tamaño maximo permito de un correo para agregar una nota o descripción a la solicitud';
 $s_plugin_EmailReporting_mail_max_email_body_text = 'Usar este texto si la descripción o nota fue eliminada o truncada';
 $s_plugin_EmailReporting_mail_max_email_body_add_attach = 'Agregar la descripción completa o nota como adjunto en caso que este sea truncado';
@@ -65,6 +66,7 @@ $s_plugin_EmailReporting_mail_remove_mantis_email = 'Eliminar MantisBT notificat
 $s_plugin_EmailReporting_mail_remove_replies = 'Eliminar todas las respuestas de las notas';
 $s_plugin_EmailReporting_mail_removed_reply_text = 'Usar este texto si las notas han sido eliminadas del email';
 $s_plugin_EmailReporting_mail_reporter_id = 'Usuario predeterminado para las solicitudes creadas por email';
+$s_plugin_EmailReporting_mail_respect_permissions = 'Comprobar permisos del usuario';
 $s_plugin_EmailReporting_mail_rule_system = 'Reglas de sistema';
 $s_plugin_EmailReporting_mail_save_from = 'Escribir el email del usuario que envia la solicitud en el cuerpo del reporte o nota';
 $s_plugin_EmailReporting_mail_save_subject_in_note = 'Escribir el asunto del mensaje en la nota';
