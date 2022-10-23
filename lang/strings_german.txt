@@ -41,6 +41,7 @@ $s_plugin_EmailReporting_directory_unwritable = 'Achtung: Order nicht schreibbar
 $s_plugin_EmailReporting_mail_add_bug_reports = 'Erstelle ein neues Ticket';
 $s_plugin_EmailReporting_mail_add_bugnotes = 'Notiz hinzufügen';
 $s_plugin_EmailReporting_mail_add_complete_email = 'Komplette Email als Anhang dem Ticket hinzufügen';
+$s_plugin_EmailReporting_mail_add_complete_email_ext = 'Extension used for the complete email attachment'; //TODO Needs translation
 $s_plugin_EmailReporting_mail_add_users_from_cc_to = 'Füge Benutzer aus den To- und Cc-Feldern als Beobachter hinzu';
 $s_plugin_EmailReporting_mail_auto_signup = 'Neue Benutzer automatisch registrieren (mögliches Sicherheitsrisiko! Dokumentation konsultieren!';
 $s_plugin_EmailReporting_mail_block_attachments_md5 = 'Anhänge blockieren die folgenden MD5 Hashes entsprechen';

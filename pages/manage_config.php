@@ -177,6 +177,7 @@ ERP_output_table_open( 'debug_options' );
 ERP_output_config_option( 'mail_debug', 'boolean' );
 ERP_output_config_option( 'mail_debug_directory', 'directory_string' );
 ERP_output_config_option( 'mail_add_complete_email', 'boolean' );
+ERP_output_config_option( 'mail_add_complete_email_ext', 'string' );
 ERP_output_config_option( 'mail_debug_show_memory_usage', 'boolean' );
 ERP_output_table_close();
 

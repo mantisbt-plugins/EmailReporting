@@ -41,6 +41,7 @@ $s_plugin_EmailReporting_directory_unwritable = 'Advertencia: Directorio no modi
 $s_plugin_EmailReporting_mail_add_bug_reports = 'Crear nuevas solicitudes';
 $s_plugin_EmailReporting_mail_add_bugnotes = 'Agregar Notas';
 $s_plugin_EmailReporting_mail_add_complete_email = 'Agregar el correo como adjunto';
+$s_plugin_EmailReporting_mail_add_complete_email_ext = 'Extension used for the complete email attachment'; //TODO Needs translation
 $s_plugin_EmailReporting_mail_add_users_from_cc_to = 'Agregar usuarios asociados como Cc a la solicitud como monitores';
 $s_plugin_EmailReporting_mail_auto_signup = 'Crear nuevos usuarios automaticamente (Posible riesgo de seguridad!!)';
 $s_plugin_EmailReporting_mail_block_attachments_md5 = 'Bloquear adjunto que coincidan con estos hashes MD5';

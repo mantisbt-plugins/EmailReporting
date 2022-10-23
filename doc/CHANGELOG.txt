@@ -31,6 +31,7 @@ Changelog:
 	- Add max attachment name length check (#29148)
 	- Adjust file naming to use a suffix instead of a prefix (default MantisBT method)
 	- Fix sorting POP3 emails
+	- Allow changing of the extension for the complete email attachment
 
 May 2018 - EmailReporting-0.10.1
 	- Added error if, on installation, 'api/soap/mc_file_api.php' is missing

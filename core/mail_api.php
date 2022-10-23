@@ -54,6 +54,7 @@ class ERP_mailbox_api
 	private $_mail_add_bug_reports;
 	private $_mail_add_bugnotes;
 	private $_mail_add_complete_email;
+	private $_mail_add_complete_email_ext;
 	private $_mail_add_users_from_cc_to;
 	private $_mail_auto_signup;
 	private $_mail_block_attachments_md5;
@@ -107,6 +108,7 @@ class ERP_mailbox_api
 		$this->_mail_add_bug_reports			= plugin_config_get( 'mail_add_bug_reports' );
 		$this->_mail_add_bugnotes				= plugin_config_get( 'mail_add_bugnotes' );
 		$this->_mail_add_complete_email			= plugin_config_get( 'mail_add_complete_email' );
+		$this->_mail_add_complete_email_ext		= plugin_config_get( 'mail_add_complete_email_ext' );
 		$this->_mail_add_users_from_cc_to		= plugin_config_get( 'mail_add_users_from_cc_to' );
 		$this->_mail_auto_signup				= plugin_config_get( 'mail_auto_signup' );
 		$this->_mail_block_attachments_md5		= plugin_config_get( 'mail_block_attachments_md5' );
@@ -684,7 +686,7 @@ class ERP_mailbox_api
 		if ( $this->_mail_add_complete_email )
 		{
 			$t_part = array(
-				'name' => 'Complete email.txt',
+				'name' => 'Complete email.' . $this->_mail_add_complete_email_ext,
 				'ctype' => 'text/plain',
 				'body' => $p_msg,
 			);

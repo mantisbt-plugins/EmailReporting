@@ -41,6 +41,7 @@ $s_plugin_EmailReporting_directory_unwritable = 'Warning: directory not writable
 $s_plugin_EmailReporting_mail_add_bug_reports = 'Add new issues';
 $s_plugin_EmailReporting_mail_add_bugnotes = 'Add notes';
 $s_plugin_EmailReporting_mail_add_complete_email = 'Add the complete email into the attachments';
+$s_plugin_EmailReporting_mail_add_complete_email_ext = 'Extension used for the complete email attachment';
 $s_plugin_EmailReporting_mail_add_users_from_cc_to = 'Add users to issue monitoring list from Cc and To fields in mail header';
 $s_plugin_EmailReporting_mail_auto_signup = 'Signup new users automatically (possible security risk!, see documentation)';
 $s_plugin_EmailReporting_mail_block_attachments_md5 = 'Block attachments matching these MD5 hashes';

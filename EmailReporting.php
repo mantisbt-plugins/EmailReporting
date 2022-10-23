@@ -50,6 +50,9 @@ class EmailReportingPlugin extends MantisPlugin
 			# Add complete email into the attachments
 			'mail_add_complete_email'		=> OFF,
 
+			# Extension used for the complete email attachment
+			'mail_add_complete_email_ext'	=> 'txt',
+
 			// Add users from Cc and To field in mail header
 			'mail_add_users_from_cc_to'		=> OFF,
 
