@@ -1,6 +1,7 @@
 Changelog:
 ??? - EmailReporting-0.12.0
 	- Removed encryptions no longer supported ('SSLv2', 'SSLv3', 'TLSv1.0', 'TLSv1.1', 'TLSv1.2').
+	- Fixed deprecated error priority NULL values
 
 Okt 2022 - EmailReporting-0.11.0
 	- PHP 8.x.x base64_decode deprecation fix

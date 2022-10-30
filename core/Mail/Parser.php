@@ -29,7 +29,7 @@ class ERP_Mail_Parser
 	private $_subject;
 	private $_def_charset = 'auto';
 	private $_fallback_charset = 'ASCII';
-	private $_priority = NULL;
+	private $_priority = '';
 	private $_messageid;
 	private $_references = array();
 	private $_inreplyto;
