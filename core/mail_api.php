@@ -1144,7 +1144,7 @@ class ERP_mailbox_api
 							'body' => 'List of rejected files' . "\n\n" . $t_rejected_files,
 						);
 
-						$t_reject_rejected_files = $this->add_file( $t_bug_id, $t_part );
+						$t_reject_rejected_files = $this->add_file( $t_bug_id, $t_part, $t_bugnote_id );
 
 						if ( $t_reject_rejected_files !== TRUE )
 						{
