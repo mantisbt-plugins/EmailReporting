@@ -1,11 +1,8 @@
 Changelog:
-??? - EmailReporting-0.12.0
-	- Removed encryptions no longer supported ('SSLv2', 'SSLv3', 'TLSv1.0', 'TLSv1.1', 'TLSv1.2').
-	- Fixed deprecated error priority NULL values
-
-Okt 2022 - EmailReporting-0.11.0
+??? - EmailReporting-0.11.0
 	- PHP 8.x.x base64_decode deprecation fix
 	- PHP 8.1.x deprecation fixes
+	- PHP 8.3.x support added
 	- Update Markdownify github master
 	- Add EmailReplyParser library
 	- Retired old functionality now being handled by EmailReplyParser
@@ -36,6 +33,11 @@ Okt 2022 - EmailReporting-0.11.0
 	- Adjust file naming to use a suffix instead of a prefix (default MantisBT method)
 	- Fix sorting POP3 emails
 	- Allow changing of the extension for the complete email attachment
+	- Removed encryptions no longer supported ('SSLv2', 'SSLv3', 'TLSv1.0', 'TLSv1.1', 'TLSv1.2').
+	- Fixed deprecated error priority NULL values
+	- PEAR IMAP hierarchy delimiter improvement
+	- Fix caching issue with user level configuration options (joelgb)
+	- Corrected permissions of scripts folder
 
 May 2018 - EmailReporting-0.10.1
 	- Added error if, on installation, 'api/soap/mc_file_api.php' is missing

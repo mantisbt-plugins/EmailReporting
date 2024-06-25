@@ -239,8 +239,6 @@ class ERP_mailbox_api
 
 							if ( $t_upload_folder_passed )
 							{
-								$this->prepare_mailbox_hostname();
-
 								if ( !$this->_test_only && $this->_mail_debug )
 								{
 									var_dump( $this->_mailbox );
@@ -248,6 +246,8 @@ class ERP_mailbox_api
 								}
 
 								$this->show_memory_usage( 'Start process mailbox' );
+
+								$this->prepare_mailbox_hostname();
 
 								$t_process_mailbox_function = 'process_' . strtolower( $this->_mailbox[ 'mailbox_type' ] ) . '_mailbox';
 
@@ -340,7 +340,7 @@ class ERP_mailbox_api
 
 		if ( $t_connectresult === TRUE )
 		{
-			$t_loginresult = $this->mailbox_login();
+			$t_loginresult = $this->PEAR_mailbox_login();
 
 			if ( !$this->pear_error( 'Attempt login', $t_loginresult ) )
 			{
@@ -348,7 +348,7 @@ class ERP_mailbox_api
 				{
 					if ( project_get_field( $this->_mailbox[ 'project_id' ], 'enabled' ) == ON )
 					{
-						$t_ListMsgs = $this->getListing();
+						$t_ListMsgs = $this->PEAR_getListing();
 
 						if ( !$this->pear_error( 'Retrieve list of messages', $t_ListMsgs ) )
 						{
@@ -394,7 +394,7 @@ class ERP_mailbox_api
 
 		if ( $this->_mailserver->_connected === TRUE )
 		{
-			$t_loginresult = $this->mailbox_login();
+			$t_loginresult = $this->PEAR_mailbox_login();
 
 			if ( !$this->pear_error( 'Attempt login', $t_loginresult ) )
 			{
@@ -427,7 +427,7 @@ class ERP_mailbox_api
 							{
 								$t_project_name = $this->cleanup_project_name( $t_project[ 'name' ] );
 
-								$t_foldername = $this->_mailbox[ 'imap_basefolder' ] . ( ( $this->_mailbox[ 'imap_createfolderstructure' ] ) ? $t_hierarchydelimiter . $t_project_name : NULL );
+								$t_foldername = str_replace( '/', $t_hierarchydelimiter, $this->_mailbox[ 'imap_basefolder' ] ) . ( ( $this->_mailbox[ 'imap_createfolderstructure' ] ) ? $t_hierarchydelimiter . $t_project_name : NULL );
 
 								// We don't need to check twice whether the mailbox exist incase createfolderstructure is false
 								if ( !$this->_mailbox[ 'imap_createfolderstructure' ] || $this->_mailserver->mailboxExist( $t_foldername ) === TRUE )
@@ -445,7 +445,7 @@ class ERP_mailbox_api
 
 										if ( !$this->pear_error( 'Select IMAP folder', $t_result ) )
 										{
-											$t_ListMsgs = $this->getListing();
+											$t_ListMsgs = $this->PEAR_getListing();
 
 											if ( !$this->pear_error( 'Retrieve list of messages', $t_ListMsgs ) )
 											{
@@ -453,7 +453,7 @@ class ERP_mailbox_api
 
 												while ( $t_Msg = array_pop( $t_ListMsgs ) )
 												{
-													$t_isDeleted = $this->isDeleted( $t_Msg[ 'msg_id' ], $t_flags );
+													$t_isDeleted = $this->PEAR_isDeleted( $t_Msg[ 'msg_id' ], $t_flags );
 
 													if ( $this->pear_error( 'Check email deleted flag', $t_isDeleted ) )
 													{
@@ -528,7 +528,7 @@ class ERP_mailbox_api
 
 	# --------------------
 	# Perform the login to the mailbox
-	private function mailbox_login()
+	private function PEAR_mailbox_login()
 	{
 		$t_mailbox_username = $this->_mailbox[ 'erp_username' ];
 		$t_mailbox_password = base64_decode( $this->_mailbox[ 'erp_password' ] );
@@ -540,7 +540,7 @@ class ERP_mailbox_api
 	# --------------------
 	# Return a list of emails in the mailbox
 	# Needed a workaround to sort IMAP emails in a certain order
-	private function getListing()
+	private function PEAR_getListing()
 	{
 		$t_ListMsgs = $this->_mailserver->getListing();
 
@@ -573,7 +573,7 @@ class ERP_mailbox_api
 
 		if ( empty( $t_msg ) )
 		{
-			$this->custom_error( 'Retrieved message was empty. Either an invalid message ID was passed or there is a problem with one of the required PEAR packages' );
+			$this->custom_error( 'Retrieved message was empty. Either an invalid message ID was passed or there is a problem with one of the required packages' );
 
 			return( FALSE );
 		}
@@ -649,7 +649,7 @@ class ERP_mailbox_api
 	# Check whether a email is deleted
 	# for IMAP only function
 	# Handles a workaround for problems with Net_IMAP 1.1.x with the hasFlag function (isDeleted uses that function)
-	private function isDeleted( $p_msg_id, &$p_flags )
+	private function PEAR_isDeleted( $p_msg_id, &$p_flags )
 	{
 //		return $this->hasFlag($message_nro, '\Deleted');
 		$flag = '\Deleted';
@@ -812,6 +812,9 @@ class ERP_mailbox_api
 			if ( $t_authattemptresult === TRUE )
 			{
 				user_update_last_visit( $t_reporter_id );
+
+				// Reset cache for current users.
+				unset( $GLOBALS[ 'g_cache_config_user' ] );
 
 				return( (int) $t_reporter_id );
 			}

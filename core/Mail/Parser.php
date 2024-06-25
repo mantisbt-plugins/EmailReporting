@@ -87,6 +87,8 @@ class ERP_Mail_Parser
 
 			$t_charset_list = mb_list_encodings();
 
+			$t_charset_list = array_diff( $t_charset_list, array( 'BASE64', 'UUENCODE', 'HTML-ENTITIES', 'Quoted-Printable' ) );
+
 			// This function does not exist in version older then PHP 5.3.0
 			if ( function_exists( 'mb_encoding_aliases' ) )
 			{

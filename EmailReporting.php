@@ -11,7 +11,7 @@ class EmailReportingPlugin extends MantisPlugin
 		$this->description = plugin_lang_get( 'plugin_description' );
 		$this->page = 'manage_config';
 
-		$this->version = '0.12.0-DEV';
+		$this->version = '0.11.0-DEV';
 		$this->requires = array(
 			'MantisCore' => '1.3.0, <2.99.99',
 		);
@@ -289,7 +289,7 @@ class EmailReportingPlugin extends MantisPlugin
 			array( 'CreateTableSQL', array( plugin_table( 'msgids' ), "
 				id              I       UNSIGNED NOTNULL PRIMARY AUTOINCREMENT,
 				issue_id        I       UNSIGNED NOTNULL,
-				msg_id          C(255)  NOTNULL
+				msg_id          C(250)  NOTNULL
 				", Array('mysql' => 'DEFAULT CHARSET=utf8', 'pgsql' => 'WITHOUT OIDS')
 				)
 			),

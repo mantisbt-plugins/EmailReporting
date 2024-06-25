@@ -2,11 +2,11 @@
 
 # Apache 2.4
 <IfModule mod_authz_core.c>
-	Require all granted
+	Require all denied
 </IfModule>
 
 # Apache 2.2
 <IfModule !mod_authz_core.c>
 	Order Allow,Deny
-	Allow from all
+	Deny from all
 </IfModule>
