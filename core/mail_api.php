@@ -199,8 +199,10 @@ class ERP_mailbox_api
 		{
 			if ( $this->_mailbox[ 'enabled' ] )
 			{
+				$this->prepare_mailbox_type();
+
 				// Check whether EmailReporting supports the mailbox type. The check is based on available default ports
-				if ( isset( $this->_default_ports[ $this->_mailbox[ 'mailbox_type' ] ] ) )
+				if ( isset( $this->_default_ports[ $this->_mailbox[ 'mailbox_type' ][ 'type' ] ] ) )
 				{
 					if ( project_exists( $this->_mailbox[ 'project_id' ] ) )
 					{
@@ -249,7 +251,19 @@ class ERP_mailbox_api
 
 								$this->prepare_mailbox_hostname();
 
-								$t_process_mailbox_function = 'process_' . strtolower( $this->_mailbox[ 'mailbox_type' ] ) . '_mailbox';
+								if ( $this->_mailbox[ 'mailbox_type' ][ 'ext' ] === 'PEAR' )
+								{
+									$t_process_mailbox_function = 'process_' . strtolower( $this->_mailbox[ 'mailbox_type' ][ 'type' ] ) . '_mailbox';
+								}
+								elseif ( in_array( $this->_mailbox[ 'mailbox_type' ][ 'ext' ], array( /*'JAV_IMAP2',*/ 'PHP_IMAP' ), TRUE ) )
+								{
+									$t_process_mailbox_function = 'process_' . strtolower( $this->_mailbox[ 'mailbox_type' ][ 'ext' ] ) . '_mailbox';
+								}
+								else
+								{
+									$this->custom_error( 'Unknown mailbox type' );
+									return( $this->_result );
+								}
 
 								$this->$t_process_mailbox_function();
 
@@ -327,6 +341,18 @@ class ERP_mailbox_api
 		{
 			echo 'Mailbox: ' . $this->_mailbox[ 'description' ] . "\n" . $t_error_text . "\n\n";
 		}
+	}
+
+	# --------------------
+	# Prepare mailbox types
+	private function prepare_mailbox_type()
+	{
+		$t_mailbox_type = explode( '_', $this->_mailbox[ 'mailbox_type' ], 2 );
+
+		$this->_mailbox[ 'mailbox_type' ] = array(
+			'type' => $t_mailbox_type[ 0 ],
+			'ext' => ( ( isset( $t_mailbox_type[ 1 ] ) ) ? $t_mailbox_type[ 1 ] : 'PEAR' )
+		);
 	}
 
 	# --------------------
@@ -514,6 +540,196 @@ class ERP_mailbox_api
 		}
 	}
 
+	# --------------------
+	# process all mails for a php-imap mailbox
+	private function process_php_imap_mailbox()
+	{
+//		$this->_mailserver = new Net_POP3();
+//		imap_timeout( IMAP_OPENTIMEOUT, 3 );
+
+		$t_connection_string = '{' . $this->_mailbox[ 'hostname' ] . ':' . $this->_mailbox[ 'port' ] . '/' . strtolower( $this->_mailbox[ 'mailbox_type' ][ 'type' ] ) . '/' . $this->_mailbox[ 'enc_conn_str' ] . '' . ( ( $this->_mailbox[ 'ssl_cert_verify' ] == OFF ) ? '/novalidate-cert' : NULL ) . ( ( $this->_test_only === TRUE && $this->_mailbox[ 'mailbox_type' ][ 'type' ] === 'IMAP' ) ? '/readonly' : NULL ) . '}' . ( ( $this->_mailbox[ 'mailbox_type' ][ 'type' ] === 'POP3' ) ? 'INBOX' : NULL );
+		$this->_mailserver = imap_open( $t_connection_string, $this->_mailbox[ 'erp_username' ], base64_decode( $this->_mailbox[ 'erp_password' ] ) );
+//echo 'errors';
+//var_dump( imap_alerts(), imap_errors(), imap_last_error() );
+
+//echo 'imap_num_msg';
+//var_dump(imap_num_msg($this->_mailserver));
+//echo 'imap_num_recent';
+//var_dump(imap_num_recent($this->_mailserver));
+//echo 'imap_sort FALSE';
+//var_dump(imap_sort($this->_mailserver, SORTARRIVAL, FALSE));
+//echo 'imap_sort SE_UID';
+//var_dump(imap_sort($this->_mailserver, SORTARRIVAL, FALSE, SE_UID));
+//echo 'imap_status';
+//var_dump(imap_status($this->_mailserver, $t_connection_string, SA_ALL));
+//echo 'imap_fetch_overview';
+//var_dump(imap_fetch_overview($this->_mailserver,"1:2",0));
+//echo 'imap_fetchbody';
+//var_dump(imap_fetchbody($this->_mailserver,"1",'' ));
+//echo 'imap_getmailboxes';
+//var_dump(imap_getmailboxes($this->_mailserver, $t_connection_string, "*"));
+//var_dump(imap_getmailboxes($this->_mailserver, $t_connection_string, "INBOX")[ 0 ]->delimiter);
+
+//echo 'errors';
+//var_dump( imap_alerts(), imap_errors(), imap_last_error() );
+//exit;
+
+		if ( $this->_mailserver !== FALSE )
+		{
+			if ( imap_last_error() === FALSE )
+			{
+				if ( $this->_mailbox[ 'mailbox_type' ][ 'type' ] === 'POP3' )
+				{
+					if ( $this->_test_only === FALSE )
+					{
+						if ( project_get_field( $this->_mailbox[ 'project_id' ], 'enabled' ) == ON )
+						{
+							$t_ListMsgs = imap_sort( $this->_mailserver, SORTARRIVAL, FALSE );
+
+							if ( $t_ListMsgs !== FALSE )
+							{
+								while ( $t_Msg_id = array_pop( $t_ListMsgs ) )
+								{
+									$t_emailresult = $this->process_single_email( $t_Msg_id );
+
+									if ( $this->_mail_delete && $t_emailresult )
+									{
+										$t_deleteresult = imap_delete( $this->_mailserver, $t_Msg_id );
+
+										if ( $t_deleteresult !== TRUE )
+										{
+											$this->custom_error( imap_last_error() );
+										}
+									}
+								}
+							}
+							else
+							{
+							 	$this->custom_error( imap_last_error() );
+							}
+						}
+						else
+						{
+							$this->custom_error( 'Project is disabled: ' . project_get_field( $this->_mailbox[ 'project_id' ], 'name' ) );
+						}
+					}
+				}
+				elseif ( $this->_mailbox[ 'mailbox_type' ][ 'type' ] === 'IMAP' )
+				{
+					if ( is_blank( $this->_mailbox[ 'imap_basefolder' ] ) )
+					{
+						$this->_mailbox[ 'imap_basefolder' ] = 'INBOX';
+					}
+
+					$t_hierarchydelimiter = imap_getmailboxes( $this->_mailserver, $t_connection_string, 'INBOX' )[ 0 ]->delimiter;
+					$t_imap_basefolder = ( ( '/' !== $t_hierarchydelimiter ) ? str_replace( '/', $t_hierarchydelimiter, $this->_mailbox[ 'imap_basefolder' ] ) : $this->_mailbox[ 'imap_basefolder' ] );
+
+					$t_imap_getmailboxes = imap_getmailboxes( $this->_mailserver, $t_connection_string, imap_utf8_to_mutf7( $t_imap_basefolder ) );
+
+					if ( $t_imap_getmailboxes !== FALSE )
+					{
+						if ( $this->_test_only === FALSE )
+						{
+							if ( $this->_mailbox[ 'imap_createfolderstructure' ] == ON )
+							{
+								$t_projects = project_get_all_rows();
+							}
+							else
+							{
+								$t_projects = array( 0 => project_get_row( $this->_mailbox[ 'project_id' ] ) );
+							}
+
+							foreach ( $t_projects AS $t_project )
+							{
+								if ( $t_project[ 'enabled' ] == ON )
+								{
+									$t_project_name = $this->cleanup_project_name( $t_project[ 'name' ] );
+
+									$t_foldername = imap_utf8_to_mutf7( $t_imap_basefolder . ( ( $this->_mailbox[ 'imap_createfolderstructure' ] ) ? $t_hierarchydelimiter . $t_project_name : NULL ) );
+
+									$t_imap_getmailboxes = imap_getmailboxes( $this->_mailserver, $t_connection_string, $t_foldername );
+									// We don't need to check twice whether the mailbox exist incase createfolderstructure is false
+									if ( !$this->_mailbox[ 'imap_createfolderstructure' ] || $t_imap_getmailboxes !== FALSE )
+									{
+										$t_reopen = imap_reopen( $this->_mailserver, $t_connection_string . $t_foldername );
+
+										if ( $t_reopen === TRUE )
+										{
+											$t_ListMsgs = imap_sort( $this->_mailserver, SORTARRIVAL, FALSE, 0, 'UNDELETED' );
+
+											if ( $t_ListMsgs !== FALSE )
+											{
+												while ( $t_Msg_id = array_pop( $t_ListMsgs ) )
+												{
+													$t_emailresult = $this->process_single_email( $t_Msg_id, (int) $t_project[ 'id' ] );
+
+													if ( $t_emailresult === TRUE )
+													{
+														$t_deleteresult = imap_delete( $this->_mailserver, $t_Msg_id );
+
+														if ( $t_deleteresult !== TRUE )
+														{
+															$this->custom_error( imap_last_error() );
+														}
+													}
+												}
+											}
+											else
+											{
+											 	$this->custom_error( imap_last_error() );
+											}
+										}
+										else
+										{
+										 	$this->custom_error( imap_last_error() );
+										}
+									}
+									elseif ( $this->_mailbox[ 'imap_createfolderstructure' ] == ON )
+									{
+										// create this mailbox
+										$t_imap_createmailbox = imap_createmailbox( $this->_mailserver, $t_connection_string . $t_foldername );
+
+										if ( $t_imap_createmailbox === FALSE )
+										{
+											$this->custom_error( imap_last_error() );
+										}
+									}
+								}
+								elseif ( $this->_mailbox[ 'imap_createfolderstructure' ] == OFF )
+								{
+									$this->custom_error( 'Project is disabled: ' . $t_project[ 'name' ] );
+								}
+							}
+						}
+					}
+					else
+					{
+					 	$this->custom_error( 'IMAP basefolder not found' );
+					}
+
+					if ( (bool) $this->_mail_delete )
+					{
+						imap_expunge( $this->_mailserver );
+					}
+				}
+				else
+				{
+				 	$this->custom_error( 'Unknown mailbox type' );
+				}
+			}
+			else
+			{
+			 	$this->custom_error( imap_last_error() );
+			}
+
+			imap_close( $this->_mailserver ); /* CL_EXPUNGE */
+		}
+		else
+		{
+			$this->custom_error( 'Failed to connect to the mail server' );
+		}
+	}
+
 	# Return Stream Context Options array
 	private function get_StreamContextOptions()
 	{
@@ -546,7 +762,7 @@ class ERP_mailbox_api
 
 		if ( !PEAR::isError( $t_ListMsgs ) )
 		{
-			if ( $this->_mailbox[ 'mailbox_type' ] === 'IMAP' )
+			if ( $this->_mailbox[ 'mailbox_type' ][ 'type' ] === 'IMAP' )
 			{
 				$t_ListMsgs = array_column( $t_ListMsgs, NULL, 'uidl' );
 			}
@@ -575,11 +791,6 @@ class ERP_mailbox_api
 		{
 			$this->custom_error( 'Retrieved message was empty. Either an invalid message ID was passed or there is a problem with one of the required packages' );
 
-			return( FALSE );
-		}
-
-		if ( $this->pear_error( 'Retrieve raw message', $t_msg ) )
-		{
 			return( FALSE );
 		}
 
@@ -627,19 +838,40 @@ class ERP_mailbox_api
 	# Handles a workaround for problems with Net_IMAP 1.1.x concerning the getMsg function
 	private function getMsg( $p_msg_id )
 	{
-		if ( $this->_mailbox[ 'mailbox_type' ] === 'IMAP' )
-		{
-			// Net_IMAP 1.1.0 and 1.1.2 seems to have a somewhat broken getMsg function.
-			$t_msg = $this->_mailserver->getMessages( $p_msg_id, TRUE );
+		$t_msg = NULL;
 
-			if ( is_array( $t_msg ) && count( $t_msg ) === 1 )
+		if ( $this->_mailbox[ 'mailbox_type' ][ 'ext' ] === 'PEAR' )
+		{
+			if ( $this->_mailbox[ 'mailbox_type' ][ 'type' ] === 'IMAP' )
 			{
-				$t_msg = $t_msg[ key( $t_msg ) ];
+				// Net_IMAP 1.1.0 and 1.1.2 seems to have a somewhat broken getMsg function.
+				$t_msg = $this->_mailserver->getMessages( $p_msg_id, TRUE );
+
+				if ( is_array( $t_msg ) && count( $t_msg ) === 1 )
+				{
+					$t_msg = $t_msg[ key( $t_msg ) ];
+				}
+			}
+			elseif ( $this->_mailbox[ 'mailbox_type' ][ 'type' ] === 'POP3' )
+			{
+				$t_msg = $this->_mailserver->getMsg( $p_msg_id );
+			}
+
+			if ( $this->pear_error( 'Retrieve raw message', $t_msg ) )
+			{
+				return( FALSE );
 			}
 		}
-		else
+		elseif ( $this->_mailbox[ 'mailbox_type' ][ 'ext' ] === 'PHP_IMAP' )
 		{
-			$t_msg = $this->_mailserver->getMsg( $p_msg_id );
+			$t_msg = imap_fetchbody( $this->_mailserver, $p_msg_id, '' );
+
+			if ( $t_msg === FALSE )
+			{
+				$this->custom_error( imap_last_error() );
+
+				return( FALSE );
+			}
 		}
 
 		return( $t_msg );
@@ -1297,6 +1529,7 @@ class ERP_mailbox_api
 				// The IMAP pear package will enable encryption after the connection is established if the default port is used. So we need to work around that
 				// No longer needed since we disabled the code in question in IMAPProtocol.php
 //				if ( !( $this->_mailbox[ 'mailbox_type' ] === 'IMAP' && ( $this->_mailbox[ 'port' ] <= 0 || $this->_mailbox[ 'port' ] === $this->_default_ports[ $this->_mailbox[ 'mailbox_type' ] ][ $t_def_mailbox_port_index ] ) ) )
+				if ( $this->_mailbox[ 'mailbox_type' ][ 'ext' ] === 'PEAR' )
 				{
 					$this->_mailbox[ 'hostname' ] = strtolower( $this->_mailbox[ 'encryption' ] ) . '://' . $this->_mailbox[ 'hostname' ];
 				}
@@ -1307,9 +1540,33 @@ class ERP_mailbox_api
 			}
 		}
 
+		if ( $this->_mailbox[ 'mailbox_type' ][ 'ext' ] === 'PHP_IMAP' )
+		{
+		 	switch ( $this->_mailbox[ 'encryption' ] )
+		 	{
+		 		case 'None':
+		 			$this->_mailbox[ 'enc_conn_str' ] = 'notls';
+		 			break;
+
+		 		case 'SSL':
+		 			$this->_mailbox[ 'enc_conn_str' ] = 'ssl';
+		 			break;
+
+		 		case 'TLS':
+		 			$this->_mailbox[ 'enc_conn_str' ] = 'tls';
+		 			break;
+
+		 		case 'STARTTLS':
+		 			$this->_mailbox[ 'enc_conn_str' ] = 'tls';
+		 			break;
+
+		 		default: $this->custom_error( 'Unknown encryption encountered' );
+		 	}
+		}
+
 		if ( $this->_mailbox[ 'port' ] <= 0 )
 		{
-			$this->_mailbox[ 'port' ] = (int) $this->_default_ports[ $this->_mailbox[ 'mailbox_type' ] ][ $t_def_mailbox_port_index ];
+			$this->_mailbox[ 'port' ] = (int) $this->_default_ports[ $this->_mailbox[ 'mailbox_type' ][ 'type' ] ][ $t_def_mailbox_port_index ];
 		}
 	}
 

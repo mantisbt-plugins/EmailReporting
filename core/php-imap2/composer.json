@@ -1,0 +1,5 @@
+{
+    "require": {
+        "javanile/php-imap2": "^0.1.9"
+    }
+}

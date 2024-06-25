@@ -1,4 +1,9 @@
 Changelog:
+??? - EmailReporting-0.12.0
+	- Support for PHP IMAP extension
+//	- Support for Javanile IMAP
+//	- Support for OAuth
+
 ??? - EmailReporting-0.11.0
 	- PHP 8.x.x base64_decode deprecation fix
 	- PHP 8.1.x deprecation fixes
