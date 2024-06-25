@@ -229,6 +229,13 @@ class Converter
     protected $indent = '';
 
     /**
+     * previous indentation, when we want to disable current indentation and get it back later
+     *
+     * @var string
+     */
+    static $previousIndent = '';
+
+    /**
      * constructor, set options, setup parser
      *
      * @param int $linkPosition define the position of links
@@ -548,8 +555,7 @@ class Converter
                     // don't indent inside <pre> tags
                     if ($this->parser->tagName == 'pre') {
                         $this->out($this->parser->node);
-                        static $indent;
-                        $indent = $this->indent;
+                        $this->previousIndent = $this->indent;
                         $this->indent = '';
                     } else {
                         $this->out($this->parser->node . "\n" . $this->indent);
@@ -570,8 +576,7 @@ class Converter
                     } else {
                         // reset indentation
                         $this->out($this->parser->node);
-                        static $indent;
-                        $this->indent = $indent;
+                        $this->indent = $this->previousIndent;
                     }
 
                     if (in_array($this->parent(), ['ins', 'del'])) {
