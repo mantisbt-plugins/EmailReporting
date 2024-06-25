@@ -161,6 +161,15 @@ class Net_IMAPProtocol
     var $_encoding = 'ISO-8859-1';
 
 
+	// ERP-modification: Fix for PHP 8.3
+    /**
+     * lastline
+     * @var string
+     * @access private
+     */
+    var $lastline = NULL;
+
+
     /**
      * Constructor
      *
