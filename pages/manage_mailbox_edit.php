@@ -116,5 +116,5 @@ if( plugin_config_get( 'mailboxes' ) !== $t_mailboxes && ( $f_mailbox_action ===
 
 if ( !isset( $t_no_redirect ) )
 {
-	print_successful_redirect( plugin_page( 'manage_mailbox', TRUE ) );
+	print_header_redirect( plugin_page( 'manage_mailbox', TRUE ) );
 }

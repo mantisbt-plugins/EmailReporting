@@ -85,5 +85,5 @@ if( plugin_config_get( 'rules' ) != $t_rules && ( $f_rule_action === 'add' || $f
 
 if ( !isset( $t_no_redirect ) )
 {
-	print_successful_redirect( plugin_page( 'manage_rule', TRUE ) );
+	print_header_redirect( plugin_page( 'manage_rule', TRUE ) );
 }
