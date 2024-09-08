@@ -8,7 +8,7 @@ $f_gpc = array(
 	'mail_add_bug_reports'			=> gpc_get_int( 'mail_add_bug_reports' ),
 	'mail_add_bugnotes'				=> gpc_get_int( 'mail_add_bugnotes' ),
 	'mail_add_complete_email'		=> gpc_get_int( 'mail_add_complete_email' ),
-	'mail_add_complete_email_ext'	=> gpc_get_int( 'mail_add_complete_email_ext' ),
+	'mail_add_complete_email_ext'	=> gpc_get_string( 'mail_add_complete_email_ext' ),
 	'mail_add_users_from_cc_to'		=> gpc_get_int( 'mail_add_users_from_cc_to' ),
 	'mail_auto_signup'				=> gpc_get_int( 'mail_auto_signup' ),
 	'mail_block_attachments_md5'	=> array_map( 'strtolower', array_filter( array_map( 'trim', explode( "\n", str_replace( array( "\r\n", "\r" ), "\n", gpc_get_string( 'mail_block_attachments_md5' ) ) ) ) ) ),
@@ -93,5 +93,5 @@ else
 
 if ( !isset( $t_notsuccesfull ) )
 {
-	print_successful_redirect( plugin_page( 'manage_config', TRUE ) );
+	print_header_redirect( plugin_page( 'manage_config', TRUE ) );
 }
