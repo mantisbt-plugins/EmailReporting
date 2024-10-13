@@ -38,6 +38,7 @@ Changelog:
 	- PEAR IMAP hierarchy delimiter improvement
 	- Fix caching issue with user level configuration options (joelgb)
 	- Corrected permissions of scripts folder
+	- Fix MantisBT 2.27.0 category issue
 
 May 2018 - EmailReporting-0.10.1
 	- Added error if, on installation, 'api/soap/mc_file_api.php' is missing
