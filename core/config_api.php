@@ -1030,7 +1030,7 @@ if ( !function_exists( 'check_is_collation_utf8' ) )
 		// Need to disable inherit projects for one moment.
 		ERP_set_temporary_overwrite( 'subprojects_inherit_categories', OFF );
 
-		$t_sel_value = (array) $p_sel_value;
+		$t_sel_value = (array) ( ( $p_sel_value === NULL) ? 0 : $p_sel_value );
 
 		print_category_option_list( $t_sel_value, ALL_PROJECTS );
 
