@@ -1030,7 +1030,14 @@ if ( !function_exists( 'check_is_collation_utf8' ) )
 		// Need to disable inherit projects for one moment.
 		ERP_set_temporary_overwrite( 'subprojects_inherit_categories', OFF );
 
-		$t_sel_value = (array) ( ( $p_sel_value === NULL) ? 0 : $p_sel_value );
+		// (array) causes problems when category 1 does not exist. Removed for now.
+		$t_sel_value = ( ( $p_sel_value === NULL ) ? 0 : $p_sel_value );
+
+		if ( $t_sel_value !== 0 && !category_exists( $t_sel_value ) )
+		{
+			$t_ori_sel_value = $t_sel_value;
+			$t_sel_value = 0;
+		}
 
 		print_category_option_list( $t_sel_value, ALL_PROJECTS );
 
@@ -1048,6 +1055,13 @@ if ( !function_exists( 'check_is_collation_utf8' ) )
 			echo '<optgroup label="' . string_attribute( $t_project_name ) . '">';
 			print_category_option_list( $t_sel_value, (int) $t_project_id );
 			echo '</optgroup>';
+		}
+
+		if ( isset( $t_ori_sel_value ) )
+		{
+			$t_error = lang_get( 'MANTIS_ERROR' );
+			echo '<option value="' . $t_ori_sel_value . '" selected class="red negative">';
+			echo string_attribute( $t_error[ ERROR_CATEGORY_NOT_FOUND ] ), ': ' . $t_ori_sel_value . '</option>', PHP_EOL;
 		}
 	}
 

@@ -70,7 +70,7 @@ ERP_output_config_option( 'cond_mailbox', 'dropdown_multiselect_any', $t_rule, '
 ERP_output_config_option( 'cond_issue_issue_issuenote', 'dropdown_multiselect_any', $t_rule, 'print_descriptions_option_list', array( 'newnote', 'newissue', 'newattachment' ) );
 ERP_output_config_option( 'cond_issue_reporter', 'dropdown_multiselect_any', $t_rule, 'print_reporter_option_list' );
 ERP_output_config_option( 'cond_issue_project', 'dropdown_multiselect_any', $t_rule, 'print_projects_option_list' );
-ERP_output_config_option( 'cond_issue_category', 'dropdown_multiselect_any', $t_rule, 'print_global_category_option_list' );
+ERP_output_config_option( 'cond_issue_category', 'dropdown_any', $t_rule, 'print_global_category_option_list' );// multiselect_ removed since the function no longer supports it
 ERP_output_config_option( 'cond_issue_priority', 'dropdown_multiselect_any', $t_rule, 'print_priority_option_list' );
 ERP_output_config_option( 'cond_issue_summary', 'string', $t_rule );
 ERP_output_config_option( 'cond_issue_description', 'string', $t_rule );
