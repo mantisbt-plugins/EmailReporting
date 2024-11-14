@@ -1024,25 +1024,20 @@ if ( !function_exists( 'check_is_collation_utf8' ) )
 	# output a option list with global categories available in the mantisbt system
 	function ERP_custom_function_print_global_category_option_list( $p_sel_value )
 	{
-		// Need to disable allow_no_category for a moment
-		ERP_set_temporary_overwrite( 'allow_no_category', OFF );
+		$t_sel_values = (array) $p_sel_value;
 
-		// Need to disable inherit projects for one moment.
-		ERP_set_temporary_overwrite( 'subprojects_inherit_categories', OFF );
-
-		// (array) causes problems when category 1 does not exist. Removed for now.
-		$t_sel_value = ( ( $p_sel_value === NULL ) ? 0 : $p_sel_value );
-
-		if ( $t_sel_value !== 0 && !category_exists( $t_sel_value ) )
+		foreach ( $t_sel_values AS $t_sel_value )
 		{
-			$t_ori_sel_value = $t_sel_value;
-			$t_sel_value = 0;
+			if ( !category_exists( $t_sel_value ) )
+			{
+				$t_error = lang_get( 'MANTIS_ERROR' );
+				echo '<option value="' . $t_sel_value . '" selected class="red negative">';
+				echo string_attribute( $t_error[ ERROR_CATEGORY_NOT_FOUND ] ), ': ' . $t_sel_value . '</option>', PHP_EOL;
+			}
 		}
 
-		print_category_option_list( $t_sel_value, ALL_PROJECTS );
-
 		$t_all_projects = project_get_all_rows();
-		$t_projects_info = array();
+		$t_projects_info = array( ALL_PROJECTS => "" );
 		foreach( $t_all_projects AS $t_project )
 		{
 			$t_projects_info[ $t_project[ 'id' ] ] = $t_project[ 'name' ];
@@ -1052,16 +1047,28 @@ if ( !function_exists( 'check_is_collation_utf8' ) )
 
 		foreach( $t_projects_info AS $t_project_id => $t_project_name )
 		{
-			echo '<optgroup label="' . string_attribute( $t_project_name ) . '">';
-			print_category_option_list( $t_sel_value, (int) $t_project_id );
-			echo '</optgroup>';
-		}
+			if ( $t_project_id !== 0 )
+			{
+				echo '<optgroup label="' . string_attribute( $t_project_name ) . '">';
+			}
 
-		if ( isset( $t_ori_sel_value ) )
-		{
-			$t_error = lang_get( 'MANTIS_ERROR' );
-			echo '<option value="' . $t_ori_sel_value . '" selected class="red negative">';
-			echo string_attribute( $t_error[ ERROR_CATEGORY_NOT_FOUND ] ), ': ' . $t_ori_sel_value . '</option>', PHP_EOL;
+			$t_cat_arr = category_get_all_rows( $t_project_id, false, false, false );
+			foreach( $t_cat_arr as $t_category_row )
+			{
+				$t_category_id = (int) $t_category_row[ 'id' ];
+				$t_disabled = $t_category_row[ 'status' ] == CATEGORY_STATUS_DISABLED;
+				$t_category_name = category_full_name( $t_category_id, false );
+				echo '<option value="' . $t_category_id . '"';
+				check_selected( $t_sel_values, $t_category_id );
+				check_disabled( $t_disabled );
+				echo '>';
+				echo string_attribute( $t_category_name ), '</option>', PHP_EOL;
+			}
+
+			if ( $t_project_id !== 0 )
+			{
+				echo '</optgroup>';
+			}
 		}
 	}
 
