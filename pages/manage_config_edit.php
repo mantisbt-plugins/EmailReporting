@@ -7,6 +7,7 @@ plugin_require_api( 'core/config_api.php' );
 $f_gpc = array(
 	'mail_add_bug_reports'			=> gpc_get_int( 'mail_add_bug_reports' ),
 	'mail_add_bugnotes'				=> gpc_get_int( 'mail_add_bugnotes' ),
+	'mail_reopen_bugs'				=> gpc_get_int( 'mail_reopen_bugs' ),
 	'mail_add_complete_email'		=> gpc_get_int( 'mail_add_complete_email' ),
 	'mail_add_complete_email_ext'	=> gpc_get_string( 'mail_add_complete_email_ext' ),
 	'mail_add_users_from_cc_to'		=> gpc_get_int( 'mail_add_users_from_cc_to' ),

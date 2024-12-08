@@ -40,6 +40,7 @@ $s_plugin_EmailReporting_directory_unwritable = 'Warning: directory not writable
 
 $s_plugin_EmailReporting_mail_add_bug_reports = 'Add new issues';
 $s_plugin_EmailReporting_mail_add_bugnotes = 'Add notes';
+$s_plugin_EmailReporting_mail_reopen_bugs = 'Reopen closed or resolved tickets when adding notes';
 $s_plugin_EmailReporting_mail_add_complete_email = 'Add the complete email into the attachments';
 $s_plugin_EmailReporting_mail_add_complete_email_ext = 'Extension used for the complete email attachment';
 $s_plugin_EmailReporting_mail_add_users_from_cc_to = 'Add users to issue monitoring list from Cc and To fields in mail header';

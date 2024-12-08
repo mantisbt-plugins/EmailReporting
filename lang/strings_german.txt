@@ -40,6 +40,7 @@ $s_plugin_EmailReporting_directory_unwritable = 'Achtung: Order nicht schreibbar
 
 $s_plugin_EmailReporting_mail_add_bug_reports = 'Erstelle ein neues Ticket';
 $s_plugin_EmailReporting_mail_add_bugnotes = 'Notiz hinzufügen';
+$s_plugin_EmailReporting_mail_reopen_bugs = 'Beim Hinzufügen von Notizen geschlossene oder gelöste Tickets wieder öffnen';
 $s_plugin_EmailReporting_mail_add_complete_email = 'Komplette Email als Anhang dem Ticket hinzufügen';
 $s_plugin_EmailReporting_mail_add_complete_email_ext = 'Extension used for the complete email attachment'; //TODO Needs translation
 $s_plugin_EmailReporting_mail_add_users_from_cc_to = 'Füge Benutzer aus den To- und Cc-Feldern als Beobachter hinzu';
