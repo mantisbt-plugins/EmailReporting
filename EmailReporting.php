@@ -47,6 +47,9 @@ class EmailReportingPlugin extends MantisPlugin
 			# Is this plugin allowed to process and add notes to existing issues
 			'mail_add_bugnotes'				=> ON,
 
+			# Should this plugin reopen resolved issues when adding notes to existing issues
+			'mail_reopen_bugs'				=> ON,
+
 			# Add complete email into the attachments
 			'mail_add_complete_email'		=> OFF,
 
