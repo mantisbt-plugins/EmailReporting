@@ -44,6 +44,7 @@ Changelog:
 	- Fix caching issue with user level configuration options (joelgb)
 	- Corrected permissions of scripts folder
 	- Fix MantisBT 2.27.0 category issue
+	- Added option to control reopening when adding notes
 
 May 2018 - EmailReporting-0.10.1
 	- Added error if, on installation, 'api/soap/mc_file_api.php' is missing
