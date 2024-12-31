@@ -53,6 +53,7 @@ class ERP_mailbox_api
 
 	private $_mail_add_bug_reports;
 	private $_mail_add_bugnotes;
+	private $_mail_reopen_bugs;
 	private $_mail_add_complete_email;
 	private $_mail_add_complete_email_ext;
 	private $_mail_add_users_from_cc_to;
@@ -107,6 +108,7 @@ class ERP_mailbox_api
 
 		$this->_mail_add_bug_reports			= plugin_config_get( 'mail_add_bug_reports' );
 		$this->_mail_add_bugnotes				= plugin_config_get( 'mail_add_bugnotes' );
+		$this->_mail_reopen_bugs				= plugin_config_get( 'mail_reopen_bugs' );
 		$this->_mail_add_complete_email			= plugin_config_get( 'mail_add_complete_email' );
 		$this->_mail_add_complete_email_ext		= plugin_config_get( 'mail_add_complete_email_ext' );
 		$this->_mail_add_users_from_cc_to		= plugin_config_get( 'mail_add_users_from_cc_to' );
@@ -1123,7 +1125,10 @@ class ERP_mailbox_api
 
 			# Check reopen permissions
 			$t_bug = bug_get( $t_bug_id, true );
-			if ( bug_is_resolved( $t_bug_id ) && ( !$this->_mail_respect_permissions || access_can_reopen_bug( $t_bug ) ) )
+
+			if ( $this->_mail_reopen_bugs
+				&& bug_is_resolved( $t_bug_id )
+				&& ( !$this->_mail_respect_permissions || access_can_reopen_bug( $t_bug ) ) )
 			{
 				if ( !is_blank( $t_description ) )
 				{
