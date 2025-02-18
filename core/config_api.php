@@ -1024,9 +1024,10 @@ if ( !function_exists( 'check_is_collation_utf8' ) )
 	# output a option list with global categories available in the mantisbt system
 	function ERP_custom_function_print_global_category_option_list( $p_sel_value )
 	{
+		// Fix for older MantisBT pre 2.27 versions
 		if ( !defined( "CATEGORY_STATUS_DISABLED" ) )
 		{
-			define( "CATEGORY_STATUS_DISABLED", 0 );
+			define( "CATEGORY_STATUS_DISABLED", 1 );
 		}
 
 		$t_sel_values = (array) $p_sel_value;
