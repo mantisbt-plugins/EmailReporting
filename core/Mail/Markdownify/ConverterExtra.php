@@ -34,6 +34,13 @@ class ConverterExtra extends Converter
     protected $addCssClass = true;
 
     /**
+     * ERP-modification: Fix deprecated error "Creation of dynamic property"
+     */
+    protected $tableLookaheadHeader;
+    protected $tdSubstitute;
+    protected $tableLookaheadBody;
+
+    /**
      * constructor, see Markdownify::Markdownify() for more information
      */
     public function __construct($linksAfterEachParagraph = self::LINK_AFTER_CONTENT, $bodyWidth = MDFY_BODYWIDTH, $keepHTML = MDFY_KEEPHTML)
