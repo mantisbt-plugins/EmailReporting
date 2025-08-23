@@ -34,7 +34,6 @@ Changelog:
 	- Fix sorting POP3 emails
 	- Allow changing of the extension for the complete email attachment
 	- Removed encryptions no longer supported ('SSLv2', 'SSLv3', 'TLSv1.0', 'TLSv1.1', 'TLSv1.2').
-	- Fixed deprecated error priority NULL values
 	- PEAR IMAP hierarchy delimiter improvement
 	- Fix caching issue with user level configuration options (joelgb)
 	- Corrected permissions of scripts folder
