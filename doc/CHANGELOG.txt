@@ -39,6 +39,7 @@ Changelog:
 	- Corrected permissions of scripts folder
 	- Fix MantisBT 2.27.0 category issue
 	- Added option to control reopening when adding notes
+	- Fixed gpc_get_string_array error caused by MantisBT 2.28 (#36815)
 
 May 2018 - EmailReporting-0.10.1
 	- Added error if, on installation, 'api/soap/mc_file_api.php' is missing
