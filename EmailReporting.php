@@ -104,6 +104,9 @@ class EmailReportingPlugin extends MantisPlugin
 			# Delete incoming mail from POP3 server
 			'mail_delete'					=> ON,
 
+			# Disable the MantisBT antispam feature
+			'mail_disable_antispam'			=> OFF,
+
 			# MantisBT always has the disposble email checker enabled. We needed an option to disable this in EmailReporting
 			'mail_disposable_email_checker'	=> ON,
 

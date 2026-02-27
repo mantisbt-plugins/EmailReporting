@@ -121,6 +121,7 @@ ERP_output_config_option( 'mail_delete', 'boolean' );
 ERP_output_config_option( 'mail_max_email_body', 'integer' );
 ERP_output_config_option( 'mail_max_email_body_text', 'string' );
 ERP_output_config_option( 'mail_max_email_body_add_attach', 'boolean' );
+ERP_output_config_option( 'mail_disable_antispam', 'boolean' );
 ERP_output_table_close();
 
 ERP_output_table_open( 'reporter_options' );
