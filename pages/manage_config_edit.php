@@ -18,6 +18,7 @@ $f_gpc = array(
 	'mail_debug_directory'			=> ERP_prepare_directory_string( gpc_get_string( 'mail_debug_directory' ) ),
 	'mail_debug_show_memory_usage'	=> gpc_get_int( 'mail_debug_show_memory_usage' ),
 	'mail_delete'					=> gpc_get_int( 'mail_delete' ),
+	'mail_disable_antispam'			=> gpc_get_int( 'mail_disable_antispam' ),
 	'mail_disposable_email_checker'	=> gpc_get_int( 'mail_disposable_email_checker' ),
 	'mail_email_receive_own'		=> gpc_get_int( 'mail_email_receive_own' ),
 	'mail_fallback_mail_reporter'	=> gpc_get_int( 'mail_fallback_mail_reporter' ),

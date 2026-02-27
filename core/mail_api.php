@@ -177,6 +177,13 @@ class ERP_mailbox_api
 			ERP_set_temporary_overwrite( 'email_receive_own', ON );
 		}
 
+		// Do we need to disable the MantisBT antispam feature?
+		$t_mail_disable_antispam				= plugin_config_get( 'mail_disable_antispam' );
+		if ( $t_mail_disable_antispam )
+		{
+			ERP_set_temporary_overwrite( 'antispam_max_event_count', 0 );
+		}
+
 		$this->_functionality_enabled = TRUE;
 
 		// Because of a notice level error in core/email_api.php on line 516 in MantisBT 1.2.0 we need to fill this value

@@ -52,6 +52,7 @@ $s_plugin_EmailReporting_mail_debug = 'Modo depuración';
 $s_plugin_EmailReporting_mail_debug_directory = 'Guardar el contenido del email en este directorio si el modo depuración esta activo';
 $s_plugin_EmailReporting_mail_debug_show_memory_usage = 'Mostrar uso de memoria en diferentes estados del proceso de email';
 $s_plugin_EmailReporting_mail_delete = 'Borrar correos procesados del buzón';
+$s_plugin_EmailReporting_mail_disable_antispam = 'Desactivar el antispam MantisBT';
 $s_plugin_EmailReporting_mail_disposable_email_checker = 'Verificador de dirección de correo electrónico desechable de MantisBT';
 $s_plugin_EmailReporting_mail_email_receive_own = 'Permitir a los usuarios recibir notificaciones de sus propias acciones (No Aplica si email_receive_own = ON)';
 $s_plugin_EmailReporting_mail_fallback_mail_reporter = 'Habilitar usuario predeterminado';
