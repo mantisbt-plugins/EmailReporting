@@ -3,6 +3,9 @@ Changelog:
 	- PHP 8.x.x base64_decode deprecation fix
 	- PHP 8.1.x deprecation fixes
 	- PHP 8.3.x support added
+	- PHP 8.4.x support added
+	- PHP 8.5.x support added
+	- Updated PEAR packages: PEAR
 	- Update Markdownify github master
 	- Add EmailReplyParser library
 	- Retired old functionality now being handled by EmailReplyParser

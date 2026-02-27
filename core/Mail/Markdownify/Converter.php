@@ -233,7 +233,7 @@ class Converter
      *
      * @var string
      */
-    static $previousIndent = '';
+    private string $previousIndent = '';
 
     /**
      * constructor, set options, setup parser
