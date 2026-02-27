@@ -8,6 +8,9 @@ Changelog:
 	- PHP 8.x.x base64_decode deprecation fix
 	- PHP 8.1.x deprecation fixes
 	- PHP 8.3.x support added
+	- PHP 8.4.x support added
+	- PHP 8.5.x support added
+	- Updated PEAR packages: PEAR
 	- Update Markdownify github master
 	- Add EmailReplyParser library
 	- Retired old functionality now being handled by EmailReplyParser
@@ -45,6 +48,7 @@ Changelog:
 	- Fix MantisBT 2.27.0 category issue
 	- Added option to control reopening when adding notes
 	- Fixed gpc_get_string_array error caused by MantisBT 2.28 (#36815)
+	- Fix Undefined variable $t_hierarchydelimiter' for IMAP not using the project folder structure
 
 May 2018 - EmailReporting-0.10.1
 	- Added error if, on installation, 'api/soap/mc_file_api.php' is missing

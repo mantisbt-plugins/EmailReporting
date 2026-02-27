@@ -289,7 +289,7 @@ class ERP_Mail_Parser
 
 	public function priority()
 	{
-		return( $this->_priority );
+		return( (string) $this->_priority );
 	}
 
 	public function messageid()

@@ -442,12 +442,13 @@ class ERP_mailbox_api
 						if ( $this->_mailbox[ 'imap_createfolderstructure' ] == ON )
 						{
 							$t_projects = project_get_all_rows();
-							$t_hierarchydelimiter = $this->_mailserver->getHierarchyDelimiter();
 						}
 						else
 						{
 							$t_projects = array( 0 => project_get_row( $this->_mailbox[ 'project_id' ] ) );
 						}
+
+						$t_hierarchydelimiter = $this->_mailserver->getHierarchyDelimiter();
 
 						foreach ( $t_projects AS $t_project )
 						{

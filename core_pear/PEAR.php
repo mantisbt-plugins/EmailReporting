@@ -49,7 +49,9 @@ $GLOBALS['_PEAR_destructor_object_list'] = array();
 $GLOBALS['_PEAR_shutdown_funcs']         = array();
 $GLOBALS['_PEAR_error_handler_stack']    = array();
 
-@ini_set('track_errors', true);
+if(function_exists('ini_set')) {
+    @ini_set('track_errors', true);
+}
 
 /**
  * Base class for other PEAR classes.  Provides rudimentary
@@ -75,7 +77,7 @@ $GLOBALS['_PEAR_error_handler_stack']    = array();
  * @author     Greg Beaver <cellog@php.net>
  * @copyright  1997-2006 The PHP Group
  * @license    http://opensource.org/licenses/bsd-license.php New BSD License
- * @version    Release: 1.10.15
+ * @version    Release: 1.10.17
  * @link       http://pear.php.net/package/PEAR
  * @see        PEAR_Error
  * @since      Class available since PHP 4.0.2
@@ -214,9 +216,13 @@ class PEAR
     public function __call($method, $arguments)
     {
         if (!isset(self::$bivalentMethods[$method])) {
-            trigger_error(
-                'Call to undefined method PEAR::' . $method . '()', E_USER_ERROR
-            );
+           if (PHP_VERSION_ID < 70000) {
+                trigger_error(
+                    'Call to undefined method PEAR::' . $method . '()', E_USER_ERROR
+                );
+            } else {
+                throw new Error('Call to undefined method PEAR::' . $method . '()');
+            }
         }
         return call_user_func_array(
             array(__CLASS__, '_' . $method),
@@ -227,9 +233,13 @@ class PEAR
     public static function __callStatic($method, $arguments)
     {
         if (!isset(self::$bivalentMethods[$method])) {
-            trigger_error(
-                'Call to undefined method PEAR::' . $method . '()', E_USER_ERROR
-            );
+            if (PHP_VERSION_ID < 70000) {
+                trigger_error(
+                    'Call to undefined method PEAR::' . $method . '()', E_USER_ERROR
+                );
+            } else {
+                throw new Error('Call to undefined method PEAR::' . $method . '()');
+            }
         }
         return call_user_func_array(
             array(__CLASS__, '_' . $method),
@@ -845,7 +855,7 @@ function _PEAR_call_destructors()
  * @author     Gregory Beaver <cellog@php.net>
  * @copyright  1997-2006 The PHP Group
  * @license    http://opensource.org/licenses/bsd-license.php New BSD License
- * @version    Release: 1.10.15
+ * @version    Release: 1.10.17
  * @link       http://pear.php.net/manual/en/core.pear.pear-error.php
  * @see        PEAR::raiseError(), PEAR::throwError()
  * @since      Class available since PHP 4.0.2
