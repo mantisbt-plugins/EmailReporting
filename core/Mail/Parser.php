@@ -312,12 +312,130 @@ class ERP_Mail_Parser
 	{
 		return( $this->_body );
 	}
-
+		
 	public function parts()
 	{
-		return( $this->_parts );
+		$this->cleanWinmailDat();
+		return $this->_parts;
 	}
 
+	private function cleanWinmailDat()
+	{
+		$commandExists = trim((string)shell_exec('command -v tnef 2>/dev/null'));
+		if ($commandExists === '') {
+			return;
+		}
+
+		$path = __DIR__ . '/../../../../tmp/' . substr($this->_messageid, 1, 32) . '/';
+
+		if (!is_dir($path) && !mkdir($path, 0775, true) && !is_dir($path)) {
+			error_log("Impossible de créer le répertoire : " . $path);
+			return;
+		}
+
+		foreach ($this->_parts as $partsKey => $part) {
+			if (($part['ctype'] ?? '') !== 'application/ms-tnef') {
+				continue;
+			}
+
+			$filename = $part['name'] ?? 'winmail.dat';
+			$fullFilePath = $path . $filename;
+
+			if (file_put_contents($fullFilePath, $part['body']) === false) {
+				error_log("Impossible d'écrire le fichier : " . $fullFilePath);
+				continue;
+			}
+
+			$cmd = sprintf(
+				'tnef %s --number-backups --directory=%s 2>&1',
+				escapeshellarg($fullFilePath),
+				escapeshellarg($path)
+			);
+
+			$output = [];
+			$returnCode = 0;
+			exec($cmd, $output, $returnCode);
+
+			if ($returnCode !== 0) {
+				error_log("Erreur tnef ($returnCode) : " . implode("\n", $output));
+				@unlink($fullFilePath);
+				continue;
+			}
+
+			@unlink($fullFilePath);
+
+			$cdir = scandir($path);
+			if ($cdir === false) {
+				error_log("Impossible de lire le répertoire : " . $path);
+				continue;
+			}
+
+			foreach ($cdir as $value) {
+				if ($value === '.' || $value === '..' || strpos($value, 'OutlookEmoji') !== false) {
+					continue;
+				}
+
+				$extractedFile = $path . $value;
+
+				if (!is_file($extractedFile)) {
+					continue;
+				}
+
+				$contents = file_get_contents($extractedFile);
+				if ($contents === false) {
+					continue;
+				}
+
+				// Correction de l'extension pour les PJ au format pastedImage.png.1
+				$lastPoint = strrpos($value, '.');
+				if ($lastPoint !== false) {
+					$lastExt = substr($value, $lastPoint + 1);
+					if (is_numeric($lastExt)) {
+						$value = $lastExt . '_' . substr($value, 0, $lastPoint);
+					}
+				}
+
+				$this->_parts[] = [
+					'ctype' => '',
+					'name'  => $value,
+					'body'  => $contents,
+				];
+			}
+
+			unset($this->_parts[$partsKey]);
+		}
+
+		if (is_dir($path)) {
+			$this->deleteDir($path);
+		}
+	}
+
+	private function deleteDir($dirPath)
+	{
+		if (!is_dir($dirPath)) {
+			return;
+		}
+
+		if (substr($dirPath, -1) !== '/') {
+			$dirPath .= '/';
+		}
+
+		$files = glob($dirPath . '*', GLOB_MARK);
+		if ($files === false) {
+			return;
+		}
+
+		foreach ($files as $file) {
+			if (is_dir($file)) {
+				$this->deleteDir($file);
+			} else {
+				@unlink($file);
+			}
+		}
+
+		@rmdir($dirPath);
+	}
+	
 	public function is_auto_reply()
 	{
 		return( $this->_is_auto_reply );
