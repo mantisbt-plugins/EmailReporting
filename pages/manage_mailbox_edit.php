@@ -27,7 +27,7 @@ if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailb
 //		'link_rules'             => gpc_get_int_array( 'link_rules', array() ),
 	);
 
-	if ( in_array( $t_mailbox[ 'mailbox_type' ], array( 'IMAP', 'IMAP_PHP_IMAP' ), TRUE ) )
+	if ( in_array( $t_mailbox[ 'mailbox_type' ], array( 'IMAP' ), TRUE ) )
 	{
 		$t_mailbox_imap = array(
 			'imap_basefolder'               => ERP_prepare_directory_string( gpc_get_string( 'imap_basefolder', '' ), TRUE ),

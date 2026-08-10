@@ -74,8 +74,8 @@ ERP_output_table_open( 'mailbox_settings' );
 ERP_output_config_option( 'enabled', 'boolean', $t_mailbox );
 ERP_output_config_option( 'description', 'string', $t_mailbox );
 $t_mailbox_types = array(
-	'IMAP' => array( 'description' => 'IMAP (PEAR)' ),
-	'POP3' => array( 'description' => 'POP3 (PEAR)' ),
+	'IMAP' => array( 'description' => 'IMAP' ), // (PEAR)
+	'POP3' => array( 'description' => 'POP3' ), // (PEAR)
 //	'POP3_JAV_IMAP2' => array( 'description' => 'POP3 (JAV-IMAP2)' ),
 //	'IMAP_JAV_IMAP2' => array( 'description' => 'IMAP (JAV-IMAP2)' )
 );
