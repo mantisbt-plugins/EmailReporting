@@ -1,6 +1,5 @@
 Changelog:
 ??? - EmailReporting-0.12.0
-	- Support for PHP IMAP extension
 //	- Support for Javanile IMAP
 //	- Support for OAuth
 
