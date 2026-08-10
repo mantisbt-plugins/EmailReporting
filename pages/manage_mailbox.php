@@ -79,13 +79,6 @@ $t_mailbox_types = array(
 //	'POP3_JAV_IMAP2' => array( 'description' => 'POP3 (JAV-IMAP2)' ),
 //	'IMAP_JAV_IMAP2' => array( 'description' => 'IMAP (JAV-IMAP2)' )
 );
-if ( extension_loaded( 'imap' ) )
-{
-	$t_mailbox_types += array(
-		'POP3_PHP_IMAP' => array( 'description' => 'POP3 (PHP-IMAP)' ),
-		'IMAP_PHP_IMAP' => array( 'description' => 'IMAP (PHP-IMAP)' )
-	);
-}
 ERP_output_config_option( 'mailbox_type', 'dropdown', $t_mailbox, 'print_descriptions_option_list', $t_mailbox_types );
 ERP_output_config_option( 'hostname', 'string', $t_mailbox );
 ERP_output_config_option( 'port', 'string', $t_mailbox );

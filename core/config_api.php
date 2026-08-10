@@ -8,11 +8,11 @@
 	function ERP_get_default_mailbox()
 	{
 		$t_mailbox = array(
-			'enabled'				=> ON,
-			'mailbox_type'			=> 'POP3',
-			'encryption'			=> 'None',
-			'ssl_cert_verify'		=> ON,
-			'auth_method'			=> 'USER',
+			'enabled'               => ON,
+			'mailbox_type'          => 'POP3',
+			'encryption'            => 'None',
+			'ssl_cert_verify'       => ON,
+			'auth_method'           => 'USER',
 		);
 
 		return( $t_mailbox );
@@ -223,8 +223,8 @@
 				'manage_mailbox',
 			),
 			'lang_get' => array(
-				'documentation_link'	=> 'view_readme',
-				'changelog_link'		=> 'view_changelog',
+				'documentation_link'    => 'view_readme',
+				'changelog_link'        => 'view_changelog',
 			),
 		);
 

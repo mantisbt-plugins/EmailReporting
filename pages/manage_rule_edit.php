@@ -13,8 +13,8 @@ $t_rules = plugin_config_get( 'rules' );
 if ( $f_rule_action === 'add' || $f_rule_action === 'copy' || ( ( $f_rule_action === 'edit' ) && $f_select_rule >= 0 ) )
 {
 	$t_rule = array(
-		'enabled'				=> gpc_get_int( 'enabled' ),
-		'description'			=> gpc_get_string( 'description' ),
+		'enabled'               => gpc_get_int( 'enabled' ),
+		'description'           => gpc_get_string( 'description' ),
 
 // code for retrieving custom fields ids for loop gpc
 /*		$t_custom_fields = custom_field_get_ids();

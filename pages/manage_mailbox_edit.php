@@ -12,26 +12,26 @@ $t_mailboxes = plugin_config_get( 'mailboxes' );
 if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailbox_action === 'edit' || $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test' ) && $f_select_mailbox >= 0 ) )
 {
 	$t_mailbox = array(
-		'enabled'				=> gpc_get_int( 'enabled', ON ),
-		'description'			=> gpc_get_string( 'description', '' ),
-		'mailbox_type'			=> gpc_get_string( 'mailbox_type' ),
-		'hostname'				=> gpc_get_string( 'hostname', '' ),
-		'port'					=> gpc_get_string( 'port', '' ),
-		'encryption'			=> gpc_get_string( 'encryption' ),
-		'ssl_cert_verify'		=> gpc_get_int( 'ssl_cert_verify', ON ),
-		'erp_username'			=> gpc_get_string( 'erp_username', '' ),
-		'erp_password'			=> base64_encode( gpc_get_string( 'erp_password', '' ) ),
-		'auth_method'			=> gpc_get_string( 'auth_method' ),
-		'project_id'			=> gpc_get_int( 'project_id' ),
-		'global_category_id'	=> gpc_get_int( 'global_category_id' ),
-//		'link_rules'			=> gpc_get_int_array( 'link_rules', array() ),
+		'enabled'                => gpc_get_int( 'enabled', ON ),
+		'description'            => gpc_get_string( 'description', '' ),
+		'mailbox_type'           => gpc_get_string( 'mailbox_type' ),
+		'hostname'               => gpc_get_string( 'hostname', '' ),
+		'port'                   => gpc_get_string( 'port', '' ),
+		'encryption'             => gpc_get_string( 'encryption' ),
+		'ssl_cert_verify'        => gpc_get_int( 'ssl_cert_verify', ON ),
+		'erp_username'           => gpc_get_string( 'erp_username', '' ),
+		'erp_password'           => base64_encode( gpc_get_string( 'erp_password', '' ) ),
+		'auth_method'            => gpc_get_string( 'auth_method' ),
+		'project_id'             => gpc_get_int( 'project_id' ),
+		'global_category_id'     => gpc_get_int( 'global_category_id' ),
+//		'link_rules'             => gpc_get_int_array( 'link_rules', array() ),
 	);
 
 	if ( in_array( $t_mailbox[ 'mailbox_type' ], array( 'IMAP', 'IMAP_PHP_IMAP' ), TRUE ) )
 	{
 		$t_mailbox_imap = array(
-			'imap_basefolder'				=> ERP_prepare_directory_string( gpc_get_string( 'imap_basefolder', '' ), TRUE ),
-			'imap_createfolderstructure'	=> gpc_get_int( 'imap_createfolderstructure' ),
+			'imap_basefolder'               => ERP_prepare_directory_string( gpc_get_string( 'imap_basefolder', '' ), TRUE ),
+			'imap_createfolderstructure'    => gpc_get_int( 'imap_createfolderstructure' ),
 		);
 
 		$t_mailbox += $t_mailbox_imap;
