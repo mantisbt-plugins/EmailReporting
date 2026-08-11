@@ -1,32 +1,32 @@
 <?php
-	# Mantis - a php based bugtracking system
-	# Copyright (C) 2002 - 2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
-	# Copyright (C) 2004  Gerrit Beine - gerrit.beine@pitcom.de
-	# Copyright (C) 2007  Rolf Kleef - rolf@drostan.org (IMAP)
-	# This program is distributed under the terms and conditions of the GPL
-	# See the README and LICENSE files for details
+# Mantis - a php based bugtracking system
+# Copyright (C) 2002 - 2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
+# Copyright (C) 2004  Gerrit Beine - gerrit.beine@pitcom.de
+# Copyright (C) 2007  Rolf Kleef - rolf@drostan.org (IMAP)
+# This program is distributed under the terms and conditions of the GPL
+# See the README and LICENSE files for details
 
-	# This page receives an E-Mail via POP3 or IMAP and generates an Report
+# This page receives an E-Mail via POP3 or IMAP and generates an Report
 
-	require_api( 'bug_api.php' );
-	require_api( 'bugnote_api.php' );
-	require_api( 'user_api.php' );
-	require_api( 'file_api.php' );
+require_api( 'bug_api.php' );
+require_api( 'bugnote_api.php' );
+require_api( 'user_api.php' );
+require_api( 'file_api.php' );
 
-	require_once( config_get_global( 'absolute_path' ) . 'api/soap/mc_file_api.php' );
+require_once( config_get_global( 'absolute_path' ) . 'api/soap/mc_file_api.php' );
 
-	//require_once( 'Net/POP3.php' );
-	plugin_require_api( 'core_pear/Net/POP3.php' );
-	//require_once( 'Net/IMAP.php' );
-	plugin_require_api( 'core_pear/Net/IMAP.php' );
+//require_once( 'Net/POP3.php' );
+plugin_require_api( 'core_pear/Net/POP3.php' );
+//require_once( 'Net/IMAP.php' );
+plugin_require_api( 'core_pear/Net/IMAP.php' );
 
-	plugin_require_api( 'core/config_api.php' );
-	plugin_require_api( 'core/Mail/Parser.php' );
+plugin_require_api( 'core/config_api.php' );
+plugin_require_api( 'core/Mail/Parser.php' );
 
-	plugin_require_api( 'core/EmailReplyParser/Parser/EmailParser.php');
-	plugin_require_api( 'core/EmailReplyParser/Parser/FragmentDTO.php');
-	plugin_require_api( 'core/EmailReplyParser/Email.php');
-	plugin_require_api( 'core/EmailReplyParser/Fragment.php');
+plugin_require_api( 'core/EmailReplyParser/Parser/EmailParser.php');
+plugin_require_api( 'core/EmailReplyParser/Parser/FragmentDTO.php');
+plugin_require_api( 'core/EmailReplyParser/Email.php');
+plugin_require_api( 'core/EmailReplyParser/Fragment.php');
 
 class ERP_mailbox_api
 {
@@ -1981,29 +1981,29 @@ class ERP_mailbox_api
 	}
 }
 
-	# --------------------
-	# This function formats the bytes so that they are easily readable.
-	# Not part of a class
-	function ERP_formatbytes( $p_bytes )
+# --------------------
+# This function formats the bytes so that they are easily readable.
+# Not part of a class
+function ERP_formatbytes( $p_bytes )
+{
+	$t_units = array( ' B', ' KiB', ' MiB', ' GiB', ' TiB' );
+
+	$t_bytes = $p_bytes;
+
+	for ( $i = 0; $t_bytes > 1024; $i++ )
 	{
-		$t_units = array( ' B', ' KiB', ' MiB', ' GiB', ' TiB' );
-
-		$t_bytes = $p_bytes;
-
-		for ( $i = 0; $t_bytes > 1024; $i++ )
-		{
-			$t_bytes /= 1024;
-		}
-
-		return( round( $t_bytes, 2 ) . $t_units[ $i ] );
+		$t_bytes /= 1024;
 	}
 
-	# --------------------
-	# Returns the current timestamp
-	function ERP_get_timestamp()
-	{
-		$t_time = explode( ' ', microtime() );
-		return( $t_time[1] + $t_time[0] );
-	}
+	return( round( $t_bytes, 2 ) . $t_units[ $i ] );
+}
+
+# --------------------
+# Returns the current timestamp
+function ERP_get_timestamp()
+{
+	$t_time = explode( ' ', microtime() );
+	return( $t_time[1] + $t_time[0] );
+}
 
 ?>
