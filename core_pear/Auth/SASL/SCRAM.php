@@ -52,6 +52,14 @@ plugin_require_api( 'core_pear/Auth/SASL/Common.php' );
 
 class Auth_SASL_SCRAM extends Auth_SASL_Common
 {
+    private $hash;
+    private $hmac;
+    private $gs2_header;
+    private $cnonce;
+    private $first_message_bare;
+    private $saltedPassword;
+    private $authMessage;
+
     /**
     * Construct a SCRAM-H client where 'H' is a cryptographic hash function.
     *
@@ -71,8 +79,8 @@ class Auth_SASL_SCRAM extends Auth_SASL_Common
             'md5' => 'md5',
             'sha-1' => 'sha1',
             'sha1' => 'sha1',
-            'sha-224' > 'sha224',
-            'sha224' > 'sha224',
+            'sha-224' => 'sha224',
+            'sha224' => 'sha224',
             'sha-256' => 'sha256',
             'sha256' => 'sha256',
             'sha-384' => 'sha384',
@@ -81,21 +89,33 @@ class Auth_SASL_SCRAM extends Auth_SASL_Common
             'sha512' => 'sha512');
         if (function_exists('hash_hmac') && isset($hashes[$hash]))
         {
-            $this->hash = create_function('$data', 'return hash("' . $hashes[$hash] . '", $data, TRUE);');
-            $this->hmac = create_function('$key,$str,$raw', 'return hash_hmac("' . $hashes[$hash] . '", $str, $key, $raw);');
+            $selectedHash = $hashes[$hash];
+            $this->hash = function($data) use ($selectedHash) {
+                return hash($selectedHash, $data, TRUE);
+            };
+            $this->hmac = function($key,$str,$raw) use ($selectedHash) {
+                return hash_hmac($selectedHash, $str, $key, $raw);
+            };
         }
         elseif ($hash == 'md5')
         {
-            $this->hash = create_function('$data', 'return md5($data, true);');
+            $this->hash = function($data) {
+                return md5($data, true);
+            };
             $this->hmac = array($this, '_HMAC_MD5');
         }
         elseif (in_array($hash, array('sha1', 'sha-1')))
         {
-            $this->hash = create_function('$data', 'return sha1($data, true);');
+            $this->hash = function($data) {
+                return sha1($data, true);
+            };
             $this->hmac = array($this, '_HMAC_SHA1');
         }
-        else
+        else {
             return PEAR::raiseError('Invalid SASL mechanism type');
+        }
+
+        return true;
     }
 
     /**
@@ -258,7 +278,7 @@ class Auth_SASL_SCRAM extends Auth_SASL_Common
     * Hi() call, which is essentially PBKDF2 (RFC-2898) with HMAC-H() as the pseudorandom function.
     *
     * @param string $str The string to hash.
-    * @param string $hash The hash value.
+    * @param string $salt The salt value.
     * @param int $i The iteration count.
     * @access private
     */

@@ -77,7 +77,7 @@ if(function_exists('ini_set')) {
  * @author     Greg Beaver <cellog@php.net>
  * @copyright  1997-2006 The PHP Group
  * @license    http://opensource.org/licenses/bsd-license.php New BSD License
- * @version    Release: 1.10.17
+ * @version    Release: 1.10.18
  * @link       http://pear.php.net/package/PEAR
  * @see        PEAR_Error
  * @since      Class available since PHP 4.0.2
@@ -855,7 +855,7 @@ function _PEAR_call_destructors()
  * @author     Gregory Beaver <cellog@php.net>
  * @copyright  1997-2006 The PHP Group
  * @license    http://opensource.org/licenses/bsd-license.php New BSD License
- * @version    Release: 1.10.17
+ * @version    Release: 1.10.18
  * @link       http://pear.php.net/manual/en/core.pear.pear-error.php
  * @see        PEAR::raiseError(), PEAR::throwError()
  * @since      Class available since PHP 4.0.2
