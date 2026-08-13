@@ -41,8 +41,6 @@ class ERP_Mail_Parser
 	private $_mb_list_encodings = array();
 
 	/**
-	* Based on horde-3.3.13 function _mbstringCharset
-	*
 	* Workaround charsets that don't work with mbstring functions.
 	*
 	* The keys in this array should be lowercase
@@ -55,12 +53,15 @@ class ERP_Mail_Parser
 	* Use UHC (CP949) encoding instead. See, e.g.,
 	* http://lists.w3.org/Archives/Public/ietf-charsets/2001AprJun/0030.html */
 	private $_mbstring_unsupportedcharsets = array(
-			'ks_c_5601-1987' => 'UHC',
-			'ks_c_5601-1989' => 'UHC',
-			'us-ascii' => 'ASCII',
-			'big5' => 'BIG-5',
-			'windows-1257' => 'ISO-8859-13', // not perfect but should do the job
-			'windows-1250' => 'ISO-8859-2',
+    	// Korean KSC aliases
+		'ks_c_5601-1987' => 'UHC', // Proper mapping for the way Legacy Outlook uses it 
+		'ks_c_5601-1989' => 'EUC-KR',
+
+		// us-ascii missing from older PHP versions 
+		'us-ascii'       => 'ASCII',
+
+		// Chinese
+		'big5'           => 'BIG-5',
 	);
 
 	public function __construct( $options, $mailbox_starttime = NULL )
@@ -109,6 +110,8 @@ class ERP_Mail_Parser
 			}
 
 			$this->_mb_list_encodings = $r_charset_list + $this->_mbstring_unsupportedcharsets;
+			$this->_fallback_charset = strtolower( trim( $this->_fallback_charset ) );
+			$this->_def_charset = strtolower( trim( $this->_def_charset ) );
 		}
 	}
 
@@ -128,20 +131,34 @@ class ERP_Mail_Parser
 	{
 		if ( extension_loaded( 'mbstring' ) )
 		{
-			if ( $charset === NULL || $charset === 'auto' || !isset( $this->_mb_list_encodings[ strtolower( $charset ) ] ) )
+			if ( empty( $charset ) || $charset === 'auto' )
 			{
 				$charset = mb_detect_encoding( $encode, $this->_def_charset );
 			}
 
 			if ( $charset === FALSE )
 			{
+				echo "\n" . 'Message: Charset not detected: ' . "\n";
 				$charset = $this->_fallback_charset;
-				echo "\n" . 'Message: Charset detection failed on: ' . $encode . "\n";
 			}
+
+			$charset = strtolower( trim( $charset ) );
 
 			if ( $this->_encoding !== $charset )
 			{
-				$t_encode = mb_convert_encoding( $encode, $this->_encoding, $this->_mb_list_encodings[ strtolower( $charset ) ] );
+				if ( isset( $this->_mb_list_encodings[ $charset ] ) )
+				{
+					$t_encode = mb_convert_encoding( $encode, $this->_encoding, $this->_mb_list_encodings[ $charset ] );
+				}
+				elseif ( extension_loaded( 'iconv' ) )
+				{
+					$t_encode = iconv( $charset, $this->_encoding . '//TRANSLIT', $encode );
+				}
+				else
+				{
+					echo "\n" . 'Message: Charset not supported: ' . $charset . "\n";
+					$t_encode = FALSE;
+				}
 
 				if ( $t_encode !== FALSE )
 				{
@@ -175,27 +192,39 @@ class ERP_Mail_Parser
 				$text     = $matches[4];
 
 				// Process unsupported fallback charsets
-				if ( isset( $this->_mb_list_encodings[ strtolower( $charset ) ] ) && isset( $this->_mbstring_unsupportedcharsets[ strtolower( $charset ) ] ) && $this->_mb_list_encodings[ strtolower( $charset ) ] === $this->_mbstring_unsupportedcharsets[ strtolower( $charset ) ] )
+				if ( isset( $this->_mb_list_encodings[ strtolower( trim( $charset ) ) ] ) )
 				{
-					$charset = $this->_mb_list_encodings[ strtolower( $charset ) ];
-				}
+					$charset = strtolower( trim( $charset ) );
+					$charset = $this->_mb_list_encodings[ $charset ];
 
-				// Process unsupported charsets
-				if ( !isset( $this->_mb_list_encodings[ strtolower( $charset ) ] ) )
+					// mb_decode_mimeheader leaves underscores where there should be spaces incase of quoted-printable mimeheaders. Applying workaround.
+					if ( strtolower( $encoding ) === 'q' )
+					{
+						$text = str_replace( '_', ' ', $text );
+					}
+
+					$encode_part = mb_decode_mimeheader( '=?' . $charset . '?' . $encoding . '?' . $text . '?=' );
+				}
+				elseif ( extension_loaded( 'iconv' ) )
+				{
+					$encode_part = iconv_mime_decode( '=?' . $charset . '?' . $encoding . '?' . $text . '?=', 0, $this->_encoding );
+				}
+				else
 				{
 					echo "\n" . 'Message: Charset not supported: ' . $charset . "\n";
-					$charset = $this->_fallback_charset;
+					$use_fallback = TRUE;
+					break;
 				}
 
-				// mb_decode_mimeheader leaves underscores where there should be spaces incase of quoted-printable mimeheaders. Applying workaround.
-				if ( strtolower( $encoding ) === 'q' )
+				if ( $encode_part !== FALSE )
 				{
-					$text = str_replace( '_', ' ', $text );
+					$t_encode = str_replace( $encoded, $encode_part, $t_encode );
 				}
-
-				$encode_part = mb_decode_mimeheader( '=?' . $charset . '?' . $encoding . '?' . $text . '?=' );
-
-				$t_encode = str_replace( $encoded, $encode_part, $t_encode );
+				else
+				{
+					$use_fallback = TRUE;
+					break;
+				}
 			}
 
 			// If any encoded-words are left then mb_decode_mimeheader did not work as intended. Performing fallback
@@ -365,7 +394,7 @@ class ERP_Mail_Parser
 
 		if ( isset( $structure->body ) )
 		{
-			$t_body_charset = NULL;
+			$t_body_charset = '';
 			if ( isset( $structure->ctype_parameters[ 'charset' ] ) )
 			{
 				$t_body_charset = $structure->ctype_parameters[ 'charset' ];
@@ -564,7 +593,7 @@ class ERP_Mail_Parser
 			}
 			else
 			{
-				$t_body_charset = NULL;
+				$t_body_charset = '';
 				if ( isset( $parts[ $i ]->ctype_parameters[ 'charset' ] ) )
 				{
 					$t_body_charset = $parts[ $i ]->ctype_parameters[ 'charset' ];
