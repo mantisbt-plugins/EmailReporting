@@ -125,7 +125,9 @@ class Net_POP3
     */
     //var $supportedAuthMethods=array('DIGEST-MD5', 'CRAM-MD5', 'APOP' , 'PLAIN' , 'LOGIN', 'USER');
     //Disabling DIGEST-MD5 for now
-    var $supportedAuthMethods=array( 'CRAM-MD5', 'APOP' , 'PLAIN' , 'LOGIN', 'USER');
+    // ERP-modification: Add XOAUTH2 support
+    //var $supportedAuthMethods=array( 'CRAM-MD5', 'APOP' , 'PLAIN' , 'LOGIN', 'USER');
+    var $supportedAuthMethods=array( 'CRAM-MD5', 'APOP' , 'PLAIN' , 'LOGIN', 'USER', 'XOAUTH2');
     //var $supportedAuthMethods=array( 'CRAM-MD5', 'PLAIN' , 'LOGIN');
     //var $supportedAuthMethods=array( 'PLAIN' , 'LOGIN');
 
@@ -411,6 +413,10 @@ class Net_POP3
         }
 
         switch ($method) {
+            // ERP-modification: Add XOAUTH2 support
+            case 'XOAUTH2':
+                $result = $this->_authXOAUTH2( $uid , $pwd );
+                break;
             case 'DIGEST-MD5':
                 $result = $this->_authDigest_MD5( $uid , $pwd );
                 break;
@@ -443,6 +449,45 @@ class Net_POP3
         return $result;
     }
 
+
+
+
+    // ERP-modification: Add XOAUTH2 support
+    /**
+    * Authenticates the user using the XOAUTH2 method.
+    *
+    * @param string The userid to authenticate as.
+    * @param string The accesstoken to authenticate with.
+    *
+    * @return array Returns an array containing the response
+    *
+    * @access private
+    * @since  1.0
+    */
+    function _authXOAUTH2($user, $pass  )
+    {
+        $this->_send('AUTH XOAUTH2');
+
+        if ( PEAR::isError( $challenge = $this->_recvLn() ) ) {
+            return $challenge;
+        }
+        if( PEAR::isError($ret=$this->_checkResponse($challenge) )){
+            return $ret;
+        }
+
+
+        $authString = 'user=' . $user . "\x01" . 'auth=Bearer ' . $pass . "\x01\x01";
+        $auth_str   = base64_encode($authString);
+        if ( PEAR::isError( $ret = $this->_send(sprintf('%s', $auth_str)) ) ) {
+            return $ret;
+        }
+
+        if ( PEAR::isError( $challenge = $this->_recvLn() ) ) {
+            return $challenge;
+        }
+
+        return $this->_checkResponse($challenge);
+    }
 
 
 

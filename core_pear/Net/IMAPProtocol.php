@@ -38,7 +38,9 @@ class Net_IMAPProtocol
      * The auth methods this class support
      * @var array
      */
-    var $supportedAuthMethods = array('DIGEST-MD5', 'CRAM-MD5', 'LOGIN');
+    // ERP-modification: Add XOAUTH2 support
+    //var $supportedAuthMethods = array('DIGEST-MD5', 'CRAM-MD5', 'LOGIN');
+    var $supportedAuthMethods = array('DIGEST-MD5', 'CRAM-MD5', 'LOGIN', 'XOAUTH2');
 
 
     /**
@@ -556,6 +558,10 @@ class Net_IMAPProtocol
 
 
         switch ($method) {
+        // ERP-modification: Add XOAUTH2 support
+        case 'XOAUTH2':
+            $result = $this->_authXOAUTH2($uid, $pwd, $cmdid);
+            break;
         case 'DIGEST-MD5':
             $result = $this->_authDigestMD5($uid, $pwd, $cmdid);
             break;
@@ -575,6 +581,48 @@ class Net_IMAPProtocol
         $args = $this->_getRawResponse($cmdid);
         return $this->_genericImapResponseParser($args, $cmdid);
 
+    }
+
+
+
+    // ERP-modification: Add XOAUTH2 support
+    /**
+     * Authenticates the user using the XOAUTH2 method.
+     *
+     * @param string $uid   The userid to authenticate as.
+     * @param string $pwd   The accesstoken to authenticate with.
+     * @param string $cmdid The cmdID.
+     *
+     * @return array Returns an array containing the response
+     * @access private
+     * @since 1.0
+     */
+    function _authXOAUTH2($uid, $pwd, $cmdid)
+    {
+        $error = $this->_putCMD($cmdid,
+                                                  'AUTHENTICATE',
+                                                  'XOAUTH2');
+        if ($error instanceOf PEAR_Error) {
+            return $error;
+        }
+
+        $args = $this->_recvLn();
+        if ($args instanceOf PEAR_Error) {
+            return $args;
+        }
+
+        $this->_getNextToken($args, $plus);
+        $this->_getNextToken($args, $space);
+        $this->_getNextToken($args, $challenge);
+
+        $challenge  = base64_decode($challenge);
+        $authString = 'user=' . $uid . "\x01" . 'auth=Bearer ' . $pwd . "\x01\x01";
+        $auth_str   = base64_encode($authString);
+
+        $error = $this->_send($auth_str . "\r\n");
+        if ($error instanceOf PEAR_Error) {
+            return $error;
+        }
     }
 
 
