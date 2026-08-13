@@ -81,6 +81,11 @@ class ERP_Mail_Parser
 		}
 	}
 
+	/**
+	* Prepare mbstring encodings supported charsets table
+	*
+	* @access private
+	**/
 	private function prepare_mb_list_encodings()
 	{
 		if ( extension_loaded( 'mbstring' ) )
@@ -127,6 +132,13 @@ class ERP_Mail_Parser
 		$this->_content = file_get_contents( $this->_file );
 	}
 
+	/**
+	* Convert body encoding as necessary.
+	*
+	* First try this using mbstring. If that fails attempt iconv.
+	*
+	* @access private
+	**/
 	private function process_body_encoding( $encode, $charset )
 	{
 		if ( extension_loaded( 'mbstring' ) )
@@ -152,7 +164,7 @@ class ERP_Mail_Parser
 				}
 				elseif ( extension_loaded( 'iconv' ) )
 				{
-					$t_encode = iconv( $charset, $this->_encoding . '//TRANSLIT', $encode );
+					$t_encode = @iconv( $charset, $this->_encoding . '//TRANSLIT', $encode );
 				}
 				else
 				{
@@ -166,16 +178,27 @@ class ERP_Mail_Parser
 				}
 			}
 
-			// Replace non-breakable space with normal space
-			$encode = str_replace( "\xC2\xA0" , ' ', $encode );
-			// Remove any invisible unicode control format characters
-			// https://www.fileformat.info/info/unicode/category/Cf/index.htm
-			$encode = preg_replace( '/\p{Cf}+/u', '', $encode );
+			# Should only do this when charset is UTF-8
+			if ( $this->_encoding === $charset || $t_encode !== FALSE )
+			{
+				// Replace non-breakable space with normal space
+				$encode = str_replace( "\xC2\xA0" , ' ', $encode );
+				// Remove any invisible unicode control format characters
+				// https://www.fileformat.info/info/unicode/category/Cf/index.htm
+				$encode = preg_replace( '/\p{Cf}+/u', '', $encode );
+			}
 		}
 
 		return( $encode );
 	}
 
+	/**
+	* Convert header encoding as necessary
+	*
+	* First try this using mbstring. If that fails attempt iconv.
+	*
+	* @access private
+	**/
 	private function process_header_encoding( $encode )
 	{
 		$use_fallback = FALSE;
@@ -191,7 +214,6 @@ class ERP_Mail_Parser
 				$encoding = $matches[3];
 				$text     = $matches[4];
 
-				// Process unsupported fallback charsets
 				if ( isset( $this->_mb_list_encodings[ strtolower( trim( $charset ) ) ] ) )
 				{
 					$charset = strtolower( trim( $charset ) );
@@ -207,7 +229,7 @@ class ERP_Mail_Parser
 				}
 				elseif ( extension_loaded( 'iconv' ) )
 				{
-					$encode_part = iconv_mime_decode( '=?' . $charset . '?' . $encoding . '?' . $text . '?=', 0, $this->_encoding );
+					$encode_part = @iconv_mime_decode( '=?' . $charset . '?' . $encoding . '?' . $text . '?=', 0, $this->_encoding );
 				}
 				else
 				{
