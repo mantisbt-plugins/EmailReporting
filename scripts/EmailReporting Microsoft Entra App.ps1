@@ -53,6 +53,7 @@ $CertificatePassword         = Read-Host "Enter password for PFX export" -AsSecu
 $CertificateOutputPath       = "$PSScriptRoot\$($AppDisplayName -replace '[\\/:*?""<>|]', '_')"
 $CerPath                     = "$CertificateOutputPath.cer"
 $PfxPath                     = "$CertificateOutputPath.pfx"
+$PemPath                     = "$CertificateOutputPath.pem"
 
 
 # Office 365 Exchange Online resource app.
@@ -115,6 +116,12 @@ if($Module.count -eq 0)
     Write-Host Installing MSGraph. -ForegroundColor Green
     Install-Module Microsoft.Graph -AllowClobber -Scope CurrentUser
 }
+$Module=Get-InstalledModule -Name ExchangeOnlineManagement -ErrorAction SilentlyContinue
+if($Module.count -eq 0)
+{
+    Write-Host ExchangeOnlineManagement. -ForegroundColor Green
+    Install-Module ExchangeOnlineManagement -AllowClobber -Scope CurrentUser
+}
 
 Write-Host "Checking Microsoft Graph connection..." -ForegroundColor Cyan
 
@@ -138,6 +145,20 @@ if (-not $MgContext) {
 }
 
 Write-Host "Connected to tenant: $($MgContext.TenantId)" -ForegroundColor Green
+
+Write-Host "Checking Microsoft Exchange connection..." -ForegroundColor Cyan
+
+if(-not (Get-ConnectionInformation | Where-Object {$_.State -eq 'Connected' -and -not $_.IsEopSession})) {
+    Connect-ExchangeOnline -ShowBanner:$false
+}
+
+$EXOConnection = Get-ConnectionInformation | Where-Object {$_.State -eq 'Connected' -and -not $_.IsEopSession}
+
+if(-not ($EXOConnection)) {
+    throw "Microsoft Exchange is not connected. Connect first using Connect-ExchangeOnline."
+}
+
+Write-Host "Connected to EXO: $(($EXOConnection).UserPrincipalName)" -ForegroundColor Green
 
 $Mailboxes = @($Mailboxes)
 foreach ($Mailbox in $Mailboxes) {
@@ -409,7 +430,7 @@ if ($CreateClientSecret) {
 $CertificateCredential = $null
 
 if ($CreateCertificateCredential) {
-    if ((Test-Path $CerPath) -and (Test-Path $PfxPath)) {
+    if (Test-Path $PfxPath) {
         Write-Host "Existing Certificate found: $PfxPath" -ForegroundColor Cyan
 
         $Certificate = Get-PfxData -FilePath $PfxPath -Password $CertificatePassword | select -expandproperty EndEntityCertificates
@@ -434,12 +455,6 @@ if ($CreateCertificateCredential) {
             -HashAlgorithm SHA256 `
             -NotAfter (Get-Date).AddMonths($CertificateValidMonths)
 
-        Export-Certificate `
-            -Cert $Certificate `
-            -FilePath $CerPath `
-            -Force |
-            Out-Null
-
         Export-PfxCertificate `
             -Cert $Certificate `
             -FilePath $PfxPath `
@@ -449,8 +464,35 @@ if ($CreateCertificateCredential) {
 
         Write-Host "Certificate exported:" -ForegroundColor Green
     }
+
+    Export-Certificate `
+        -Cert $Certificate `
+        -FilePath $CerPath `
+        -Force |
+        Out-Null
+
+    if(($PSVersionTable::PSVersion.Major) -ge 7) {
+        $rsa = [System.Security.Cryptography.X509Certificates.RSACertificateExtensions]::GetRSAPrivateKey($Certificate)
+        $keyBytes = $rsa.ExportPkcs8PrivateKey()
+        $pem = -join [System.Security.Cryptography.PemEncoding]::Write(
+            "PRIVATE KEY",
+            $keyBytes
+        )
+        Set-Content -Path $PemPath -Value $pem -Encoding ascii
+    }
+    elseif (Get-Command openssl -ErrorAction SilentlyContinue) {
+        $PlainPassword = [System.Net.NetworkCredential]::new(
+            '',
+            $CertificatePassword
+            ).Password
+        openssl pkcs12 -in $PfxPath -nocerts -nodes -out $PemPath -passin "pass:$PlainPassword"
+    }
+
     Write-Host "CER: $CerPath"
     Write-Host "PFX: $PfxPath"
+    if((($PSVersionTable::PSVersion.Major) -ge 7) -or (Get-Command openssl -ErrorAction SilentlyContinue)) {
+        Write-Host "PEM: $PemPath"
+    }
 
     $RawCertificate = [System.IO.File]::ReadAllBytes($CerPath)
 
@@ -644,12 +686,13 @@ $Result = [PSCustomObject]@{
     ExchangeServicePrincipalId     = $ExchangeServicePrincipal.Identity
     ExchangeServicePrincipalAppId  = $ExchangeServicePrincipal.AppId
     ExchangeServicePrincipalObjId  = $ExchangeServicePrincipal.ObjectId
-    Mailboxen                      = $Mailboxes -join ", "
+    Mailboxes                      = $Mailboxes -join ", "
     PermissionIMAP                 = $ExchangePermissionValueIMAP
     PermissionPOP                  = $ExchangePermissionValuePOP
     TokenScopeForPHP               = "https://outlook.office365.com/.default"
-    ImapServer                     = "outlook.office365.com"
+    MailServer                     = "outlook.office365.com"
     ImapPort                       = 993
+    PopPort                        = 995
     ClientSecretCreated            = [bool]$ClientSecret
     ClientSecretValue              = if ($ClientSecret) { $ClientSecret.SecretText } else { $null }
     ClientSecretExpires            = if ($ClientSecret) { $ClientSecret.EndDateTime } else { $null }
@@ -661,6 +704,14 @@ $Result = [PSCustomObject]@{
 
 $Result | Format-List
 
+if((($PSVersionTable::PSVersion.Major) -lt 7) -and -not (Get-Command openssl -ErrorAction SilentlyContinue)) {
+    Write-Host ""
+    Write-Host "Powershell 7 is able to write .pem files. Powershell 5 is not." -ForegroundColor Cyan
+    Write-Host "You will need to use openssl or a tool of your choice to get the plain text private key." -ForegroundColor Cyan
+    Write-Host "Command: openssl pkcs12 -in ""$PfxPath"" -nocerts -nodes -out ""$PemPath"""
+    Write-Host ""
+}
 
-Write-Host "`nPress Enter to return to the menu..."
+Write-Host "`nPress Enter to return..."
 [void][System.Console]::ReadLine()
+
