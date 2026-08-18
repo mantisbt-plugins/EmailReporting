@@ -511,9 +511,14 @@ class ERP_Mail_Parser
 
 	private function setBody( $body, $ctype_primary, $ctype_secondary, $charset )
 	{
-		if ( is_blank( $body ) || !is_blank( $this->_body ) )
+		if ( is_blank( $body ) )
 		{
-			return;
+			return( NULL );
+		}
+
+		if ( !is_blank( $this->_body ) )
+		{
+			return( FALSE );
 		}
 
 		$this->setContentType( $ctype_primary, $ctype_secondary );
@@ -579,26 +584,33 @@ class ERP_Mail_Parser
 			$p_attached_email_subject = $parts[ $i ]->headers[ 'subject' ];
 		}
 
-		if ( 'text' === strtolower( $parts[ $i ]->ctype_primary ) && in_array( strtolower( $parts[ $i ]->ctype_secondary ), array( 'plain', 'html' ), TRUE ) )
+		$parts[ $i ]->ctype_primary = strtolower( $parts[ $i ]->ctype_primary );
+		$parts[ $i ]->ctype_secondary = strtolower( $parts[ $i ]->ctype_secondary );
+		if ( 'text' === $parts[ $i ]->ctype_primary && in_array( $parts[ $i ]->ctype_secondary, array( 'plain', 'html' ), TRUE ) )
 		{
 			$t_stop_part = FALSE;
 
 			// We prefer the plaintext body if markdown is disabled. We prefer the html body if markdown is enabled
 			// It must only have 2 parts. Most likely one is text/html and one is text/plain
-			if (
-				count( $parts ) === 2 && !isset( $parts[ $i ]->parts ) && !isset( $parts[ $i+1 ]->parts ) &&
-				'text' === strtolower( $parts[ $i+1 ]->ctype_primary ) &&
-				in_array( strtolower( $parts[ $i+1 ]->ctype_secondary ), array( 'plain', 'html' ), TRUE ) &&
-				strtolower( $parts[ $i ]->ctype_secondary ) !== strtolower( $parts[ $i+1 ]->ctype_secondary )
-			)
+			if ( count( $parts ) === 2 )
 			{
-				if ( ( strtolower( $parts[ $i ]->ctype_secondary ) === 'plain' && $this->_parse_html && $this->_process_markdown ) ||
-					( strtolower( $parts[ $i ]->ctype_secondary ) === 'html' && !$this->_process_markdown ) )
+				$parts[ $i + 1 ]->ctype_primary = strtolower( $parts[ $i + 1 ]->ctype_primary );
+				$parts[ $i + 1 ]->ctype_secondary = strtolower( $parts[ $i + 1 ]->ctype_secondary );
+				if (
+					!isset( $parts[ $i ]->parts ) && !isset( $parts[ $i + 1 ]->parts ) &&
+					'text' === $parts[ $i + 1 ]->ctype_primary &&
+					in_array( $parts[ $i + 1 ]->ctype_secondary, array( 'plain', 'html' ), TRUE ) &&
+					$parts[ $i ]->ctype_secondary !== $parts[ $i + 1 ]->ctype_secondary
+				)
 				{
-					$i++;
-				}
+					if ( ( $parts[ $i ]->ctype_secondary === 'plain' && $this->_parse_html && $this->_process_markdown ) ||
+						( $parts[ $i ]->ctype_secondary === 'html' && !$this->_process_markdown ) )
+					{
+						$i++;
+					}
 
-				$t_stop_part = TRUE;
+					$t_stop_part = TRUE;
+				}
 			}
 
 			if ( $attachment === TRUE )
