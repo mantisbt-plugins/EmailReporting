@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "433bbff0b9426ec1f2dc531ac3166e7a",
+    "content-hash": "84065a4acc8d86e60291eb14d500e29a",
     "packages": [
         {
             "name": "pear/console_getopt",
@@ -413,16 +413,16 @@
         },
         {
             "name": "sl-gundam/markdownify",
-            "version": "v2.3.3.3",
+            "version": "v2.3.3.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SL-Gundam/Markdownify.git",
-                "reference": "3bb0bffe87d618329e13e6afc8c544ee4b0e442d"
+                "reference": "c310af0128767ac75d626b54662fc33ae5e36886"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SL-Gundam/Markdownify/zipball/3bb0bffe87d618329e13e6afc8c544ee4b0e442d",
-                "reference": "3bb0bffe87d618329e13e6afc8c544ee4b0e442d",
+                "url": "https://api.github.com/repos/SL-Gundam/Markdownify/zipball/c310af0128767ac75d626b54662fc33ae5e36886",
+                "reference": "c310af0128767ac75d626b54662fc33ae5e36886",
                 "shasum": ""
             },
             "require": {
@@ -475,9 +475,9 @@
                 "markdownify"
             ],
             "support": {
-                "source": "https://github.com/SL-Gundam/Markdownify/tree/v2.3.3.3"
+                "source": "https://github.com/SL-Gundam/Markdownify/tree/v2.3.3.4"
             },
-            "time": "2026-08-17T19:29:42+00:00"
+            "time": "2026-08-18T22:00:47+00:00"
         },
         {
             "name": "sl-gundam/net_imap",
@@ -727,7 +727,12 @@
     "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": {},
+    "platform": {
+        "php": "^8.1",
+        "ext-mbstring": "*",
+        "ext-iconv": "*",
+        "ext-openssl": "*"
+    },
     "platform-dev": {},
     "platform-overrides": {
         "php": "8.1.34"
