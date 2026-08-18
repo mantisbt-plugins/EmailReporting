@@ -54,22 +54,6 @@ if ( $f_mailbox_action === 'complete_test' )
 	ERP_output_note_close();
 }
 
-// Loading this one here to throw a error if necessary and notifying the user of the issue
-plugin_require_api( 'core_pear/PEAR.php' );
-if ( !defined( 'PEAR_OS' ) )
-{
-	ERP_output_note_open();
-?>
-<p><i class="fa fa-warning"></i> 
-<?php echo plugin_lang_get( 'pear_load_error' ); ?>
-</p>
-<?php
-	ERP_output_note_close();
-}
-?>
-
-<?php
-
 ERP_output_table_open( 'mailbox_settings' );
 ERP_output_config_option( 'enabled', 'boolean', $t_mailbox );
 ERP_output_config_option( 'description', 'string', $t_mailbox );

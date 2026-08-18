@@ -1,14 +1,5 @@
 <?php
 
-//require_once( 'Mail/mimeDecode.php' );
-plugin_require_api( 'core_pear/Mail/mimeDecode.php' );
-
-plugin_require_api( 'core/Mail/simple_html_dom.php' );
-
-plugin_require_api( 'core/Mail/Markdownify/Converter.php' );
-plugin_require_api( 'core/Mail/Markdownify/ConverterExtra.php' );
-plugin_require_api( 'core/Mail/Markdownify/Parser.php' );
-
 class ERP_Mail_Parser
 {
 	private $_parse_html = FALSE;
@@ -448,11 +439,11 @@ class ERP_Mail_Parser
 		 * - https://www.arp242.net/autoreply.html
 		*/
 		if (
-			isset( $structure->headers[ 'x-autoreply' ] )
-			|| isset( $structure->headers[ 'x-autorespond' ] )
-			|| isset( $structure->headers[ 'x-ag-autoreply' ] )
-			|| ( isset( $structure->headers[ 'auto-submitted' ] ) && $structure->headers[ 'auto-submitted' ] !== 'no' )
-			|| ( isset( $structure->headers[ 'precedence' ] ) && $structure->headers[ 'precedence' ] === 'auto_reply' )
+			isset( $structure->headers[ 'x-autoreply' ] ) ||
+			isset( $structure->headers[ 'x-autorespond' ] ) ||
+			isset( $structure->headers[ 'x-ag-autoreply' ] ) ||
+			( isset( $structure->headers[ 'auto-submitted' ] ) && $structure->headers[ 'auto-submitted' ] !== 'no' ) ||
+			( isset( $structure->headers[ 'precedence' ] ) && $structure->headers[ 'precedence' ] === 'auto_reply' )
 		)
 		{
 			$this->setAutoReply( TRUE );
@@ -555,7 +546,8 @@ class ERP_Mail_Parser
 			}
 			else
 			{
-				$htmlToText = str_get_html( $body, true, true, $this->_encoding, false ); 
+				$htmlToText = new PHPCore\SimpleHtmlDom\HtmlDocument( null, true, true, $this->_encoding, false );
+				$htmlToText->load( $body, true, false );
 
 				// extract text from HTML
 				$this->_body = $htmlToText->plaintext;

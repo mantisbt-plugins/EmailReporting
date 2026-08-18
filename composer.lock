@@ -1,0 +1,736 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "433bbff0b9426ec1f2dc531ac3166e7a",
+    "packages": [
+        {
+            "name": "pear/console_getopt",
+            "version": "v1.4.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pear/Console_Getopt.git",
+                "reference": "a41f8d3e668987609178c7c4a9fe48fecac53fa0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pear/Console_Getopt/zipball/a41f8d3e668987609178c7c4a9fe48fecac53fa0",
+                "reference": "a41f8d3e668987609178c7c4a9fe48fecac53fa0",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Console": "./"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "include-path": [
+                "./"
+            ],
+            "license": [
+                "BSD-2-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Andrei Zmievski",
+                    "email": "andrei@php.net",
+                    "role": "Lead"
+                },
+                {
+                    "name": "Stig Bakken",
+                    "email": "stig@php.net",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Greg Beaver",
+                    "email": "cellog@php.net",
+                    "role": "Helper"
+                }
+            ],
+            "description": "More info available on: http://pear.php.net/package/Console_Getopt",
+            "support": {
+                "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=Console_Getopt",
+                "source": "https://github.com/pear/Console_Getopt"
+            },
+            "time": "2019-11-20T18:27:48+00:00"
+        },
+        {
+            "name": "pear/pear-core-minimal",
+            "version": "v1.10.18",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pear/pear-core-minimal.git",
+                "reference": "c7b55789d01de0ce090d289b73f1bbd6a2f113b1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pear/pear-core-minimal/zipball/c7b55789d01de0ce090d289b73f1bbd6a2f113b1",
+                "reference": "c7b55789d01de0ce090d289b73f1bbd6a2f113b1",
+                "shasum": ""
+            },
+            "require": {
+                "pear/console_getopt": "~1.4",
+                "pear/pear_exception": "~1.0",
+                "php": ">=5.4"
+            },
+            "replace": {
+                "rsky/pear-core-min": "self.version"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "include-path": [
+                "src/"
+            ],
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Christian Weiske",
+                    "email": "cweiske@php.net",
+                    "role": "Lead"
+                }
+            ],
+            "description": "Minimal set of PEAR core files to be used as composer dependency",
+            "support": {
+                "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=PEAR",
+                "source": "https://github.com/pear/pear-core-minimal"
+            },
+            "time": "2025-12-14T20:37:07+00:00"
+        },
+        {
+            "name": "pear/pear_exception",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pear/PEAR_Exception.git",
+                "reference": "b14fbe2ddb0b9f94f5b24cf08783d599f776fff0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pear/PEAR_Exception/zipball/b14fbe2ddb0b9f94f5b24cf08783d599f776fff0",
+                "reference": "b14fbe2ddb0b9f94f5b24cf08783d599f776fff0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.2.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "<9"
+            },
+            "type": "class",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "classmap": [
+                    "PEAR/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "include-path": [
+                "."
+            ],
+            "license": [
+                "BSD-2-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Helgi Thormar",
+                    "email": "dufuz@php.net"
+                },
+                {
+                    "name": "Greg Beaver",
+                    "email": "cellog@php.net"
+                }
+            ],
+            "description": "The PEAR Exception base class.",
+            "homepage": "https://github.com/pear/PEAR_Exception",
+            "keywords": [
+                "exception"
+            ],
+            "support": {
+                "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=PEAR_Exception",
+                "source": "https://github.com/pear/PEAR_Exception"
+            },
+            "time": "2021-03-21T15:43:46+00:00"
+        },
+        {
+            "name": "php-core/simplehtmldom",
+            "version": "0.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-core/simplehtmldom.git",
+                "reference": "9565297a3d0e0d1b981faef0086dda24d6c7a89f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-core/simplehtmldom/zipball/9565297a3d0e0d1b981faef0086dda24d6c7a89f",
+                "reference": "9565297a3d0e0d1b981faef0086dda24d6c7a89f",
+                "shasum": ""
+            },
+            "require": {
+                "ext-iconv": "*",
+                "php": ">=8.1"
+            },
+            "require-dev": {
+                "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+                "phpcompatibility/php-compatibility": "^9.3",
+                "phpunit/phpunit": "^9.6",
+                "squizlabs/php_codesniffer": "^3.11"
+            },
+            "suggest": {
+                "ext-curl": "Needed to support cURL downloads in class HtmlWeb",
+                "ext-mbstring": "Allows better decoding for multi-byte documents",
+                "ext-openssl": "Allows loading HTTPS pages when using cURL"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/include/constants.php",
+                    "src/include/functions.php"
+                ],
+                "psr-4": {
+                    "PHPCore\\SimpleHtmlDom\\": "src/PHPCore/SimpleHtmlDom"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "S.C. Chen",
+                    "role": "Developer"
+                },
+                {
+                    "name": "John Schlick",
+                    "role": "Developer"
+                },
+                {
+                    "name": "logmanoriginal",
+                    "role": "Developer"
+                },
+                {
+                    "name": "PHP-Core",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A fast, simple and reliable HTML document parser for PHP.",
+            "homepage": "https://github.com/php-core/simplehtmldom",
+            "keywords": [
+                "Simple",
+                "dom",
+                "html",
+                "parser",
+                "php",
+                "simplehtmldom"
+            ],
+            "support": {
+                "issues": "https://github.com/php-core/simplehtmldom/issues",
+                "source": "https://github.com/php-core/simplehtmldom",
+                "wiki": "https://github.com/php-core/simplehtmldom/blob/master/docs/index.md"
+            },
+            "time": "2024-12-09T01:07:54+00:00"
+        },
+        {
+            "name": "qualityunit/tnef-decoder",
+            "version": "1.2.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/QualityUnit/TNEFDecoder.git",
+                "reference": "499ce51150d744cfb8c02d9656eb792df3f6b853"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/QualityUnit/TNEFDecoder/zipball/499ce51150d744cfb8c02d9656eb792df3f6b853",
+                "reference": "499ce51150d744cfb8c02d9656eb792df3f6b853",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "php": ">=7.0"
+            },
+            "require-dev": {
+                "overtrue/phplint": "^2.0",
+                "phpunit/phpunit": "^9.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "TNEFDecoder\\": "src/TNEFDecoder/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "description": "TNEF Decoder library extracted from squirell mail plugin to decode winmail.dat file in email attachment",
+            "homepage": "https://github.com/QualityUnit/TNEFDecoder",
+            "keywords": [
+                "tnef decoder",
+                "winmail.dat"
+            ],
+            "support": {
+                "issues": "https://github.com/QualityUnit/TNEFDecoder/issues",
+                "source": "https://github.com/QualityUnit/TNEFDecoder/tree/1.2.9"
+            },
+            "time": "2024-01-09T13:30:27+00:00"
+        },
+        {
+            "name": "sl-gundam/auth_sasl",
+            "version": "v1.2.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SL-Gundam/Auth_SASL.git",
+                "reference": "579db65bfe76aa392310ba44dabf5f730f2a7c03"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SL-Gundam/Auth_SASL/zipball/579db65bfe76aa392310ba44dabf5f730f2a7c03",
+                "reference": "579db65bfe76aa392310ba44dabf5f730f2a7c03",
+                "shasum": ""
+            },
+            "require": {
+                "pear/pear-core-minimal": "*",
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "@stable"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Auth": "./"
+                }
+            },
+            "include-path": [
+                "./"
+            ],
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "email": "amistry@am-productions.biz",
+                    "name": "Anish Mistry",
+                    "role": "Lead"
+                },
+                {
+                    "email": "richard@php.net",
+                    "name": "Richard Heyes",
+                    "role": "Lead"
+                },
+                {
+                    "email": "michael@bretterklieber.com",
+                    "name": "Michael Bretterklieber",
+                    "role": "Lead"
+                },
+                {
+                    "name": "SL-Gundam",
+                    "role": "Maintainer",
+                    "homepage": "https://github.com/SL-Gundam"
+                }
+            ],
+            "description": "Fork of pear/Auth_SASL with fixes/improvements for EmailReporting",
+            "homepage": "http://pear.php.net/package/Auth_SASL",
+            "support": {
+                "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=Auth_SASL",
+                "source": "https://github.com/pear/Auth_SASL"
+            },
+            "time": "2026-08-16T21:39:20+00:00"
+        },
+        {
+            "name": "sl-gundam/mail_mimedecode",
+            "version": "v1.5.6.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SL-Gundam/Mail_mimeDecode.git",
+                "reference": "4a1f444bc2e36b4c265cac3b1a5e8cecade1b3bf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SL-Gundam/Mail_mimeDecode/zipball/4a1f444bc2e36b4c265cac3b1a5e8cecade1b3bf",
+                "reference": "4a1f444bc2e36b4c265cac3b1a5e8cecade1b3bf",
+                "shasum": ""
+            },
+            "require": {
+                "pear/pear-core-minimal": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "Mail/mimeDecode.php"
+                ],
+                "psr-4": {
+                    "Pear\\": "vendor/pear/pear-core-minimal/src/"
+                }
+            },
+            "include-path": [
+                "./"
+            ],
+            "license": [
+                "BSD-3-clause"
+            ],
+            "authors": [
+                {
+                    "email": "alan@roojs.com",
+                    "name": "Alan Knowles",
+                    "homepage": "http://www.roojs.com",
+                    "role": "Lead"
+                },
+                {
+                    "email": "cipri@php.net",
+                    "name": "Cipriano Groenendal",
+                    "role": "Lead"
+                },
+                {
+                    "email": "alec@php.net",
+                    "name": "George Schlossnagle",
+                    "role": "Developer, inactive"
+                },
+                {
+                    "name": "SL-Gundam"
+                }
+            ],
+            "description": "Provides a class to decode mime messages. A updated fork of pear/mail_mime-decode. Fork of TheTechsTech/Mail_mimeDecode with fixes/improvements for EmailReporting",
+            "homepage": "http://pear.php.net/package/Mail_mimeDecode",
+            "support": {
+                "issues": "https://github.com/sl-gundam/Mail_mimeDecode/issues",
+                "source": "https://github.com/pear/Mail_mimeDecode"
+            },
+            "time": "2026-08-18T04:06:21+00:00"
+        },
+        {
+            "name": "sl-gundam/markdownify",
+            "version": "v2.3.3.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SL-Gundam/Markdownify.git",
+                "reference": "3bb0bffe87d618329e13e6afc8c544ee4b0e442d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SL-Gundam/Markdownify/zipball/3bb0bffe87d618329e13e6afc8c544ee4b0e442d",
+                "reference": "3bb0bffe87d618329e13e6afc8c544ee4b0e442d",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^11.5"
+            },
+            "type": "lib",
+            "autoload": {
+                "psr-4": {
+                    "Markdownify\\": "src"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Test\\Markdownify\\": "test"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "phpunit"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Milian Wolff",
+                    "email": "mail@milianw.de",
+                    "homepage": "http://milianw.de"
+                },
+                {
+                    "name": "Thomas Zilliox",
+                    "email": "hello@tzi.fr",
+                    "homepage": "https://tzi.fr"
+                },
+                {
+                    "name": "SL-Gundam",
+                    "homepage": "https://github.com/SL-Gundam"
+                }
+            ],
+            "description": "Fork of Elephant418/Markdownify with fixes/improvements for EmailReporting",
+            "homepage": "https://github.com/elephant418/Markdownify",
+            "keywords": [
+                "converter",
+                "html",
+                "markdown",
+                "markdownify"
+            ],
+            "support": {
+                "source": "https://github.com/SL-Gundam/Markdownify/tree/v2.3.3.3"
+            },
+            "time": "2026-08-17T19:29:42+00:00"
+        },
+        {
+            "name": "sl-gundam/net_imap",
+            "version": "1.1.4.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SL-Gundam/Net_IMAP.git",
+                "reference": "d8e2e656f5017e506e10f7b0e868538ad9709734"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SL-Gundam/Net_IMAP/zipball/d8e2e656f5017e506e10f7b0e868538ad9709734",
+                "reference": "d8e2e656f5017e506e10f7b0e868538ad9709734",
+                "shasum": ""
+            },
+            "require": {
+                "pear/pear_exception": "*",
+                "sl-gundam/net_socket": "*"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "*"
+            },
+            "suggest": {
+                "sl-gundam/auth_sasl": "Install optionally via your project's composer.json"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Net": "./"
+                }
+            },
+            "include-path": [
+                "./"
+            ],
+            "license": [
+                "PHP-3.01"
+            ],
+            "authors": [
+                {
+                    "email": "amistry@am-productions.biz",
+                    "name": "Anish Mistry",
+                    "role": "Lead"
+                },
+                {
+                    "email": "hudeldudel@php.net",
+                    "name": "Sebastian Ebling",
+                    "role": "Lead"
+                },
+                {
+                    "email": "damlists@cnba.uba.ar",
+                    "name": "Damian Alejandro Fernandez Sosa",
+                    "role": "Lead"
+                },
+                {
+                    "name": "SL-Gundam",
+                    "role": "Maintainer",
+                    "homepage": "https://github.com/SL-Gundam"
+                }
+            ],
+            "description": "Fork of pear/Net_IMAP with fixes/improvements for EmailReporting",
+            "support": {
+                "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=Net_IMAP",
+                "source": "https://github.com/pear/Net_IMAP"
+            },
+            "time": "2026-08-17T18:32:42+00:00"
+        },
+        {
+            "name": "sl-gundam/net_pop3",
+            "version": "v1.3.9.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SL-Gundam/Net_POP3.git",
+                "reference": "9e53aa95f0bd170912c41c823c47a004b4cf67be"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SL-Gundam/Net_POP3/zipball/9e53aa95f0bd170912c41c823c47a004b4cf67be",
+                "reference": "9e53aa95f0bd170912c41c823c47a004b4cf67be",
+                "shasum": ""
+            },
+            "require": {
+                "pear/pear_exception": "*",
+                "sl-gundam/net_socket": "*"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "*"
+            },
+            "suggest": {
+                "sl-gundam/auth_sasl": "Install optionally via your project's composer.json"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Net": "./"
+                }
+            },
+            "include-path": [
+                "./"
+            ],
+            "license": [
+                "BSD"
+            ],
+            "authors": [
+                {
+                    "email": "richard@php.net",
+                    "name": "Richard Heyes",
+                    "role": "Lead"
+                },
+                {
+                    "email": "damlists@cnba.uba.ar",
+                    "name": "Damian Fernandez Sosa",
+                    "role": "Lead"
+                },
+                {
+                    "email": "george@omniti.com",
+                    "name": "George Schlossnagle",
+                    "role": "Lead"
+                },
+                {
+                    "name": "SL-Gundam",
+                    "role": "Maintainer",
+                    "homepage": "https://github.com/SL-Gundam"
+                }
+            ],
+            "description": "Fork of pear/Net_POP3 with fixes/improvements for EmailReporting",
+            "support": {
+                "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=Net_POP3",
+                "source": "https://github.com/pear/Net_POP3"
+            },
+            "time": "2026-08-17T18:37:47+00:00"
+        },
+        {
+            "name": "sl-gundam/net_socket",
+            "version": "v1.2.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SL-Gundam/Net_Socket.git",
+                "reference": "4b0d9afa97277b51563c6f73895b6b9bc948886f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SL-Gundam/Net_Socket/zipball/4b0d9afa97277b51563c6f73895b6b9bc948886f",
+                "reference": "4b0d9afa97277b51563c6f73895b6b9bc948886f",
+                "shasum": ""
+            },
+            "require": {
+                "pear/pear-core-minimal": "*",
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Net": "./"
+                }
+            },
+            "include-path": [
+                "./"
+            ],
+            "license": [
+                "BSD-2-Clause"
+            ],
+            "authors": [
+                {
+                    "email": "chuck@horde.org",
+                    "name": "Chuck Hagenbuch",
+                    "role": "Lead"
+                },
+                {
+                    "email": "stig@php.net",
+                    "name": "Stig Bakken",
+                    "role": "Lead"
+                },
+                {
+                    "email": "alec@php.net",
+                    "name": "Aleksander Machniak",
+                    "role": "Lead"
+                },
+                {
+                    "name": "SL-Gundam",
+                    "role": "Maintainer",
+                    "homepage": "https://github.com/SL-Gundam"
+                }
+            ],
+            "description": "Fork of pear/Net_Socket with fixes/improvements for EmailReporting",
+            "support": {
+                "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=Net_Socket",
+                "source": "https://github.com/pear/Net_Socket"
+            },
+            "time": "2026-08-16T19:41:46+00:00"
+        },
+        {
+            "name": "willdurand/email-reply-parser",
+            "version": "2.10.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/willdurand/EmailReplyParser.git",
+                "reference": "f25f8c6c3cb876112e3857eb3da15e38e44e4725"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/willdurand/EmailReplyParser/zipball/f25f8c6c3cb876112e3857eb3da15e38e44e4725",
+                "reference": "f25f8c6c3cb876112e3857eb3da15e38e44e4725",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.4.0"
+            },
+            "require-dev": {
+                "symfony/phpunit-bridge": "^5.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.8-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "EmailReplyParser\\": "src/EmailReplyParser"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "William Durand",
+                    "email": "will+git@drnd.me"
+                }
+            ],
+            "description": "Port of the cool GitHub's EmailReplyParser library in PHP",
+            "keywords": [
+                "email",
+                "reply-parser"
+            ],
+            "support": {
+                "issues": "https://github.com/willdurand/EmailReplyParser/issues",
+                "source": "https://github.com/willdurand/EmailReplyParser/tree/2.10.0"
+            },
+            "time": "2022-01-30T20:56:36+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {},
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {},
+    "platform-dev": {},
+    "platform-overrides": {
+        "php": "8.1.34"
+    },
+    "plugin-api-version": "2.9.0"
+}

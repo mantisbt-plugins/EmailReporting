@@ -15,18 +15,8 @@ require_api( 'file_api.php' );
 
 require_once( config_get_global( 'absolute_path' ) . 'api/soap/mc_file_api.php' );
 
-//require_once( 'Net/POP3.php' );
-plugin_require_api( 'core_pear/Net/POP3.php' );
-//require_once( 'Net/IMAP.php' );
-plugin_require_api( 'core_pear/Net/IMAP.php' );
-
 plugin_require_api( 'core/config_api.php' );
 plugin_require_api( 'core/Mail/Parser.php' );
-
-plugin_require_api( 'core/EmailReplyParser/Parser/EmailParser.php');
-plugin_require_api( 'core/EmailReplyParser/Parser/FragmentDTO.php');
-plugin_require_api( 'core/EmailReplyParser/Email.php');
-plugin_require_api( 'core/EmailReplyParser/Fragment.php');
 
 class ERP_mailbox_api
 {
@@ -419,7 +409,7 @@ class ERP_mailbox_api
 	# process all mails for an imap mailbox
 	private function process_imap_mailbox()
 	{
-		$this->_mailserver = new Net_IMAP();
+		$this->_mailserver = new Net_IMAP( NULL );
 		$this->_mailserver->setTimeout( 3 );
 
 		$this->_mailserver->setStreamContextOptions( $this->get_StreamContextOptions() );
