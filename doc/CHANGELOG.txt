@@ -6,10 +6,7 @@ Aug 2026 - EmailReporting-0.12.0
 	- Improve charset conversion. Iconv is used as fallback.
 	- Changed simple_html_dom to php-core/simplehtmldom (Composer)
 	- Composer migration: PEAR, Auth_SASL, Net_IMAP, Net_POP3, Net_Socket, Net_mimeDecode, Markdownify (ERP version), EmailReplyParser
-//	- Support for Javanile IMAP
-//	- Support for OAuth
-//	- TNEF decoder support see https://github.com/mantisbt-plugins/EmailReporting/pull/39
-//	- Update readme requirements specification
+	- TNEF decoder (winmail.dat) support using QualityUnit/TNEFDecoder
 
 Aug 2026 - EmailReporting-0.11.0
 	- PHP 8.x.x base64_decode deprecation fix

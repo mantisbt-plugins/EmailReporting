@@ -656,10 +656,36 @@ class ERP_Mail_Parser
 			{
 				$this->setParts( $parts[ $i ]->parts, TRUE );
 			}
+			elseif ( 'application' == strtolower( $parts[ $i ]->ctype_primary ) && 'ms-tnef' == strtolower( $parts[ $i ]->ctype_secondary ) )
+			{
+				$this->ParseTNEF( $parts[ $i ]->body );
+			}
 			else
 			{
 				$this->addPart( $parts[ $i ] );
 			}
+		}
+	}
+
+	private function ParseTNEF( &$TNEFbody )
+	{
+		$TNEFattachment = new TNEFDecoder\TNEFAttachment();
+		$TNEFattachment->decodeTnef( $TNEFbody );
+		$TNEFfiles = $TNEFattachment->getFiles();
+		unset( $TNEFattachment );
+
+		while ( $TNEFfile = array_shift( $TNEFfiles ) )
+		{
+			list( $ctype_primary, $ctype_secondary ) = explode( '/', $TNEFfile->type, 2 );
+
+			$part = new stdClass();
+
+			$part->ctype_primary    = $ctype_primary;
+			$part->ctype_secondary  = $ctype_secondary;
+			$part->ctype_parameters = array( 'name' => $TNEFfile->name );
+			$part->body             = $TNEFfile->content;
+
+			$this->addPart( $part );
 		}
 	}
 
