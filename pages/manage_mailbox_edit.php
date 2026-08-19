@@ -83,7 +83,7 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 	$t_message .= plugin_lang_get( 'hostname' ) . ': ' . $t_mailbox_api->_mailbox[ 'hostname' ] . '<br />';
 	$t_message .= plugin_lang_get( 'port' ) . ': ' . $t_mailbox_api->_mailbox[ 'port' ] . '<br />';
 	$t_message .= plugin_lang_get( 'encryption' ) . ': ' . $t_mailbox_api->_mailbox[ 'encryption' ] . '<br />';
-	$t_message .= plugin_lang_get( 'ssl_cert_verify' ) . ': ' . $t_mailbox_api->_mailbox[ 'ssl_cert_verify' ] . '<br />';
+	$t_message .= plugin_lang_get( 'ssl_cert_verify' ) . ': ' . ( ( $t_mailbox_api->_mailbox[ 'ssl_cert_verify' ] ) ? lang_get( 'yes' ) : lang_get( 'no' ) ) . '<br />';
 	$t_message .= plugin_lang_get( 'erp_username' ) . ': ' . $t_mailbox_api->_mailbox[ 'erp_username' ] . '<br />';
 	$t_message .= plugin_lang_get( 'erp_password' ) . ': ******' . '<br />';
 	$t_message .= plugin_lang_get( 'auth_method' ) . ': ' . $t_mailbox_api->_mailbox[ 'auth_method' ] . '<br />';
