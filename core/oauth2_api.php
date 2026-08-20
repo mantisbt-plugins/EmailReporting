@@ -315,21 +315,13 @@ class ERP_GoogleOAuthProvider extends ERP_OAuthProvider
 {
 	private const DEFAULT_SCOPE = 'https://www.googleapis.com/auth/gmail.imap_admin';
 
-	private array|string $serviceAccountCredentials;
-	private string $mailbox;
-	private string $scope;
-
 	public function __construct(
-		array|string $serviceAccountCredentials,
-		string $mailbox,
-		string $scope = self::DEFAULT_SCOPE
+		private readonly array|string $serviceAccountCredentials,
+		private readonly string $mailbox,
+		private readonly string $scope = self::DEFAULT_SCOPE
 	)
 	{
-		$this->serviceAccountCredentials = $serviceAccountCredentials;
-		$this->mailbox = trim( $mailbox );
-		$this->scope = $scope;
-
-		if ( $this->mailbox === '' )
+		if ( trim( $this->mailbox ) === '' )
 		{
 			throw new InvalidArgumentException( 'Google Workspace mailbox cannot be empty.' );
 		}
@@ -353,7 +345,7 @@ class ERP_GoogleOAuthProvider extends ERP_OAuthProvider
 		$credentials = new Google\Auth\Credentials\ServiceAccountCredentials(
 			$this->scope,
 			$this->serviceAccountCredentials,
-			$this->mailbox
+			trim( $this->mailbox )
 		);
 
 		try
