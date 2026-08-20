@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "af94f3ecfc51271a30826f5972493f3e",
+    "content-hash": "c6e68b0e783be4c3a8682ae451c028ab",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -1491,16 +1491,16 @@
         },
         {
             "name": "sl-gundam/net_pop3",
-            "version": "v1.3.9.3",
+            "version": "v1.3.9.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SL-Gundam/Net_POP3.git",
-                "reference": "36b8351e4341663b2545d3958680357e56855857"
+                "reference": "c5d1854798f34165aa3fd7de465f22b72568bd56"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SL-Gundam/Net_POP3/zipball/36b8351e4341663b2545d3958680357e56855857",
-                "reference": "36b8351e4341663b2545d3958680357e56855857",
+                "url": "https://api.github.com/repos/SL-Gundam/Net_POP3/zipball/c5d1854798f34165aa3fd7de465f22b72568bd56",
+                "reference": "c5d1854798f34165aa3fd7de465f22b72568bd56",
                 "shasum": ""
             },
             "require": {
@@ -1552,7 +1552,7 @@
                 "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=Net_POP3",
                 "source": "https://github.com/pear/Net_POP3"
             },
-            "time": "2026-08-20T01:44:31+00:00"
+            "time": "2026-08-20T20:28:47+00:00"
         },
         {
             "name": "sl-gundam/net_socket",
