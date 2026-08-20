@@ -68,9 +68,29 @@ ERP_output_config_option( 'hostname', 'string', $t_mailbox );
 ERP_output_config_option( 'port', 'string', $t_mailbox );
 ERP_output_config_option( 'encryption', 'dropdown', $t_mailbox, 'print_encryption_option_list' );
 ERP_output_config_option( 'ssl_cert_verify', 'boolean', $t_mailbox );
+ERP_output_config_option( 'auth_method', 'dropdown', $t_mailbox, 'print_auth_method_option_list' );
+ERP_output_table_close();
+
+ERP_output_table_open( 'mailbox_settings_logininfo' );
 ERP_output_config_option( 'erp_username', 'string', $t_mailbox );
 ERP_output_config_option( 'erp_password', 'string_password', $t_mailbox );
-ERP_output_config_option( 'auth_method', 'dropdown', $t_mailbox, 'print_auth_method_option_list' );
+ERP_output_table_close();
+
+ERP_output_table_open( 'mailbox_settings_oauth' );
+ERP_output_config_option( 'oauth_provider', 'dropdown', $t_mailbox, 'print_descriptions_option_list', array( 'Google', 'Microsoft' ) );
+ERP_output_table_close();
+
+ERP_output_table_open( 'mailbox_settings_oauth_microsoft' );
+ERP_output_config_option( 'm_tenantId', 'string', $t_mailbox );
+ERP_output_config_option( 'm_clientId', 'string', $t_mailbox );
+ERP_output_config_option( 'm_clientSecret', 'string_password', $t_mailbox );
+ERP_output_config_option( 'm_pfxPath', 'string', $t_mailbox );
+ERP_output_config_option( 'm_pfxPassword', 'string_password', $t_mailbox );
+ERP_output_table_close();
+
+ERP_output_table_open( 'mailbox_settings_oauth_google' );
+ERP_output_config_option( 'g_serviceAccountCredentials', 'string', $t_mailbox );
+ERP_output_config_option( 'g_mailbox', 'string', $t_mailbox );
 ERP_output_table_close();
 
 ERP_output_table_open( 'mailbox_settings_imap' );
@@ -88,6 +108,8 @@ event_signal( 'EVENT_ERP_OUTPUT_MAILBOX_FIELDS', $f_select_mailbox );
 
 ERP_output_table_open();
 ERP_output_table_close( $f_mailbox_action . '_action' );
+
+echo '<script src="' . plugin_file( 'emailreporting.js' ) .	'"></script>';
 
 ?>
 </form>

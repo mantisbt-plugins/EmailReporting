@@ -12,7 +12,11 @@ $s_plugin_EmailReporting_jobsetup = 'To collect the emails from the mailboxes yo
 $s_plugin_EmailReporting_job_users = '<span class="negative">Warning</span>: It seems that the scheduled job is not run with the same user account as the webserver / PHP process. This could cause problems with attachments.<br />The SAPI for the scheduled job is most likely "cli".<br />The webserver runs under the following user account: ';
 
 $s_plugin_EmailReporting_mailbox_settings = 'Mailbox settings';
-$s_plugin_EmailReporting_mailbox_settings_imap = 'Mailbox IMAP only settings';
+$s_plugin_EmailReporting_mailbox_settings_logininfo = 'Mailbox login information';
+$s_plugin_EmailReporting_mailbox_settings_oauth = 'Mailbox OAuth settings';
+$s_plugin_EmailReporting_mailbox_settings_oauth_microsoft = 'Mailbox Microsoft OAuth settings';
+$s_plugin_EmailReporting_mailbox_settings_oauth_google = 'Mailbox Google OAuth settings';
+$s_plugin_EmailReporting_mailbox_settings_imap = 'Mailbox IMAP settings';
 $s_plugin_EmailReporting_mailbox_settings_issue = 'Mailbox issue settings';
 $s_plugin_EmailReporting_problems = 'To reset a configuration option to its default value, please delete the configuration option in question from the "<a href="adm_config_report.php">Configuration Report</a>" page.';
 
@@ -119,6 +123,14 @@ $s_plugin_EmailReporting_ssl_cert_verify = 'Verify SSL certificate';
 $s_plugin_EmailReporting_erp_username = 'Username';
 $s_plugin_EmailReporting_erp_password = 'Password';
 $s_plugin_EmailReporting_auth_method = 'Authentication method';
+$s_plugin_EmailReporting_oauth_provider = 'OAuth provider';
+$s_plugin_EmailReporting_m_tenantId = 'tenantId';
+$s_plugin_EmailReporting_m_clientId = 'clientId';
+$s_plugin_EmailReporting_m_clientSecret = 'clientSecret';
+$s_plugin_EmailReporting_m_pfxPath = 'Path to PFX file';
+$s_plugin_EmailReporting_m_pfxPassword = 'PFX file password';
+$s_plugin_EmailReporting_g_serviceAccountCredentials = 'serviceAccountCredentials';
+$s_plugin_EmailReporting_g_mailbox = 'Mailbox email address';
 $s_plugin_EmailReporting_imap_basefolder = 'Basefolder (optional)';
 $s_plugin_EmailReporting_imap_createfolderstructure = 'Create project subfolder structure';
 $s_plugin_EmailReporting_project_id = 'Select a project';

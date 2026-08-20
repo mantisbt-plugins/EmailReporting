@@ -12,6 +12,10 @@ $s_plugin_EmailReporting_jobsetup = 'Para recolectar los emails de los buzones, 
 $s_plugin_EmailReporting_job_users = '<span class="negative">Advertencia</span>: Parece que la tarea programada no se ejecuta con la misma cuenta de usuario que el webserver o proceso PHP. Esto puede causar problemas con los adjuntos.<br />The SAPI for the scheduled job is most likely "cli".<br />El webserver se ejecuta bajo la siguiente cuenta de usuario: ';
 
 $s_plugin_EmailReporting_mailbox_settings = 'Configuración de Buzón';
+$s_plugin_EmailReporting_mailbox_settings_logininfo = 'Mailbox login information'; //TODO Needs translation
+$s_plugin_EmailReporting_mailbox_settings_oauth = 'Mailbox OAuth settings'; //TODO Needs translation
+$s_plugin_EmailReporting_mailbox_settings_oauth_microsoft = 'Mailbox Microsoft OAuth settings'; //TODO Needs translation
+$s_plugin_EmailReporting_mailbox_settings_oauth_google = 'Mailbox Google OAuth settings'; //TODO Needs translation
 $s_plugin_EmailReporting_mailbox_settings_imap = 'Configuración del Buzón IMAP.';
 $s_plugin_EmailReporting_mailbox_settings_issue = 'Configuración de fallas de buzón';
 $s_plugin_EmailReporting_problems = 'Para reiniciar una configuración, por favor borre la configuración desde la página "<a href="adm_config_report.php">Reporte de Configuración</a>".';
@@ -119,6 +123,14 @@ $s_plugin_EmailReporting_ssl_cert_verify = 'Verificar certificado SSL';
 $s_plugin_EmailReporting_erp_username = 'Usuario';
 $s_plugin_EmailReporting_erp_password = 'Contraseña';
 $s_plugin_EmailReporting_auth_method = 'Metodo de autenticación';
+$s_plugin_EmailReporting_oauth_provider = 'OAuth provider'; //TODO Needs translation
+$s_plugin_EmailReporting_m_tenantId = 'tenantId'; //TODO Needs translation
+$s_plugin_EmailReporting_m_clientId = 'clientId'; //TODO Needs translation
+$s_plugin_EmailReporting_m_clientSecret = 'clientSecret'; //TODO Needs translation
+$s_plugin_EmailReporting_m_pfxPath = 'Path to PFX file'; //TODO Needs translation
+$s_plugin_EmailReporting_m_pfxPassword = 'PFX file password'; //TODO Needs translation
+$s_plugin_EmailReporting_g_serviceAccountCredentials = 'serviceAccountCredentials'; //TODO Needs translation
+$s_plugin_EmailReporting_g_mailbox = 'Mailbox email address'; //TODO Needs translation
 $s_plugin_EmailReporting_imap_basefolder = 'Directorio principal (opcional)';
 $s_plugin_EmailReporting_imap_createfolderstructure = 'Crear estructura de proyecto';
 $s_plugin_EmailReporting_project_id = 'Seleccionar un proyecto';
