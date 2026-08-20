@@ -16,6 +16,7 @@ require_api( 'file_api.php' );
 require_once( config_get_global( 'absolute_path' ) . 'api/soap/mc_file_api.php' );
 
 plugin_require_api( 'core/config_api.php' );
+plugin_require_api( 'core/oauth2_api.php' );
 plugin_require_api( 'core/Mail/Parser.php' );
 
 class ERP_mailbox_api
@@ -559,7 +560,79 @@ class ERP_mailbox_api
 		$t_mailbox_password = base64_decode( $this->_mailbox[ 'erp_password' ] );
 		$t_mailbox_auth_method = $this->_mailbox[ 'auth_method' ];
 
+		if ( $t_mailbox_auth_method === 'XOAUTH2' )
+		{
+			$t_mailbox_password = $this->Get_OAuth2_AccessToken();
+
+			if ( $t_mailbox_password === FALSE )
+			{
+				$this->custom_error( 'Failed to get accestoken for OAuth authentication.' );
+				return( FALSE );
+			}
+		}
+
 		return( $this->_mailserver->login( $t_mailbox_username, $t_mailbox_password, $t_mailbox_auth_method ) );
+	}
+
+	# --------------------
+	# Get an OAuth accesstoken for XOAUTH2
+	private function Get_OAuth2_AccessToken()
+	{
+		if ( $this->_mailbox[ 'auth_method' ] === 'XOAUTH2' )
+		{
+			if ( !extension_loaded( 'openssl' ) )
+			{
+				$this->custom_error( plugin_lang_get( 'openssl_unavailable', 'EmailReporting' ) );
+				return( FALSE );
+			}
+
+			if ( $this->_mailbox[ 'oauth_provider' ] === 'Google' )
+			{
+				$provider = new ERP_GoogleOAuthProvider(
+					serviceAccountCredentials: $this->_mailbox[ 'g_serviceAccountCredentials' ],
+					mailbox: $this->_mailbox[ 'g_mailbox' ]
+				);
+			}
+			elseif ( $this->_mailbox[ 'oauth_provider' ] === 'Microsoft' )
+			{
+				$t_hasClientSecret = (bool) ( !empty( $this->_mailbox[ 'm_clientSecret' ] ) );
+				$t_hasCertificate = (bool) ( !empty( $this->_mailbox[ 'm_pfxPath' ] ) && !empty( $this->_mailbox[ 'm_pfxPassword' ] ) );
+
+				if ( $hasClientSecret )
+				{
+					$provider = new ERP_Microsoft365OAuthProvider(
+						tenantId: $this->_mailbox[ 'm_tenantId' ],
+						clientId: $this->_mailbox[ 'm_clientId' ],
+
+						clientSecret: $this->_mailbox[ 'm_clientSecret' ]
+					);
+				}
+				elseif ( $hasCertificate )
+				{
+					$provider = new ERP_Microsoft365OAuthProvider(
+						tenantId: $this->_mailbox[ 'm_tenantId' ],
+						clientId: $this->_mailbox[ 'm_clientId' ],
+
+						pfxPath: $this->_mailbox[ 'm_pfxPath' ],
+//						pfxPath: __DIR__ . '/EmailReporting Mailbox App.pfx',
+						pfxPassword: $this->_mailbox[ 'm_pfxPassword' ]
+					);
+				}
+			}
+			else
+			{
+				$this->custom_error( 'Unknown OAuth provider.' );
+				return( FALSE );
+			}
+
+			$accessToken = $provider->getAccessToken();
+
+//			$xoauth2 = $provider->createXoauth2String('mantis@inretail.nl');
+
+			return( $accessToken );
+		}
+
+		return( FALSE );
 	}
 
 	# --------------------
