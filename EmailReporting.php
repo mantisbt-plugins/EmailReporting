@@ -337,9 +337,9 @@ class EmailReportingPlugin extends MantisPlugin
 	 */
 	function ERP_core_ready( )
 	{
-		$this->ERP_update_check( );
+		$this->ERP_update_check();
 
-		$this->ERP_check_mantisbt_url( );
+		$this->ERP_check_mantisbt_url();
 	}
 
 	/*
