@@ -676,7 +676,7 @@ class ERP_Mail_Parser
 
 		while ( $TNEFfile = array_shift( $TNEFfiles ) )
 		{
-			list( $ctype_primary, $ctype_secondary ) = explode( '/', $TNEFfile->type, 2 );
+			list( $ctype_primary, $ctype_secondary ) = array_pad( explode( '/', $TNEFfile->type, 2 ), 2, '' );
 
 			$part = new stdClass();
 
