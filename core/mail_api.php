@@ -639,8 +639,6 @@ class ERP_mailbox_api
 
 			$accessToken = $provider->getAccessToken();
 
-//			$xoauth2 = $provider->createXoauth2String('mantis@inretail.nl');
-
 			return( $accessToken );
 		}
 
