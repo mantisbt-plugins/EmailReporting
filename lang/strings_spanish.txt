@@ -39,8 +39,12 @@ $s_plugin_EmailReporting_strip_signature_feature_options = 'Configuración de bo
 $s_plugin_EmailReporting_copy_of = 'Copiar de';
 $s_plugin_EmailReporting_directory_exists = 'Directorio encontrado';
 $s_plugin_EmailReporting_directory_unavailable = 'Advertencia: Directorio no encontrado';
-$s_plugin_EmailReporting_directory_writable = 'Directorio modificable';
-$s_plugin_EmailReporting_directory_unwritable = 'Advertencia: Directorio no modificable';
+$s_plugin_EmailReporting_directory_access = 'Directorio modificable';
+$s_plugin_EmailReporting_directory_notaccess = 'Advertencia: Directorio no modificable';
+$s_plugin_EmailReporting_file_exists = 'File found'; //TODO Needs translation
+$s_plugin_EmailReporting_file_unavailable = 'Warning: file not found'; //TODO Needs translation
+$s_plugin_EmailReporting_file_access = 'File readable'; //TODO Needs translation
+$s_plugin_EmailReporting_file_notaccess = 'Warning: file not readable'; //TODO Needs translation
 
 $s_plugin_EmailReporting_mail_add_bug_reports = 'Crear nuevas solicitudes';
 $s_plugin_EmailReporting_mail_add_bugnotes = 'Agregar Notas';

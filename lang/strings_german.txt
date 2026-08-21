@@ -39,8 +39,12 @@ $s_plugin_EmailReporting_strip_signature_feature_options = 'Konfigurationsoption
 $s_plugin_EmailReporting_copy_of = 'Kopie von';
 $s_plugin_EmailReporting_directory_exists = 'Order gefunden';
 $s_plugin_EmailReporting_directory_unavailable = 'Achtung: Order nicht gefunden';
-$s_plugin_EmailReporting_directory_writable = 'Order schreibbar';
-$s_plugin_EmailReporting_directory_unwritable = 'Achtung: Order nicht schreibbar';
+$s_plugin_EmailReporting_directory_access = 'Order schreibbar';
+$s_plugin_EmailReporting_directory_notaccess = 'Achtung: Order nicht schreibbar';
+$s_plugin_EmailReporting_file_exists = 'File found'; //TODO Needs translation
+$s_plugin_EmailReporting_file_unavailable = 'Warning: file not found'; //TODO Needs translation
+$s_plugin_EmailReporting_file_access = 'File readable'; //TODO Needs translation
+$s_plugin_EmailReporting_file_notaccess = 'Warning: file not readable'; //TODO Needs translation
 
 $s_plugin_EmailReporting_mail_add_bug_reports = 'Erstelle ein neues Ticket';
 $s_plugin_EmailReporting_mail_add_bugnotes = 'Notiz hinzufügen';

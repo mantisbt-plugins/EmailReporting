@@ -659,6 +659,7 @@ function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, $p_fun
 			break;
 
 		case 'boolean':
+		case 'file_string':
 		case 'directory_string':
 		case 'disabled':
 		case 'integer':
@@ -705,34 +706,58 @@ function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, $p_fun
 
 					break;
 
+				case 'file_string':
 				case 'directory_string':
-					$t_dir = $t_value;
-					if ( is_dir( $t_dir ) )
+					$t_dirfile = (string) $t_value;
+					if ( $p_type === 'directory_string' )
 					{
-						$t_result_is_dir_color = 'green postive';
-						$t_result_is_dir_text = plugin_lang_get( 'directory_exists', 'EmailReporting' );
+						$t_dirfile_type = 'directory';
+					}
+					elseif ( $p_type === 'file_string' )
+					{
+						$t_dirfile_type = 'file';
+					}
+					else
+					{
+						break;
+					}
 
-						if ( is_writable( $t_dir ) )
+					if ( !empty( $t_dirfile ) )
+					{
+						if ( ( $t_dirfile_type === 'directory' && is_dir( $t_dirfile ) ) || ( $t_dirfile_type === 'file' && is_file( $t_dirfile ) ) )
 						{
-							$t_result_is_writable_color = 'green positive';
-							$t_result_is_writable_text = plugin_lang_get( 'directory_writable', 'EmailReporting' );
+							$t_result_is_dir_color = 'green postive';
+							$t_result_is_dir_text = plugin_lang_get( $t_dirfile_type . '_exists', 'EmailReporting' );
+
+							if ( ( $t_dirfile_type === 'directory' && is_writable( $t_dirfile ) ) || ( $t_dirfile_type === 'file' && is_readable( $t_dirfile ) ) )
+							{
+								$t_result_is_writable_color = 'green positive';
+								$t_result_is_writable_text = plugin_lang_get( $t_dirfile_type . '_access', 'EmailReporting' );
+							}
+							else
+							{
+								$t_result_is_writable_color = 'red negative';
+								$t_result_is_writable_text = plugin_lang_get( $t_dirfile_type . '_notaccess', 'EmailReporting' );
+							}
 						}
 						else
 						{
-							$t_result_is_writable_color = 'red negative';
-							$t_result_is_writable_text = plugin_lang_get( 'directory_unwritable', 'EmailReporting' );
+							$t_result_is_dir_color = 'red negative';
+							$t_result_is_dir_text = plugin_lang_get( $t_dirfile_type . '_unavailable', 'EmailReporting' );
+							$t_result_is_writable_color = NULL;
+							$t_result_is_writable_text = NULL;
 						}
 					}
 					else
 					{
-						$t_result_is_dir_color = 'red negative';
-						$t_result_is_dir_text = plugin_lang_get( 'directory_unavailable', 'EmailReporting' );
+						$t_result_is_dir_color = NULL;
+						$t_result_is_dir_text = NULL;
 						$t_result_is_writable_color = NULL;
 						$t_result_is_writable_text = NULL;
 					}
 ?>
 <td width="25%">
-	<input id="<?php echo $t_input_name ?>" class="input-sm" <?php echo helper_get_tab_index() ?> type="text" size="32" maxlength="200" name="<?php echo $t_input_name ?>" value="<?php echo string_attribute( $t_dir ) ?>"/>
+	<input id="<?php echo $t_input_name ?>" class="input-sm" <?php echo helper_get_tab_index() ?> type="text" size="64" maxlength="250" name="<?php echo $t_input_name ?>" value="<?php echo string_attribute( $t_dirfile ) ?>"/>
 </td>
 <td width="25%">
 	<span class="<?php echo $t_result_is_dir_color ?>"><?php echo $t_result_is_dir_text ?></span><br />
