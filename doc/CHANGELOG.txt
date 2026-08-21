@@ -7,7 +7,7 @@ Aug 2026 - EmailReporting-0.12.0
 	- Changed simple_html_dom to php-core/simplehtmldom (Composer)
 	- Composer migration: PEAR, Auth_SASL, Net_IMAP, Net_POP3, Net_Socket, Net_mimeDecode, Markdownify (ERP version), EmailReplyParser
 	- TNEF decoder (winmail.dat) support using QualityUnit/TNEFDecoder
-	- Support for OAuth authentication with Microsft and Google
+	- Support for OAuth authentication with Microsoft and Google
 
 Aug 2026 - EmailReporting-0.11.0
 	- PHP 8.x.x base64_decode deprecation fix
