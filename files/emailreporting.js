@@ -1,9 +1,9 @@
 // There should be a better way to generate this... TODO
 
-const IMAP = 'IMAP';
-const AUTH_XOAUTH2 = 'XOAUTH2';
-const PROVIDER_MICROSOFT = 'Microsoft';
-const PROVIDER_GOOGLE = 'Google';
+const ERP_IMAP = 'IMAP';
+const ERP_AUTH_XOAUTH2 = 'XOAUTH2';
+const ERP_PROVIDER_MICROSOFT = 'Microsoft';
+const ERP_PROVIDER_GOOGLE = 'Google';
 
 const mailbox_type = document.getElementById('mailbox_type');
 const mailbox_settings_imap = document.getElementById('mailbox_settings_imap');
@@ -20,10 +20,10 @@ function ERP_setVisible(element, visible) {
 }
 
 function ERP_updateFields() {
-	const isImap = mailbox_type.value === IMAP;
-	const isOAuth = auth_method.value === AUTH_XOAUTH2;
-	const isMicrosoft = oauth_provider.value === PROVIDER_MICROSOFT;
-	const isGoogle = oauth_provider.value === PROVIDER_GOOGLE;
+	const isImap = mailbox_type.value === ERP_IMAP;
+	const isOAuth = auth_method.value === ERP_AUTH_XOAUTH2;
+	const isMicrosoft = oauth_provider.value === ERP_PROVIDER_MICROSOFT;
+	const isGoogle = oauth_provider.value === ERP_PROVIDER_GOOGLE;
 
 	ERP_setVisible(mailbox_settings_imap, isImap);
 	ERP_setVisible(mailbox_settings_logininfo, !isOAuth);

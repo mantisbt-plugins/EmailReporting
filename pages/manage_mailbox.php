@@ -77,20 +77,21 @@ ERP_output_config_option( 'erp_password', 'string_password', $t_mailbox );
 ERP_output_table_close();
 
 ERP_output_table_open( 'mailbox_settings_oauth' );
-ERP_output_config_option( 'oauth_provider', 'dropdown', $t_mailbox, 'print_descriptions_option_list', array( 'Google', 'Microsoft' ) );
-ERP_output_table_close();
-
-ERP_output_table_open( 'mailbox_settings_oauth_microsoft' );
-ERP_output_config_option( 'm_tenantId', 'string', $t_mailbox );
-ERP_output_config_option( 'm_clientId', 'string', $t_mailbox );
-ERP_output_config_option( 'm_clientSecret', 'string_password', $t_mailbox );
-ERP_output_config_option( 'm_pfxPath', 'string', $t_mailbox );
-ERP_output_config_option( 'm_pfxPassword', 'string_password', $t_mailbox );
+ERP_output_config_option( 'oauth_provider', 'dropdown', $t_mailbox, 'print_descriptions_option_list', array( ERP_PROVIDER_GOOGLE, ERP_PROVIDER_MICROSOFT ) );
 ERP_output_table_close();
 
 ERP_output_table_open( 'mailbox_settings_oauth_google' );
-ERP_output_config_option( 'g_serviceAccountCredentials', 'string', $t_mailbox );
 ERP_output_config_option( 'g_mailbox', 'string', $t_mailbox );
+ERP_output_config_option( 'g_serviceAccountCredentials', 'file_string', $t_mailbox );
+ERP_output_table_close();
+
+ERP_output_table_open( 'mailbox_settings_oauth_microsoft' );
+ERP_output_config_option( 'm_mailbox', 'string', $t_mailbox );
+ERP_output_config_option( 'm_tenantId', 'string', $t_mailbox );
+ERP_output_config_option( 'm_clientId', 'string', $t_mailbox );
+ERP_output_config_option( 'm_clientSecret', 'string_password', $t_mailbox );
+ERP_output_config_option( 'm_pfxPath', 'file_string', $t_mailbox );
+ERP_output_config_option( 'm_pfxPassword', 'string_password', $t_mailbox );
 ERP_output_table_close();
 
 ERP_output_table_open( 'mailbox_settings_imap' );

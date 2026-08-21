@@ -586,15 +586,26 @@ class ERP_mailbox_api
 				return( FALSE );
 			}
 
-			if ( $this->_mailbox[ 'oauth_provider' ] === 'Google' )
+			if ( $this->_mailbox[ 'oauth_provider' ] === ERP_PROVIDER_GOOGLE )
 			{
 				$provider = new ERP_GoogleOAuthProvider(
 					serviceAccountCredentials: $this->_mailbox[ 'g_serviceAccountCredentials' ],
 					mailbox: $this->_mailbox[ 'g_mailbox' ]
 				);
 			}
-			elseif ( $this->_mailbox[ 'oauth_provider' ] === 'Microsoft' )
+			elseif ( $this->_mailbox[ 'oauth_provider' ] === ERP_PROVIDER_MICROSOFT )
 			{
+				$provider = new ERP_Microsoft365OAuthProvider(
+					tenantId: $this->_mailbox[ 'm_tenantId' ],
+					clientId: $this->_mailbox[ 'm_clientId' ],
+
+					clientSecret: base64_decode( $this->_mailbox[ 'm_clientSecret' ] )
+
+					pfxPath: $this->_mailbox[ 'm_pfxPath' ],
+//					pfxPath: __DIR__ . '/EmailReporting Mailbox App.pfx',
+					pfxPassword: base64_decode( $this->_mailbox[ 'm_pfxPassword' ] )
+				);
+/*
 				$t_hasClientSecret = (bool) ( !empty( $this->_mailbox[ 'm_clientSecret' ] ) );
 				$t_hasCertificate = (bool) ( !empty( $this->_mailbox[ 'm_pfxPath' ] ) && !empty( $this->_mailbox[ 'm_pfxPassword' ] ) );
 
@@ -618,6 +629,7 @@ class ERP_mailbox_api
 						pfxPassword: $this->_mailbox[ 'm_pfxPassword' ]
 					);
 				}
+*/
 			}
 			else
 			{

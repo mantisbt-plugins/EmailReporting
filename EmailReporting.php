@@ -272,6 +272,8 @@ class EmailReportingPlugin extends MantisPlugin
 	 */
 	function init()
 	{
+		define( 'ERP_PROVIDER_MICROSOFT', 'Microsoft' );
+		define( 'ERP_PROVIDER_GOOGLE', 'Google' );
 	}
 
 	function events()

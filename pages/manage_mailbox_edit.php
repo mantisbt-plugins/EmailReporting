@@ -19,23 +19,57 @@ if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailb
 		'port'                   => gpc_get_string( 'port', '' ),
 		'encryption'             => gpc_get_string( 'encryption' ),
 		'ssl_cert_verify'        => gpc_get_int( 'ssl_cert_verify', ON ),
-		'erp_username'           => gpc_get_string( 'erp_username', '' ),
-		'erp_password'           => base64_encode( gpc_get_string( 'erp_password', '' ) ),
 		'auth_method'            => gpc_get_string( 'auth_method' ),
+	);
+
+	$t_isOAuth = $t_mailbox[ 'auth_method' ] === 'XOAUTH2';
+	if ( !$t_isOAuth )
+	{
+		$t_mailbox += array(
+			'erp_username'           => gpc_get_string( 'erp_username' ),
+			'erp_password'           => base64_encode( gpc_get_string( 'erp_password' ) ),
+		);
+	}
+
+	if ( $t_isOAuth )
+	{
+		$t_mailbox[ 'oauth_provider' ] = gpc_get_string( 'oauth_provider' );
+		$t_isGoogle = $t_mailbox[ 'oauth_provider' ] === ERP_PROVIDER_GOOGLE;
+		$t_isMicrosoft = $t_mailbox[ 'oauth_provider' ] === ERP_PROVIDER_MICROSOFT;
+		if ( $t_isGoogle )
+		{
+			$t_mailbox += array(
+				'g_mailbox'                   => gpc_get_string( 'g_mailbox' ),
+				'g_serviceAccountCredentials' => ERP_prepare_directory_string( gpc_get_string( 'g_serviceAccountCredentials' ) ),
+			);
+		}
+		elseif ( $t_isMicrosoft )
+		{
+			$t_mailbox += array(
+				'm_mailbox'           => gpc_get_string( 'm_mailbox' ),
+				'm_tenantId'          => gpc_get_string( 'm_tenantId' ),
+				'm_clientId'          => gpc_get_string( 'm_clientId' ),
+				'm_clientSecret'      => base64_encode( gpc_get_string( 'm_clientSecret', '' ) ),
+				'm_pfxPath'           => ERP_prepare_directory_string( gpc_get_string( 'm_pfxPath', '' ) ),
+				'm_pfxPassword'       => base64_encode( gpc_get_string( 'm_pfxPassword', '' ) ),
+			);
+		}
+	}
+
+	$t_isImap = in_array( $t_mailbox[ 'mailbox_type' ], array( 'IMAP' ), TRUE );
+	if ( $t_isImap )
+	{
+		$t_mailbox += array(
+			'imap_basefolder'               => ERP_prepare_directory_string( gpc_get_string( 'imap_basefolder', '' ), TRUE ),
+			'imap_createfolderstructure'    => gpc_get_int( 'imap_createfolderstructure' ),
+		);
+	}
+
+	$t_mailbox += array(
 		'project_id'             => gpc_get_int( 'project_id' ),
 		'global_category_id'     => gpc_get_int( 'global_category_id' ),
 //		'link_rules'             => gpc_get_int_array( 'link_rules', array() ),
 	);
-
-	if ( in_array( $t_mailbox[ 'mailbox_type' ], array( 'IMAP' ), TRUE ) )
-	{
-		$t_mailbox_imap = array(
-			'imap_basefolder'               => ERP_prepare_directory_string( gpc_get_string( 'imap_basefolder', '' ), TRUE ),
-			'imap_createfolderstructure'    => gpc_get_int( 'imap_createfolderstructure' ),
-		);
-
-		$t_mailbox += $t_mailbox_imap;
-	}
 
 	$t_plugin_content = gpc_get_string_array( 'plugin_content', array() );
 
