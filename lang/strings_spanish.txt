@@ -89,6 +89,9 @@ $s_plugin_EmailReporting_mail_use_bug_priority = 'Buscar en el campo prioridad d
 $s_plugin_EmailReporting_mail_use_message_id = 'Usar Message-ID en la cabecera del email para identificar las notas';
 $s_plugin_EmailReporting_mail_use_reporter = 'Usar solo el informador por defecto para las solicitudes creadas por email';
 
+$s_plugin_EmailReporting_Google = 'Google Workspace'; //TODO Needs translation
+$s_plugin_EmailReporting_Microsoft = 'Microsoft 365'; //TODO Needs translation
+
 $s_plugin_EmailReporting_strict = 'Estricta';
 $s_plugin_EmailReporting_balanced = 'Balanceada';
 $s_plugin_EmailReporting_relaxed = 'Flexible';

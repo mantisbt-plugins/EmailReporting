@@ -89,6 +89,9 @@ $s_plugin_EmailReporting_mail_use_bug_priority = 'Suche nach der Priorität im H
 $s_plugin_EmailReporting_mail_use_message_id = 'Benutze die Message-ID im Header um Notizen zu identifizieren';
 $s_plugin_EmailReporting_mail_use_reporter = 'Benutze nur den Standard Reporter zur Erstellung von Tickets';
 
+$s_plugin_EmailReporting_Google = 'Google Workspace'; //TODO Needs translation
+$s_plugin_EmailReporting_Microsoft = 'Microsoft 365'; //TODO Needs translation
+
 $s_plugin_EmailReporting_strict = 'Strikt';
 $s_plugin_EmailReporting_balanced = 'Ausgewogen';
 $s_plugin_EmailReporting_relaxed = 'Locker';
