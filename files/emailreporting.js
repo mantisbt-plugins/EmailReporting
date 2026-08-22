@@ -1,38 +1,83 @@
-// There should be a better way to generate this... TODO
-
-const ERP_IMAP = 'IMAP';
-const ERP_AUTH_XOAUTH2 = 'XOAUTH2';
-const ERP_PROVIDER_MICROSOFT = 'Microsoft';
-const ERP_PROVIDER_GOOGLE = 'Google';
-
-const mailbox_type = document.getElementById('mailbox_type');
-const mailbox_settings_imap = document.getElementById('mailbox_settings_imap');
-
-const auth_method = document.getElementById('auth_method');
-const oauth_provider = document.getElementById('oauth_provider');
-const mailbox_settings_logininfo = document.getElementById('mailbox_settings_logininfo');
-const mailbox_settings_oauth = document.getElementById('mailbox_settings_oauth');
-const mailbox_settings_oauth_microsoft = document.getElementById('mailbox_settings_oauth_microsoft');
-const mailbox_settings_oauth_google = document.getElementById('mailbox_settings_oauth_google');
-
 function ERP_setVisible(element, visible) {
 	element.classList.toggle('hidden', !visible);
 }
 
-function ERP_updateFields() {
-	const isImap = mailbox_type.value === ERP_IMAP;
-	const isOAuth = auth_method.value === ERP_AUTH_XOAUTH2;
-	const isMicrosoft = oauth_provider.value === ERP_PROVIDER_MICROSOFT;
-	const isGoogle = oauth_provider.value === ERP_PROVIDER_GOOGLE;
+function ERP_matchesRule(controlValue, rule) {
 
-	ERP_setVisible(mailbox_settings_imap, isImap);
-	ERP_setVisible(mailbox_settings_logininfo, !isOAuth);
-	ERP_setVisible(mailbox_settings_oauth, isOAuth);
-	ERP_setVisible(mailbox_settings_oauth_microsoft, isOAuth && isMicrosoft);
-	ERP_setVisible(mailbox_settings_oauth_google, isOAuth && isGoogle);
+	// Equality (IN)
+	if (Array.isArray(rule)) {
+		return rule.includes(controlValue);
+	}
+
+	// Not equal (NOT IN)
+	if (rule['!=']) {
+		return !rule['!='].includes(controlValue);
+	}
+
+	return false;
 }
 
-mailbox_type.addEventListener('change', ERP_updateFields);
-auth_method.addEventListener('change', ERP_updateFields);
-oauth_provider.addEventListener('change', ERP_updateFields);
+function ERP_updateFields() {
+
+	document
+		.querySelectorAll('[data-visible-when]')
+		.forEach(function(element) {
+
+			let rules;
+
+			try {
+				rules = JSON.parse(
+					element.dataset.visibleWhen
+				);
+			}
+			catch (e) {
+				console.error(
+					'Invalid data-visible-when:',
+					element
+				);
+
+				ERP_setVisible(element, true);
+				return;
+			}
+
+			const visible = Object.entries(rules).every(
+				function([fieldId, rule]) {
+
+					const field =
+						document.getElementById(fieldId);
+
+					if (!field) {
+						console.warn(
+							'Field not found:',
+							fieldId
+						);
+
+						return false;
+					}
+
+					return ERP_matchesRule(
+						field.value,
+						rule
+					);
+				}
+			);
+
+			ERP_setVisible(element, visible);
+		});
+}
+
+
+document
+	.querySelectorAll(
+		'[data-visibility-controller]'
+	)
+	.forEach(element => {
+		element.addEventListener(
+			'change',
+			ERP_updateFields
+		);
+	});
+
+window.addEventListener('pageshow', ERP_updateFields); // Update for specific events
+
 ERP_updateFields(); // Set correct state on page load

@@ -63,29 +63,29 @@ $t_mailbox_types = array(
 //	'POP3_JAV_IMAP2' => array( 'description' => 'POP3 (JAV-IMAP2)' ),
 //	'IMAP_JAV_IMAP2' => array( 'description' => 'IMAP (JAV-IMAP2)' )
 );
-ERP_output_config_option( 'mailbox_type', 'dropdown', $t_mailbox, 'print_descriptions_option_list', $t_mailbox_types );
+ERP_output_config_option( 'mailbox_type', 'dropdown', $t_mailbox, 'print_descriptions_option_list', $t_mailbox_types + array( 'visibility-controller' => TRUE ) );
 ERP_output_config_option( 'hostname', 'string', $t_mailbox );
 ERP_output_config_option( 'port', 'string', $t_mailbox );
 ERP_output_config_option( 'encryption', 'dropdown', $t_mailbox, 'print_encryption_option_list' );
 ERP_output_config_option( 'ssl_cert_verify', 'boolean', $t_mailbox );
-ERP_output_config_option( 'auth_method', 'dropdown', $t_mailbox, 'print_auth_method_option_list' );
+ERP_output_config_option( 'auth_method', 'dropdown', $t_mailbox, 'print_auth_method_option_list', array( 'visibility-controller' => TRUE ) );
 ERP_output_table_close();
 
-ERP_output_table_open( 'mailbox_settings_logininfo' );
+ERP_output_table_open( 'mailbox_settings_logininfo', array( 'auth_method' => [ '!=' => [ 'XOAUTH2' ] ] ) );
 ERP_output_config_option( 'erp_username', 'string', $t_mailbox );
 ERP_output_config_option( 'erp_password', 'string_password', $t_mailbox );
 ERP_output_table_close();
 
-ERP_output_table_open( 'mailbox_settings_oauth' );
-ERP_output_config_option( 'oauth_provider', 'dropdown', $t_mailbox, 'print_descriptions_option_list', array( ERP_PROVIDER_GOOGLE, ERP_PROVIDER_MICROSOFT ) );
+ERP_output_table_open( 'mailbox_settings_oauth', array( 'auth_method' => [ 'XOAUTH2' ] ) );
+ERP_output_config_option( 'oauth_provider', 'dropdown', $t_mailbox, 'print_descriptions_option_list', array( ERP_PROVIDER_GOOGLE, ERP_PROVIDER_MICROSOFT ) + array( 'visibility-controller' => TRUE ) );
 ERP_output_table_close();
 
-ERP_output_table_open( 'mailbox_settings_oauth_google' );
+ERP_output_table_open( 'mailbox_settings_oauth_google', array( 'auth_method' => [ 'XOAUTH2' ], 'oauth_provider' => [ ERP_PROVIDER_GOOGLE ] ) );
 ERP_output_config_option( 'g_mailbox', 'string', $t_mailbox );
 ERP_output_config_option( 'g_serviceAccountCredentials', 'file_string', $t_mailbox );
 ERP_output_table_close();
 
-ERP_output_table_open( 'mailbox_settings_oauth_microsoft' );
+ERP_output_table_open( 'mailbox_settings_oauth_microsoft', array( 'auth_method' => [ 'XOAUTH2' ], 'oauth_provider' => [ ERP_PROVIDER_MICROSOFT ] ) );
 ERP_output_config_option( 'm_mailbox', 'string', $t_mailbox );
 ERP_output_config_option( 'm_tenantId', 'string', $t_mailbox );
 ERP_output_config_option( 'm_clientId', 'string', $t_mailbox );
@@ -94,7 +94,7 @@ ERP_output_config_option( 'm_pfxPath', 'file_string', $t_mailbox );
 ERP_output_config_option( 'm_pfxPassword', 'string_password', $t_mailbox );
 ERP_output_table_close();
 
-ERP_output_table_open( 'mailbox_settings_imap' );
+ERP_output_table_open( 'mailbox_settings_imap', array( 'mailbox_type' => [ 'IMAP' ] ) );
 ERP_output_config_option( 'imap_basefolder', 'string', $t_mailbox );
 ERP_output_config_option( 'imap_createfolderstructure', 'boolean', $t_mailbox );
 ERP_output_table_close();

@@ -146,10 +146,13 @@ function ERP_page_end( $p_page = '' )
 # --------------------
 # output html table open elements
 # 
-function ERP_output_table_open( $p_headertitle = NULL )
+# $p_data_visible_when can accept something like: [ 'mailbox_type' => [ 'IMAP', 'POP3' ] ] or [ 'mailbox_type' => [ '!=' => [ 'IMAP' ] ] ]
+# 
+function ERP_output_table_open( $p_headertitle = NULL, ?array $p_data_visible_when = NULL )
 {
+	$j_data_visible_when = json_encode( $p_data_visible_when );
 ?>
-<div <?php echo ( ( $p_headertitle !== NULL ) ? 'id="' . $p_headertitle . '"' : NULL ) ?>>
+<div<?php echo ( ( $p_headertitle !== NULL ) ? ' id="' . $p_headertitle . '"' . ( ( $p_data_visible_when !== NULL ) ? ' data-visible-when=\'' . $j_data_visible_when . '\'' : NULL ) : NULL ) ?>>
 <div class="widget-box widget-color-blue2">
 <?php
 	if ( $p_headertitle !== NULL )
@@ -834,8 +837,14 @@ function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, $p_fun
 
 					if ( function_exists( $t_function_name ) )
 					{
+						$t_vis_controller = FALSE;
+						if ( isset( $p_function_parameter[ 'visibility-controller' ] ) && $p_function_parameter[ 'visibility-controller' ] === TRUE )
+						{
+							$t_vis_controller = TRUE;
+							unset( $p_function_parameter[ 'visibility-controller' ] );
+						}
 ?>
-	<select id="<?php echo $t_input_name ?>" class="input-sm" <?php echo helper_get_tab_index() ?> name="<?php
+	<select id="<?php echo $t_input_name ?>" <?php echo ( ( $t_vis_controller ) ? 'data-visibility-controller ' : NULL ) ?>class="input-sm" <?php echo helper_get_tab_index() ?> name="<?php
 							echo $t_input_name . ( ( in_array( $p_type, array( 'dropdown_multiselect', 'dropdown_multiselect_any' ), TRUE ) ) ? '[]" multiple size="6' : NULL );
 	?>">
 <?php
