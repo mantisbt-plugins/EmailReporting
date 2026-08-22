@@ -96,9 +96,6 @@ $s_plugin_EmailReporting_strict = 'Strict';
 $s_plugin_EmailReporting_balanced = 'Balanced';
 $s_plugin_EmailReporting_relaxed = 'Relaxed';
 
-$s_plugin_EmailReporting_emailreporting = 'EmailReporting';
-$s_plugin_EmailReporting_mantisbt = 'MantisBT';
-
 $s_plugin_EmailReporting_newnote = 'New note';
 $s_plugin_EmailReporting_newissue = 'New issue';
 $s_plugin_EmailReporting_newattachment = 'New attachment';
