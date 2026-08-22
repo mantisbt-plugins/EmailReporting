@@ -709,18 +709,7 @@ function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, $p_fun
 				case 'file_string':
 				case 'directory_string':
 					$t_dirfile = (string) $t_value;
-					if ( $p_type === 'directory_string' )
-					{
-						$t_dirfile_type = 'directory';
-					}
-					elseif ( $p_type === 'file_string' )
-					{
-						$t_dirfile_type = 'file';
-					}
-					else
-					{
-						break;
-					}
+					$t_dirfile_type = str_replace( '_string', '', $p_type );
 
 					if ( !empty( $t_dirfile ) )
 					{
