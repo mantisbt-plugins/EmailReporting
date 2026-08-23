@@ -33,10 +33,6 @@
 	}
 
 	ini_set( 'memory_limit', -1 );
-	if ( ini_get( 'safe_mode' ) == 0 )
-	{
-		set_time_limit( 0 );
-	}
 
 	if ( php_sapi_name() !== 'cli' )
 	{
@@ -71,6 +67,7 @@
 
 	foreach ( $GLOBALS[ 't_mailboxes' ] as $t_mailbox )
 	{
+		set_time_limit( 300 );
 		$GLOBALS[ $t_mailbox_api_index ]->process_mailbox( $t_mailbox );
 	}
 

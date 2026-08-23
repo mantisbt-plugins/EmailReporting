@@ -9,6 +9,8 @@ Aug 2026 - EmailReporting-0.12.0
 	- Composer migration: PEAR, Auth_SASL, Net_IMAP, Net_POP3, Net_Socket, Net_mimeDecode, Markdownify (ERP version), EmailReplyParser
 	- TNEF decoder (winmail.dat) support using QualityUnit/TNEFDecoder
 	- Support for OAuth authentication with Microsoft and Google
+	- Removed safe_mode check (deprecated)
+	- Changed set_time_limit from infinite to 5 minutes per mailbox.
 
 Aug 2026 - EmailReporting-0.11.0
 	- PHP 8.x.x base64_decode deprecation fix
