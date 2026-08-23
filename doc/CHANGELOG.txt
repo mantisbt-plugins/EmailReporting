@@ -1,6 +1,7 @@
 Changelog:
 Aug 2026 - EmailReporting-0.12.0
 	- Drop support for MantisBT 1.3.x
+	- PHP requirement change: minimum PHP required 8.1
 	- Updated PEAR packages: PEAR, Auth_SASL
 	- Powershell script for Microsoft Entra App creation
 	- Improve charset conversion. Iconv is used as fallback.
