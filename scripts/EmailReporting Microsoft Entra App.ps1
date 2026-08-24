@@ -37,7 +37,7 @@ https://outlook.office365.com/.default
 
 $AppDisplayName = "EmailReporting Mailbox App"
 $Mailboxes      = @(
-    "emailreporting@mantisbt.org",
+    "emailaddress@doesnot.exist",
     "another@nonexistent.emailaddress"
 )
 
@@ -119,7 +119,7 @@ if($Module.count -eq 0)
 $Module=Get-InstalledModule -Name ExchangeOnlineManagement -ErrorAction SilentlyContinue
 if($Module.count -eq 0)
 {
-    Write-Host ExchangeOnlineManagement. -ForegroundColor Green
+    Write-Host Installing ExchangeOnlineManagement. -ForegroundColor Green
     Install-Module ExchangeOnlineManagement -AllowClobber -Scope CurrentUser
 }
 
