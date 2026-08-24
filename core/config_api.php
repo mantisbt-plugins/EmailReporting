@@ -676,7 +676,7 @@ function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, $p_fun
 		case 'dropdown_multiselect_any':
 ?>
 <tr>
-	<td class="category width-50">
+	<td class="category width-50 align-middle">
 <?php
 			ERP_print_documentation_link( $p_name );
 ?>
