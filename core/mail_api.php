@@ -249,6 +249,17 @@ class ERP_mailbox_api
 
 								$this->prepare_mailbox_hostname();
 
+								if ( $this->_mailbox[ 'auth_method' ] === 'XOAUTH2' )
+								{
+									$this->_mailbox[ 'AccessToken' ] = $this->Get_OAuth2_AccessToken();
+
+									if ( $this->_mailbox[ 'AccessToken' ] === FALSE )
+									{
+										unset( $this->_mailbox[ 'AccessToken' ] );
+										return( $this->_result );
+									}
+								}
+
 								$t_process_mailbox_function = 'process_' . strtolower( $this->_mailbox[ 'mailbox_type' ] ) . '_mailbox';
 
 								$this->$t_process_mailbox_function();
@@ -542,14 +553,15 @@ class ERP_mailbox_api
 			{
 				$t_mailbox_username = $this->_mailbox[ 'm_mailbox' ];
 			}
-
-			$t_mailbox_password = $this->Get_OAuth2_AccessToken();
-
-			if ( $t_mailbox_password === FALSE )
+			else
 			{
-				$this->custom_error( 'Failed to get accestoken for OAuth authentication.' );
+				$this->custom_error( 'Unknown OAuth provider.' );
+				unset( $this->_mailbox[ 'AccessToken' ] );
 				return( FALSE );
 			}
+
+			$t_mailbox_password = $this->_mailbox[ 'AccessToken' ];
+			unset( $this->_mailbox[ 'AccessToken' ] );
 		}
 		else
 		{
@@ -597,9 +609,9 @@ class ERP_mailbox_api
 				return( FALSE );
 			}
 
-			$accessToken = $provider->getAccessToken();
+			$AccessToken = $provider->getAccessToken();
 
-			return( $accessToken );
+			return( $AccessToken );
 		}
 
 		return( FALSE );
