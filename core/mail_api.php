@@ -556,12 +556,19 @@ class ERP_mailbox_api
 	# Perform the login to the mailbox
 	private function PEAR_mailbox_login()
 	{
-		$t_mailbox_username = $this->_mailbox[ 'erp_username' ];
-		$t_mailbox_password = base64_decode( $this->_mailbox[ 'erp_password' ] );
 		$t_mailbox_auth_method = $this->_mailbox[ 'auth_method' ];
 
 		if ( $t_mailbox_auth_method === 'XOAUTH2' )
 		{
+			if ( $this->_mailbox[ 'oauth_provider' ] === ERP_PROVIDER_GOOGLE )
+			{
+				$t_mailbox_username = $this->_mailbox[ 'g_mailbox' ];
+			}
+			elseif ( $this->_mailbox[ 'oauth_provider' ] === ERP_PROVIDER_MICROSOFT )
+			{
+				$t_mailbox_username = $this->_mailbox[ 'm_mailbox' ];
+			}
+
 			$t_mailbox_password = $this->Get_OAuth2_AccessToken();
 
 			if ( $t_mailbox_password === FALSE )
@@ -569,6 +576,11 @@ class ERP_mailbox_api
 				$this->custom_error( 'Failed to get accestoken for OAuth authentication.' );
 				return( FALSE );
 			}
+		}
+		else
+		{
+			$t_mailbox_username = $this->_mailbox[ 'erp_username' ];
+			$t_mailbox_password = base64_decode( $this->_mailbox[ 'erp_password' ] );
 		}
 
 		return( $this->_mailserver->login( $t_mailbox_username, $t_mailbox_password, $t_mailbox_auth_method ) );
