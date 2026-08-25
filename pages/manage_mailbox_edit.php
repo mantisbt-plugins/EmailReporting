@@ -119,7 +119,7 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 		{
 			$t_value = implode( '_', $t_value );
 		}
-		if ( $t_key === 'enabled' || $t_key === 'ssl_cert_verify' )
+		if ( $t_key === 'enabled' || $t_key === 'ssl_cert_verify' || $t_key === 'imap_createfolderstructure' )
 		{
 			$t_value = ( ( $t_value ) ? lang_get( 'yes' ) : lang_get( 'no' ) );
 		}
