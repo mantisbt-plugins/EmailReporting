@@ -56,7 +56,7 @@ if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailb
 		}
 	}
 
-	$t_isImap = in_array( $t_mailbox[ 'mailbox_type' ], array( 'IMAP' ), TRUE );
+	$t_isImap = $t_mailbox[ 'mailbox_type' ] === 'IMAP';
 	if ( $t_isImap )
 	{
 		$t_mailbox += array(
@@ -117,7 +117,7 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 	{
 		If ( is_array( $t_value ) )
 		{
-			$t_value = implode( '_', $t_value );
+			$t_value = implode( ' - ', $t_value );
 		}
 		if ( $t_key === 'enabled' || $t_key === 'ssl_cert_verify' || $t_key === 'imap_createfolderstructure' )
 		{

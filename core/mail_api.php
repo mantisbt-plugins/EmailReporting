@@ -199,10 +199,8 @@ class ERP_mailbox_api
 		{
 			if ( $this->_mailbox[ 'enabled' ] )
 			{
-				$this->prepare_mailbox_type();
-
 				// Check whether EmailReporting supports the mailbox type. The check is based on available default ports
-				if ( isset( $this->_default_ports[ $this->_mailbox[ 'mailbox_type' ][ 'type' ] ] ) )
+				if ( isset( $this->_default_ports[ $this->_mailbox[ 'mailbox_type' ] ] ) )
 				{
 					if ( project_exists( $this->_mailbox[ 'project_id' ] ) )
 					{
@@ -251,19 +249,7 @@ class ERP_mailbox_api
 
 								$this->prepare_mailbox_hostname();
 
-								if ( $this->_mailbox[ 'mailbox_type' ][ 'ext' ] === 'PEAR' )
-								{
-									$t_process_mailbox_function = 'process_' . strtolower( $this->_mailbox[ 'mailbox_type' ][ 'type' ] ) . '_mailbox';
-								}
-								elseif ( in_array( $this->_mailbox[ 'mailbox_type' ][ 'ext' ], array( /*'JAV_IMAP2'*/ ), TRUE ) )
-								{
-									$t_process_mailbox_function = 'process_' . strtolower( $this->_mailbox[ 'mailbox_type' ][ 'ext' ] ) . '_mailbox';
-								}
-								else
-								{
-									$this->custom_error( 'Unknown mailbox type' );
-									return( $this->_result );
-								}
+								$t_process_mailbox_function = 'process_' . strtolower( $this->_mailbox[ 'mailbox_type' ] ) . '_mailbox';
 
 								$this->$t_process_mailbox_function();
 
@@ -341,18 +327,6 @@ class ERP_mailbox_api
 		{
 			echo 'Mailbox: ' . $this->_mailbox[ 'description' ] . "\n" . $t_error_text . "\n\n";
 		}
-	}
-
-	# --------------------
-	# Prepare mailbox types
-	private function prepare_mailbox_type()
-	{
-		$t_mailbox_type = explode( '_', $this->_mailbox[ 'mailbox_type' ], 2 );
-
-		$this->_mailbox[ 'mailbox_type' ] = array(
-			'type' => $t_mailbox_type[ 0 ],
-			'ext' => ( ( isset( $t_mailbox_type[ 1 ] ) ) ? $t_mailbox_type[ 1 ] : 'PEAR' )
-		);
 	}
 
 	# --------------------
@@ -614,34 +588,8 @@ class ERP_mailbox_api
 					clientSecret: base64_decode( $this->_mailbox[ 'm_clientSecret' ] ),
 
 					pfxPath: $this->_mailbox[ 'm_pfxPath' ],
-//					pfxPath: __DIR__ . '/EmailReporting Mailbox App.pfx',
 					pfxPassword: base64_decode( $this->_mailbox[ 'm_pfxPassword' ] ),
 				);
-/*
-				$t_hasClientSecret = (bool) ( !empty( $this->_mailbox[ 'm_clientSecret' ] ) );
-				$t_hasCertificate = (bool) ( !empty( $this->_mailbox[ 'm_pfxPath' ] ) && !empty( $this->_mailbox[ 'm_pfxPassword' ] ) );
-
-				if ( $hasClientSecret )
-				{
-					$provider = new ERP_Microsoft365OAuthProvider(
-						tenantId: $this->_mailbox[ 'm_tenantId' ],
-						clientId: $this->_mailbox[ 'm_clientId' ],
-
-						clientSecret: $this->_mailbox[ 'm_clientSecret' ]
-					);
-				}
-				elseif ( $hasCertificate )
-				{
-					$provider = new ERP_Microsoft365OAuthProvider(
-						tenantId: $this->_mailbox[ 'm_tenantId' ],
-						clientId: $this->_mailbox[ 'm_clientId' ],
-
-						pfxPath: $this->_mailbox[ 'm_pfxPath' ],
-//						pfxPath: __DIR__ . '/EmailReporting Mailbox App.pfx',
-						pfxPassword: $this->_mailbox[ 'm_pfxPassword' ]
-					);
-				}
-*/
 			}
 			else
 			{
@@ -666,7 +614,7 @@ class ERP_mailbox_api
 
 		if ( !PEAR::isError( $t_ListMsgs ) )
 		{
-			if ( $this->_mailbox[ 'mailbox_type' ][ 'type' ] === 'IMAP' )
+			if ( $this->_mailbox[ 'mailbox_type' ] === 'IMAP' )
 			{
 				$t_ListMsgs = array_column( $t_ListMsgs, NULL, 'uidl' );
 			}
@@ -744,27 +692,24 @@ class ERP_mailbox_api
 	{
 		$t_msg = NULL;
 
-		if ( $this->_mailbox[ 'mailbox_type' ][ 'ext' ] === 'PEAR' )
+		if ( $this->_mailbox[ 'mailbox_type' ] === 'IMAP' )
 		{
-			if ( $this->_mailbox[ 'mailbox_type' ][ 'type' ] === 'IMAP' )
-			{
-				// Net_IMAP 1.1.0 and 1.1.2 seems to have a somewhat broken getMsg function.
-				$t_msg = $this->_mailserver->getMessages( $p_msg_id, TRUE );
+			// Net_IMAP 1.1.0 and 1.1.2 seems to have a somewhat broken getMsg function.
+			$t_msg = $this->_mailserver->getMessages( $p_msg_id, TRUE );
 
-				if ( is_array( $t_msg ) && count( $t_msg ) === 1 )
-				{
-					$t_msg = $t_msg[ key( $t_msg ) ];
-				}
-			}
-			elseif ( $this->_mailbox[ 'mailbox_type' ][ 'type' ] === 'POP3' )
+			if ( is_array( $t_msg ) && count( $t_msg ) === 1 )
 			{
-				$t_msg = $this->_mailserver->getMsg( $p_msg_id );
+				$t_msg = $t_msg[ key( $t_msg ) ];
 			}
+		}
+		elseif ( $this->_mailbox[ 'mailbox_type' ] === 'POP3' )
+		{
+			$t_msg = $this->_mailserver->getMsg( $p_msg_id );
+		}
 
-			if ( $this->pear_error( 'Retrieve raw message', $t_msg ) )
-			{
-				return( FALSE );
-			}
+		if ( $this->pear_error( 'Retrieve raw message', $t_msg ) )
+		{
+			return( FALSE );
 		}
 
 		return( $t_msg );
@@ -1425,7 +1370,6 @@ class ERP_mailbox_api
 				// The IMAP pear package will enable encryption after the connection is established if the default port is used. So we need to work around that
 				// No longer needed since we disabled the code in question in IMAPProtocol.php
 //				if ( !( $this->_mailbox[ 'mailbox_type' ] === 'IMAP' && ( $this->_mailbox[ 'port' ] <= 0 || $this->_mailbox[ 'port' ] === $this->_default_ports[ $this->_mailbox[ 'mailbox_type' ] ][ $t_def_mailbox_port_index ] ) ) )
-				if ( $this->_mailbox[ 'mailbox_type' ][ 'ext' ] === 'PEAR' )
 				{
 					$this->_mailbox[ 'hostname' ] = strtolower( $this->_mailbox[ 'encryption' ] ) . '://' . $this->_mailbox[ 'hostname' ];
 				}
@@ -1438,7 +1382,7 @@ class ERP_mailbox_api
 
 		if ( $this->_mailbox[ 'port' ] <= 0 )
 		{
-			$this->_mailbox[ 'port' ] = (int) $this->_default_ports[ $this->_mailbox[ 'mailbox_type' ][ 'type' ] ][ $t_def_mailbox_port_index ];
+			$this->_mailbox[ 'port' ] = (int) $this->_default_ports[ $this->_mailbox[ 'mailbox_type' ] ][ $t_def_mailbox_port_index ];
 		}
 	}
 
