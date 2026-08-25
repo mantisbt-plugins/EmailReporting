@@ -133,7 +133,7 @@ class ERP_Microsoft365OAuthProvider extends ERP_OAuthProvider
 
 			if (
 				$e instanceof GuzzleHttp\Exception\RequestException &&
-				$e->hasResponse()
+				$e->getResponse() !== null
 			)
 			{
 				$responseBody = (string)$e->getResponse()->getBody();
