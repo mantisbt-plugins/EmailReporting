@@ -109,22 +109,28 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 ?>
 <br /><div class="center">
 <?php
-	$t_message = NULL;
+	$t_message = '';
 	$t_message .= plugin_lang_get( ( ( $t_is_custom_error || PEAR::isError( $t_result ) ) ? 'test_failure' : 'test_success' ) ) . '<br /><br />';
 
-	$t_message .= plugin_lang_get( 'description' ) . ': ' . $t_mailbox_api->_mailbox[ 'description' ] . '<br />';
-	$t_message .= plugin_lang_get( 'mailbox_type' ) . ': ' . implode( '_', $t_mailbox_api->_mailbox[ 'mailbox_type' ] ) . '<br />';
-	$t_message .= plugin_lang_get( 'hostname' ) . ': ' . $t_mailbox_api->_mailbox[ 'hostname' ] . '<br />';
-	$t_message .= plugin_lang_get( 'port' ) . ': ' . $t_mailbox_api->_mailbox[ 'port' ] . '<br />';
-	$t_message .= plugin_lang_get( 'encryption' ) . ': ' . $t_mailbox_api->_mailbox[ 'encryption' ] . '<br />';
-	$t_message .= plugin_lang_get( 'ssl_cert_verify' ) . ': ' . ( ( $t_mailbox_api->_mailbox[ 'ssl_cert_verify' ] ) ? lang_get( 'yes' ) : lang_get( 'no' ) ) . '<br />';
-	$t_message .= plugin_lang_get( 'erp_username' ) . ': ' . $t_mailbox_api->_mailbox[ 'erp_username' ] . '<br />';
-	$t_message .= plugin_lang_get( 'erp_password' ) . ': ******' . '<br />';
-	$t_message .= plugin_lang_get( 'auth_method' ) . ': ' . $t_mailbox_api->_mailbox[ 'auth_method' ] . '<br />';
-
-	if ( $t_mailbox_api->_mailbox[ 'mailbox_type' ][ 'type' ] === 'IMAP' )
+	$t_mailbox = $t_mailbox_api->_mailbox;
+	foreach ( $t_mailbox AS $t_key => $t_value )
 	{
-		$t_message .= plugin_lang_get( 'imap_basefolder' ) . ': ' . $t_mailbox_api->_mailbox[ 'imap_basefolder' ] . '<br />';
+		If ( is_array( $t_value ) )
+		{
+			$t_value = implode( '_', $t_value );
+		}
+		if ( $t_key === 'enabled' || $t_key === 'ssl_cert_verify' )
+		{
+			$t_value = ( ( $t_value ) ? lang_get( 'yes' ) : lang_get( 'no' ) );
+		}
+		if ( $t_key === 'erp_password' || $t_key === 'm_clientSecret' || $t_key === 'm_pfxPassword' )
+		{
+			$t_value = '******';
+		}
+		if ( $t_key !== 'project_id' && $t_key !== 'global_category_id' && $t_key !== 'link_rules' )
+		{
+			$t_message .= plugin_lang_get( $t_key ) . ': ' . $t_value . '<br />';
+		}
 	}
 
 	$t_message .= '<br />' . ( ( $t_is_custom_error ) ? nl2br( $t_result[ 'ERROR_MESSAGE' ] ) : ( ( PEAR::isError( $t_result ) ) ? 'Location: ' . $t_result->ERP_location . '<br />' . $t_result->toString() : NULL ) );
