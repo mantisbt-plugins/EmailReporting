@@ -599,11 +599,11 @@ class ERP_mailbox_api
 					tenantId: $this->_mailbox[ 'm_tenantId' ],
 					clientId: $this->_mailbox[ 'm_clientId' ],
 
-					clientSecret: base64_decode( $this->_mailbox[ 'm_clientSecret' ] )
+					clientSecret: base64_decode( $this->_mailbox[ 'm_clientSecret' ] ),
 
 					pfxPath: $this->_mailbox[ 'm_pfxPath' ],
 //					pfxPath: __DIR__ . '/EmailReporting Mailbox App.pfx',
-					pfxPassword: base64_decode( $this->_mailbox[ 'm_pfxPassword' ] )
+					pfxPassword: base64_decode( $this->_mailbox[ 'm_pfxPassword' ] ),
 				);
 /*
 				$t_hasClientSecret = (bool) ( !empty( $this->_mailbox[ 'm_clientSecret' ] ) );
