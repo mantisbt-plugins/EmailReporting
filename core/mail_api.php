@@ -1706,10 +1706,10 @@ class ERP_mailbox_api
 			{
 				if ( !is_blank( $t_ref ) )
 				{
-					// ignore references longer then 255 characters as they are most likely malformed
-					if ( strlen( $t_ref ) > 255 )
+					// ignore references longer then 250 characters as they are most likely malformed
+					if ( strlen( $t_ref ) > 250 )
 					{
-						$this->custom_error( 'Reference id encountered thats longer then 255 characters. It will be ignored' );
+						$this->custom_error( 'Reference id encountered thats longer then 250 characters. It will be ignored' );
 					}
 					else
 					{
