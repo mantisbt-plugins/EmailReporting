@@ -7,11 +7,13 @@ abstract class ERP_OAuthProvider
 	private ?string $cachedAccessToken = null;
 	private ?int $cachedAccessTokenExpiresAt = null;
 
-	abstract protected function requestAccessToken(): array;
+	private array $_error = array();
+
+	abstract protected function requestAccessToken(): array|false;
 
 	# --------------------
 	# get the accesstoken for M365
-	public function getAccessToken(): string
+	public function getAccessToken(): string|false
 	{
 		if ($this->cachedAccessToken && $this->cachedAccessTokenExpiresAt)
 		{
@@ -24,6 +26,17 @@ abstract class ERP_OAuthProvider
 
 		$tokenResponse = $this->requestAccessToken();
 
+		if ( $tokenResponse === FALSE )
+		{
+			return( FALSE );
+		}
+
+		if ( !isset( $tokenResponse[ 'access_token' ], $tokenResponse[ 'expires_in' ] ) )
+		{
+			$this->setError( 'OAuth token response does not contain the expected access_token and expires_in values.' );
+			return( FALSE );
+		}
+
 		$this->cachedAccessToken = $tokenResponse[ 'access_token' ];
 		$this->cachedAccessTokenExpiresAt = time() + (int)( $tokenResponse[ 'expires_in' ] ?? 3599 );
 
@@ -32,14 +45,33 @@ abstract class ERP_OAuthProvider
 
 	# --------------------
 	# Return an XOAUTH2 formatted auth string
-	public function createXoauth2String( string $mailbox ): string
+	public function createXoauth2String( string $mailbox ): string|false
 	{
 		$accessToken = $this->getAccessToken();
+
+		if ( $accessToken === FALSE )
+		{
+			return( $accessToken );
+		}
 
 		return( base64_encode(
 			'user=' . $mailbox . "\x01" .
 			'auth=Bearer ' . $accessToken . "\x01\x01"
 		) );
+	}
+
+	# --------------------
+	# Add an error to _error 
+	protected function setError( string $error ): void
+	{
+		$this->_error[] = $error;
+	}
+
+	# --------------------
+	# Return the first error in _error
+	public function getError(): ?string
+	{
+		return( array_shift( $this->_error ) );
 	}
 }
 
@@ -72,9 +104,10 @@ class ERP_Microsoft365OAuthProvider extends ERP_OAuthProvider
 		$hasClientSecret = (bool) ( !empty( $clientSecret ) );
 		$hasCertificate = (bool) ( !empty( $pfxPath ) && !empty( $pfxPassword ) );
 
-		if ( $hasClientSecret === $hasCertificate )
+		if ( $hasClientSecret && $hasCertificate )
 		{
-			throw new InvalidArgumentException( 'Configure either a client secret or a PFX certificate, but not both.' );
+			$this->setError( 'Configure either a client secret or a PFX certificate, but not both.' );
+			return;
 		}
 
 		if ( $hasClientSecret )
@@ -87,13 +120,14 @@ class ERP_Microsoft365OAuthProvider extends ERP_OAuthProvider
 		}
 		else
 		{
-			throw new RuntimeException( 'clientSecret or pfxPath + pfxPassword is missing.' );
+			$this->setError( 'clientSecret or pfxPath + pfxPassword is missing.' );
+			return;
 		}
 	}
 
 	# --------------------
 	# Request accesstoken from M365
-	protected function requestAccessToken(): array
+	protected function requestAccessToken(): array|false
 	{
 		$tokenEndpoint = $this->getTokenEndpoint();
 
@@ -109,12 +143,19 @@ class ERP_Microsoft365OAuthProvider extends ERP_OAuthProvider
 		}
 		elseif ( $this->UseCertificateCredential === TRUE )
 		{
+			$createClientAssertion = $this->createClientAssertion();
+			if ( $createClientAssertion === FALSE)
+			{
+				return( $createClientAssertion );
+			}
+			
 			$postData[ 'client_assertion_type' ] = 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer';
-			$postData[ 'client_assertion' ] = $this->createClientAssertion();
+			$postData[ 'client_assertion' ] = $createClientAssertion;
 		}
 		else
 		{
-			throw new LogicException( 'No Microsoft authentication method is configured.' );	
+			$this->setError( 'No Microsoft authentication method is configured.' );
+			return( FALSE );
 		}
 
 		try
@@ -144,11 +185,11 @@ class ERP_Microsoft365OAuthProvider extends ERP_OAuthProvider
 				}
 			}
 
-			throw new RuntimeException(
-				'Failed to request Microsoft 365 access token. ' . $errorDetails,
-				(int)$e->getCode(),
-				$e
+			$this->setError(
+				'Failed to request Microsoft 365 access token. ' . $errorDetails . 
+				' ERRORCODE: ' . (int)$e->getCode()
 			);
+			return( FALSE );
 		}
 
 		$body = (string)$response->getBody();
@@ -156,12 +197,14 @@ class ERP_Microsoft365OAuthProvider extends ERP_OAuthProvider
 
 		if ( !is_array( $data ) )
 		{
-			throw new RuntimeException( 'Microsoft token response was not valid JSON: ' . $body );
+			$this->setError( 'Microsoft token response was not valid JSON: ' . $body );
+			return( FALSE );
 		}
 
 		if ( empty( $data[ 'access_token' ] ) )
 		{
-			throw new RuntimeException( 'Microsoft token response did not contain an access_token: ' . $body );
+			$this->setError( 'Microsoft token response did not contain an access_token: ' . $body );
+			return( FALSE );
 		}
 
 		return( $data );
@@ -169,9 +212,13 @@ class ERP_Microsoft365OAuthProvider extends ERP_OAuthProvider
 
 	# --------------------
 	# Create the ClientAssertion
-	private function createClientAssertion(): string
+	private function createClientAssertion(): string|false
 	{
 		$certificateData = $this->readPfx();
+		if ( $certificateData === FALSE )
+		{
+			return( $certificateData );
+		}
 
 		$now = time();
 
@@ -209,7 +256,7 @@ class ERP_Microsoft365OAuthProvider extends ERP_OAuthProvider
 
 	# --------------------
 	# Read the pfx certificate
-	private function readPfx(): array
+	private function readPfx(): array|false
 	{
 		if ( $this->certificateData !== null )
 		{
@@ -218,34 +265,43 @@ class ERP_Microsoft365OAuthProvider extends ERP_OAuthProvider
 
 		if ( !is_file( $this->pfxPath ) )
 		{
-			throw new RuntimeException( 'PFX file not found: ' . $this->pfxPath );
+			$this->setError( 'PFX file not found: ' . $this->pfxPath );
+			return( FALSE );
 		}
 
 		$pfxContents = file_get_contents( $this->pfxPath );
 
 		if ( $pfxContents === FALSE )
 		{
-			throw new RuntimeException( 'Could not read PFX file: ' . $this->pfxPath );
+			$this->setError( 'Could not read PFX file: ' . $this->pfxPath );
+			return( FALSE );
 		}
 
 		$certificates = [];
 
 		if ( !openssl_pkcs12_read( $pfxContents, $certificates, $this->pfxPassword ) )
 		{
-			throw new RuntimeException( 'Could not read PFX file. Check the PFX password.' );
+			$this->setError( 'Could not read PFX file. Check the PFX password.' );
+			return( FALSE );
 		}
 
 		if ( empty( $certificates[ 'pkey' ] ) )
 		{
-			throw new RuntimeException( 'PFX file does not contain a private key.' );
+			$this->setError( 'PFX file does not contain a private key.' );
+			return( FALSE );
 		}
 
 		if ( empty( $certificates[ 'cert' ] ) )
 		{
-			throw new RuntimeException( 'PFX file does not contain a certificate.' );
+			$this->setError( 'PFX file does not contain a certificate.' );
+			return( FALSE );
 		}
 
 		$certificateDer = self::pemCertificateToDer( $certificates[ 'cert' ] );
+		if ( $certificateDer === FALSE )
+		{
+			return( $certificateDer );
+		}
 
 		$this->certificateData = [
 			'privateKeyPem' => $certificates[ 'pkey' ],
@@ -268,7 +324,7 @@ class ERP_Microsoft365OAuthProvider extends ERP_OAuthProvider
 
 	# --------------------
 	# Pem certificate to Der
-	private static function pemCertificateToDer( string $certificatePem ): string
+	private function pemCertificateToDer( string $certificatePem ): string|false
 	{
 		$certificateDer = preg_replace(
 			'/-----BEGIN CERTIFICATE-----|-----END CERTIFICATE-----|\s/',
@@ -278,14 +334,16 @@ class ERP_Microsoft365OAuthProvider extends ERP_OAuthProvider
 
 		if ( !is_string( $certificateDer ) || $certificateDer === '' )
 		{
-			throw new RuntimeException( 'Could not parse PEM certificate.' );
+			$this->setError( 'Could not parse PEM certificate.' );
+			return( FALSE );
 		}
 
 		$decoded = base64_decode( $certificateDer, TRUE );
 
 		if ( $decoded === FALSE )
 		{
-			throw new RuntimeException( 'Could not decode PEM certificate.' );
+			$this->setError( 'Could not decode PEM certificate.' );
+			return( FALSE );
 		}
 
 		return( $decoded );
@@ -323,7 +381,8 @@ class ERP_GoogleOAuthProvider extends ERP_OAuthProvider
 	{
 		if ( trim( $this->mailbox ) === '' )
 		{
-			throw new InvalidArgumentException( 'Google Workspace mailbox cannot be empty.' );
+			$this->setError( 'Google Workspace mailbox cannot be empty.' );
+			return;
 		}
 
 		if (
@@ -331,16 +390,17 @@ class ERP_GoogleOAuthProvider extends ERP_OAuthProvider
 			!is_file( $this->serviceAccountCredentials )
 		)
 		{
-			throw new InvalidArgumentException(
+			$this->setError(
 				'Google service-account JSON file was not found: ' .
 				$this->serviceAccountCredentials
 			);
+			return;
 		}
 	}
 
 	# --------------------
 	# Request access token from Google
-	protected function requestAccessToken(): array
+	protected function requestAccessToken(): array|false
 	{
 		$credentials = new Google\Auth\Credentials\ServiceAccountCredentials(
 			$this->scope,
@@ -354,17 +414,24 @@ class ERP_GoogleOAuthProvider extends ERP_OAuthProvider
 		}
 		catch ( Throwable $e )
 		{
-			throw new RuntimeException(
+			$this->setError(
 				'Failed to request Google Workspace access token: ' .
-					$e->getMessage(),
-				(int)$e->getCode(),
-				$e
+				$e->getMessage() . 
+				' ERRORCODE: ' . (int)$e->getCode()
 			);
+			return( FALSE );
 		}
 
 		if ( !is_array( $tokenResponse ) )
 		{
-			throw new RuntimeException( 'Google token response was not an array.' );
+			$this->setError( 'Google token response was not an array.' );
+			return( FALSE );
+		}
+
+		if ( empty( $tokenResponse[ 'access_token' ] ) )
+		{
+			$this->setError( 'Google token response did not contain an access_token.' );
+			return( FALSE );
 		}
 
 		return( $tokenResponse );

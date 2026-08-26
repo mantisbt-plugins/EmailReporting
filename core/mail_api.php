@@ -251,11 +251,11 @@ class ERP_mailbox_api
 
 								if ( $this->_mailbox[ 'auth_method' ] === 'XOAUTH2' )
 								{
-									$this->_mailbox[ 'AccessToken' ] = $this->Get_OAuth2_AccessToken();
+									$this->_mailbox[ 'access_token' ] = $this->Get_OAuth2_AccessToken();
 
-									if ( $this->_mailbox[ 'AccessToken' ] === FALSE )
+									if ( $this->_mailbox[ 'access_token' ] === FALSE )
 									{
-										unset( $this->_mailbox[ 'AccessToken' ] );
+										unset( $this->_mailbox[ 'access_token' ] );
 										return( $this->_result );
 									}
 								}
@@ -556,12 +556,12 @@ class ERP_mailbox_api
 			else
 			{
 				$this->custom_error( 'Unknown OAuth provider.' );
-				unset( $this->_mailbox[ 'AccessToken' ] );
+				unset( $this->_mailbox[ 'access_token' ] );
 				return( FALSE );
 			}
 
-			$t_mailbox_password = $this->_mailbox[ 'AccessToken' ];
-			unset( $this->_mailbox[ 'AccessToken' ] );
+			$t_mailbox_password = $this->_mailbox[ 'access_token' ];
+			unset( $this->_mailbox[ 'access_token' ] );
 		}
 		else
 		{
@@ -609,9 +609,26 @@ class ERP_mailbox_api
 				return( FALSE );
 			}
 
-			$AccessToken = $provider->getAccessToken();
+			$constructError = $provider->getError();
 
-			return( $AccessToken );
+			if ( $constructError !== NULL )
+			{
+				$this->custom_error( $constructError );
+				return( FALSE );
+			}
+
+			$accessToken = $provider->getAccessToken();
+
+			if ( $accessToken === FALSE )
+			{
+				$this->custom_error(
+					$provider->getError() ?? 'Unknown error: OAuth access token request failed.'
+				);
+
+				return( FALSE );
+			}
+
+			return( $accessToken );
 		}
 
 		return( FALSE );
