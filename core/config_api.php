@@ -375,7 +375,7 @@ function ERP_print_documentation_link( $p_a_name = '', $p_other_description = FA
 	}
 
 	echo plugin_lang_get( $t_description );
-	echo ' <a href="http://www.mantisbt.org/wiki/doku.php/mantisbt:plugins:emailreporting#' . $t_a_name . '" target="_blank">[?]</a>';
+	echo ' <a href="http://www.mantisbt.org/wiki/doku.php/mantisbt:plugins:emailreporting#' . strtolower( $t_a_name ) . '" target="_blank">[?]</a>';
 }
 
 # This overwrites a specific configuration option for the current request
