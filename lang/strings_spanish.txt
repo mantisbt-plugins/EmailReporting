@@ -34,7 +34,7 @@ $s_plugin_EmailReporting_remove_reply_options = 'Configuración de respuestas';
 $s_plugin_EmailReporting_reporter_options = 'Configuración de reporte de solicitud';
 $s_plugin_EmailReporting_runtime_options = 'Configuración de ambiente de ejecución';
 $s_plugin_EmailReporting_security_options = 'Configuración de seguridad';
-$s_plugin_EmailReporting_strip_signature_feature_options = 'Configuración de borrado de firma (Experimental)';
+$s_plugin_EmailReporting_strip_signature_feature_options = 'Configuración de borrado de firma';
 
 $s_plugin_EmailReporting_copy_of = 'Copiar de';
 $s_plugin_EmailReporting_directory_exists = 'Directorio encontrado';

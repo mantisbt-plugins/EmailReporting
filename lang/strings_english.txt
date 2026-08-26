@@ -34,7 +34,7 @@ $s_plugin_EmailReporting_remove_reply_options = 'Remove replies configuration op
 $s_plugin_EmailReporting_reporter_options = 'Issue reporter configuration options';
 $s_plugin_EmailReporting_runtime_options = 'Runtime configuration options';
 $s_plugin_EmailReporting_security_options = 'Security configuration options';
-$s_plugin_EmailReporting_strip_signature_feature_options = 'Strip signature configuration options (Experimental)';
+$s_plugin_EmailReporting_strip_signature_feature_options = 'Strip signature configuration options';
 
 $s_plugin_EmailReporting_copy_of = 'Copy of';
 $s_plugin_EmailReporting_directory_exists = 'Directory found';

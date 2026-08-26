@@ -34,7 +34,7 @@ $s_plugin_EmailReporting_remove_reply_options = 'Entferne Konfigurationsoptionen
 $s_plugin_EmailReporting_reporter_options = 'Konfigurationsoptionen für Ticketreporter';
 $s_plugin_EmailReporting_runtime_options = 'Konfigurationsoptionen für Laufzeit';
 $s_plugin_EmailReporting_security_options = 'Konfigurationsoptionen für Sicherheit';
-$s_plugin_EmailReporting_strip_signature_feature_options = 'Konfigurationsoptionen zur Entfernung von Signaturen (experimentell)';
+$s_plugin_EmailReporting_strip_signature_feature_options = 'Konfigurationsoptionen zur Entfernung von Signaturen';
 
 $s_plugin_EmailReporting_copy_of = 'Kopie von';
 $s_plugin_EmailReporting_directory_exists = 'Ordner gefunden';
