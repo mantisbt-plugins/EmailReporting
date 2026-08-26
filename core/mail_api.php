@@ -251,7 +251,7 @@ class ERP_mailbox_api
 
 								if ( $this->_mailbox[ 'auth_method' ] === 'XOAUTH2' )
 								{
-									$this->_mailbox[ 'access_token' ] = $this->Get_OAuth2_AccessToken();
+									$this->_mailbox[ 'access_token' ] = $this->get_OAuth2_AccessToken();
 
 									if ( $this->_mailbox[ 'access_token' ] === FALSE )
 									{
@@ -574,7 +574,7 @@ class ERP_mailbox_api
 
 	# --------------------
 	# Get an OAuth accesstoken for XOAUTH2
-	private function Get_OAuth2_AccessToken()
+	private function get_OAuth2_AccessToken()
 	{
 		if ( $this->_mailbox[ 'auth_method' ] === 'XOAUTH2' )
 		{
