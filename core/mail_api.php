@@ -305,9 +305,12 @@ class ERP_mailbox_api
 	{
 		if ( PEAR::isError( $p_pear ) )
 		{
-			$p_pear->ERP_location = $p_location;
+			$t_pear = array(
+				'ERP_location' => $p_location,
+				'pear'         => $p_pear,
+			);;
 
-			$this->_result = &$p_pear;
+			$this->_result = $t_pear;
 
 			if ( !$this->_test_only )
 			{
@@ -451,13 +454,13 @@ class ERP_mailbox_api
 									// After 10 errors Exchange will ignore the connection and any further commands will fail with ", "
 									// 10 errors or more can happen when imap_createfolderstructure is ON
 									// examineMailbox allows EmailReporting to check whether or not there are emails in the folder without producing an error
-									$t_result = $this->_mailserver->examineMailbox( $t_foldername );
+									$t_examineresult = $this->_mailserver->examineMailbox( $t_foldername );
 
-									if ( !$this->pear_error( 'Examine IMAP folder', $t_result ) && $t_result[ 'EXISTS' ] > 0 )
+									if ( !$this->pear_error( 'Examine IMAP folder', $t_examineresult ) && $t_examineresult[ 'EXISTS' ] > 0 )
 									{
-										$t_result = $this->_mailserver->selectMailbox( $t_foldername );
+										$t_selectresult = $this->_mailserver->selectMailbox( $t_foldername );
 
-										if ( !$this->pear_error( 'Select IMAP folder', $t_result ) )
+										if ( !$this->pear_error( 'Select IMAP folder', $t_selectresult ) )
 										{
 											$t_ListMsgs = $this->PEAR_getListing();
 
@@ -499,9 +502,9 @@ class ERP_mailbox_api
 								elseif ( $this->_mailbox[ 'imap_createfolderstructure' ] == ON )
 								{
 									// create this mailbox
-									$t_result = $this->_mailserver->createMailbox( $t_foldername );
+									$t_createresult = $this->_mailserver->createMailbox( $t_foldername );
 
-									$this->pear_error( 'Create IMAP folder: "' . $t_foldername . '"', $t_result );
+									$this->pear_error( 'Create IMAP folder: "' . $t_foldername . '"', $t_createresult );
 								}
 							}
 							elseif ( $this->_mailbox[ 'imap_createfolderstructure' ] == OFF )
@@ -1684,9 +1687,9 @@ class ERP_mailbox_api
 		$t_ref_ids = array();
 
 		$query = 'SELECT msg_id FROM ' . plugin_table( 'msgids' ) . ' WHERE issue_id=' . db_param();
-		$t_result = db_query( $query, array( (int)$p_bug_id ) );
+		$t_dbqueryresult = db_query( $query, array( (int)$p_bug_id ) );
 
-		while( $t_row = db_fetch_array( $t_result ) )
+		while( $t_row = db_fetch_array( $t_dbqueryresult ) )
 		{
 			$t_ref_ids[] = $t_row['msg_id'];
 		}

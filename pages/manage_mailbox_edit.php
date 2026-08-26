@@ -120,11 +120,12 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 	echo '</pre>';
 
 	$t_is_custom_error = ( ( is_array( $t_result ) && isset( $t_result[ 'ERROR_TYPE' ] ) && $t_result[ 'ERROR_TYPE' ] === 'NON-PEAR-ERROR' ) || ( is_bool( $t_result ) && $t_result === FALSE ) );
+	$t_is_pear_error = ( isset( $t_result[ 'pear' ] ) && PEAR::isError( $t_result[ 'pear' ] ) );
 ?>
 <br /><div class="center">
 <?php
 	$t_message = '';
-	$t_message .= plugin_lang_get( ( ( $t_is_custom_error || PEAR::isError( $t_result ) ) ? 'test_failure' : 'test_success' ) ) . '<br /><br />';
+	$t_message .= plugin_lang_get( ( ( $t_is_custom_error || $t_is_pear_error ) ? 'test_failure' : 'test_success' ) ) . '<br /><br />';
 
 	$t_mailbox = $t_mailbox_api->_mailbox;
 	foreach ( $t_mailbox AS $t_key => $t_value )
@@ -147,9 +148,9 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 		}
 	}
 
-	$t_message .= '<br />' . ( ( $t_is_custom_error ) ? nl2br( $t_result[ 'ERROR_MESSAGE' ] ) : ( ( PEAR::isError( $t_result ) ) ? 'Location: ' . $t_result->ERP_location . '<br />' . $t_result->toString() : NULL ) );
+	$t_message .= '<br />' . ( ( $t_is_custom_error ) ? nl2br( $t_result[ 'ERROR_MESSAGE' ] ) : ( ( $t_is_pear_error ) ? 'Location: ' . $t_result[ 'ERP_location' ] . '<br />' . $t_result[ 'pear' ]->toString() : NULL ) );
 
-	if ( ( $t_is_custom_error || PEAR::isError( $t_result ) ) )
+	if ( ( $t_is_custom_error || $t_is_pear_error ) )
 	{
 		html_operation_failure( plugin_page( 'manage_mailbox', TRUE ), $t_message );
 	}
