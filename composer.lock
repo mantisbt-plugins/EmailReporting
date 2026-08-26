@@ -821,16 +821,16 @@
         },
         {
             "name": "phpseclib/phpseclib",
-            "version": "3.0.56",
+            "version": "3.0.57",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "7adbbe38cde25e2df2116dbf2673c407e24fa305"
+                "reference": "d17e0ddaeaf6f22f7e007cbb437d78792fe2a0e4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/7adbbe38cde25e2df2116dbf2673c407e24fa305",
-                "reference": "7adbbe38cde25e2df2116dbf2673c407e24fa305",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/d17e0ddaeaf6f22f7e007cbb437d78792fe2a0e4",
+                "reference": "d17e0ddaeaf6f22f7e007cbb437d78792fe2a0e4",
                 "shasum": ""
             },
             "require": {
@@ -911,7 +911,7 @@
             ],
             "support": {
                 "issues": "https://github.com/phpseclib/phpseclib/issues",
-                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.56"
+                "source": "https://github.com/phpseclib/phpseclib/tree/3.0.57"
             },
             "funding": [
                 {
@@ -927,7 +927,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-08-03T04:36:50+00:00"
+            "time": "2026-08-26T12:13:21+00:00"
         },
         {
             "name": "psr/cache",
@@ -1426,16 +1426,16 @@
         },
         {
             "name": "sl-gundam/net_imap",
-            "version": "1.1.4.2",
+            "version": "1.1.4.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SL-Gundam/Net_IMAP.git",
-                "reference": "d8e2e656f5017e506e10f7b0e868538ad9709734"
+                "reference": "eb37c5bc6ca5503274374be7b8b8abef801711e7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SL-Gundam/Net_IMAP/zipball/d8e2e656f5017e506e10f7b0e868538ad9709734",
-                "reference": "d8e2e656f5017e506e10f7b0e868538ad9709734",
+                "url": "https://api.github.com/repos/SL-Gundam/Net_IMAP/zipball/eb37c5bc6ca5503274374be7b8b8abef801711e7",
+                "reference": "eb37c5bc6ca5503274374be7b8b8abef801711e7",
                 "shasum": ""
             },
             "require": {
@@ -1487,20 +1487,20 @@
                 "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=Net_IMAP",
                 "source": "https://github.com/pear/Net_IMAP"
             },
-            "time": "2026-08-17T18:32:42+00:00"
+            "time": "2026-08-26T20:42:49+00:00"
         },
         {
             "name": "sl-gundam/net_pop3",
-            "version": "v1.3.9.5",
+            "version": "v1.3.9.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SL-Gundam/Net_POP3.git",
-                "reference": "085d2f27a0c395f4cb157e2c58a4e36e6070f099"
+                "reference": "d5c657e8868de756753819f9aa00ba54483e2980"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SL-Gundam/Net_POP3/zipball/085d2f27a0c395f4cb157e2c58a4e36e6070f099",
-                "reference": "085d2f27a0c395f4cb157e2c58a4e36e6070f099",
+                "url": "https://api.github.com/repos/SL-Gundam/Net_POP3/zipball/d5c657e8868de756753819f9aa00ba54483e2980",
+                "reference": "d5c657e8868de756753819f9aa00ba54483e2980",
                 "shasum": ""
             },
             "require": {
@@ -1552,7 +1552,7 @@
                 "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=Net_POP3",
                 "source": "https://github.com/pear/Net_POP3"
             },
-            "time": "2026-08-24T01:17:03+00:00"
+            "time": "2026-08-26T20:44:25+00:00"
         },
         {
             "name": "sl-gundam/net_socket",
