@@ -3,6 +3,9 @@
 # This program is distributed under the terms and conditions of the GPL
 # See the README and LICENSE files for details
 
+# Load Composer autoloader
+require_once( __DIR__ . '/../vendor/autoload.php' );
+
 # --------------------
 # Return the default mailbox options
 function ERP_get_default_mailbox()

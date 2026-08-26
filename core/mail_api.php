@@ -8,6 +8,9 @@
 
 # This page receives an E-Mail via POP3 or IMAP and generates an Report
 
+# Load Composer autoloader
+require_once( __DIR__ . '/../vendor/autoload.php' );
+
 require_api( 'bug_api.php' );
 require_api( 'bugnote_api.php' );
 require_api( 'user_api.php' );
