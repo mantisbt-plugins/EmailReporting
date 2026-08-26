@@ -38,6 +38,13 @@ if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailb
 		$t_isMicrosoft = $t_mailbox[ 'oauth_provider' ] === ERP_PROVIDER_MICROSOFT;
 		if ( $t_isGoogle )
 		{
+			if ( empty( $t_mailbox[ 'hostname' ] ) )
+			{
+				$t_mailbox[ 'hostname' ] = ( ( $t_mailbox[ 'mailbox_type' ] === 'IMAP' ) ? 'imap.gmail.com' : 'pop.gmail.com' );
+				$t_mailbox[ 'port' ] = '';
+				$t_mailbox[ 'encryption' ] = 'SSL';
+			}
+
 			$t_mailbox += array(
 				'g_mailbox'                   => gpc_get_string( 'g_mailbox' ),
 				'g_serviceAccountCredentials' => ERP_prepare_directory_string( gpc_get_string( 'g_serviceAccountCredentials' ) ),
@@ -45,6 +52,13 @@ if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailb
 		}
 		elseif ( $t_isMicrosoft )
 		{
+			if ( empty( $t_mailbox[ 'hostname' ] ) )
+			{
+				$t_mailbox[ 'hostname' ] = 'outlook.office365.com';
+				$t_mailbox[ 'port' ] = '';
+				$t_mailbox[ 'encryption' ] = 'SSL';
+			}
+
 			$t_mailbox += array(
 				'm_mailbox'           => gpc_get_string( 'm_mailbox' ),
 				'm_tenantId'          => gpc_get_string( 'm_tenantId' ),
