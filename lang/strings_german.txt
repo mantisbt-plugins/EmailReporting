@@ -71,6 +71,7 @@ $s_plugin_EmailReporting_mail_max_email_body_add_attach = 'Die komplette Beschre
 $s_plugin_EmailReporting_mail_nodescription = 'Der Mailbody beeinhaltet keinen Text.';
 $s_plugin_EmailReporting_mail_nosubject = 'Der Mailbetreff beeinhaltete keinen Text.';
 $s_plugin_EmailReporting_mail_parse_html = 'Analysiere HTML Mails';
+$s_plugin_EmailReporting_mail_parse_tnef = 'winmail.dat-Dateien analysieren';
 $s_plugin_EmailReporting_mail_preferred_username = 'Bevorzugter Benutzername bei der Erstellung neuer Benutzer';
 $s_plugin_EmailReporting_mail_preferred_realname = 'Bevorzugter Klarname bei der Erstellung neuer Benutzer';
 $s_plugin_EmailReporting_mail_remove_mantis_email = 'Entferne MantisBT Benachrichtigungen von Antworten';

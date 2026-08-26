@@ -3,6 +3,7 @@
 class ERP_Mail_Parser
 {
 	private $_parse_html = FALSE;
+	private $_parse_tnef = FALSE;
 	private $_process_markdown = FALSE;
 	private $_encoding = 'UTF-8';
 	private $_add_attachments = TRUE;
@@ -57,11 +58,19 @@ class ERP_Mail_Parser
 
 	public function __construct( $options, $mailbox_starttime = NULL )
 	{
-		$this->_parse_html = $options[ 'parse_html' ];
-		$this->_process_markdown = $options[ 'process_markdown' ];
-		$this->_add_attachments = $options[ 'add_attachments' ];
-		$this->_debug = $options[ 'debug' ];
-		$this->_show_mem_usage = $options[ 'show_mem_usage' ];
+		foreach ( $options AS $name => $value )
+		{
+			$t_option_name = '_' . $name;
+			if ( isset( $this->$t_option_name ) )
+			{
+				$this->$t_option_name = $value;
+			}
+			else
+			{
+				echo 'Unknown option received: ' . $t_option_name;
+			}
+		}
+
 		$this->_mailbox_starttime = $mailbox_starttime;
 
 		$this->prepare_mb_list_encodings();
@@ -658,7 +667,7 @@ class ERP_Mail_Parser
 			}
 			elseif ( 'application' == strtolower( $parts[ $i ]->ctype_primary ) && ( 'ms-tnef' == strtolower( $parts[ $i ]->ctype_secondary ) || 'vnd.ms-tnef' == strtolower( $parts[ $i ]->ctype_secondary ) ) )
 			{
-				$this->ParseTNEF( $parts[ $i ]->body );
+				$this->ParseTNEF( $parts[ $i ] );
 			}
 			else
 			{
@@ -667,25 +676,41 @@ class ERP_Mail_Parser
 		}
 	}
 
-	private function ParseTNEF( &$TNEFbody )
+	// @TODO doesn't yet deal with TNEF decode errors
+	private function ParseTNEF( &$TNEFpart )
 	{
-		$TNEFattachment = new TNEFDecoder\TNEFAttachment();
-		$TNEFattachment->decodeTnef( $TNEFbody );
-		$TNEFfiles = $TNEFattachment->getFiles();
-		unset( $TNEFattachment );
-
-		while ( $TNEFfile = array_shift( $TNEFfiles ) )
+		if ( $this->_parse_tnef )
 		{
-			list( $ctype_primary, $ctype_secondary ) = array_pad( explode( '/', $TNEFfile->type, 2 ), 2, '' );
+			$TNEFattachment = new TNEFDecoder\TNEFAttachment();
+			try
+			{
+				$TNEFattachment->decodeTnef( $TNEFpart->body );
+				$TNEFfiles = $TNEFattachment->getFiles();
+			}
+			catch (Throwable $e)
+			{
+				$TNEFfiles = array();
+				$this->addPart( $TNEFpart, 'winmail CORRUPT.dat' );
+			}
+			unset( $TNEFattachment );
 
-			$part = new stdClass();
+			while ( $TNEFfile = array_shift( $TNEFfiles ) )
+			{
+				list( $ctype_primary, $ctype_secondary ) = array_pad( explode( '/', $TNEFfile->type, 2 ), 2, '' );
 
-			$part->ctype_primary    = $ctype_primary;
-			$part->ctype_secondary  = $ctype_secondary;
-			$part->ctype_parameters = array( 'name' => $TNEFfile->name );
-			$part->body             = $TNEFfile->content;
+				$part = new stdClass();
 
-			$this->addPart( $part );
+				$part->ctype_primary    = $ctype_primary;
+				$part->ctype_secondary  = $ctype_secondary;
+				$part->ctype_parameters = array( 'name' => $TNEFfile->name );
+				$part->body             = $TNEFfile->content;
+
+				$this->addPart( $part );
+			}
+		}
+		else
+		{
+			$this->addPart( $TNEFpart );
 		}
 	}
 
@@ -718,10 +743,15 @@ class ERP_Mail_Parser
 				$p[ 'name' ] = $this->process_header_encoding( $p[ 'name' ] );
 			}
 
-			if ( strtolower( $p[ 'name' ] ) === 'winmail.dat' )
+			if ( $this->_parse_tnef && strtolower( $p[ 'name' ] ) === 'winmail.dat' )
 			{
-				$this->ParseTNEF( $p[ 'body' ] );
-				return;
+				if ( $p_alternative_name === NULL )
+				{
+					$this->ParseTNEF( $p[ 'body' ] );
+					return;
+				}
+
+				$p[ 'name' ] = $p_alternative_name;
 			}
 
 			$this->_parts[] = $p;

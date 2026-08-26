@@ -141,6 +141,7 @@ class ERP_mailbox_api
 		$this->_mp_options[ 'debug' ]                = $this->_mail_debug;
 		$this->_mp_options[ 'show_mem_usage' ]       = $this->_mail_debug_show_memory_usage;
 		$this->_mp_options[ 'parse_html' ]           = plugin_config_get( 'mail_parse_html' );
+		$this->_mp_options[ 'parse_tnef' ]           = plugin_config_get( 'mail_parse_tnef' );
 
 		$this->_mp_options[ 'process_markdown' ]     = OFF;
 		if ( plugin_is_loaded( 'MantisCoreFormatting' ) )

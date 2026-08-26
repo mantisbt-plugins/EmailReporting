@@ -157,6 +157,7 @@ ERP_output_table_close();
 ERP_output_table_open( 'attachment_feature_options' );
 ERP_output_config_option( 'mail_block_attachments_md5', 'string_multiline' );
 ERP_output_config_option( 'mail_block_attachments_logging', 'boolean' );
+ERP_output_config_option( 'mail_parse_tnef', 'boolean' );
 ERP_output_table_close();
 
 ERP_output_table_open( 'strip_signature_feature_options' );

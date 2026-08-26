@@ -139,6 +139,9 @@ class EmailReportingPlugin extends MantisPlugin
 			# Parse HTML mails
 			'mail_parse_html'                 => ON,
 
+			# Parse HTML mails
+			'mail_parse_tnef'                 => ON,
+
 			# Preferred username for new user creations
 			'mail_preferred_username'         => 'name',
 

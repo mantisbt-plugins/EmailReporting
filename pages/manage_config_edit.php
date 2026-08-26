@@ -29,6 +29,7 @@ $f_gpc = array(
 	'mail_nodescription'              => gpc_get_string( 'mail_nodescription' ),
 	'mail_nosubject'                  => gpc_get_string( 'mail_nosubject' ),
 	'mail_parse_html'                 => gpc_get_int( 'mail_parse_html' ),
+	'mail_parse_tnef'                 => gpc_get_int( 'mail_parse_tnef' ),
 	'mail_preferred_username'         => gpc_get_string( 'mail_preferred_username' ),
 	'mail_preferred_realname'         => gpc_get_string( 'mail_preferred_realname' ),
 	'mail_remove_mantis_email'        => gpc_get_int( 'mail_remove_mantis_email' ),
