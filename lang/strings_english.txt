@@ -160,6 +160,7 @@ There are still minor differences compared to the scheduled job (bug_report_mail
 
 Use with care.';
 $s_plugin_EmailReporting_apisoap_error = '"api/soap/mc_file_api.php" is missing. EmailReporting requires this file to work.';
+$s_plugin_EmailReporting_sensitive_data_storage = '<span class="negative">Warning</span>: Please store the M365 PFX certificate or the Google Service Account credentials (JSON file) outside the web servers document root for safety reasons.';
 
 $s_plugin_EmailReporting_rules = 'Rules';
 $s_plugin_EmailReporting_select_rule = 'Select rule';

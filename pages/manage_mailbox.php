@@ -74,6 +74,30 @@ ERP_output_table_open( 'mailbox_settings_oauth', array( 'auth_method' => [ 'XOAU
 ERP_output_config_option( 'oauth_provider', 'dropdown', $t_mailbox, 'print_descriptions_option_list', array( ERP_PROVIDER_GOOGLE, ERP_PROVIDER_MICROSOFT ) + array( 'visibility-controller' => TRUE ) );
 ERP_output_table_close();
 
+if ( isset( $t_mailbox[ 'oauth_provider' ], $t_mailbox[ 'auth_method' ] ) && $t_mailbox[ 'auth_method' ] === 'XOAUTH2' )
+{
+	$t_DOCUMENT_ROOT = realpath( $_SERVER['DOCUMENT_ROOT'] );
+	$t_sensitiveFile = ( ( $t_mailbox[ 'oauth_provider' ] === ERP_PROVIDER_GOOGLE ) ? realpath( $t_mailbox[ 'g_serviceAccountCredentials' ] ) : ( ( $t_mailbox[ 'oauth_provider' ] === ERP_PROVIDER_MICROSOFT ) ? realpath( $t_mailbox[ 'm_pfxPath' ] ) : FALSE ) );
+
+	if (
+		$t_DOCUMENT_ROOT !== FALSE &&
+		$t_sensitiveFile !== FALSE &&
+		str_starts_with(
+			$t_sensitiveFile,
+			$t_DOCUMENT_ROOT . DIRECTORY_SEPARATOR
+		)
+	)
+	{
+	ERP_output_note_open();
+?>
+<p><i class="fa fa-warning"></i> 
+<?php echo nl2br( plugin_lang_get( 'sensitive_data_storage' ) ) ?>
+</p>
+<?php
+	ERP_output_note_close();
+	}
+}
+
 ERP_output_table_open( 'mailbox_settings_oauth_google', array( 'auth_method' => [ 'XOAUTH2' ], 'oauth_provider' => [ ERP_PROVIDER_GOOGLE ] ) );
 ERP_output_config_option( 'g_mailbox', 'string', $t_mailbox );
 ERP_output_config_option( 'g_serviceAccountCredentials', 'file_string', $t_mailbox );
