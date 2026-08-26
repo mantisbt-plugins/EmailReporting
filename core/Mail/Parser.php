@@ -656,7 +656,7 @@ class ERP_Mail_Parser
 			{
 				$this->setParts( $parts[ $i ]->parts, TRUE );
 			}
-			elseif ( 'application' == strtolower( $parts[ $i ]->ctype_primary ) && 'ms-tnef' == strtolower( $parts[ $i ]->ctype_secondary ) )
+			elseif ( 'application' == strtolower( $parts[ $i ]->ctype_primary ) && ( 'ms-tnef' == strtolower( $parts[ $i ]->ctype_secondary ) || 'vnd.ms-tnef' == strtolower( $parts[ $i ]->ctype_secondary ) ) )
 			{
 				$this->ParseTNEF( $parts[ $i ]->body );
 			}
@@ -716,6 +716,12 @@ class ERP_Mail_Parser
 			if ( extension_loaded( 'mbstring' ) && !empty( $p[ 'name' ] ) )
 			{
 				$p[ 'name' ] = $this->process_header_encoding( $p[ 'name' ] );
+			}
+
+			if ( strtolower( $p[ 'name' ] ) === 'winmail.dat' )
+			{
+				$this->ParseTNEF( $p[ 'body' ] );
+				return;
 			}
 
 			$this->_parts[] = $p;
