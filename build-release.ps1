@@ -1,0 +1,550 @@
+﻿# EmailReporting Release Builder
+
+```
+#powershell
+#requires -Version 5.1
+
+<#
+    EmailReporting release builder
+
+    This script:
+      - Builds a release from the current working tree.
+      - Does not modify the source checkout.
+      - Extracts the plugin version from EmailReporting.php.
+      - Creates a fresh Composer vendor directory using composer.lock.
+      - Removes development/repository files from the staging copy.
+      - Performs basic release validation.
+      - Removes this script from the staging copy.
+      - Creates the final ZIP archive.
+
+    composer.json and composer.lock remain in the Git repository,
+    but are intentionally NOT included in the release package.
+#>
+
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Stop'
+
+# ---------------------------------------------------------------------------
+# Configuration
+# ---------------------------------------------------------------------------
+
+$PackageName = 'EmailReporting'
+
+$ScriptPath = $MyInvocation.MyCommand.Path
+$ScriptName = Split-Path -Leaf $ScriptPath
+
+$SourceRoot = Split-Path -Parent $ScriptPath
+
+$ReleaseDirectory = Join-Path $SourceRoot 'release'
+$StagingRoot = Join-Path $ReleaseDirectory "$PackageName-staging"
+
+# ---------------------------------------------------------------------------
+# Helper functions
+# ---------------------------------------------------------------------------
+
+function Write-Step {
+    param (
+        [string]$Message
+    )
+
+    Write-Host ''
+    Write-Host "==> $Message" -ForegroundColor Cyan
+}
+
+function Fail {
+    param (
+        [string]$Message
+    )
+
+    throw $Message
+}
+
+function Assert-File {
+    param (
+        [string]$Path,
+        [string]$Description
+    )
+
+    if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) {
+        Fail "Required file is missing: $Description`nPath: $Path"
+    }
+}
+
+function Assert-Directory {
+    param (
+        [string]$Path,
+        [string]$Description
+    )
+
+    if (-not (Test-Path -LiteralPath $Path -PathType Container)) {
+        Fail "Required directory is missing: $Description`nPath: $Path"
+    }
+}
+
+function Remove-IfExists {
+    param (
+        [string]$Path
+    )
+
+    if (Test-Path -LiteralPath $Path) {
+        Remove-Item -LiteralPath $Path -Recurse -Force
+    }
+}
+
+# ---------------------------------------------------------------------------
+# Initial validation
+# ---------------------------------------------------------------------------
+
+Write-Step 'Checking source tree'
+
+Assert-File `
+    (Join-Path $SourceRoot 'EmailReporting.php') `
+    'EmailReporting.php'
+
+Assert-File `
+    (Join-Path $SourceRoot 'composer.json') `
+    'composer.json'
+
+Assert-File `
+    (Join-Path $SourceRoot 'composer.lock') `
+    'composer.lock'
+
+# ---------------------------------------------------------------------------
+# Determine version
+# ---------------------------------------------------------------------------
+
+Write-Step 'Determining plugin version'
+
+$PluginFile = Join-Path $SourceRoot 'EmailReporting.php'
+$PluginSource = Get-Content -LiteralPath $PluginFile -Raw
+
+$VersionMatch = [regex]::Match(
+    $PluginSource,
+    "\`$this->version\s*=\s*['""]([^'""]+)['""]\s*;"
+)
+
+if (-not $VersionMatch.Success) {
+    Fail 'Could not determine the EmailReporting version from EmailReporting.php.'
+}
+
+$Version = $VersionMatch.Groups[1].Value
+
+if ($Version -notmatch '^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$') {
+    Fail "The detected version '$Version' does not look like a valid release version."
+}
+
+$ArchiveName = "${PackageName}_${Version}.zip"
+$ArchivePath = Join-Path $ReleaseDirectory $ArchiveName
+
+Write-Host "Version: $Version"
+
+# ---------------------------------------------------------------------------
+# Check required tools
+# ---------------------------------------------------------------------------
+
+Write-Step 'Checking required tools'
+
+$ComposerCommand = Get-Command composer -ErrorAction SilentlyContinue
+
+if ($null -eq $ComposerCommand) {
+    Fail 'Composer was not found in PATH.'
+}
+
+$PhpCommand = Get-Command php -ErrorAction SilentlyContinue
+
+if ($null -eq $PhpCommand) {
+    Fail 'PHP was not found in PATH.'
+}
+
+Write-Host "PHP:     $($PhpCommand.Source)"
+Write-Host "Composer: $($ComposerCommand.Source)"
+
+# ---------------------------------------------------------------------------
+# Prepare release directory
+# ---------------------------------------------------------------------------
+
+Write-Step 'Preparing release directory'
+
+if (Test-Path -LiteralPath $ReleaseDirectory) {
+    Write-Host "Removing previous release directory:"
+    Write-Host "  $ReleaseDirectory"
+
+    Remove-Item -LiteralPath $ReleaseDirectory -Recurse -Force
+}
+
+New-Item -ItemType Directory -Path $ReleaseDirectory -Force | Out-Null
+New-Item -ItemType Directory -Path $StagingRoot -Force | Out-Null
+
+# ---------------------------------------------------------------------------
+# Copy source tree
+#
+# We deliberately exclude vendor because it will be freshly generated by
+# Composer. This prevents an existing developer/vendor tree from leaking
+# into the release.
+# ---------------------------------------------------------------------------
+
+Write-Step 'Copying source tree to staging directory'
+
+$RobocopyArguments = @(
+    $SourceRoot
+    $StagingRoot
+    '/E'
+    '/R:2'
+    '/W:1'
+    '/XD'
+    '.git'
+    '.github'
+    'vendor'
+    'release'
+)
+
+& robocopy @RobocopyArguments | Out-Host
+
+# Robocopy returns:
+#   0-7 = success / success with differences
+#   8+  = failure
+if ($LASTEXITCODE -ge 8) {
+    Fail "Robocopy failed with exit code $LASTEXITCODE."
+}
+
+# ---------------------------------------------------------------------------
+# Remove files which should never enter a release
+# ---------------------------------------------------------------------------
+
+Write-Step 'Removing repository and development files'
+
+$FilesToRemove = @(
+    '.gitignore'
+    '.gitattributes'
+    'composer.json'
+    'composer.lock'
+)
+
+foreach ($File in $FilesToRemove) {
+    $Path = Join-Path $StagingRoot $File
+
+    if (Test-Path -LiteralPath $Path) {
+        Write-Host "Removing $File"
+        Remove-Item -LiteralPath $Path -Force
+    }
+}
+
+# ---------------------------------------------------------------------------
+# Composer
+#
+# composer.json and composer.lock are temporarily copied into staging by
+# robocopy, so restore them from the source before running Composer.
+# ---------------------------------------------------------------------------
+
+Write-Step 'Preparing Composer files'
+
+Copy-Item `
+    -LiteralPath (Join-Path $SourceRoot 'composer.json') `
+    -Destination (Join-Path $StagingRoot 'composer.json') `
+    -Force
+
+Copy-Item `
+    -LiteralPath (Join-Path $SourceRoot 'composer.lock') `
+    -Destination (Join-Path $StagingRoot 'composer.lock') `
+    -Force
+
+Write-Step 'Installing production Composer dependencies'
+
+Push-Location $StagingRoot
+
+try {
+    & composer install `
+        --no-dev `
+        --prefer-dist `
+        --optimize-autoloader `
+        --no-interaction `
+        --no-progress
+
+    if ($LASTEXITCODE -ne 0) {
+        Fail "Composer install failed with exit code $LASTEXITCODE."
+    }
+}
+finally {
+    Pop-Location
+}
+
+# ---------------------------------------------------------------------------
+# Verify Composer result
+# ---------------------------------------------------------------------------
+
+Write-Step 'Checking Composer installation'
+
+Assert-File `
+    (Join-Path $StagingRoot 'vendor\autoload.php') `
+    'vendor/autoload.php'
+
+Assert-Directory `
+    (Join-Path $StagingRoot 'vendor\composer') `
+    'vendor/composer'
+
+# ---------------------------------------------------------------------------
+# Restore intentionally tracked vendor files
+#
+# The repository intentionally contains these two files even though the
+# remainder of vendor is ignored by Git.
+# ---------------------------------------------------------------------------
+
+Write-Step 'Restoring intentional vendor web-server files'
+
+$VendorSource = Join-Path $SourceRoot 'vendor'
+$VendorTarget = Join-Path $StagingRoot 'vendor'
+
+foreach ($File in @('.htaccess', 'Web.config')) {
+    $SourceFile = Join-Path $VendorSource $File
+    $TargetFile = Join-Path $VendorTarget $File
+
+    Assert-File $SourceFile "vendor/$File"
+
+    Copy-Item `
+        -LiteralPath $SourceFile `
+        -Destination $TargetFile `
+        -Force
+}
+
+# ---------------------------------------------------------------------------
+# Conservative vendor cleanup
+#
+# Do NOT remove documentation/license files indiscriminately.
+# Do NOT touch vendor/composer.
+#
+# These are development/repository artefacts which have no purpose in the
+# runtime package.
+# ---------------------------------------------------------------------------
+
+Write-Step 'Cleaning development files from vendor'
+
+$VendorDevelopmentDirectories = @(
+    '.git',
+    '.github',
+    '.gitlab'
+)
+
+foreach ($DirectoryName in $VendorDevelopmentDirectories) {
+    Get-ChildItem `
+        -LiteralPath $VendorTarget `
+        -Directory `
+        -Recurse `
+        -Force `
+        -ErrorAction SilentlyContinue |
+        Where-Object { $_.Name -eq $DirectoryName } |
+        ForEach-Object {
+            Write-Host "Removing $($_.FullName)"
+            Remove-Item -LiteralPath $_.FullName -Recurse -Force
+        }
+}
+
+$VendorDevelopmentFiles = @(
+    '.gitignore',
+    '.gitattributes',
+    '.gitmodules'
+)
+
+foreach ($FileName in $VendorDevelopmentFiles) {
+    Get-ChildItem `
+        -LiteralPath $VendorTarget `
+        -File `
+        -Recurse `
+        -Force `
+        -ErrorAction SilentlyContinue |
+        Where-Object { $_.Name -eq $FileName } |
+        ForEach-Object {
+            Write-Host "Removing $($_.FullName)"
+            Remove-Item -LiteralPath $_.FullName -Force
+        }
+}
+
+# ---------------------------------------------------------------------------
+# Remove Composer files from release
+# ---------------------------------------------------------------------------
+
+Write-Step 'Removing Composer project files from release'
+
+Remove-IfExists (Join-Path $StagingRoot 'composer.json')
+Remove-IfExists (Join-Path $StagingRoot 'composer.lock')
+
+# ---------------------------------------------------------------------------
+# Verify EmailReporting Composer autoloader references
+# ---------------------------------------------------------------------------
+
+Write-Step 'Checking Composer autoloader references'
+
+$ConfigApi = Join-Path $StagingRoot 'core\config_api.php'
+$MailApi = Join-Path $StagingRoot 'core\mail_api.php'
+
+Assert-File $ConfigApi 'core/config_api.php'
+Assert-File $MailApi 'core/mail_api.php'
+
+$ExpectedAutoloader = "require_once( __DIR__ . '/../vendor/autoload.php' );"
+
+$ConfigSource = Get-Content -LiteralPath $ConfigApi -Raw
+$MailSource = Get-Content -LiteralPath $MailApi -Raw
+
+if ($ConfigSource -notlike "*$ExpectedAutoloader*") {
+    Fail 'core/config_api.php does not contain the expected Composer autoloader.'
+}
+
+if ($MailSource -notlike "*$ExpectedAutoloader*") {
+    Fail 'core/mail_api.php does not contain the expected Composer autoloader.'
+}
+
+# ---------------------------------------------------------------------------
+# Required package structure
+# ---------------------------------------------------------------------------
+
+Write-Step 'Checking required package structure'
+
+$RequiredFiles = @(
+    'EmailReporting.php'
+    'LICENSE'
+    'README.md'
+    'doc\CHANGELOG.txt'
+    'doc\INSTALL.txt'
+    'core\config_api.php'
+    'core\mail_api.php'
+    'core\oauth2_api.php'
+    'files\emailreporting.js'
+    'scripts\bug_report_mail.php'
+    'vendor\autoload.php'
+    'vendor\.htaccess'
+    'vendor\Web.config'
+)
+
+foreach ($RelativePath in $RequiredFiles) {
+    Assert-File `
+        (Join-Path $StagingRoot $RelativePath) `
+        $RelativePath
+}
+
+$RequiredDirectories = @(
+    'core'
+    'core\Mail'
+    'doc'
+    'files'
+    'lang'
+    'pages'
+    'scripts'
+    'vendor'
+    'vendor\composer'
+)
+
+foreach ($RelativePath in $RequiredDirectories) {
+    Assert-Directory `
+        (Join-Path $StagingRoot $RelativePath) `
+        $RelativePath
+}
+
+# ---------------------------------------------------------------------------
+# PHP syntax validation
+# ---------------------------------------------------------------------------
+
+Write-Step 'Checking PHP syntax'
+
+$PhpFiles = Get-ChildItem `
+    -LiteralPath $StagingRoot `
+    -Filter '*.php' `
+    -File `
+    -Recurse
+
+$SyntaxErrors = 0
+
+foreach ($PhpFile in $PhpFiles) {
+    Write-Host "Checking $($PhpFile.FullName)"
+
+    & php -l $PhpFile.FullName 2>&1 | Out-Host
+
+    if ($LASTEXITCODE -ne 0) {
+        $SyntaxErrors++
+    }
+}
+
+if ($SyntaxErrors -gt 0) {
+    Fail "$SyntaxErrors PHP file(s) failed syntax validation."
+}
+
+# ---------------------------------------------------------------------------
+# Final package cleanup
+# ---------------------------------------------------------------------------
+
+Write-Step 'Checking for unwanted files'
+
+$ForbiddenPaths = @(
+    '.git'
+    '.github'
+    '.gitignore'
+    '.gitattributes'
+    'composer.json'
+    'composer.lock'
+)
+
+foreach ($RelativePath in $ForbiddenPaths) {
+    $Path = Join-Path $StagingRoot $RelativePath
+
+    if (Test-Path -LiteralPath $Path) {
+        Fail "Forbidden release file/directory still exists: $RelativePath"
+    }
+}
+
+# ---------------------------------------------------------------------------
+# LAST STAGING OPERATION:
+# Remove this release builder from the package.
+# ---------------------------------------------------------------------------
+
+Write-Step 'Removing release builder from staging package'
+
+$ScriptInStaging = Join-Path $StagingRoot $ScriptName
+
+if (Test-Path -LiteralPath $ScriptInStaging) {
+    Remove-Item -LiteralPath $ScriptInStaging -Force
+}
+
+if (Test-Path -LiteralPath $ScriptInStaging) {
+    Fail 'Could not remove the release builder from the staging package.'
+}
+
+# ---------------------------------------------------------------------------
+# Create ZIP
+# ---------------------------------------------------------------------------
+
+Write-Step 'Creating release archive'
+
+if (Test-Path -LiteralPath $ArchivePath) {
+    Remove-Item -LiteralPath $ArchivePath -Force
+}
+
+Compress-Archive `
+    -Path (Join-Path $StagingRoot '*') `
+    -DestinationPath $ArchivePath `
+    -CompressionLevel Optimal
+
+Assert-File $ArchivePath 'release archive'
+
+# ---------------------------------------------------------------------------
+# Final report
+# ---------------------------------------------------------------------------
+
+$ArchiveInfo = Get-Item -LiteralPath $ArchivePath
+
+Write-Host ''
+Write-Host '============================================================' -ForegroundColor Green
+Write-Host 'Release package created successfully.' -ForegroundColor Green
+Write-Host '============================================================' -ForegroundColor Green
+Write-Host ''
+Write-Host "Package:  $PackageName"
+Write-Host "Version:  $Version"
+Write-Host "Archive:  $ArchivePath"
+Write-Host "Size:     $([math]::Round($ArchiveInfo.Length / 1MB, 2)) MB"
+Write-Host ''
+Write-Host 'The source tree was not modified.'
+Write-Host 'composer.json and composer.lock remain in the repository.'
+Write-Host 'The release builder was removed from the release package.'
+Write-Host ''
+Write-Host ''
+Write-Host "`nPress Enter to close this window..." -ForegroundColor Yellow
+[void](Read-Host)
+```
+ 
