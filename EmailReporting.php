@@ -357,6 +357,8 @@ class EmailReportingPlugin extends MantisPlugin
 	 */
 	function ERP_update_check( )
 	{
+		# Intentionally not updated during execution.
+		# A version 0 installation will execute all upgrade steps sequentially.
 		$t_config_version = plugin_config_get( 'config_version' );
 
 		if ( $t_config_version === 0 )
@@ -650,6 +652,32 @@ class EmailReportingPlugin extends MantisPlugin
 			db_query( $t_query, array( '<% %>' ) );
 
 			plugin_config_set( 'config_version', 18 );
+		}
+
+		if ( $t_config_version <= 18 )
+		{
+			$t_mailboxes = plugin_config_get( 'mailboxes', array() );
+
+			$t_updated = FALSE;
+			foreach ( $t_mailboxes AS $t_key => $t_array )
+			{
+				if (
+					isset( $t_array[ 'mailbox_type' ], $t_array[ 'auth_method' ] ) &&
+					$t_array[ 'mailbox_type' ] === 'IMAP' &&
+					$t_array[ 'auth_method' ] === 'USER'
+				)
+				{
+					$t_mailboxes[ $t_key ][ 'auth_method' ] = 'PLAIN';
+					$t_updated = TRUE;
+				}
+			}
+
+			if ( $t_updated )
+			{
+				plugin_config_set( 'mailboxes', $t_mailboxes );
+			}
+
+			plugin_config_set( 'config_version', 19 );
 		}
 	}
 
