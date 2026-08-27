@@ -12,7 +12,11 @@ $s_plugin_EmailReporting_jobsetup = 'To collect the emails from the mailboxes yo
 $s_plugin_EmailReporting_job_users = '<span class="negative">Warning</span>: It seems that the scheduled job is not run with the same user account as the webserver / PHP process. This could cause problems with attachments.<br />The SAPI for the scheduled job is most likely "cli".<br />The webserver runs under the following user account: ';
 
 $s_plugin_EmailReporting_mailbox_settings = 'Mailbox settings';
-$s_plugin_EmailReporting_mailbox_settings_imap = 'Mailbox IMAP only settings';
+$s_plugin_EmailReporting_mailbox_settings_logininfo = 'Mailbox login information';
+$s_plugin_EmailReporting_mailbox_settings_oauth = 'Mailbox OAuth settings';
+$s_plugin_EmailReporting_mailbox_settings_oauth_microsoft = 'Mailbox Microsoft OAuth settings';
+$s_plugin_EmailReporting_mailbox_settings_oauth_google = 'Mailbox Google OAuth settings';
+$s_plugin_EmailReporting_mailbox_settings_imap = 'Mailbox IMAP settings';
 $s_plugin_EmailReporting_mailbox_settings_issue = 'Mailbox issue settings';
 $s_plugin_EmailReporting_problems = 'To reset a configuration option to its default value, please delete the configuration option in question from the "<a href="adm_config_report.php">Configuration Report</a>" page.';
 
@@ -30,19 +34,23 @@ $s_plugin_EmailReporting_remove_reply_options = 'Remove replies configuration op
 $s_plugin_EmailReporting_reporter_options = 'Issue reporter configuration options';
 $s_plugin_EmailReporting_runtime_options = 'Runtime configuration options';
 $s_plugin_EmailReporting_security_options = 'Security configuration options';
-$s_plugin_EmailReporting_strip_signature_feature_options = 'Strip signature configuration options (Experimental)';
+$s_plugin_EmailReporting_strip_signature_feature_options = 'Strip signature configuration options';
 
 $s_plugin_EmailReporting_copy_of = 'Copy of';
 $s_plugin_EmailReporting_directory_exists = 'Directory found';
 $s_plugin_EmailReporting_directory_unavailable = 'Warning: directory not found';
-$s_plugin_EmailReporting_directory_writable = 'Directory writable';
-$s_plugin_EmailReporting_directory_unwritable = 'Warning: directory not writable';
+$s_plugin_EmailReporting_directory_access = 'Directory writable';
+$s_plugin_EmailReporting_directory_notaccess = 'Warning: directory not writable';
+$s_plugin_EmailReporting_file_exists = 'File found';
+$s_plugin_EmailReporting_file_unavailable = 'Warning: file not found';
+$s_plugin_EmailReporting_file_access = 'File readable';
+$s_plugin_EmailReporting_file_notaccess = 'Warning: file not readable';
 
 $s_plugin_EmailReporting_mail_add_bug_reports = 'Add new issues';
 $s_plugin_EmailReporting_mail_add_bugnotes = 'Add notes';
 $s_plugin_EmailReporting_mail_reopen_bugs = 'Reopen resolved tickets when adding notes';
 $s_plugin_EmailReporting_mail_add_complete_email = 'Add the complete email into the attachments';
-$s_plugin_EmailReporting_mail_add_complete_email_ext = 'Extension used for the complete email attachment';
+$s_plugin_EmailReporting_mail_add_complete_email_ext = 'File extension used for the complete email attachment';
 $s_plugin_EmailReporting_mail_add_users_from_cc_to = 'Add users to issue monitoring list from Cc and To fields in mail header';
 $s_plugin_EmailReporting_mail_auto_signup = 'Signup new users automatically (possible security risk!, see documentation)';
 $s_plugin_EmailReporting_mail_block_attachments_md5 = 'Block attachments matching these MD5 hashes';
@@ -63,6 +71,7 @@ $s_plugin_EmailReporting_mail_max_email_body_add_attach = 'Add the complete desc
 $s_plugin_EmailReporting_mail_nodescription = 'Use this text if no description is found in the email';
 $s_plugin_EmailReporting_mail_nosubject = 'Use this text if no subject is found in the email';
 $s_plugin_EmailReporting_mail_parse_html = 'Parse HTML emails';
+$s_plugin_EmailReporting_mail_parse_tnef = 'Parse winmail.dat files';
 $s_plugin_EmailReporting_mail_preferred_username = 'Preferred username for new user creations';
 $s_plugin_EmailReporting_mail_preferred_realname = 'Preferred realname for new user creations';
 $s_plugin_EmailReporting_mail_remove_mantis_email = 'Remove MantisBT notification emails from replies';
@@ -81,12 +90,12 @@ $s_plugin_EmailReporting_mail_use_bug_priority = 'Look for priority header field
 $s_plugin_EmailReporting_mail_use_message_id = 'Use Message-ID in Mail header to identify notes';
 $s_plugin_EmailReporting_mail_use_reporter = 'Use only default reporter user for issues created by email';
 
+$s_plugin_EmailReporting_Google = 'Google Workspace';
+$s_plugin_EmailReporting_Microsoft = 'Microsoft 365';
+
 $s_plugin_EmailReporting_strict = 'Strict';
 $s_plugin_EmailReporting_balanced = 'Balanced';
 $s_plugin_EmailReporting_relaxed = 'Relaxed';
-
-$s_plugin_EmailReporting_emailreporting = 'EmailReporting';
-$s_plugin_EmailReporting_mantisbt = 'MantisBT';
 
 $s_plugin_EmailReporting_newnote = 'New note';
 $s_plugin_EmailReporting_newissue = 'New issue';
@@ -119,6 +128,15 @@ $s_plugin_EmailReporting_ssl_cert_verify = 'Verify SSL certificate';
 $s_plugin_EmailReporting_erp_username = 'Username';
 $s_plugin_EmailReporting_erp_password = 'Password';
 $s_plugin_EmailReporting_auth_method = 'Authentication method';
+$s_plugin_EmailReporting_oauth_provider = 'OAuth provider';
+$s_plugin_EmailReporting_m_mailbox = 'Mailbox email address';
+$s_plugin_EmailReporting_m_tenantId = 'Tenant ID';
+$s_plugin_EmailReporting_m_clientId = 'Client ID';
+$s_plugin_EmailReporting_m_clientSecret = 'Client secret';
+$s_plugin_EmailReporting_m_pfxPath = 'Path to PFX file';
+$s_plugin_EmailReporting_m_pfxPassword = 'PFX file password';
+$s_plugin_EmailReporting_g_mailbox = $s_plugin_EmailReporting_m_mailbox;
+$s_plugin_EmailReporting_g_serviceAccountCredentials = 'Serviceaccount credentials (JSON file)';
 $s_plugin_EmailReporting_imap_basefolder = 'Basefolder (optional)';
 $s_plugin_EmailReporting_imap_createfolderstructure = 'Create project subfolder structure';
 $s_plugin_EmailReporting_project_id = 'Select a project';
@@ -137,13 +155,13 @@ $s_plugin_EmailReporting_unknown_setting = 'Unknown setting encountered. Setting
 $s_plugin_EmailReporting_zero_records = 'None available';
 $s_plugin_EmailReporting_function_not_found = 'Function not found';
 $s_plugin_EmailReporting_input_name_not_allowed = 'The selected variable name is not allowed as it could cause conflicts in certain situations';
-$s_plugin_EmailReporting_pear_load_error = 'Failed to load pear.php. This might be because security settings (open_basedir) do not allow loading your existing PEAR repository';
 $s_plugin_EmailReporting_complete_test_action_note = '<span class="negative">Warning</span>: This will test a single mailbox as completely as possible unlike "Test" which will only perform the tasks that do not change anything.
 
 There are still minor differences compared to the scheduled job (bug_report_mail.php). For example one of the differences could be the useraccount that runs the job.
 
 Use with care.';
 $s_plugin_EmailReporting_apisoap_error = '"api/soap/mc_file_api.php" is missing. EmailReporting requires this file to work.';
+$s_plugin_EmailReporting_sensitive_data_storage = '<span class="negative">Warning</span>: Please store the M365 PFX certificate or the Google Service Account credentials (JSON file) outside the web servers document root for safety reasons.';
 
 $s_plugin_EmailReporting_rules = 'Rules';
 $s_plugin_EmailReporting_select_rule = 'Select rule';

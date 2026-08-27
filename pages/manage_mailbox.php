@@ -54,36 +54,65 @@ if ( $f_mailbox_action === 'complete_test' )
 	ERP_output_note_close();
 }
 
-// Loading this one here to throw a error if necessary and notifying the user of the issue
-plugin_require_api( 'core_pear/PEAR.php' );
-if ( !defined( 'PEAR_OS' ) )
-{
-	ERP_output_note_open();
-?>
-<p><i class="fa fa-warning"></i> 
-<?php echo plugin_lang_get( 'pear_load_error' ); ?>
-</p>
-<?php
-	ERP_output_note_close();
-}
-?>
-
-<?php
-
 ERP_output_table_open( 'mailbox_settings' );
 ERP_output_config_option( 'enabled', 'boolean', $t_mailbox );
 ERP_output_config_option( 'description', 'string', $t_mailbox );
-ERP_output_config_option( 'mailbox_type', 'dropdown', $t_mailbox, 'print_descriptions_option_list', array( 'IMAP', 'POP3' ) );
+ERP_output_config_option( 'mailbox_type', 'dropdown', $t_mailbox, 'print_descriptions_option_list', array( 'IMAP', 'POP3' ) + array( 'visibility-controller' => TRUE ) );
 ERP_output_config_option( 'hostname', 'string', $t_mailbox );
 ERP_output_config_option( 'port', 'string', $t_mailbox );
 ERP_output_config_option( 'encryption', 'dropdown', $t_mailbox, 'print_encryption_option_list' );
 ERP_output_config_option( 'ssl_cert_verify', 'boolean', $t_mailbox );
-ERP_output_config_option( 'erp_username', 'string', $t_mailbox );
-ERP_output_config_option( 'erp_password', 'string_password', $t_mailbox );
-ERP_output_config_option( 'auth_method', 'dropdown', $t_mailbox, 'print_auth_method_option_list' );
+ERP_output_config_option( 'auth_method', 'dropdown', $t_mailbox, 'print_auth_method_option_list', array( 'visibility-controller' => TRUE ) );
 ERP_output_table_close();
 
-ERP_output_table_open( 'mailbox_settings_imap' );
+ERP_output_table_open( 'mailbox_settings_logininfo', array( 'auth_method' => [ '!=' => [ 'XOAUTH2' ] ] ) );
+ERP_output_config_option( 'erp_username', 'string', $t_mailbox );
+ERP_output_config_option( 'erp_password', 'string_password', $t_mailbox );
+ERP_output_table_close();
+
+ERP_output_table_open( 'mailbox_settings_oauth', array( 'auth_method' => [ 'XOAUTH2' ] ) );
+ERP_output_config_option( 'oauth_provider', 'dropdown', $t_mailbox, 'print_descriptions_option_list', array( ERP_PROVIDER_GOOGLE, ERP_PROVIDER_MICROSOFT ) + array( 'visibility-controller' => TRUE ) );
+ERP_output_table_close();
+
+if ( isset( $t_mailbox[ 'oauth_provider' ], $t_mailbox[ 'auth_method' ] ) && $t_mailbox[ 'auth_method' ] === 'XOAUTH2' )
+{
+	$t_DOCUMENT_ROOT = realpath( $_SERVER['DOCUMENT_ROOT'] );
+	$t_sensitiveFile = ( ( $t_mailbox[ 'oauth_provider' ] === ERP_PROVIDER_GOOGLE ) ? realpath( $t_mailbox[ 'g_serviceAccountCredentials' ] ) : ( ( $t_mailbox[ 'oauth_provider' ] === ERP_PROVIDER_MICROSOFT ) ? realpath( $t_mailbox[ 'm_pfxPath' ] ) : FALSE ) );
+
+	if (
+		$t_DOCUMENT_ROOT !== FALSE &&
+		$t_sensitiveFile !== FALSE &&
+		str_starts_with(
+			$t_sensitiveFile,
+			$t_DOCUMENT_ROOT . DIRECTORY_SEPARATOR
+		)
+	)
+	{
+	ERP_output_note_open();
+?>
+<p><i class="fa fa-warning"></i> 
+<?php echo nl2br( plugin_lang_get( 'sensitive_data_storage' ) ) ?>
+</p>
+<?php
+	ERP_output_note_close();
+	}
+}
+
+ERP_output_table_open( 'mailbox_settings_oauth_google', array( 'auth_method' => [ 'XOAUTH2' ], 'oauth_provider' => [ ERP_PROVIDER_GOOGLE ] ) );
+ERP_output_config_option( 'g_mailbox', 'string', $t_mailbox );
+ERP_output_config_option( 'g_serviceAccountCredentials', 'file_string', $t_mailbox );
+ERP_output_table_close();
+
+ERP_output_table_open( 'mailbox_settings_oauth_microsoft', array( 'auth_method' => [ 'XOAUTH2' ], 'oauth_provider' => [ ERP_PROVIDER_MICROSOFT ] ) );
+ERP_output_config_option( 'm_mailbox', 'string', $t_mailbox );
+ERP_output_config_option( 'm_tenantId', 'string', $t_mailbox );
+ERP_output_config_option( 'm_clientId', 'string', $t_mailbox );
+ERP_output_config_option( 'm_clientSecret', 'string_password', $t_mailbox );
+ERP_output_config_option( 'm_pfxPath', 'file_string', $t_mailbox );
+ERP_output_config_option( 'm_pfxPassword', 'string_password', $t_mailbox );
+ERP_output_table_close();
+
+ERP_output_table_open( 'mailbox_settings_imap', array( 'mailbox_type' => [ 'IMAP' ] ) );
 ERP_output_config_option( 'imap_basefolder', 'string', $t_mailbox );
 ERP_output_config_option( 'imap_createfolderstructure', 'boolean', $t_mailbox );
 ERP_output_table_close();
@@ -98,6 +127,8 @@ event_signal( 'EVENT_ERP_OUTPUT_MAILBOX_FIELDS', $f_select_mailbox );
 
 ERP_output_table_open();
 ERP_output_table_close( $f_mailbox_action . '_action' );
+
+echo '<script src="' . plugin_file( 'emailreporting.js' ) .	'"></script>';
 
 ?>
 </form>

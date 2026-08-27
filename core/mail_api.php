@@ -1,32 +1,26 @@
 <?php
-	# Mantis - a php based bugtracking system
-	# Copyright (C) 2002 - 2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
-	# Copyright (C) 2004  Gerrit Beine - gerrit.beine@pitcom.de
-	# Copyright (C) 2007  Rolf Kleef - rolf@drostan.org (IMAP)
-	# This program is distributed under the terms and conditions of the GPL
-	# See the README and LICENSE files for details
+# Mantis - a php based bugtracking system
+# Copyright (C) 2002 - 2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
+# Copyright (C) 2004  Gerrit Beine - gerrit.beine@pitcom.de
+# Copyright (C) 2007  Rolf Kleef - rolf@drostan.org (IMAP)
+# This program is distributed under the terms and conditions of the GPL
+# See the README and LICENSE files for details
 
-	# This page receives an E-Mail via POP3 or IMAP and generates an Report
+# This page receives an E-Mail via POP3 or IMAP and generates an Report
 
-	require_api( 'bug_api.php' );
-	require_api( 'bugnote_api.php' );
-	require_api( 'user_api.php' );
-	require_api( 'file_api.php' );
+# Load Composer autoloader
+require_once( __DIR__ . '/../vendor/autoload.php' );
 
-	require_once( config_get_global( 'absolute_path' ) . 'api/soap/mc_file_api.php' );
+require_api( 'bug_api.php' );
+require_api( 'bugnote_api.php' );
+require_api( 'user_api.php' );
+require_api( 'file_api.php' );
 
-	//require_once( 'Net/POP3.php' );
-	plugin_require_api( 'core_pear/Net/POP3.php' );
-	//require_once( 'Net/IMAP.php' );
-	plugin_require_api( 'core_pear/Net/IMAP.php' );
+require_once( config_get_global( 'absolute_path' ) . 'api/soap/mc_file_api.php' );
 
-	plugin_require_api( 'core/config_api.php' );
-	plugin_require_api( 'core/Mail/Parser.php' );
-
-	plugin_require_api( 'core/EmailReplyParser/Parser/EmailParser.php');
-	plugin_require_api( 'core/EmailReplyParser/Parser/FragmentDTO.php');
-	plugin_require_api( 'core/EmailReplyParser/Email.php');
-	plugin_require_api( 'core/EmailReplyParser/Fragment.php');
+plugin_require_api( 'core/config_api.php' );
+plugin_require_api( 'core/oauth2_api.php' );
+plugin_require_api( 'core/Mail/Parser.php' );
 
 class ERP_mailbox_api
 {
@@ -106,49 +100,50 @@ class ERP_mailbox_api
 	{
 		$this->_test_only = $p_test_only;
 
-		$this->_mail_add_bug_reports			= plugin_config_get( 'mail_add_bug_reports' );
-		$this->_mail_add_bugnotes				= plugin_config_get( 'mail_add_bugnotes' );
-		$this->_mail_reopen_bugs				= plugin_config_get( 'mail_reopen_bugs' );
-		$this->_mail_add_complete_email			= plugin_config_get( 'mail_add_complete_email' );
-		$this->_mail_add_complete_email_ext		= plugin_config_get( 'mail_add_complete_email_ext' );
-		$this->_mail_add_users_from_cc_to		= plugin_config_get( 'mail_add_users_from_cc_to' );
-		$this->_mail_auto_signup				= plugin_config_get( 'mail_auto_signup' );
-		$this->_mail_block_attachments_md5		= plugin_config_get( 'mail_block_attachments_md5' );
-		$this->_mail_block_attachments_logging	= plugin_config_get( 'mail_block_attachments_logging' );
-		$this->_mail_bug_priority				= plugin_config_get( 'mail_bug_priority' );
-		$this->_mail_debug						= plugin_config_get( 'mail_debug' );
-		$this->_mail_debug_directory			= plugin_config_get( 'mail_debug_directory' );
-		$this->_mail_debug_show_memory_usage	= plugin_config_get( 'mail_debug_show_memory_usage' );
-		$this->_mail_delete						= plugin_config_get( 'mail_delete' );
-		$this->_mail_disposable_email_checker	= plugin_config_get( 'mail_disposable_email_checker' );
-		$this->_mail_fallback_mail_reporter		= plugin_config_get( 'mail_fallback_mail_reporter' );
-		$this->_mail_ignore_auto_replies		= plugin_config_get( 'mail_ignore_auto_replies' );
-		$this->_mail_max_email_body				= plugin_config_get( 'mail_max_email_body' );
-		$this->_mail_max_email_body_text		= plugin_config_get( 'mail_max_email_body_text' );
-		$this->_mail_max_email_body_add_attach	= plugin_config_get( 'mail_max_email_body_add_attach' );
-		$this->_mail_nodescription				= plugin_config_get( 'mail_nodescription' );
-		$this->_mail_nosubject					= plugin_config_get( 'mail_nosubject' );
-		$this->_mail_preferred_username			= plugin_config_get( 'mail_preferred_username' );
-		$this->_mail_preferred_realname			= plugin_config_get( 'mail_preferred_realname' );
-		$this->_mail_remove_mantis_email		= plugin_config_get( 'mail_remove_mantis_email' );
-		$this->_mail_remove_replies				= plugin_config_get( 'mail_remove_replies' );
-		$this->_mail_removed_reply_text			= plugin_config_get( 'mail_removed_reply_text' );
-		$this->_mail_reporter_id				= plugin_config_get( 'mail_reporter_id' );
-		$this->_mail_respect_permissions		= plugin_config_get( 'mail_respect_permissions' );
-		$this->_mail_save_from					= plugin_config_get( 'mail_save_from' );
-		$this->_mail_save_subject_in_note		= plugin_config_get( 'mail_save_subject_in_note' );
-		$this->_mail_strip_signature			= plugin_config_get( 'mail_strip_signature' );
-		$this->_mail_subject_id_regex			= plugin_config_get( 'mail_subject_id_regex' );
-		$this->_mail_use_bug_priority			= plugin_config_get( 'mail_use_bug_priority' );
-		$this->_mail_use_message_id				= plugin_config_get( 'mail_use_message_id' );
-		$this->_mail_use_reporter				= plugin_config_get( 'mail_use_reporter' );
+		$this->_mail_add_bug_reports                 = plugin_config_get( 'mail_add_bug_reports' );
+		$this->_mail_add_bugnotes                    = plugin_config_get( 'mail_add_bugnotes' );
+		$this->_mail_reopen_bugs                     = plugin_config_get( 'mail_reopen_bugs' );
+		$this->_mail_add_complete_email              = plugin_config_get( 'mail_add_complete_email' );
+		$this->_mail_add_complete_email_ext          = plugin_config_get( 'mail_add_complete_email_ext' );
+		$this->_mail_add_users_from_cc_to            = plugin_config_get( 'mail_add_users_from_cc_to' );
+		$this->_mail_auto_signup                     = plugin_config_get( 'mail_auto_signup' );
+		$this->_mail_block_attachments_md5           = plugin_config_get( 'mail_block_attachments_md5' );
+		$this->_mail_block_attachments_logging       = plugin_config_get( 'mail_block_attachments_logging' );
+		$this->_mail_bug_priority                    = plugin_config_get( 'mail_bug_priority' );
+		$this->_mail_debug                           = plugin_config_get( 'mail_debug' );
+		$this->_mail_debug_directory                 = plugin_config_get( 'mail_debug_directory' );
+		$this->_mail_debug_show_memory_usage         = plugin_config_get( 'mail_debug_show_memory_usage' );
+		$this->_mail_delete                          = plugin_config_get( 'mail_delete' );
+		$this->_mail_disposable_email_checker        = plugin_config_get( 'mail_disposable_email_checker' );
+		$this->_mail_fallback_mail_reporter          = plugin_config_get( 'mail_fallback_mail_reporter' );
+		$this->_mail_ignore_auto_replies             = plugin_config_get( 'mail_ignore_auto_replies' );
+		$this->_mail_max_email_body                  = plugin_config_get( 'mail_max_email_body' );
+		$this->_mail_max_email_body_text             = plugin_config_get( 'mail_max_email_body_text' );
+		$this->_mail_max_email_body_add_attach       = plugin_config_get( 'mail_max_email_body_add_attach' );
+		$this->_mail_nodescription                   = plugin_config_get( 'mail_nodescription' );
+		$this->_mail_nosubject                       = plugin_config_get( 'mail_nosubject' );
+		$this->_mail_preferred_username              = plugin_config_get( 'mail_preferred_username' );
+		$this->_mail_preferred_realname              = plugin_config_get( 'mail_preferred_realname' );
+		$this->_mail_remove_mantis_email             = plugin_config_get( 'mail_remove_mantis_email' );
+		$this->_mail_remove_replies                  = plugin_config_get( 'mail_remove_replies' );
+		$this->_mail_removed_reply_text              = plugin_config_get( 'mail_removed_reply_text' );
+		$this->_mail_reporter_id                     = plugin_config_get( 'mail_reporter_id' );
+		$this->_mail_respect_permissions             = plugin_config_get( 'mail_respect_permissions' );
+		$this->_mail_save_from                       = plugin_config_get( 'mail_save_from' );
+		$this->_mail_save_subject_in_note            = plugin_config_get( 'mail_save_subject_in_note' );
+		$this->_mail_strip_signature                 = plugin_config_get( 'mail_strip_signature' );
+		$this->_mail_subject_id_regex                = plugin_config_get( 'mail_subject_id_regex' );
+		$this->_mail_use_bug_priority                = plugin_config_get( 'mail_use_bug_priority' );
+		$this->_mail_use_message_id                  = plugin_config_get( 'mail_use_message_id' );
+		$this->_mail_use_reporter                    = plugin_config_get( 'mail_use_reporter' );
 
-		$this->_mp_options[ 'add_attachments' ]	= config_get( 'allow_file_upload' );
-		$this->_mp_options[ 'debug' ]			= $this->_mail_debug;
-		$this->_mp_options[ 'show_mem_usage' ]	= $this->_mail_debug_show_memory_usage;
-		$this->_mp_options[ 'parse_html' ]		= plugin_config_get( 'mail_parse_html' );
+		$this->_mp_options[ 'add_attachments' ]      = config_get( 'allow_file_upload' );
+		$this->_mp_options[ 'debug' ]                = $this->_mail_debug;
+		$this->_mp_options[ 'show_mem_usage' ]       = $this->_mail_debug_show_memory_usage;
+		$this->_mp_options[ 'parse_html' ]           = plugin_config_get( 'mail_parse_html' );
+		$this->_mp_options[ 'parse_tnef' ]           = plugin_config_get( 'mail_parse_tnef' );
 
-		$this->_mp_options[ 'process_markdown' ]	= OFF;
+		$this->_mp_options[ 'process_markdown' ]     = OFF;
 		if ( plugin_is_loaded( 'MantisCoreFormatting' ) )
 		{
 			plugin_push_current( 'MantisCoreFormatting' );
@@ -156,14 +151,14 @@ class ERP_mailbox_api
 			plugin_pop_current();
 		}
 
-		$this->_allow_file_upload				= config_get( 'allow_file_upload' );
-		$this->_file_upload_method				= config_get( 'file_upload_method' );
-		$this->_email_separator1				= config_get( 'email_separator1' );
-		$this->_login_method					= config_get( 'login_method' );
-		$this->_use_ldap_email					= config_get( 'use_ldap_email' );
-		$this->_plugin_mime_types				= config_get( 'plugin_mime_types' );
+		$this->_allow_file_upload                    = config_get( 'allow_file_upload' );
+		$this->_file_upload_method                   = config_get( 'file_upload_method' );
+		$this->_email_separator1                     = config_get( 'email_separator1' );
+		$this->_login_method                         = config_get( 'login_method' );
+		$this->_use_ldap_email                       = config_get( 'use_ldap_email' );
+		$this->_plugin_mime_types                    = config_get( 'plugin_mime_types' );
 
-		$this->_max_file_size					= (int) min( ini_get_number( 'upload_max_filesize' ), ini_get_number( 'post_max_size' ), config_get( 'max_file_size' ) );
+		$this->_max_file_size                        = (int) min( ini_get_number( 'upload_max_filesize' ), ini_get_number( 'post_max_size' ), config_get( 'max_file_size' ) );
 
 		if ( !$this->_test_only && $this->_mail_debug )
 		{
@@ -171,14 +166,14 @@ class ERP_mailbox_api
 		}
 
 		// Do we need to temporarily enable emails on a users own actions?
-		$t_mail_email_receive_own				= plugin_config_get( 'mail_email_receive_own' );
+		$t_mail_email_receive_own                    = plugin_config_get( 'mail_email_receive_own' );
 		if ( $t_mail_email_receive_own )
 		{
 			ERP_set_temporary_overwrite( 'email_receive_own', ON );
 		}
 
 		// Do we need to disable the MantisBT antispam feature?
-		$t_mail_disable_antispam				= plugin_config_get( 'mail_disable_antispam' );
+		$t_mail_disable_antispam                     = plugin_config_get( 'mail_disable_antispam' );
 		if ( $t_mail_disable_antispam )
 		{
 			ERP_set_temporary_overwrite( 'antispam_max_event_count', 0 );
@@ -258,6 +253,17 @@ class ERP_mailbox_api
 
 								$this->prepare_mailbox_hostname();
 
+								if ( $this->_mailbox[ 'auth_method' ] === 'XOAUTH2' )
+								{
+									$this->_mailbox[ 'access_token' ] = $this->get_OAuth2_AccessToken();
+
+									if ( $this->_mailbox[ 'access_token' ] === FALSE )
+									{
+										unset( $this->_mailbox[ 'access_token' ] );
+										return( $this->_result );
+									}
+								}
+
 								$t_process_mailbox_function = 'process_' . strtolower( $this->_mailbox[ 'mailbox_type' ] ) . '_mailbox';
 
 								$this->$t_process_mailbox_function();
@@ -300,9 +306,12 @@ class ERP_mailbox_api
 	{
 		if ( PEAR::isError( $p_pear ) )
 		{
-			$p_pear->ERP_location = $p_location;
+			$t_pear = array(
+				'ERP_location' => $p_location,
+				'pear'         => $p_pear,
+			);;
 
-			$this->_result = &$p_pear;
+			$this->_result = $t_pear;
 
 			if ( !$this->_test_only )
 			{
@@ -327,8 +336,8 @@ class ERP_mailbox_api
 		if ( $p_is_error === TRUE )
 		{
 			$this->_result = array(
-				'ERROR_TYPE'	=> 'NON-PEAR-ERROR',
-				'ERROR_MESSAGE'	=> $t_error_text,
+				'ERROR_TYPE'    => 'NON-PEAR-ERROR',
+				'ERROR_MESSAGE' => $t_error_text,
 			);
 		}
 
@@ -393,8 +402,7 @@ class ERP_mailbox_api
 	# process all mails for an imap mailbox
 	private function process_imap_mailbox()
 	{
-//		$this->_mailserver = new Net_IMAP( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ] );
-		$this->_mailserver = new Net_IMAP();
+		$this->_mailserver = new Net_IMAP( NULL );
 		$this->_mailserver->setTimeout( 3 );
 
 		$this->_mailserver->setStreamContextOptions( $this->get_StreamContextOptions() );
@@ -447,13 +455,13 @@ class ERP_mailbox_api
 									// After 10 errors Exchange will ignore the connection and any further commands will fail with ", "
 									// 10 errors or more can happen when imap_createfolderstructure is ON
 									// examineMailbox allows EmailReporting to check whether or not there are emails in the folder without producing an error
-									$t_result = $this->_mailserver->examineMailbox( $t_foldername );
+									$t_examineresult = $this->_mailserver->examineMailbox( $t_foldername );
 
-									if ( !$this->pear_error( 'Examine IMAP folder', $t_result ) && $t_result[ 'EXISTS' ] > 0 )
+									if ( !$this->pear_error( 'Examine IMAP folder', $t_examineresult ) && $t_examineresult[ 'EXISTS' ] > 0 )
 									{
-										$t_result = $this->_mailserver->selectMailbox( $t_foldername );
+										$t_selectresult = $this->_mailserver->selectMailbox( $t_foldername );
 
-										if ( !$this->pear_error( 'Select IMAP folder', $t_result ) )
+										if ( !$this->pear_error( 'Select IMAP folder', $t_selectresult ) )
 										{
 											$t_ListMsgs = $this->PEAR_getListing();
 
@@ -495,9 +503,9 @@ class ERP_mailbox_api
 								elseif ( $this->_mailbox[ 'imap_createfolderstructure' ] == ON )
 								{
 									// create this mailbox
-									$t_result = $this->_mailserver->createMailbox( $t_foldername );
+									$t_createresult = $this->_mailserver->createMailbox( $t_foldername );
 
-									$this->pear_error( 'Create IMAP folder: "' . $t_foldername . '"', $t_result );
+									$this->pear_error( 'Create IMAP folder: "' . $t_foldername . '"', $t_createresult );
 								}
 							}
 							elseif ( $this->_mailbox[ 'imap_createfolderstructure' ] == OFF )
@@ -540,11 +548,97 @@ class ERP_mailbox_api
 	# Perform the login to the mailbox
 	private function PEAR_mailbox_login()
 	{
-		$t_mailbox_username = $this->_mailbox[ 'erp_username' ];
-		$t_mailbox_password = base64_decode( $this->_mailbox[ 'erp_password' ] );
 		$t_mailbox_auth_method = $this->_mailbox[ 'auth_method' ];
 
+		if ( $t_mailbox_auth_method === 'XOAUTH2' )
+		{
+			if ( $this->_mailbox[ 'oauth_provider' ] === ERP_PROVIDER_GOOGLE )
+			{
+				$t_mailbox_username = $this->_mailbox[ 'g_mailbox' ];
+			}
+			elseif ( $this->_mailbox[ 'oauth_provider' ] === ERP_PROVIDER_MICROSOFT )
+			{
+				$t_mailbox_username = $this->_mailbox[ 'm_mailbox' ];
+			}
+			else
+			{
+				$this->custom_error( 'Unknown OAuth provider.' );
+				unset( $this->_mailbox[ 'access_token' ] );
+				return( FALSE );
+			}
+
+			$t_mailbox_password = $this->_mailbox[ 'access_token' ];
+			unset( $this->_mailbox[ 'access_token' ] );
+		}
+		else
+		{
+			$t_mailbox_username = $this->_mailbox[ 'erp_username' ];
+			$t_mailbox_password = base64_decode( $this->_mailbox[ 'erp_password' ] );
+		}
+
 		return( $this->_mailserver->login( $t_mailbox_username, $t_mailbox_password, $t_mailbox_auth_method ) );
+	}
+
+	# --------------------
+	# Get an OAuth accesstoken for XOAUTH2
+	private function get_OAuth2_AccessToken()
+	{
+		if ( $this->_mailbox[ 'auth_method' ] === 'XOAUTH2' )
+		{
+			if ( !extension_loaded( 'openssl' ) )
+			{
+				$this->custom_error( plugin_lang_get( 'openssl_unavailable', 'EmailReporting' ) );
+				return( FALSE );
+			}
+
+			if ( $this->_mailbox[ 'oauth_provider' ] === ERP_PROVIDER_GOOGLE )
+			{
+				$provider = new ERP_GoogleOAuthProvider(
+					serviceAccountCredentials: $this->_mailbox[ 'g_serviceAccountCredentials' ],
+					mailbox: $this->_mailbox[ 'g_mailbox' ]
+				);
+			}
+			elseif ( $this->_mailbox[ 'oauth_provider' ] === ERP_PROVIDER_MICROSOFT )
+			{
+				$provider = new ERP_Microsoft365OAuthProvider(
+					tenantId: $this->_mailbox[ 'm_tenantId' ],
+					clientId: $this->_mailbox[ 'm_clientId' ],
+
+					clientSecret: base64_decode( $this->_mailbox[ 'm_clientSecret' ] ),
+
+					pfxPath: $this->_mailbox[ 'm_pfxPath' ],
+					pfxPassword: base64_decode( $this->_mailbox[ 'm_pfxPassword' ] ),
+				);
+			}
+			else
+			{
+				$this->custom_error( 'Unknown OAuth provider.' );
+				return( FALSE );
+			}
+
+			$constructError = $provider->getError();
+
+			if ( $constructError !== NULL )
+			{
+				$this->custom_error( $constructError );
+				return( FALSE );
+			}
+
+			$accessToken = $provider->getAccessToken();
+
+			if ( $accessToken === FALSE )
+			{
+				$this->custom_error(
+					$provider->getError() ?? 'Unknown error: OAuth access token request failed.'
+				);
+
+				return( FALSE );
+			}
+
+			return( $accessToken );
+		}
+
+		return( FALSE );
 	}
 
 	# --------------------
@@ -585,11 +679,6 @@ class ERP_mailbox_api
 		{
 			$this->custom_error( 'Retrieved message was empty. Either an invalid message ID was passed or there is a problem with one of the required packages' );
 
-			return( FALSE );
-		}
-
-		if ( $this->pear_error( 'Retrieve raw message', $t_msg ) )
-		{
 			return( FALSE );
 		}
 
@@ -637,6 +726,8 @@ class ERP_mailbox_api
 	# Handles a workaround for problems with Net_IMAP 1.1.x concerning the getMsg function
 	private function getMsg( $p_msg_id )
 	{
+		$t_msg = NULL;
+
 		if ( $this->_mailbox[ 'mailbox_type' ] === 'IMAP' )
 		{
 			// Net_IMAP 1.1.0 and 1.1.2 seems to have a somewhat broken getMsg function.
@@ -647,9 +738,14 @@ class ERP_mailbox_api
 				$t_msg = $t_msg[ key( $t_msg ) ];
 			}
 		}
-		else
+		elseif ( $this->_mailbox[ 'mailbox_type' ] === 'POP3' )
 		{
 			$t_msg = $this->_mailserver->getMsg( $p_msg_id );
+		}
+
+		if ( $this->pear_error( 'Retrieve raw message', $t_msg ) )
+		{
+			return( FALSE );
 		}
 
 		return( $t_msg );
@@ -980,47 +1076,47 @@ class ERP_mailbox_api
 
 				$t_bug_data = new BugData;
 
-				$t_bug_data->build					= '';
-				$t_bug_data->platform				= '';
-				$t_bug_data->os						= '';
-				$t_bug_data->os_build				= '';
-				$t_bug_data->version				= '';
-				$t_bug_data->profile_id				= 0;
-				$t_bug_data->handler_id				= 0;
-				$t_bug_data->view_state				= (int) config_get( 'default_bug_view_status' );
+				$t_bug_data->build                     = '';
+				$t_bug_data->platform                  = '';
+				$t_bug_data->os                        = '';
+				$t_bug_data->os_build                  = '';
+				$t_bug_data->version                   = '';
+				$t_bug_data->profile_id                = 0;
+				$t_bug_data->handler_id                = 0;
+				$t_bug_data->view_state                = (int) config_get( 'default_bug_view_status' );
 
-				$t_bug_data->category_id			= (int) $this->_mailbox[ 'global_category_id' ];
-				$t_bug_data->reproducibility		= (int) config_get( 'default_bug_reproducibility' );
-				$t_bug_data->severity				= (int) config_get( 'default_bug_severity' );
+				$t_bug_data->category_id               = (int) $this->_mailbox[ 'global_category_id' ];
+				$t_bug_data->reproducibility           = (int) config_get( 'default_bug_reproducibility' );
+				$t_bug_data->severity                  = (int) config_get( 'default_bug_severity' );
 
 				$t_priority = $this->verify_priority( $p_email[ 'Priority' ] );
-				$t_bug_data->priority				= (int) $t_priority;
-				$t_bug_data->projection				= (int) config_get( 'default_bug_projection' );
-				$t_bug_data->eta					= (int) config_get( 'default_bug_eta' );
-				$t_bug_data->resolution				= config_get( 'default_bug_resolution' );
-				$t_bug_data->status					= config_get( 'bug_submit_status' );
-				$t_bug_data->summary				= mb_substr( $p_email[ 'Subject' ], 0, $this->_mail_max_email_summary );
+				$t_bug_data->priority                  = (int) $t_priority;
+				$t_bug_data->projection                = (int) config_get( 'default_bug_projection' );
+				$t_bug_data->eta                       = (int) config_get( 'default_bug_eta' );
+				$t_bug_data->resolution                = config_get( 'default_bug_resolution' );
+				$t_bug_data->status                    = config_get( 'bug_submit_status' );
+				$t_bug_data->summary                   = mb_substr( $p_email[ 'Subject' ], 0, $this->_mail_max_email_summary );
 
 				$t_description = $p_email[ 'X-Mantis-Body' ];
 				$t_description = $this->add_additional_info( 'issue', $p_email, $t_description );
 				$t_description = $this->limit_body_size( 'description', $t_description, $p_email );
-				$t_bug_data->description			= $t_description;
+				$t_bug_data->description               = $t_description;
 
-				$t_bug_data->steps_to_reproduce		= config_get( 'default_bug_steps_to_reproduce' );
-				$t_bug_data->additional_information	= config_get( 'default_bug_additional_info' );
-				
+				$t_bug_data->steps_to_reproduce        = config_get( 'default_bug_steps_to_reproduce' );
+				$t_bug_data->additional_information    = config_get( 'default_bug_additional_info' );
+
 				$t_fields = config_get( 'bug_report_page_fields' );
 				$t_fields = columns_filter_disabled( $t_fields );
 				$t_update_due_date = in_array( 'due_date', $t_fields ) && access_has_project_level( config_get( 'due_date_update_threshold' ), helper_get_current_project(), auth_get_current_user_id() );
-				$t_bug_data->due_date				= date_strtotime( config_get( 'due_date_default' ) );
+				$t_bug_data->due_date                  = date_strtotime( config_get( 'due_date_default' ) );
 				if( ( $this->_mail_respect_permissions && !$t_update_due_date ) || $t_bug_data->due_date === '' )
 				{
-					$t_bug_data->due_date			= date_get_null();
+					$t_bug_data->due_date              = date_get_null();
 				}
 
-				$t_bug_data->project_id				= $t_project_id;
+				$t_bug_data->project_id                = $t_project_id;
 
-				$t_bug_data->reporter_id			= $p_email[ 'Reporter_id' ];
+				$t_bug_data->reporter_id               = $p_email[ 'Reporter_id' ];
 
 				// This function might do stuff that EmailReporting cannot handle. Disabled
 				//helper_call_custom_function( 'issue_create_validate', array( $t_bug_data ) );
@@ -1352,17 +1448,17 @@ class ERP_mailbox_api
 		if ( preg_match( '/^(?:(?P<name>.*?)<|)(?P<email>' . $this->_email_regex_simple . ')(?:>|)/u', trim( (string)$p_from_address ), $match ) )
 		{
 			$v_from_address = array(
-				'name'	=> trim( (string)$match[ 'name' ], '"\' ' ),
-				'email'	=> trim( (string)$match[ 'email' ] ),
-				'From'	=> $p_from_address,
+				'name'  => trim( (string)$match[ 'name' ], '"\' ' ),
+				'email' => trim( (string)$match[ 'email' ] ),
+				'From'  => $p_from_address,
 			);
 		}
 		else
 		{
 			$v_from_address = array(
-				'name'	=> '',
-				'email'	=> $p_from_address,
-				'From'	=> $p_from_address,
+				'name'  => '',
+				'email' => $p_from_address,
+				'From'  => $p_from_address,
 			);
 		}
 
@@ -1592,9 +1688,9 @@ class ERP_mailbox_api
 		$t_ref_ids = array();
 
 		$query = 'SELECT msg_id FROM ' . plugin_table( 'msgids' ) . ' WHERE issue_id=' . db_param();
-		$t_result = db_query( $query, array( (int)$p_bug_id ) );
+		$t_dbqueryresult = db_query( $query, array( (int)$p_bug_id ) );
 
-		while( $t_row = db_fetch_array( $t_result ) )
+		while( $t_row = db_fetch_array( $t_dbqueryresult ) )
 		{
 			$t_ref_ids[] = $t_row['msg_id'];
 		}
@@ -1617,10 +1713,10 @@ class ERP_mailbox_api
 			{
 				if ( !is_blank( $t_ref ) )
 				{
-					// ignore references longer then 255 characters as they are most likely malformed
-					if ( strlen( $t_ref ) > 255 )
+					// ignore references longer then 250 characters as they are most likely malformed
+					if ( strlen( $t_ref ) > 250 )
 					{
-						$this->custom_error( 'Reference id encountered thats longer then 255 characters. It will be ignored' );
+						$this->custom_error( 'Reference id encountered thats longer then 250 characters. It will be ignored' );
 					}
 					else
 					{
@@ -1950,29 +2046,29 @@ class ERP_mailbox_api
 	}
 }
 
-	# --------------------
-	# This function formats the bytes so that they are easily readable.
-	# Not part of a class
-	function ERP_formatbytes( $p_bytes )
+# --------------------
+# This function formats the bytes so that they are easily readable.
+# Not part of a class
+function ERP_formatbytes( $p_bytes )
+{
+	$t_units = array( ' B', ' KiB', ' MiB', ' GiB', ' TiB' );
+
+	$t_bytes = $p_bytes;
+
+	for ( $i = 0; $t_bytes > 1024; $i++ )
 	{
-		$t_units = array( ' B', ' KiB', ' MiB', ' GiB', ' TiB' );
-
-		$t_bytes = $p_bytes;
-
-		for ( $i = 0; $t_bytes > 1024; $i++ )
-		{
-			$t_bytes /= 1024;
-		}
-
-		return( round( $t_bytes, 2 ) . $t_units[ $i ] );
+		$t_bytes /= 1024;
 	}
 
-	# --------------------
-	# Returns the current timestamp
-	function ERP_get_timestamp()
-	{
-		$t_time = explode( ' ', microtime() );
-		return( $t_time[1] + $t_time[0] );
-	}
+	return( round( $t_bytes, 2 ) . $t_units[ $i ] );
+}
+
+# --------------------
+# Returns the current timestamp
+function ERP_get_timestamp()
+{
+	$t_time = explode( ' ', microtime() );
+	return( $t_time[1] + $t_time[0] );
+}
 
 ?>

@@ -1,17 +1,9 @@
 <?php
 
-//require_once( 'Mail/mimeDecode.php' );
-plugin_require_api( 'core_pear/Mail/mimeDecode.php' );
-
-plugin_require_api( 'core/Mail/simple_html_dom.php' );
-
-plugin_require_api( 'core/Mail/Markdownify/Converter.php' );
-plugin_require_api( 'core/Mail/Markdownify/ConverterExtra.php' );
-plugin_require_api( 'core/Mail/Markdownify/Parser.php' );
-
 class ERP_Mail_Parser
 {
 	private $_parse_html = FALSE;
+	private $_parse_tnef = FALSE;
 	private $_process_markdown = FALSE;
 	private $_encoding = 'UTF-8';
 	private $_add_attachments = TRUE;
@@ -41,8 +33,6 @@ class ERP_Mail_Parser
 	private $_mb_list_encodings = array();
 
 	/**
-	* Based on horde-3.3.13 function _mbstringCharset
-	*
 	* Workaround charsets that don't work with mbstring functions.
 	*
 	* The keys in this array should be lowercase
@@ -55,21 +45,32 @@ class ERP_Mail_Parser
 	* Use UHC (CP949) encoding instead. See, e.g.,
 	* http://lists.w3.org/Archives/Public/ietf-charsets/2001AprJun/0030.html */
 	private $_mbstring_unsupportedcharsets = array(
-			'ks_c_5601-1987' => 'UHC',
-			'ks_c_5601-1989' => 'UHC',
-			'us-ascii' => 'ASCII',
-			'big5' => 'BIG-5',
-			'windows-1257' => 'ISO-8859-13', // not perfect but should do the job
-			'windows-1250' => 'ISO-8859-2',
+    	// Korean KSC aliases
+		'ks_c_5601-1987' => 'UHC', // Proper mapping for the way Legacy Outlook uses it 
+		'ks_c_5601-1989' => 'EUC-KR',
+
+		// us-ascii missing from older PHP versions 
+		'us-ascii'       => 'ASCII',
+
+		// Chinese
+		'big5'           => 'BIG-5',
 	);
 
 	public function __construct( $options, $mailbox_starttime = NULL )
 	{
-		$this->_parse_html = $options[ 'parse_html' ];
-		$this->_process_markdown = $options[ 'process_markdown' ];
-		$this->_add_attachments = $options[ 'add_attachments' ];
-		$this->_debug = $options[ 'debug' ];
-		$this->_show_mem_usage = $options[ 'show_mem_usage' ];
+		foreach ( $options AS $name => $value )
+		{
+			$t_option_name = '_' . $name;
+			if ( isset( $this->$t_option_name ) )
+			{
+				$this->$t_option_name = $value;
+			}
+			else
+			{
+				echo 'Unknown option received: ' . $t_option_name;
+			}
+		}
+
 		$this->_mailbox_starttime = $mailbox_starttime;
 
 		$this->prepare_mb_list_encodings();
@@ -80,6 +81,11 @@ class ERP_Mail_Parser
 		}
 	}
 
+	/**
+	* Prepare mbstring encodings supported charsets table
+	*
+	* @access private
+	**/
 	private function prepare_mb_list_encodings()
 	{
 		if ( extension_loaded( 'mbstring' ) )
@@ -109,6 +115,8 @@ class ERP_Mail_Parser
 			}
 
 			$this->_mb_list_encodings = $r_charset_list + $this->_mbstring_unsupportedcharsets;
+			$this->_fallback_charset = strtolower( trim( $this->_fallback_charset ) );
+			$this->_def_charset = strtolower( trim( $this->_def_charset ) );
 		}
 	}
 
@@ -124,24 +132,45 @@ class ERP_Mail_Parser
 		$this->_content = file_get_contents( $this->_file );
 	}
 
+	/**
+	* Convert body encoding as necessary.
+	*
+	* First try this using mbstring. If that fails attempt iconv.
+	*
+	* @access private
+	**/
 	private function process_body_encoding( $encode, $charset )
 	{
 		if ( extension_loaded( 'mbstring' ) )
 		{
-			if ( $charset === NULL || $charset === 'auto' || !isset( $this->_mb_list_encodings[ strtolower( $charset ) ] ) )
+			if ( empty( $charset ) || $charset === 'auto' )
 			{
 				$charset = mb_detect_encoding( $encode, $this->_def_charset );
 			}
 
 			if ( $charset === FALSE )
 			{
+				echo "\n" . 'Message: Charset not detected: ' . "\n";
 				$charset = $this->_fallback_charset;
-				echo "\n" . 'Message: Charset detection failed on: ' . $encode . "\n";
 			}
+
+			$charset = strtolower( trim( $charset ) );
 
 			if ( $this->_encoding !== $charset )
 			{
-				$t_encode = mb_convert_encoding( $encode, $this->_encoding, $this->_mb_list_encodings[ strtolower( $charset ) ] );
+				if ( isset( $this->_mb_list_encodings[ $charset ] ) )
+				{
+					$t_encode = mb_convert_encoding( $encode, $this->_encoding, $this->_mb_list_encodings[ $charset ] );
+				}
+				elseif ( extension_loaded( 'iconv' ) )
+				{
+					$t_encode = @iconv( $charset, $this->_encoding . '//TRANSLIT', $encode );
+				}
+				else
+				{
+					echo "\n" . 'Message: Charset not supported: ' . $charset . "\n";
+					$t_encode = FALSE;
+				}
 
 				if ( $t_encode !== FALSE )
 				{
@@ -149,16 +178,27 @@ class ERP_Mail_Parser
 				}
 			}
 
-			// Replace non-breakable space with normal space
-			$encode = str_replace( "\xC2\xA0" , ' ', $encode );
-			// Remove any invisible unicode control format characters
-			// https://www.fileformat.info/info/unicode/category/Cf/index.htm
-			$encode = preg_replace( '/\p{Cf}+/u', '', $encode );
+			# Should only do this when charset is UTF-8
+			if ( $this->_encoding === $charset || $t_encode !== FALSE )
+			{
+				// Replace non-breakable space with normal space
+				$encode = str_replace( "\xC2\xA0" , ' ', $encode );
+				// Remove any invisible unicode control format characters
+				// https://www.fileformat.info/info/unicode/category/Cf/index.htm
+				$encode = preg_replace( '/\p{Cf}+/u', '', $encode );
+			}
 		}
 
 		return( $encode );
 	}
 
+	/**
+	* Convert header encoding as necessary
+	*
+	* First try this using mbstring. If that fails attempt iconv.
+	*
+	* @access private
+	**/
 	private function process_header_encoding( $encode )
 	{
 		$use_fallback = FALSE;
@@ -174,28 +214,39 @@ class ERP_Mail_Parser
 				$encoding = $matches[3];
 				$text     = $matches[4];
 
-				// Process unsupported fallback charsets
-				if ( isset( $this->_mb_list_encodings[ strtolower( $charset ) ] ) && isset( $this->_mbstring_unsupportedcharsets[ strtolower( $charset ) ] ) && $this->_mb_list_encodings[ strtolower( $charset ) ] === $this->_mbstring_unsupportedcharsets[ strtolower( $charset ) ] )
+				if ( isset( $this->_mb_list_encodings[ strtolower( trim( $charset ) ) ] ) )
 				{
-					$charset = $this->_mb_list_encodings[ strtolower( $charset ) ];
-				}
+					$charset = strtolower( trim( $charset ) );
+					$charset = $this->_mb_list_encodings[ $charset ];
 
-				// Process unsupported charsets
-				if ( !isset( $this->_mb_list_encodings[ strtolower( $charset ) ] ) )
+					// mb_decode_mimeheader leaves underscores where there should be spaces incase of quoted-printable mimeheaders. Applying workaround.
+					if ( strtolower( $encoding ) === 'q' )
+					{
+						$text = str_replace( '_', ' ', $text );
+					}
+
+					$encode_part = mb_decode_mimeheader( '=?' . $charset . '?' . $encoding . '?' . $text . '?=' );
+				}
+				elseif ( extension_loaded( 'iconv' ) )
+				{
+					$encode_part = @iconv_mime_decode( '=?' . $charset . '?' . $encoding . '?' . $text . '?=', 0, $this->_encoding );
+				}
+				else
 				{
 					echo "\n" . 'Message: Charset not supported: ' . $charset . "\n";
-					$charset = $this->_fallback_charset;
+					$use_fallback = TRUE;
+					break;
 				}
 
-				// mb_decode_mimeheader leaves underscores where there should be spaces incase of quoted-printable mimeheaders. Applying workaround.
-				if ( strtolower( $encoding ) === 'q' )
+				if ( $encode_part !== FALSE )
 				{
-					$text = str_replace( '_', ' ', $text );
+					$t_encode = str_replace( $encoded, $encode_part, $t_encode );
 				}
-
-				$encode_part = mb_decode_mimeheader( '=?' . $charset . '?' . $encoding . '?' . $text . '?=' );
-
-				$t_encode = str_replace( $encoded, $encode_part, $t_encode );
+				else
+				{
+					$use_fallback = TRUE;
+					break;
+				}
 			}
 
 			// If any encoded-words are left then mb_decode_mimeheader did not work as intended. Performing fallback
@@ -365,7 +416,7 @@ class ERP_Mail_Parser
 
 		if ( isset( $structure->body ) )
 		{
-			$t_body_charset = NULL;
+			$t_body_charset = '';
 			if ( isset( $structure->ctype_parameters[ 'charset' ] ) )
 			{
 				$t_body_charset = $structure->ctype_parameters[ 'charset' ];
@@ -397,11 +448,11 @@ class ERP_Mail_Parser
 		 * - https://www.arp242.net/autoreply.html
 		*/
 		if (
-			isset( $structure->headers[ 'x-autoreply' ] )
-			|| isset( $structure->headers[ 'x-autorespond' ] )
-			|| isset( $structure->headers[ 'x-ag-autoreply' ] )
-			|| ( isset( $structure->headers[ 'auto-submitted' ] ) && $structure->headers[ 'auto-submitted' ] !== 'no' )
-			|| ( isset( $structure->headers[ 'precedence' ] ) && $structure->headers[ 'precedence' ] === 'auto_reply' )
+			isset( $structure->headers[ 'x-autoreply' ] ) ||
+			isset( $structure->headers[ 'x-autorespond' ] ) ||
+			isset( $structure->headers[ 'x-ag-autoreply' ] ) ||
+			( isset( $structure->headers[ 'auto-submitted' ] ) && $structure->headers[ 'auto-submitted' ] !== 'no' ) ||
+			( isset( $structure->headers[ 'precedence' ] ) && $structure->headers[ 'precedence' ] === 'auto_reply' )
 		)
 		{
 			$this->setAutoReply( TRUE );
@@ -469,9 +520,14 @@ class ERP_Mail_Parser
 
 	private function setBody( $body, $ctype_primary, $ctype_secondary, $charset )
 	{
-		if ( is_blank( $body ) || !is_blank( $this->_body ) )
+		if ( is_blank( $body ) )
 		{
-			return;
+			return( NULL );
+		}
+
+		if ( !is_blank( $this->_body ) )
+		{
+			return( FALSE );
 		}
 
 		$this->setContentType( $ctype_primary, $ctype_secondary );
@@ -504,7 +560,8 @@ class ERP_Mail_Parser
 			}
 			else
 			{
-				$htmlToText = str_get_html( $body, true, true, $this->_encoding, false ); 
+				$htmlToText = new PHPCore\SimpleHtmlDom\HtmlDocument( null, true, true, $this->_encoding, false );
+				$htmlToText->load( $body, true, false );
 
 				// extract text from HTML
 				$this->_body = $htmlToText->plaintext;
@@ -536,26 +593,33 @@ class ERP_Mail_Parser
 			$p_attached_email_subject = $parts[ $i ]->headers[ 'subject' ];
 		}
 
-		if ( 'text' === strtolower( $parts[ $i ]->ctype_primary ) && in_array( strtolower( $parts[ $i ]->ctype_secondary ), array( 'plain', 'html' ), TRUE ) )
+		$parts[ $i ]->ctype_primary = strtolower( $parts[ $i ]->ctype_primary );
+		$parts[ $i ]->ctype_secondary = strtolower( $parts[ $i ]->ctype_secondary );
+		if ( 'text' === $parts[ $i ]->ctype_primary && in_array( $parts[ $i ]->ctype_secondary, array( 'plain', 'html' ), TRUE ) )
 		{
 			$t_stop_part = FALSE;
 
 			// We prefer the plaintext body if markdown is disabled. We prefer the html body if markdown is enabled
 			// It must only have 2 parts. Most likely one is text/html and one is text/plain
-			if (
-				count( $parts ) === 2 && !isset( $parts[ $i ]->parts ) && !isset( $parts[ $i+1 ]->parts ) &&
-				'text' === strtolower( $parts[ $i+1 ]->ctype_primary ) &&
-				in_array( strtolower( $parts[ $i+1 ]->ctype_secondary ), array( 'plain', 'html' ), TRUE ) &&
-				strtolower( $parts[ $i ]->ctype_secondary ) !== strtolower( $parts[ $i+1 ]->ctype_secondary )
-			)
+			if ( count( $parts ) === 2 )
 			{
-				if ( ( strtolower( $parts[ $i ]->ctype_secondary ) === 'plain' && $this->_parse_html && $this->_process_markdown ) ||
-					( strtolower( $parts[ $i ]->ctype_secondary ) === 'html' && !$this->_process_markdown ) )
+				$parts[ $i + 1 ]->ctype_primary = strtolower( $parts[ $i + 1 ]->ctype_primary );
+				$parts[ $i + 1 ]->ctype_secondary = strtolower( $parts[ $i + 1 ]->ctype_secondary );
+				if (
+					!isset( $parts[ $i ]->parts ) && !isset( $parts[ $i + 1 ]->parts ) &&
+					'text' === $parts[ $i + 1 ]->ctype_primary &&
+					in_array( $parts[ $i + 1 ]->ctype_secondary, array( 'plain', 'html' ), TRUE ) &&
+					$parts[ $i ]->ctype_secondary !== $parts[ $i + 1 ]->ctype_secondary
+				)
 				{
-					$i++;
-				}
+					if ( ( $parts[ $i ]->ctype_secondary === 'plain' && $this->_parse_html && $this->_process_markdown ) ||
+						( $parts[ $i ]->ctype_secondary === 'html' && !$this->_process_markdown ) )
+					{
+						$i++;
+					}
 
-				$t_stop_part = TRUE;
+					$t_stop_part = TRUE;
+				}
 			}
 
 			if ( $attachment === TRUE )
@@ -564,7 +628,7 @@ class ERP_Mail_Parser
 			}
 			else
 			{
-				$t_body_charset = NULL;
+				$t_body_charset = '';
 				if ( isset( $parts[ $i ]->ctype_parameters[ 'charset' ] ) )
 				{
 					$t_body_charset = $parts[ $i ]->ctype_parameters[ 'charset' ];
@@ -601,10 +665,52 @@ class ERP_Mail_Parser
 			{
 				$this->setParts( $parts[ $i ]->parts, TRUE );
 			}
+			elseif ( 'application' == strtolower( $parts[ $i ]->ctype_primary ) && ( 'ms-tnef' == strtolower( $parts[ $i ]->ctype_secondary ) || 'vnd.ms-tnef' == strtolower( $parts[ $i ]->ctype_secondary ) ) )
+			{
+				$this->ParseTNEF( $parts[ $i ] );
+			}
 			else
 			{
 				$this->addPart( $parts[ $i ] );
 			}
+		}
+	}
+
+	// @TODO doesn't yet deal with TNEF decode errors
+	private function ParseTNEF( &$TNEFpart )
+	{
+		if ( $this->_parse_tnef )
+		{
+			$TNEFattachment = new TNEFDecoder\TNEFAttachment();
+			try
+			{
+				$TNEFattachment->decodeTnef( $TNEFpart->body );
+				$TNEFfiles = $TNEFattachment->getFiles();
+			}
+			catch (Throwable $e)
+			{
+				$TNEFfiles = array();
+				$this->addPart( $TNEFpart, 'winmail CORRUPT.dat' );
+			}
+			unset( $TNEFattachment );
+
+			while ( $TNEFfile = array_shift( $TNEFfiles ) )
+			{
+				list( $ctype_primary, $ctype_secondary ) = array_pad( explode( '/', $TNEFfile->type, 2 ), 2, '' );
+
+				$part = new stdClass();
+
+				$part->ctype_primary    = $ctype_primary;
+				$part->ctype_secondary  = $ctype_secondary;
+				$part->ctype_parameters = array( 'name' => $TNEFfile->name );
+				$part->body             = $TNEFfile->content;
+
+				$this->addPart( $part );
+			}
+		}
+		else
+		{
+			$this->addPart( $TNEFpart );
 		}
 	}
 
@@ -635,6 +741,17 @@ class ERP_Mail_Parser
 			if ( extension_loaded( 'mbstring' ) && !empty( $p[ 'name' ] ) )
 			{
 				$p[ 'name' ] = $this->process_header_encoding( $p[ 'name' ] );
+			}
+
+			if ( $this->_parse_tnef && strtolower( $p[ 'name' ] ) === 'winmail.dat' )
+			{
+				if ( $p_alternative_name === NULL )
+				{
+					$this->ParseTNEF( $p[ 'body' ] );
+					return;
+				}
+
+				$p[ 'name' ] = $p_alternative_name;
 			}
 
 			$this->_parts[] = $p;

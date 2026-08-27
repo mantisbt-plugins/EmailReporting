@@ -1,5 +1,18 @@
 Changelog:
-??? - EmailReporting-0.11.0
+Aug 2026 - EmailReporting-0.12.0
+	- Drop support for MantisBT 1.3.x
+	- PHP requirement change: minimum PHP required 8.1
+	- Updated PEAR packages: PEAR, Auth_SASL
+	- Add Powershell script for Microsoft Entra App creation
+	- Improve charset conversion. Iconv is used as fallback
+	- Changed simple_html_dom to php-core/simplehtmldom (Composer)
+	- Composer migration: PEAR, Auth_SASL, Net_IMAP, Net_POP3, Net_Socket, Net_mimeDecode, Markdownify (ERP version), EmailReplyParser
+	- TNEF decoder (winmail.dat) support using QualityUnit/TNEFDecoder
+	- Support for OAuth authentication with Microsoft and Google
+	- Removed safe_mode check (deprecated)
+	- Changed set_time_limit from infinite to 5 minutes per mailbox
+
+Aug 2026 - EmailReporting-0.11.0
 	- PHP 8.x.x base64_decode deprecation fix
 	- PHP 8.1.x deprecation fixes
 	- PHP 8.3.x support added

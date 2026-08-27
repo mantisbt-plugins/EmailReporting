@@ -12,6 +12,10 @@ $s_plugin_EmailReporting_jobsetup = 'Um Emails aus den eingerichteten Mailboxen 
 $s_plugin_EmailReporting_job_users = '<span class="negative">Warning</span>: Es scheint so, als laufe der zeitgesteuerte Job mit einem anderen Benutzerkonto, als der Webserver / PHP-Prozess. Dies könnte Probleme mit Emailanhängen verursachen<br />Der SAPI für den zeitgesteuerten Job ist meistens „cli“.<br />Der Webserver läuft zurzeit unter folgendem Benutzerkonto: ';
 
 $s_plugin_EmailReporting_mailbox_settings = 'Mailkontoeinstellungen';
+$s_plugin_EmailReporting_mailbox_settings_logininfo = 'Informationen zum Postfach-Login';
+$s_plugin_EmailReporting_mailbox_settings_oauth = 'Mailbox-OAuth-Einstellungen';
+$s_plugin_EmailReporting_mailbox_settings_oauth_microsoft = 'Microsoft OAuth-Einstellungen für das Postfach';
+$s_plugin_EmailReporting_mailbox_settings_oauth_google = 'Google OAuth-Einstellungen für das Postfach';
 $s_plugin_EmailReporting_mailbox_settings_imap = 'IMAP Kontoeinstellungen';
 $s_plugin_EmailReporting_mailbox_settings_issue = 'Ticketeinstellungen für Mailkonten';
 $s_plugin_EmailReporting_problems = 'Um eine Konfigurationsoption auf ihren Standardwert zurückzusetzen, lösche einfach die Konfigurationsoption vom <a href="adm_config_report.php">“Konfigurationsreport</a>".';
@@ -30,19 +34,23 @@ $s_plugin_EmailReporting_remove_reply_options = 'Entferne Konfigurationsoptionen
 $s_plugin_EmailReporting_reporter_options = 'Konfigurationsoptionen für Ticketreporter';
 $s_plugin_EmailReporting_runtime_options = 'Konfigurationsoptionen für Laufzeit';
 $s_plugin_EmailReporting_security_options = 'Konfigurationsoptionen für Sicherheit';
-$s_plugin_EmailReporting_strip_signature_feature_options = 'Konfigurationsoptionen zur Entfernung von Signaturen (experimentell)';
+$s_plugin_EmailReporting_strip_signature_feature_options = 'Konfigurationsoptionen zur Entfernung von Signaturen';
 
 $s_plugin_EmailReporting_copy_of = 'Kopie von';
-$s_plugin_EmailReporting_directory_exists = 'Order gefunden';
-$s_plugin_EmailReporting_directory_unavailable = 'Achtung: Order nicht gefunden';
-$s_plugin_EmailReporting_directory_writable = 'Order schreibbar';
-$s_plugin_EmailReporting_directory_unwritable = 'Achtung: Order nicht schreibbar';
+$s_plugin_EmailReporting_directory_exists = 'Ordner gefunden';
+$s_plugin_EmailReporting_directory_unavailable = 'Achtung: Ordner nicht gefunden';
+$s_plugin_EmailReporting_directory_access = 'Ordner schreibbar';
+$s_plugin_EmailReporting_directory_notaccess = 'Achtung: Ordner nicht schreibbar';
+$s_plugin_EmailReporting_file_exists = 'Datei gefunden';
+$s_plugin_EmailReporting_file_unavailable = 'Warnung: Datei nicht gefunden';
+$s_plugin_EmailReporting_file_access = 'Datei lesbar';
+$s_plugin_EmailReporting_file_notaccess = 'Warnung: Datei nicht lesbar';
 
 $s_plugin_EmailReporting_mail_add_bug_reports = 'Erstelle ein neues Ticket';
 $s_plugin_EmailReporting_mail_add_bugnotes = 'Notiz hinzufügen';
 $s_plugin_EmailReporting_mail_reopen_bugs = 'Beim Hinzufügen von Notizen gelöste Tickets wieder öffnen';
 $s_plugin_EmailReporting_mail_add_complete_email = 'Komplette Email als Anhang dem Ticket hinzufügen';
-$s_plugin_EmailReporting_mail_add_complete_email_ext = 'Extension used for the complete email attachment'; //TODO Needs translation
+$s_plugin_EmailReporting_mail_add_complete_email_ext = 'Die Dateierweiterung für den vollständigen E-Mail-Anhang wird verwendet';
 $s_plugin_EmailReporting_mail_add_users_from_cc_to = 'Füge Benutzer aus den To- und Cc-Feldern als Beobachter hinzu';
 $s_plugin_EmailReporting_mail_auto_signup = 'Neue Benutzer automatisch registrieren (mögliches Sicherheitsrisiko! Dokumentation konsultieren!';
 $s_plugin_EmailReporting_mail_block_attachments_md5 = 'Anhänge blockieren die folgenden MD5 Hashes entsprechen';
@@ -63,6 +71,7 @@ $s_plugin_EmailReporting_mail_max_email_body_add_attach = 'Die komplette Beschre
 $s_plugin_EmailReporting_mail_nodescription = 'Der Mailbody beeinhaltet keinen Text.';
 $s_plugin_EmailReporting_mail_nosubject = 'Der Mailbetreff beeinhaltete keinen Text.';
 $s_plugin_EmailReporting_mail_parse_html = 'Analysiere HTML Mails';
+$s_plugin_EmailReporting_mail_parse_tnef = 'winmail.dat-Dateien analysieren';
 $s_plugin_EmailReporting_mail_preferred_username = 'Bevorzugter Benutzername bei der Erstellung neuer Benutzer';
 $s_plugin_EmailReporting_mail_preferred_realname = 'Bevorzugter Klarname bei der Erstellung neuer Benutzer';
 $s_plugin_EmailReporting_mail_remove_mantis_email = 'Entferne MantisBT Benachrichtigungen von Antworten';
@@ -81,12 +90,12 @@ $s_plugin_EmailReporting_mail_use_bug_priority = 'Suche nach der Priorität im H
 $s_plugin_EmailReporting_mail_use_message_id = 'Benutze die Message-ID im Header um Notizen zu identifizieren';
 $s_plugin_EmailReporting_mail_use_reporter = 'Benutze nur den Standard Reporter zur Erstellung von Tickets';
 
+$s_plugin_EmailReporting_Google = 'Google Workspace';
+$s_plugin_EmailReporting_Microsoft = 'Microsoft 365';
+
 $s_plugin_EmailReporting_strict = 'Strikt';
 $s_plugin_EmailReporting_balanced = 'Ausgewogen';
 $s_plugin_EmailReporting_relaxed = 'Locker';
-
-$s_plugin_EmailReporting_emailreporting = 'EmailReporting';
-$s_plugin_EmailReporting_mantisbt = 'MantisBT';
 
 $s_plugin_EmailReporting_newnote = 'Neue Notiz';
 $s_plugin_EmailReporting_newissue = 'Neues Ticket';
@@ -119,6 +128,15 @@ $s_plugin_EmailReporting_ssl_cert_verify = 'Verifizierung des SSL Zertifikats';
 $s_plugin_EmailReporting_erp_username = 'Benutzername';
 $s_plugin_EmailReporting_erp_password = 'Passwort';
 $s_plugin_EmailReporting_auth_method = 'Authentifikationsmethode';
+$s_plugin_EmailReporting_oauth_provider = 'OAuth-Anbieter';
+$s_plugin_EmailReporting_m_mailbox = 'Postfach-E-Mail-Adresse';
+$s_plugin_EmailReporting_m_tenantId = 'Mieter-ID';
+$s_plugin_EmailReporting_m_clientId = 'Client-ID';
+$s_plugin_EmailReporting_m_clientSecret = 'Clientgeheimnis';
+$s_plugin_EmailReporting_m_pfxPath = 'Pfad zur PFX-Datei';
+$s_plugin_EmailReporting_m_pfxPassword = 'PFX-Dateipasswort';
+$s_plugin_EmailReporting_g_mailbox = $s_plugin_EmailReporting_m_mailbox;
+$s_plugin_EmailReporting_g_serviceAccountCredentials = 'Servicekonto-Anmeldeinformationen (JSON-Datei)';
 $s_plugin_EmailReporting_imap_basefolder = 'Grundordner (optional)';
 $s_plugin_EmailReporting_imap_createfolderstructure = 'Erstelle die Projekt Ordnerstruktur';
 $s_plugin_EmailReporting_project_id = 'Projekt selektieren';
@@ -137,13 +155,13 @@ $s_plugin_EmailReporting_unknown_setting = 'Unbekannte Einstellung erkannt. Eins
 $s_plugin_EmailReporting_zero_records = 'Keine Einträge verfügbar';
 $s_plugin_EmailReporting_function_not_found = 'Funktion nicht gefunden';
 $s_plugin_EmailReporting_input_name_not_allowed = 'Der ausgewählte Variablename ist nicht gestattet, da in bestimmten Situationen Konflikte auftreten können';
-$s_plugin_EmailReporting_pear_load_error = 'pear.php konnte nicht geladen werden. Möglicherweise verhindern PHP Sicherheitseinstellungen (open_basedir), dass auf das PEAR Verzeichnis nicht zugegriffen werden kann.';
 $s_plugin_EmailReporting_complete_test_action_note = '<span class="negative">Warning</span>: Diese Option wird eine Mailbox komplett testen.
 
 Es gibt immernoch kleine Unterschiede zum zeitgesteuerten Job (bug_report_mail.php). Beispielsweise könnte das Benutzerkonto, unter der Job läuft, ein Anderes sein.
 
 Benutze diese Funktion mit Bedacht';
 $s_plugin_EmailReporting_apisoap_error = 'Die Datei "api/soap/mc_file_api.php" ist nicht vorhanden. EmailReporting benötigt diese Datei zum Betrieb.';
+$s_plugin_EmailReporting_sensitive_data_storage = '<span class="negative">Warning</span>: Bitte speichern Sie das M365 PFX-Zertifikat oder die Anmeldeinformationen für das Google-Dienstkonto (JSON-Datei) aus Sicherheitsgründen außerhalb des Dokumentenstamms des Webservers.';
 
 $s_plugin_EmailReporting_rules = 'Regeln';
 $s_plugin_EmailReporting_select_rule = 'Regel selektieren';
@@ -170,9 +188,9 @@ $s_plugin_EmailReporting_cond_issue_priority = 'Priorität';
 $s_plugin_EmailReporting_cond_issue_summary = 'Zusammenfassung';
 $s_plugin_EmailReporting_cond_issue_description = 'Beschreibung';
 
-$s_plugin_EmailReporting_act_issue_severity = 'Update severity'; /* @TODO Needs translation */
-$s_plugin_EmailReporting_act_issue_status = 'Update status'; /* @TODO Needs translation */
-$s_plugin_EmailReporting_act_issue_category = 'Kategorie aktualsieren';
+$s_plugin_EmailReporting_act_issue_severity = 'Aktualisierungsschweregrad';
+$s_plugin_EmailReporting_act_issue_status = 'Status aktualisieren';
+$s_plugin_EmailReporting_act_issue_category = 'Kategorie aktualisieren';
 $s_plugin_EmailReporting_act_issue_tag = 'Tag hinzufügen';
 $s_plugin_EmailReporting_act_issue_custom_field = 'Benutzerdefiniertes Feld aktualisieren';
 

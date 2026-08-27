@@ -12,30 +12,78 @@ $t_mailboxes = plugin_config_get( 'mailboxes' );
 if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailbox_action === 'edit' || $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test' ) && $f_select_mailbox >= 0 ) )
 {
 	$t_mailbox = array(
-		'enabled'				=> gpc_get_int( 'enabled', ON ),
-		'description'			=> gpc_get_string( 'description', '' ),
-		'mailbox_type'			=> gpc_get_string( 'mailbox_type' ),
-		'hostname'				=> gpc_get_string( 'hostname', '' ),
-		'port'					=> gpc_get_string( 'port', '' ),
-		'encryption'			=> gpc_get_string( 'encryption' ),
-		'ssl_cert_verify'		=> gpc_get_int( 'ssl_cert_verify', ON ),
-		'erp_username'			=> gpc_get_string( 'erp_username', '' ),
-		'erp_password'			=> base64_encode( gpc_get_string( 'erp_password', '' ) ),
-		'auth_method'			=> gpc_get_string( 'auth_method' ),
-		'project_id'			=> gpc_get_int( 'project_id' ),
-		'global_category_id'	=> gpc_get_int( 'global_category_id' ),
-//		'link_rules'			=> gpc_get_int_array( 'link_rules', array() ),
+		'enabled'                => gpc_get_int( 'enabled', ON ),
+		'description'            => gpc_get_string( 'description', '' ),
+		'mailbox_type'           => gpc_get_string( 'mailbox_type' ),
+		'hostname'               => gpc_get_string( 'hostname', '' ),
+		'port'                   => gpc_get_string( 'port', '' ),
+		'encryption'             => gpc_get_string( 'encryption' ),
+		'ssl_cert_verify'        => gpc_get_int( 'ssl_cert_verify', ON ),
+		'auth_method'            => gpc_get_string( 'auth_method' ),
 	);
 
-	if ( $t_mailbox[ 'mailbox_type' ] === 'IMAP' )
+	$t_isOAuth = $t_mailbox[ 'auth_method' ] === 'XOAUTH2';
+	if ( !$t_isOAuth )
 	{
-		$t_mailbox_imap = array(
-			'imap_basefolder'				=> ERP_prepare_directory_string( gpc_get_string( 'imap_basefolder', '' ), TRUE ),
-			'imap_createfolderstructure'	=> gpc_get_int( 'imap_createfolderstructure' ),
+		$t_mailbox += array(
+			'erp_username'           => gpc_get_string( 'erp_username' ),
+			'erp_password'           => base64_encode( gpc_get_string( 'erp_password' ) ),
 		);
-
-		$t_mailbox += $t_mailbox_imap;
 	}
+
+	if ( $t_isOAuth )
+	{
+		$t_mailbox[ 'oauth_provider' ] = gpc_get_string( 'oauth_provider' );
+		$t_isGoogle = $t_mailbox[ 'oauth_provider' ] === ERP_PROVIDER_GOOGLE;
+		$t_isMicrosoft = $t_mailbox[ 'oauth_provider' ] === ERP_PROVIDER_MICROSOFT;
+		if ( $t_isGoogle )
+		{
+			if ( empty( $t_mailbox[ 'hostname' ] ) )
+			{
+				$t_mailbox[ 'hostname' ] = ( ( $t_mailbox[ 'mailbox_type' ] === 'IMAP' ) ? 'imap.gmail.com' : 'pop.gmail.com' );
+				$t_mailbox[ 'port' ] = '';
+				$t_mailbox[ 'encryption' ] = 'SSL';
+			}
+
+			$t_mailbox += array(
+				'g_mailbox'                   => gpc_get_string( 'g_mailbox' ),
+				'g_serviceAccountCredentials' => ERP_prepare_directory_string( gpc_get_string( 'g_serviceAccountCredentials' ) ),
+			);
+		}
+		elseif ( $t_isMicrosoft )
+		{
+			if ( empty( $t_mailbox[ 'hostname' ] ) )
+			{
+				$t_mailbox[ 'hostname' ] = 'outlook.office365.com';
+				$t_mailbox[ 'port' ] = '';
+				$t_mailbox[ 'encryption' ] = 'SSL';
+			}
+
+			$t_mailbox += array(
+				'm_mailbox'           => gpc_get_string( 'm_mailbox' ),
+				'm_tenantId'          => gpc_get_string( 'm_tenantId' ),
+				'm_clientId'          => gpc_get_string( 'm_clientId' ),
+				'm_clientSecret'      => base64_encode( gpc_get_string( 'm_clientSecret', '' ) ),
+				'm_pfxPath'           => ERP_prepare_directory_string( gpc_get_string( 'm_pfxPath', '' ) ),
+				'm_pfxPassword'       => base64_encode( gpc_get_string( 'm_pfxPassword', '' ) ),
+			);
+		}
+	}
+
+	$t_isImap = $t_mailbox[ 'mailbox_type' ] === 'IMAP';
+	if ( $t_isImap )
+	{
+		$t_mailbox += array(
+			'imap_basefolder'               => ERP_prepare_directory_string( gpc_get_string( 'imap_basefolder', '' ), TRUE ),
+			'imap_createfolderstructure'    => gpc_get_int( 'imap_createfolderstructure' ),
+		);
+	}
+
+	$t_mailbox += array(
+		'project_id'             => gpc_get_int( 'project_id' ),
+		'global_category_id'     => gpc_get_int( 'global_category_id' ),
+//		'link_rules'             => gpc_get_int_array( 'link_rules', array() ),
+	);
 
 	$t_plugin_content = gpc_get_string_array( 'plugin_content', array() );
 
@@ -72,30 +120,37 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 	echo '</pre>';
 
 	$t_is_custom_error = ( ( is_array( $t_result ) && isset( $t_result[ 'ERROR_TYPE' ] ) && $t_result[ 'ERROR_TYPE' ] === 'NON-PEAR-ERROR' ) || ( is_bool( $t_result ) && $t_result === FALSE ) );
+	$t_is_pear_error = ( isset( $t_result[ 'pear' ] ) && PEAR::isError( $t_result[ 'pear' ] ) );
 ?>
 <br /><div class="center">
 <?php
-	$t_message = NULL;
-	$t_message .= plugin_lang_get( ( ( $t_is_custom_error || PEAR::isError( $t_result ) ) ? 'test_failure' : 'test_success' ) ) . '<br /><br />';
+	$t_message = '';
+	$t_message .= plugin_lang_get( ( ( $t_is_custom_error || $t_is_pear_error ) ? 'test_failure' : 'test_success' ) ) . '<br /><br />';
 
-	$t_message .= plugin_lang_get( 'description' ) . ': ' . $t_mailbox_api->_mailbox[ 'description' ] . '<br />';
-	$t_message .= plugin_lang_get( 'mailbox_type' ) . ': ' . $t_mailbox_api->_mailbox[ 'mailbox_type' ] . '<br />';
-	$t_message .= plugin_lang_get( 'hostname' ) . ': ' . $t_mailbox_api->_mailbox[ 'hostname' ] . '<br />';
-	$t_message .= plugin_lang_get( 'port' ) . ': ' . $t_mailbox_api->_mailbox[ 'port' ] . '<br />';
-	$t_message .= plugin_lang_get( 'encryption' ) . ': ' . $t_mailbox_api->_mailbox[ 'encryption' ] . '<br />';
-	$t_message .= plugin_lang_get( 'ssl_cert_verify' ) . ': ' . $t_mailbox_api->_mailbox[ 'ssl_cert_verify' ] . '<br />';
-	$t_message .= plugin_lang_get( 'erp_username' ) . ': ' . $t_mailbox_api->_mailbox[ 'erp_username' ] . '<br />';
-	$t_message .= plugin_lang_get( 'erp_password' ) . ': ******' . '<br />';
-	$t_message .= plugin_lang_get( 'auth_method' ) . ': ' . $t_mailbox_api->_mailbox[ 'auth_method' ] . '<br />';
-
-	if ( $t_mailbox_api->_mailbox[ 'mailbox_type' ] === 'IMAP' )
+	$t_mailbox = $t_mailbox_api->_mailbox;
+	foreach ( $t_mailbox AS $t_key => $t_value )
 	{
-		$t_message .= plugin_lang_get( 'imap_basefolder' ) . ': ' . $t_mailbox_api->_mailbox[ 'imap_basefolder' ] . '<br />';
+		If ( is_array( $t_value ) )
+		{
+			$t_value = implode( ' - ', $t_value );
+		}
+		if ( $t_key === 'enabled' || $t_key === 'ssl_cert_verify' || $t_key === 'imap_createfolderstructure' )
+		{
+			$t_value = ( ( $t_value ) ? lang_get( 'yes' ) : lang_get( 'no' ) );
+		}
+		if ( $t_key === 'erp_password' || $t_key === 'm_clientSecret' || $t_key === 'm_pfxPassword' )
+		{
+			$t_value = '******';
+		}
+		if ( $t_key !== 'project_id' && $t_key !== 'global_category_id' && $t_key !== 'link_rules' )
+		{
+			$t_message .= plugin_lang_get( $t_key ) . ': ' . $t_value . '<br />';
+		}
 	}
 
-	$t_message .= '<br />' . ( ( $t_is_custom_error ) ? nl2br( $t_result[ 'ERROR_MESSAGE' ] ) : ( ( PEAR::isError( $t_result ) ) ? 'Location: ' . $t_result->ERP_location . '<br />' . $t_result->toString() : NULL ) );
+	$t_message .= '<br />' . ( ( $t_is_custom_error ) ? nl2br( $t_result[ 'ERROR_MESSAGE' ] ) : ( ( $t_is_pear_error ) ? 'Location: ' . $t_result[ 'ERP_location' ] . '<br />' . $t_result[ 'pear' ]->toString() : NULL ) );
 
-	if ( ( $t_is_custom_error || PEAR::isError( $t_result ) ) )
+	if ( ( $t_is_custom_error || $t_is_pear_error ) )
 	{
 		html_operation_failure( plugin_page( 'manage_mailbox', TRUE ), $t_message );
 	}

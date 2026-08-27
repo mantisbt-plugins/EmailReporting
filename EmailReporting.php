@@ -11,9 +11,9 @@ class EmailReportingPlugin extends MantisPlugin
 		$this->description = plugin_lang_get( 'plugin_description' );
 		$this->page = 'manage_config';
 
-		$this->version = '0.11.0-DEV';
+		$this->version = '0.12.0';
 		$this->requires = array(
-			'MantisCore' => '1.3.0, <2.99.99',
+			'MantisCore' => '2.0.0',
 		);
 
 		$this->author = plugin_lang_get( 'plugin_author' );
@@ -27,174 +27,177 @@ class EmailReportingPlugin extends MantisPlugin
 	function config()
 	{
 		return array(
-			'reset_schema'					=> 0,
-			'config_version'				=> 0,
-			'schema'						=> -1,
-			'mantisbt_version'				=> (int) trim( MANTIS_VERSION )[ 0 ],
-			'job_users'						=> array(),
+			'reset_schema'                    => 0,
+			'config_version'                  => 0,
+			'schema'                          => -1,
+			'mantisbt_version'                => (int) trim( MANTIS_VERSION )[ 0 ],
+			'job_users'                       => array(),
 
 			# --- mail reporting settings -----
 			# Empty default mailboxes array. This array will be used for all the mailbox
 			# accounts
-			'mailboxes'						=> array(),
+			'mailboxes'                       => array(),
 
 			# Empty default rules array. This array will be used for all the rules
-			'rules'							=> array(),
+			'rules'                           => array(),
 
 			# Is this plugin allowed to process and create new bug reports
-			'mail_add_bug_reports'			=> ON,
+			'mail_add_bug_reports'            => ON,
 
 			# Is this plugin allowed to process and add notes to existing issues
-			'mail_add_bugnotes'				=> ON,
+			'mail_add_bugnotes'               => ON,
 
 			# Should this plugin reopen resolved issues when adding notes to existing issues
-			'mail_reopen_bugs'				=> ON,
+			'mail_reopen_bugs'                => ON,
 
 			# Add complete email into the attachments
-			'mail_add_complete_email'		=> OFF,
+			'mail_add_complete_email'         => OFF,
 
 			# Extension used for the complete email attachment
-			'mail_add_complete_email_ext'	=> 'txt',
+			'mail_add_complete_email_ext'     => 'txt',
 
 			// Add users from Cc and To field in mail header
-			'mail_add_users_from_cc_to'		=> OFF,
+			'mail_add_users_from_cc_to'       => OFF,
 
 			# Signup new users automatically (possible security risk!)
 			# Default is OFF, if mail_use_reporter is OFF and this is OFF then it will
 			# fallback to the mail_reporter account above
-			'mail_auto_signup'				=> OFF,
+			'mail_auto_signup'                => OFF,
 
 			# List of md5 hashes of attachments which will be blocked.
-			'mail_block_attachments_md5'	=> array(),
+			'mail_block_attachments_md5'      => array(),
 
 			# Log blocked attachments in the rejected files list
-			'mail_block_attachments_logging'=> ON,
+			'mail_block_attachments_logging'  => ON,
 
 			# Classify bug priorities
-			'mail_bug_priority'				=> array(
-				'5 (lowest)'	=> '10',
-				'4 (low)'		=> '20',
-				'3 (normal)'	=> '30',
-				'2 (high)'		=> '40',
-				'1 (highest)'	=> '50',
-				5		=> '20',
-				4		=> '20',
-				3		=> '30',
-				2		=> '40',
-				1		=> '50',
-				0		=> '10',
-				'low'			=> '20',
-				'normal'		=> '30',
-				'high'			=> '40',
-				''		=> '30',
-				'?'		=> '30',
+			'mail_bug_priority'               => array(
+				'5 (lowest)'     => '10',
+				'4 (low)'        => '20',
+				'3 (normal)'     => '30',
+				'2 (high)'       => '40',
+				'1 (highest)'    => '50',
+				5        => '20',
+				4        => '20',
+				3        => '30',
+				2        => '40',
+				1        => '50',
+				0        => '10',
+				'low'           => '20',
+				'normal'        => '30',
+				'high'          => '40',
+				''         => '30',
+				'?'        => '30',
 			),
 
 			# Used for debugging the system.
 			# Use with care
-			'mail_debug'					=> OFF,
+			'mail_debug'                      => OFF,
 
 			# Save mail contents to this directory if debug mode is ON
-			'mail_debug_directory'			=> '/tmp/mantis',
+			'mail_debug_directory'            => '/tmp/mantis',
 
 			# Used for debugging the system.
 			# Shows the memory usage in different stages of the debugging process
-			'mail_debug_show_memory_usage'	=> OFF,
+			'mail_debug_show_memory_usage'    => OFF,
 
 			# Delete incoming mail from POP3 server
-			'mail_delete'					=> ON,
+			'mail_delete'                     => ON,
 
 			# Disable the MantisBT antispam feature
-			'mail_disable_antispam'			=> OFF,
+			'mail_disable_antispam'           => OFF,
 
 			# MantisBT always has the disposble email checker enabled. We needed an option to disable this in EmailReporting
-			'mail_disposable_email_checker'	=> ON,
+			'mail_disposable_email_checker'   => ON,
 
 			# Should users always receive emails on actions they performed by email even though email_receive_own is OFF
-			'mail_email_receive_own'		=> OFF,
+			'mail_email_receive_own'          => OFF,
 
 			# Enable fallback to mail reporter
-			'mail_fallback_mail_reporter'	=> ON,
+			'mail_fallback_mail_reporter'     => ON,
 
 			# Ignore auto-reply emails
-			'mail_ignore_auto_replies'		=> ON,
+			'mail_ignore_auto_replies'        => ON,
 
 			# Maximum size of the description/note. Restriction needed for database limitations
 			# Older installations of MantisBT never had there description fields in MYSQL increased from TEXT to MEDIUMTEXT so TEXT is the default max
 			# Max is actually < 2^16 (=65535) but the email table also requires some extra space so thats why 60000 is chosen
-			'mail_max_email_body'			=> 60000,
+			'mail_max_email_body'             => 60000,
 
 			# Use the following text when part of the email has been truncated
-			'mail_max_email_body_text'		=> '[EmailReporting -> Email body truncated]',
+			'mail_max_email_body_text'        => '[EmailReporting -> Email body truncated]',
 
 			# Add the complete description or note as an attachment when mail_max_email_body was triggered
-			'mail_max_email_body_add_attach'=> OFF,
+			'mail_max_email_body_add_attach'  => OFF,
 
 			# Use the following text when the description is missing from the email
-			'mail_nodescription'			=> 'No description found',
+			'mail_nodescription'              => 'No description found',
 
 			# Use the following text when the subject is missing from the email
-			'mail_nosubject'				=> 'No subject found',
+			'mail_nosubject'                  => 'No subject found',
 
 			# Parse HTML mails
-			'mail_parse_html'				=> ON,
+			'mail_parse_html'                 => ON,
+
+			# Parse HTML mails
+			'mail_parse_tnef'                 => ON,
 
 			# Preferred username for new user creations
-			'mail_preferred_username'		=> 'name',
+			'mail_preferred_username'         => 'name',
 
 			# Preferred realname for new user creations
-			'mail_preferred_realname'		=> 'name',
+			'mail_preferred_realname'         => 'name',
 
 			# Try to identify the original mantis email and remove it from the description
-			'mail_remove_mantis_email'		=> ON,
+			'mail_remove_mantis_email'        => ON,
 
 			# Remove everything after and including the remove_replies_after text
-			'mail_remove_replies'			=> OFF,
+			'mail_remove_replies'             => OFF,
 
 			# Use the following text when part of the email has been removed
-			'mail_removed_reply_text'		=> '[EmailReporting -> Removed part identified as reply]',
+			'mail_removed_reply_text'         => '[EmailReporting -> Removed part identified as reply]',
 
 			# The account's id for mail reporting
 			# Also used for fallback if a user is not found in database
 			# Mail is just the default name which will be converted to a user id during installation
-			'mail_reporter_id'				=> 'Mail',
+			'mail_reporter_id'                => 'Mail',
 
 			# Should EmailReporting check whether or not the user has enough permissions?
-			'mail_respect_permissions'		=> OFF,
+			'mail_respect_permissions'        => OFF,
 
 			# Is the rule system enabled
-			'mail_rule_system'				=> OFF,
+			'mail_rule_system'                => OFF,
 
 			# Write the sender of the email into the issue report/note
-			'mail_save_from'				=> ON,
+			'mail_save_from'                  => ON,
 
 			# Write the subject of the email in the note
-			'mail_save_subject_in_note'		=> OFF,
+			'mail_save_subject_in_note'       => OFF,
 
 			# Do you want to secure the EmailReporting script so that it cannot be invoked
 			# via a webserver?
-			'mail_secured_script'			=> ON,
+			'mail_secured_script'             => ON,
 
 			# If you must invoke bug_report_mail though a webserver you can use this to restrict
 			# access to this IP address
-			'mail_secured_ipaddr'			=> '',
+			'mail_secured_ipaddr'             => '',
 
 			#Removes the signature that are delimited by mail_strip_signature_delim
-			'mail_strip_signature'			=> OFF,
+			'mail_strip_signature'            => OFF,
 
 			# Which regex should be used for finding the issue id in the subject
-			'mail_subject_id_regex'			=> 'strict',
+			'mail_subject_id_regex'           => 'strict',
 
 			# Looks for priority header field
-			'mail_use_bug_priority'			=> ON,
+			'mail_use_bug_priority'           => ON,
 
 			# This tells Mantis to report all the Mail with only one account
 			# ON = mail uses the reporter account in the setting below
 			# OFF = it identifies the reporter using the email address of the sender
-			'mail_use_reporter'				=> ON,
+			'mail_use_reporter'               => ON,
 
 			// Whether to identify notes using Message-ID in the mail header
-			'mail_use_message_id'			=> ON,
+			'mail_use_message_id'             => ON,
 		);
 	}
 
@@ -269,6 +272,8 @@ class EmailReportingPlugin extends MantisPlugin
 	 */
 	function init()
 	{
+		define( 'ERP_PROVIDER_MICROSOFT', 'Microsoft' );
+		define( 'ERP_PROVIDER_GOOGLE', 'Google' );
 	}
 
 	function events()
@@ -309,9 +314,9 @@ class EmailReportingPlugin extends MantisPlugin
 	function hooks( )
 	{
 		$hooks = array(
-			'EVENT_MENU_MANAGE'	=> 'ERP_manage_emailreporting_menu',
-			'EVENT_CORE_READY'	=> 'ERP_core_ready',
-			'EVENT_BUG_DELETED'	=> 'ERP_issue_deleted',
+			'EVENT_MENU_MANAGE' => 'ERP_manage_emailreporting_menu',
+			'EVENT_CORE_READY'  => 'ERP_core_ready',
+			'EVENT_BUG_DELETED' => 'ERP_issue_deleted',
 		);
 
 		return $hooks;
@@ -334,9 +339,9 @@ class EmailReportingPlugin extends MantisPlugin
 	 */
 	function ERP_core_ready( )
 	{
-		$this->ERP_update_check( );
+		$this->ERP_update_check();
 
-		$this->ERP_check_mantisbt_url( );
+		$this->ERP_check_mantisbt_url();
 	}
 
 	/*
@@ -352,6 +357,8 @@ class EmailReportingPlugin extends MantisPlugin
 	 */
 	function ERP_update_check( )
 	{
+		# Intentionally not updated during execution.
+		# A version 0 installation will execute all upgrade steps sequentially.
 		$t_config_version = plugin_config_get( 'config_version' );
 
 		if ( $t_config_version === 0 )
@@ -391,7 +398,7 @@ class EmailReportingPlugin extends MantisPlugin
 
 		if ( $t_config_version <= 1 )
 		{
-			$t_mail_reporter		= plugin_config_get( 'mail_reporter', '' );
+			$t_mail_reporter = plugin_config_get( 'mail_reporter', '' );
 
 			if ( strlen( $t_mail_reporter ) > 0 )
 			{
@@ -445,8 +452,8 @@ class EmailReportingPlugin extends MantisPlugin
 						}
 
 						$t_hostname = array(
-							'hostname'	=> $t_hostname[ 0 ],
-							'port'		=> ( ( isset( $t_hostname[ 1 ] ) ) ? $t_hostname[ 1 ] : '' ),
+							'hostname'  => $t_hostname[ 0 ],
+							'port'      => ( ( isset( $t_hostname[ 1 ] ) ) ? $t_hostname[ 1 ] : '' ),
 						);
 
 						$t_array[ 'mailbox_hostname' ] = $t_hostname;
@@ -463,8 +470,8 @@ class EmailReportingPlugin extends MantisPlugin
 
 		if ( $t_config_version <= 4 )
 		{
-			$t_mail_remove_mantis_email	= plugin_config_get( 'mail_remove_mantis_email', -1 );
-			$t_mail_identify_reply		= plugin_config_get( 'mail_identify_reply', $t_mail_remove_mantis_email );
+			$t_mail_remove_mantis_email = plugin_config_get( 'mail_remove_mantis_email', -1 );
+			$t_mail_identify_reply      = plugin_config_get( 'mail_identify_reply', $t_mail_remove_mantis_email );
 
 			if ( $t_mail_remove_mantis_email !== -1 && $t_mail_identify_reply !== $t_mail_remove_mantis_email )
 			{
@@ -646,6 +653,32 @@ class EmailReportingPlugin extends MantisPlugin
 
 			plugin_config_set( 'config_version', 18 );
 		}
+
+		if ( $t_config_version <= 18 )
+		{
+			$t_mailboxes = plugin_config_get( 'mailboxes', array() );
+
+			$t_updated = FALSE;
+			foreach ( $t_mailboxes AS $t_key => $t_array )
+			{
+				if (
+					isset( $t_array[ 'mailbox_type' ], $t_array[ 'auth_method' ] ) &&
+					$t_array[ 'mailbox_type' ] === 'IMAP' &&
+					$t_array[ 'auth_method' ] === 'USER'
+				)
+				{
+					$t_mailboxes[ $t_key ][ 'auth_method' ] = 'PLAIN';
+					$t_updated = TRUE;
+				}
+			}
+
+			if ( $t_updated )
+			{
+				plugin_config_set( 'mailboxes', $t_mailboxes );
+			}
+
+			plugin_config_set( 'config_version', 19 );
+		}
 	}
 
 	/*
@@ -676,10 +709,10 @@ class EmailReportingPlugin extends MantisPlugin
 	{
 		if ( php_sapi_name() !== 'cli' && !isset( $GLOBALS[ 't_dir_emailreporting_adjust' ] ) )
 		{
-			$t_path						= config_get_global( 'path' );
-			$t_mail_mantisbt_url_fix	= plugin_config_get( 'mail_mantisbt_url_fix', '' );
-			$t_absolute_path			= realpath( config_get_global( 'absolute_path' ) );
-			$t_dir_script_filename		= realpath( str_replace( array( '\\', '/'), DIRECTORY_SEPARATOR, dirname( $_SERVER['SCRIPT_FILENAME'] ) . DIRECTORY_SEPARATOR ) );
+			$t_path                     = config_get_global( 'path' );
+			$t_mail_mantisbt_url_fix    = plugin_config_get( 'mail_mantisbt_url_fix', '' );
+			$t_absolute_path            = realpath( config_get_global( 'absolute_path' ) );
+			$t_dir_script_filename      = realpath( str_replace( array( '\\', '/'), DIRECTORY_SEPARATOR, dirname( $_SERVER['SCRIPT_FILENAME'] ) . DIRECTORY_SEPARATOR ) );
 
 			if ( strncasecmp( $t_path, 'http', 4 ) === 0 &&
 				$t_path !== $t_mail_mantisbt_url_fix &&
