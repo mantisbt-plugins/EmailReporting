@@ -1,6 +1,6 @@
 ﻿# EmailReporting Release Builder
 
-```
+#```
 #powershell
 #requires -Version 5.1
 
@@ -36,7 +36,7 @@ $ScriptName = Split-Path -Leaf $ScriptPath
 $SourceRoot = Split-Path -Parent $ScriptPath
 
 $ReleaseDirectory = Join-Path $SourceRoot 'release'
-$StagingRoot = Join-Path $ReleaseDirectory "$PackageName-staging"
+$StagingRoot = Join-Path $ReleaseDirectory $PackageName
 
 # ---------------------------------------------------------------------------
 # Helper functions
@@ -517,7 +517,7 @@ if (Test-Path -LiteralPath $ArchivePath) {
 }
 
 Compress-Archive `
-    -Path (Join-Path $StagingRoot '*') `
+    -Path $StagingRoot `
     -DestinationPath $ArchivePath `
     -CompressionLevel Optimal
 
@@ -546,5 +546,5 @@ Write-Host ''
 Write-Host ''
 Write-Host "`nPress Enter to close this window..." -ForegroundColor Yellow
 [void](Read-Host)
-```
+#```
  
