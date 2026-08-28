@@ -61,7 +61,14 @@ abstract class ERP_OAuthProvider
 	}
 
 	# --------------------
-	# Add an error to _error 
+	# Check whether there are stored errors
+	public function hasError(): bool
+	{
+		return( !empty( $this->_error ) );
+	}
+
+	# --------------------
+	# Add an error to _error
 	protected function setError( string $error ): void
 	{
 		$this->_error[] = $error;
