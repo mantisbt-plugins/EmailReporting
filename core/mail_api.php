@@ -20,6 +20,7 @@ require_once( config_get_global( 'absolute_path' ) . 'api/soap/mc_file_api.php' 
 
 plugin_require_api( 'core/config_api.php' );
 plugin_require_api( 'core/oauth2_api.php' );
+plugin_require_api( 'core/Mail/PEAR_api.php' );
 plugin_require_api( 'core/Mail/Parser.php' );
 
 class ERP_mailbox_api
@@ -60,6 +61,7 @@ class ERP_mailbox_api
 	private $_mail_debug_show_memory_usage;
 	private $_mail_delete;
 	private $_mail_disposable_email_checker;
+	private $_mail_engine;
 	private $_mail_fallback_mail_reporter;
 	private $_mail_ignore_auto_replies;
 	private $_mail_max_email_body;
@@ -115,6 +117,7 @@ class ERP_mailbox_api
 		$this->_mail_debug_show_memory_usage         = plugin_config_get( 'mail_debug_show_memory_usage' );
 		$this->_mail_delete                          = plugin_config_get( 'mail_delete' );
 		$this->_mail_disposable_email_checker        = plugin_config_get( 'mail_disposable_email_checker' );
+		$this->_mail_engine                          = plugin_config_get( 'mail_engine' );
 		$this->_mail_fallback_mail_reporter          = plugin_config_get( 'mail_fallback_mail_reporter' );
 		$this->_mail_ignore_auto_replies             = plugin_config_get( 'mail_ignore_auto_replies' );
 		$this->_mail_max_email_body                  = plugin_config_get( 'mail_max_email_body' );
@@ -351,14 +354,13 @@ class ERP_mailbox_api
 	# process all mails for a pop3 mailbox
 	private function process_pop3_mailbox()
 	{
-		$this->_mailserver = new Net_POP3();
-		$this->_mailserver->_timeout = 3;
+		$this->_mailserver = new ERP_PEAR_POP3_Transport( $this->_mailbox[ 'ssl_cert_verify' ] );
 
-		$t_connectresult = $this->_mailserver->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ], $this->get_StreamContextOptions() );
+		$t_connectresult = $this->_mailserver->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ] );
 
 		if ( $t_connectresult === TRUE )
 		{
-			$t_loginresult = $this->PEAR_mailbox_login();
+			$t_loginresult = $this->mailbox_login();
 
 			if ( !$this->pear_error( 'Attempt login', $t_loginresult ) )
 			{
@@ -366,7 +368,7 @@ class ERP_mailbox_api
 				{
 					if ( project_get_field( $this->_mailbox[ 'project_id' ], 'enabled' ) == ON )
 					{
-						$t_ListMsgs = $this->PEAR_getListing();
+						$t_ListMsgs = $this->_mailserver->getListing();
 
 						if ( !$this->pear_error( 'Retrieve list of messages', $t_ListMsgs ) )
 						{
@@ -402,16 +404,13 @@ class ERP_mailbox_api
 	# process all mails for an imap mailbox
 	private function process_imap_mailbox()
 	{
-		$this->_mailserver = new Net_IMAP( NULL );
-		$this->_mailserver->setTimeout( 3 );
+		$this->_mailserver = new ERP_PEAR_IMAP_Transport( $this->_mailbox[ 'ssl_cert_verify' ] );
 
-		$this->_mailserver->setStreamContextOptions( $this->get_StreamContextOptions() );
-
-		$this->_mailserver->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ], ( ( $this->_mailbox[ 'encryption' ] === 'STARTTLS' ) ? TRUE : FALSE ) );
+		$this->_mailserver->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ], $this->_mailbox[ 'encryption' ] );
 
 		if ( $this->_mailserver->_connected === TRUE )
 		{
-			$t_loginresult = $this->PEAR_mailbox_login();
+			$t_loginresult = $this->mailbox_login();
 
 			if ( !$this->pear_error( 'Attempt login', $t_loginresult ) )
 			{
@@ -463,7 +462,7 @@ class ERP_mailbox_api
 
 										if ( !$this->pear_error( 'Select IMAP folder', $t_selectresult ) )
 										{
-											$t_ListMsgs = $this->PEAR_getListing();
+											$t_ListMsgs = $this->_mailserver->getListing();
 
 											if ( !$this->pear_error( 'Retrieve list of messages', $t_ListMsgs ) )
 											{
@@ -471,7 +470,7 @@ class ERP_mailbox_api
 
 												while ( $t_Msg = array_pop( $t_ListMsgs ) )
 												{
-													$t_isDeleted = $this->PEAR_isDeleted( $t_Msg[ 'msg_id' ], $t_flags );
+													$t_isDeleted = $this->_mailserver->isDeleted( $t_Msg[ 'msg_id' ], $t_flags );
 
 													if ( $this->pear_error( 'Check email deleted flag', $t_isDeleted ) )
 													{
@@ -532,21 +531,9 @@ class ERP_mailbox_api
 		}
 	}
 
-	# Return Stream Context Options array
-	private function get_StreamContextOptions()
-	{
-		return( array(
-			'ssl' => array
-			(
-				'verify_peer'      => (bool) $this->_mailbox[ 'ssl_cert_verify' ],
-				'verify_peer_name' => (bool) $this->_mailbox[ 'ssl_cert_verify' ]
-			)
-		) );
-	}
-
 	# --------------------
 	# Perform the login to the mailbox
-	private function PEAR_mailbox_login()
+	public function mailbox_login()
 	{
 		$t_mailbox_auth_method = $this->_mailbox[ 'auth_method' ];
 
@@ -576,7 +563,9 @@ class ERP_mailbox_api
 			$t_mailbox_password = base64_decode( $this->_mailbox[ 'erp_password' ] );
 		}
 
-		return( $this->_mailserver->login( $t_mailbox_username, $t_mailbox_password, $t_mailbox_auth_method ) );
+		$t_loginresult = $this->_mailserver->login( $t_mailbox_username, $t_mailbox_password, $t_mailbox_auth_method );
+
+		return( $t_loginresult );
 	}
 
 	# --------------------
@@ -642,38 +631,18 @@ class ERP_mailbox_api
 	}
 
 	# --------------------
-	# Return a list of emails in the mailbox
-	# Needed a workaround to sort IMAP emails in a certain order
-	private function PEAR_getListing()
-	{
-		$t_ListMsgs = $this->_mailserver->getListing();
-
-		if ( !PEAR::isError( $t_ListMsgs ) )
-		{
-			if ( $this->_mailbox[ 'mailbox_type' ] === 'IMAP' )
-			{
-				$t_ListMsgs = array_column( $t_ListMsgs, NULL, 'uidl' );
-			}
-			else
-			{
-				$t_ListMsgs = array_column( $t_ListMsgs, NULL, 'msg_id' );
-			}
-
-		}
-
-		krsort( $t_ListMsgs );
-
-		return( $t_ListMsgs );
-	}
-
-	# --------------------
 	# Process a single email from either a pop3 or imap mailbox
 	# Returns true or false based on succesfull email retrieval from the mailbox
 	private function process_single_email( $p_i, $p_overwrite_project_id = FALSE )
 	{
 		$this->show_memory_usage( 'Start process single email' );
 
-		$t_msg = $this->getMsg( $p_i );
+		$t_msg = $this->_mailserver->getMsg( $p_i );
+
+		if ( $this->pear_error( 'Retrieve raw message', $t_msg ) )
+		{
+			return( FALSE );
+		}
 
 		if ( empty( $t_msg ) )
 		{
@@ -719,64 +688,6 @@ class ERP_mailbox_api
 		$this->show_memory_usage( 'Finished process single email' );
 
 		return( TRUE );
-	}
-
-	# --------------------
-	# Return a single raw email
-	# Handles a workaround for problems with Net_IMAP 1.1.x concerning the getMsg function
-	private function getMsg( $p_msg_id )
-	{
-		$t_msg = NULL;
-
-		if ( $this->_mailbox[ 'mailbox_type' ] === 'IMAP' )
-		{
-			// Net_IMAP 1.1.0 and 1.1.2 seems to have a somewhat broken getMsg function.
-			$t_msg = $this->_mailserver->getMessages( $p_msg_id, TRUE );
-
-			if ( is_array( $t_msg ) && count( $t_msg ) === 1 )
-			{
-				$t_msg = $t_msg[ key( $t_msg ) ];
-			}
-		}
-		elseif ( $this->_mailbox[ 'mailbox_type' ] === 'POP3' )
-		{
-			$t_msg = $this->_mailserver->getMsg( $p_msg_id );
-		}
-
-		if ( $this->pear_error( 'Retrieve raw message', $t_msg ) )
-		{
-			return( FALSE );
-		}
-
-		return( $t_msg );
-	}
-
-	# --------------------
-	# Check whether a email is deleted
-	# for IMAP only function
-	# Handles a workaround for problems with Net_IMAP 1.1.x with the hasFlag function (isDeleted uses that function)
-	private function PEAR_isDeleted( $p_msg_id, &$p_flags )
-	{
-//		return $this->hasFlag($message_nro, '\Deleted');
-		$flag = '\Deleted';
-
-		if ( $p_flags instanceOf PEAR_Error )
-		{
-			return $p_flags;
-		}
-
-		if ( isset( $p_flags[ $p_msg_id ] ) )
-		{
-			if ( is_array( $p_flags[ $p_msg_id ] ) )
-			{
-				if ( in_array( $flag, $p_flags[ $p_msg_id ] ) )
-				{
-					return TRUE;
-				}
-			}
-		}
-
-		return FALSE;
 	}
 
 	# --------------------
