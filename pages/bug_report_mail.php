@@ -32,7 +32,8 @@
 		}
 	}
 
-	ini_set( 'memory_limit', -1 );
+	$t_mail_max_memory_usage = (int)( plugin_config_get( 'mail_max_memory_usage' ) );
+	ini_set( 'memory_limit', $t_mail_max_memory_usage );
 
 	if ( php_sapi_name() !== 'cli' )
 	{

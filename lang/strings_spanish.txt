@@ -68,6 +68,7 @@ $s_plugin_EmailReporting_mail_ignore_auto_replies = 'Ignorar correos electrónic
 $s_plugin_EmailReporting_mail_max_email_body = 'Tamaño maximo permito de un correo para agregar una nota o descripción a la solicitud';
 $s_plugin_EmailReporting_mail_max_email_body_text = 'Usar este texto si la descripción o nota fue eliminada o truncada';
 $s_plugin_EmailReporting_mail_max_email_body_add_attach = 'Agregar la descripción completa o nota como adjunto en caso que este sea truncado';
+$s_plugin_EmailReporting_mail_max_memory_usage = 'Uso máximo de memoria durante el procesamiento de correo';
 $s_plugin_EmailReporting_mail_nodescription = 'Usar este texto si no se encuentra descrición en el mensaje';
 $s_plugin_EmailReporting_mail_nosubject = 'Usar este texto si no se encontro asunto en el mensaje';
 $s_plugin_EmailReporting_mail_parse_html = 'Analizar los correos HTML';

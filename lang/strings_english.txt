@@ -68,6 +68,7 @@ $s_plugin_EmailReporting_mail_ignore_auto_replies = 'Ignore auto-reply emails';
 $s_plugin_EmailReporting_mail_max_email_body = 'Maximum size of the description or note being added to the issue';
 $s_plugin_EmailReporting_mail_max_email_body_text = 'Use this text if the description or note has been truncated';
 $s_plugin_EmailReporting_mail_max_email_body_add_attach = 'Add the complete description or note as an attachment in case it was truncated';
+$s_plugin_EmailReporting_mail_max_memory_usage = 'Maximum memory usage during mail processing';
 $s_plugin_EmailReporting_mail_nodescription = 'Use this text if no description is found in the email';
 $s_plugin_EmailReporting_mail_nosubject = 'Use this text if no subject is found in the email';
 $s_plugin_EmailReporting_mail_parse_html = 'Parse HTML emails';

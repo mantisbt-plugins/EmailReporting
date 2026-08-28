@@ -68,6 +68,7 @@ $s_plugin_EmailReporting_mail_ignore_auto_replies = 'Ignorieren Sie automatische
 $s_plugin_EmailReporting_mail_max_email_body = 'Maximale Größe der Beschreibung oder der Notiz, die zum Eintrag hinzugefügt wird';
 $s_plugin_EmailReporting_mail_max_email_body_text = 'Den folgenden Text verwenden, falls die Beschreibung oder die Notiz abgeschnitten wurde';
 $s_plugin_EmailReporting_mail_max_email_body_add_attach = 'Die komplette Beschreibung oder Notiz als Anhang hinzufügen, falls abgeschnitten wurde';
+$s_plugin_EmailReporting_mail_max_memory_usage = 'Maximale Speichernutzung während der E-Mail-Verarbeitung';
 $s_plugin_EmailReporting_mail_nodescription = 'Der Mailbody beeinhaltet keinen Text.';
 $s_plugin_EmailReporting_mail_nosubject = 'Der Mailbetreff beeinhaltete keinen Text.';
 $s_plugin_EmailReporting_mail_parse_html = 'Analysiere HTML Mails';

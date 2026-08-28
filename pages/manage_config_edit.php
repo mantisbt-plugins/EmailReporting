@@ -26,6 +26,7 @@ $f_gpc = array(
 	'mail_max_email_body'             => gpc_get_int( 'mail_max_email_body' ),
 	'mail_max_email_body_text'        => gpc_get_string( 'mail_max_email_body_text' ),
 	'mail_max_email_body_add_attach'  => gpc_get_int( 'mail_max_email_body_add_attach' ),
+	'mail_max_memory_usage'           => gpc_get_int( 'mail_max_memory_usage' ),
 	'mail_nodescription'              => gpc_get_string( 'mail_nodescription' ),
 	'mail_nosubject'                  => gpc_get_string( 'mail_nosubject' ),
 	'mail_parse_html'                 => gpc_get_int( 'mail_parse_html' ),

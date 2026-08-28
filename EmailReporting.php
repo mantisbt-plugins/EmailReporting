@@ -133,6 +133,9 @@ class EmailReportingPlugin extends MantisPlugin
 			# Add the complete description or note as an attachment when mail_max_email_body was triggered
 			'mail_max_email_body_add_attach'  => OFF,
 
+			# The max memory usage allowed by EmailReporting during mailbox processing
+			'mail_max_memory_usage'           => -1,
+
 			# Use the following text when the description is missing from the email
 			'mail_nodescription'              => 'No description found',
 
