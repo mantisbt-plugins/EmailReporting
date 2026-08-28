@@ -31,7 +31,7 @@ class ERP_mailbox_api
 
 	public $_mailbox = array( 'description' => 'INITIALIZATION PHASE' );
 
-	private $_mailserver = NULL;
+	private $_mail_api = NULL;
 	private $_result = TRUE;
 
 	private $_default_ports = array(
@@ -354,9 +354,9 @@ class ERP_mailbox_api
 	# process all mails for a pop3 mailbox
 	private function process_pop3_mailbox()
 	{
-		$this->_mailserver = new ERP_PEAR_POP3_Transport( $this->_mailbox[ 'ssl_cert_verify' ] );
+		$this->_mail_api = new ERP_PEAR_POP3_Transport( $this->_mailbox[ 'ssl_cert_verify' ] );
 
-		$t_connectresult = $this->_mailserver->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ] );
+		$t_connectresult = $this->_mail_api->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ] );
 
 		if ( $t_connectresult === TRUE )
 		{
@@ -368,7 +368,7 @@ class ERP_mailbox_api
 				{
 					if ( project_get_field( $this->_mailbox[ 'project_id' ], 'enabled' ) == ON )
 					{
-						$t_ListMsgs = $this->_mailserver->getListing();
+						$t_ListMsgs = $this->_mail_api->getListing();
 
 						if ( !$this->pear_error( 'Retrieve list of messages', $t_ListMsgs ) )
 						{
@@ -378,7 +378,7 @@ class ERP_mailbox_api
 
 								if ( $this->_mail_delete && $t_emailresult )
 								{
-									$t_deleteresult = $this->_mailserver->deleteMsg( $t_Msg[ 'msg_id' ] );
+									$t_deleteresult = $this->_mail_api->deleteMsg( $t_Msg[ 'msg_id' ] );
 
 									$this->pear_error( 'Attempt delete email', $t_deleteresult );
 								}
@@ -392,7 +392,7 @@ class ERP_mailbox_api
 				}
 			}
 
-			$this->_mailserver->disconnect();
+			$this->_mail_api->disconnect();
 		}
 		else
 		{
@@ -404,11 +404,11 @@ class ERP_mailbox_api
 	# process all mails for an imap mailbox
 	private function process_imap_mailbox()
 	{
-		$this->_mailserver = new ERP_PEAR_IMAP_Transport( $this->_mailbox[ 'ssl_cert_verify' ] );
+		$this->_mail_api = new ERP_PEAR_IMAP_Transport( $this->_mailbox[ 'ssl_cert_verify' ] );
 
-		$this->_mailserver->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ], $this->_mailbox[ 'encryption' ] );
+		$this->_mail_api->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ], $this->_mailbox[ 'encryption' ] );
 
-		if ( $this->_mailserver->_connected === TRUE )
+		if ( $this->_mail_api->_connected === TRUE )
 		{
 			$t_loginresult = $this->mailbox_login();
 
@@ -417,10 +417,10 @@ class ERP_mailbox_api
 				// If basefolder is empty we try to select the inbox folder
 				if ( is_blank( $this->_mailbox[ 'imap_basefolder' ] ) )
 				{
-					$this->_mailbox[ 'imap_basefolder' ] = $this->_mailserver->getCurrentMailbox();
+					$this->_mailbox[ 'imap_basefolder' ] = $this->_mail_api->getCurrentMailbox();
 				}
 
-				if ( $this->_mailserver->mailboxExist( $this->_mailbox[ 'imap_basefolder' ] ) )
+				if ( $this->_mail_api->mailboxExist( $this->_mailbox[ 'imap_basefolder' ] ) )
 				{
 					if ( $this->_test_only === FALSE )
 					{
@@ -436,7 +436,7 @@ class ERP_mailbox_api
 							$t_projects = array( 0 => project_get_row( $this->_mailbox[ 'project_id' ] ) );
 						}
 
-						$t_hierarchydelimiter = $this->_mailserver->getHierarchyDelimiter();
+						$t_hierarchydelimiter = $this->_mail_api->getHierarchyDelimiter();
 
 						foreach ( $t_projects AS $t_project )
 						{
@@ -447,30 +447,30 @@ class ERP_mailbox_api
 								$t_foldername = str_replace( '/', $t_hierarchydelimiter, $this->_mailbox[ 'imap_basefolder' ] ) . ( ( $this->_mailbox[ 'imap_createfolderstructure' ] ) ? $t_hierarchydelimiter . $t_project_name : NULL );
 
 								// We don't need to check twice whether the mailbox exist incase createfolderstructure is false
-								if ( !$this->_mailbox[ 'imap_createfolderstructure' ] || $this->_mailserver->mailboxExist( $t_foldername ) === TRUE )
+								if ( !$this->_mailbox[ 'imap_createfolderstructure' ] || $this->_mail_api->mailboxExist( $t_foldername ) === TRUE )
 								{
 									// Exchange does not seem to like numMsg so that was changed to getListing
 									// getListing returns an error when there are no emails in an IMAP folder.
 									// After 10 errors Exchange will ignore the connection and any further commands will fail with ", "
 									// 10 errors or more can happen when imap_createfolderstructure is ON
 									// examineMailbox allows EmailReporting to check whether or not there are emails in the folder without producing an error
-									$t_examineresult = $this->_mailserver->examineMailbox( $t_foldername );
+									$t_examineresult = $this->_mail_api->examineMailbox( $t_foldername );
 
 									if ( !$this->pear_error( 'Examine IMAP folder', $t_examineresult ) && $t_examineresult[ 'EXISTS' ] > 0 )
 									{
-										$t_selectresult = $this->_mailserver->selectMailbox( $t_foldername );
+										$t_selectresult = $this->_mail_api->selectMailbox( $t_foldername );
 
 										if ( !$this->pear_error( 'Select IMAP folder', $t_selectresult ) )
 										{
-											$t_ListMsgs = $this->_mailserver->getListing();
+											$t_ListMsgs = $this->_mail_api->getListing();
 
 											if ( !$this->pear_error( 'Retrieve list of messages', $t_ListMsgs ) )
 											{
-												$t_flags = $this->_mailserver->getFlags();
+												$t_flags = $this->_mail_api->getFlags();
 
 												while ( $t_Msg = array_pop( $t_ListMsgs ) )
 												{
-													$t_isDeleted = $this->_mailserver->isDeleted( $t_Msg[ 'msg_id' ], $t_flags );
+													$t_isDeleted = $this->_mail_api->isDeleted( $t_Msg[ 'msg_id' ], $t_flags );
 
 													if ( $this->pear_error( 'Check email deleted flag', $t_isDeleted ) )
 													{
@@ -489,7 +489,7 @@ class ERP_mailbox_api
 
 														if ( $t_emailresult === TRUE )
 														{
-															$t_deleteresult = $this->_mailserver->deleteMsg( $t_Msg[ 'msg_id' ] );
+															$t_deleteresult = $this->_mail_api->deleteMsg( $t_Msg[ 'msg_id' ] );
 
 															$this->pear_error( 'Attempt delete email', $t_deleteresult );
 														}
@@ -502,7 +502,7 @@ class ERP_mailbox_api
 								elseif ( $this->_mailbox[ 'imap_createfolderstructure' ] == ON )
 								{
 									// create this mailbox
-									$t_createresult = $this->_mailserver->createMailbox( $t_foldername );
+									$t_createresult = $this->_mail_api->createMailbox( $t_foldername );
 
 									$this->pear_error( 'Create IMAP folder: "' . $t_foldername . '"', $t_createresult );
 								}
@@ -520,10 +520,10 @@ class ERP_mailbox_api
 				}
 			}
 
-			//$this->_mailserver->expunge(); //disabled as this is handled by the disconnect
+			//$this->_mail_api->expunge(); //disabled as this is handled by the disconnect
 
 			// mail_delete decides whether to perform the expunge command before closing the connection
-			$this->_mailserver->disconnect( (bool) $this->_mail_delete );
+			$this->_mail_api->disconnect( (bool) $this->_mail_delete );
 		}
 		else
 		{
@@ -533,7 +533,7 @@ class ERP_mailbox_api
 
 	# --------------------
 	# Perform the login to the mailbox
-	public function mailbox_login()
+	private function mailbox_login()
 	{
 		$t_mailbox_auth_method = $this->_mailbox[ 'auth_method' ];
 
@@ -563,7 +563,7 @@ class ERP_mailbox_api
 			$t_mailbox_password = base64_decode( $this->_mailbox[ 'erp_password' ] );
 		}
 
-		$t_loginresult = $this->_mailserver->login( $t_mailbox_username, $t_mailbox_password, $t_mailbox_auth_method );
+		$t_loginresult = $this->_mail_api->login( $t_mailbox_username, $t_mailbox_password, $t_mailbox_auth_method );
 
 		return( $t_loginresult );
 	}
@@ -637,7 +637,7 @@ class ERP_mailbox_api
 	{
 		$this->show_memory_usage( 'Start process single email' );
 
-		$t_msg = $this->_mailserver->getMsg( $p_i );
+		$t_msg = $this->_mail_api->getMsg( $p_i );
 
 		if ( $this->pear_error( 'Retrieve raw message', $t_msg ) )
 		{
