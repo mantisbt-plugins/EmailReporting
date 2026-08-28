@@ -196,5 +196,3 @@ $s_plugin_EmailReporting_act_issue_custom_field = 'Update custom field';
 
 $s_plugin_EmailReporting_excep_issue_summary = 'Issue summary';
 $s_plugin_EmailReporting_excep_issue_description = 'Issue description';
-
-?>

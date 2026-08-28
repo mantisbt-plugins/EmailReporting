@@ -193,5 +193,3 @@ $s_plugin_EmailReporting_act_issue_custom_field = 'Actualizar campo personalizad
 
 $s_plugin_EmailReporting_excep_issue_summary = 'Resumen de Solicitud';
 $s_plugin_EmailReporting_excep_issue_description = 'Descripción de Solicitud';
-
-?>

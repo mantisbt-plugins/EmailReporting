@@ -196,5 +196,3 @@ $s_plugin_EmailReporting_act_issue_custom_field = 'Benutzerdefiniertes Feld aktu
 
 $s_plugin_EmailReporting_excep_issue_summary = 'Zusammenfassung';
 $s_plugin_EmailReporting_excep_issue_description = 'Beschreibung';
-
-?>
