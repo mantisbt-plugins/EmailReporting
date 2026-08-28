@@ -747,7 +747,7 @@ class ERP_Mail_Parser
 			{
 				if ( $p_alternative_name === NULL )
 				{
-					$this->ParseTNEF( $p[ 'body' ] );
+					$this->ParseTNEF( $part );
 					return;
 				}
 
