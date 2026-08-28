@@ -72,7 +72,7 @@ try
 catch (Exception $e)
 {
 	error_parameters( $f_mail_bug_priority, $e->getMessage() );
-	trigger_error( ERROR_CONFIG_OPT_BAD_SYNTAX, ERROR );
+	throw new RuntimeException( ERROR_CONFIG_OPT_BAD_SYNTAX );
 }
 
 if( isset( $t_mail_bug_priority ) && is_array( $t_mail_bug_priority ) )

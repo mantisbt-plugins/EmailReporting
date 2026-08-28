@@ -220,7 +220,7 @@ class EmailReportingPlugin extends MantisPlugin
 		if ( !@include_once( config_get_global( 'absolute_path' ) . 'api/soap/mc_file_api.php' ) )
 		{
 			error_parameters( plugin_lang_get( 'apisoap_error' ) );
-			trigger_error( ERROR_PLUGIN_INSTALL_FAILED, ERROR ); 
+			throw new RuntimeException( ERROR_PLUGIN_INSTALL_FAILED );
 			return( FALSE );
 		};
 

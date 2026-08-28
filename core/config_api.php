@@ -617,7 +617,8 @@ function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, $p_fun
 
 	if ( strcasecmp( $t_input_name, 'username' ) === 0 || strcasecmp( $t_input_name, 'password' ) === 0 )
 	{
-		trigger_error( plugin_lang_get( 'input_name_not_allowed' ), ERROR );
+		throw new RuntimeException( plugin_lang_get( 'input_name_not_allowed' ) );
+		return;
 	}
 
 	$t_function_name = 'ERP_custom_function_' . $p_function_name;
@@ -969,7 +970,7 @@ function ERP_print_custom_field_input( $p_sel_value, $p_field_def )
 	}
 	else
 	{
-		trigger_error( ERROR_CUSTOM_FIELD_INVALID_DEFINITION, ERROR );
+		throw new InvalidArgumentException( ERROR_CUSTOM_FIELD_INVALID_DEFINITION );
 	}
 }
 
