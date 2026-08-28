@@ -113,6 +113,9 @@ class EmailReportingPlugin extends MantisPlugin
 			# Should users always receive emails on actions they performed by email even though email_receive_own is OFF
 			'mail_email_receive_own'          => OFF,
 
+			# What mail engine to use for POP3 and IMAP
+			'mail_engine'                     => 'PEAR',
+
 			# Enable fallback to mail reporter
 			'mail_fallback_mail_reporter'     => ON,
 
@@ -139,7 +142,7 @@ class EmailReportingPlugin extends MantisPlugin
 			# Parse HTML mails
 			'mail_parse_html'                 => ON,
 
-			# Parse HTML mails
+			# Parse TNEF mails
 			'mail_parse_tnef'                 => ON,
 
 			# Preferred username for new user creations
