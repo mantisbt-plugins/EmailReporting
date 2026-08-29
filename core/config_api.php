@@ -978,10 +978,19 @@ function ERP_print_custom_field_input( $p_sel_value, $p_field_def )
 # output a option list for authentication methods for POP3 and IMAP
 function ERP_custom_function_print_auth_method_option_list( $p_sel_value )
 {
-	$t_mailbox_connection_pop3 = new Net_POP3();
-	$t_mailbox_connection_imap = new Net_IMAPProtocol();
+	if ( plugin_config_get( 'mail_engine' ) === 'PEAR' )
+	{
+		plugin_require_api( 'core/Mail/PEAR_api.php' );
+		$t_pop3 = new ERP_PEAR_POP3_Transport();
+		$t_imap = new ERP_PEAR_IMAP_Transport();
+	}
+	else
+	{
+		$this->custom_error( 'No valid mail engine selected.' );
+		return( FALSE );
+	}
 
-	$t_supported_auth_methods = array_unique( array_merge( $t_mailbox_connection_pop3->supportedAuthMethods, $t_mailbox_connection_imap->supportedAuthMethods ) );
+	$t_supported_auth_methods = array_unique( array_merge( $t_pop3->getsupportedAuthMethods(), $t_imap->getsupportedAuthMethods() ) );
 	natcasesort( $t_supported_auth_methods );
 
 	foreach ( $t_supported_auth_methods AS $t_supported_auth_method )

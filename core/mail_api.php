@@ -19,8 +19,6 @@ require_api( 'file_api.php' );
 require_once( config_get_global( 'absolute_path' ) . 'api/soap/mc_file_api.php' );
 
 plugin_require_api( 'core/config_api.php' );
-plugin_require_api( 'core/oauth2_api.php' );
-plugin_require_api( 'core/Mail/PEAR_api.php' );
 plugin_require_api( 'core/Mail/Parser.php' );
 
 class ERP_mailbox_api
@@ -303,50 +301,30 @@ class ERP_mailbox_api
 	}
 
 	# --------------------
-	# Show pear error when pear operation failed
-	#  return a boolean for whether the mailbox has failed
-	private function pear_error( $p_location, &$p_pear )
-	{
-		if ( PEAR::isError( $p_pear ) )
-		{
-			$t_pear = array(
-				'ERP_location' => $p_location,
-				'pear'         => $p_pear,
-			);;
-
-			$this->_result = $t_pear;
-
-			if ( !$this->_test_only )
-			{
-				echo 'Mailbox: ' . $this->_mailbox[ 'description' ] . "\n" . 'Location: ' . $p_location . "\n" . $p_pear->toString() . "\n\n";
-			}
-
-			return( TRUE );
-		}
-		else
-		{
-			return( FALSE );
-		}
-	}
-
-	# --------------------
 	# Show non-pear error
 	#  set $this->result to an array with the error or show it
-	private function custom_error( $p_error_text, $p_is_error = TRUE )
+	private function custom_error( $p_error_text, $p_is_error = TRUE, $p_location = NULL )
 	{
 		$t_error_text = 'Message: ' . $p_error_text . "\n";
 
 		if ( $p_is_error === TRUE )
 		{
 			$this->_result = array(
-				'ERROR_TYPE'    => 'NON-PEAR-ERROR',
+				'ERROR_TYPE'    => 'ERROR',
 				'ERROR_MESSAGE' => $t_error_text,
 			);
+
+			if ( $p_location !== NULL )
+			{
+				$this->_result[ 'ERP_location' ] = $p_location;
+			}
 		}
 
 		if ( !$this->_test_only )
 		{
-			echo 'Mailbox: ' . $this->_mailbox[ 'description' ] . "\n" . $t_error_text . "\n\n";
+			echo 'Mailbox: ' . $this->_mailbox[ 'description' ] . "\n" .
+				( ( $p_location !== NULL ) ? 'Location: ' . $p_location . "\n" : '' ) .
+				$t_error_text . "\n\n";
 		}
 	}
 
@@ -354,181 +332,283 @@ class ERP_mailbox_api
 	# process all mails for a pop3 mailbox
 	private function process_pop3_mailbox()
 	{
-		$this->_mail_api = new ERP_PEAR_POP3_Transport( $this->_mailbox[ 'ssl_cert_verify' ] );
-
-		$t_connectresult = $this->_mail_api->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ] );
-
-		if ( $t_connectresult === TRUE )
+		if ( $this->_mail_engine === 'PEAR' )
 		{
-			$t_loginresult = $this->mailbox_login();
-
-			if ( !$this->pear_error( 'Attempt login', $t_loginresult ) )
-			{
-				if ( $this->_test_only === FALSE )
-				{
-					if ( project_get_field( $this->_mailbox[ 'project_id' ], 'enabled' ) == ON )
-					{
-						$t_ListMsgs = $this->_mail_api->getListing();
-
-						if ( !$this->pear_error( 'Retrieve list of messages', $t_ListMsgs ) )
-						{
-							while ( $t_Msg = array_pop( $t_ListMsgs ) )
-							{
-								$t_emailresult = $this->process_single_email( $t_Msg[ 'msg_id' ] );
-
-								if ( $this->_mail_delete && $t_emailresult )
-								{
-									$t_deleteresult = $this->_mail_api->deleteMsg( $t_Msg[ 'msg_id' ] );
-
-									$this->pear_error( 'Attempt delete email', $t_deleteresult );
-								}
-							}
-						}
-					}
-					else
-					{
-						$this->custom_error( 'Project is disabled: ' . project_get_field( $this->_mailbox[ 'project_id' ], 'name' ) );
-					}
-				}
-			}
-
-			$this->_mail_api->disconnect();
+			plugin_require_api( 'core/Mail/PEAR_api.php' );
+			$this->_mail_api = new ERP_PEAR_POP3_Transport( $this->_mailbox[ 'ssl_cert_verify' ] );
 		}
 		else
 		{
-			$this->custom_error( 'Failed to connect to the mail server' . ( ( $this->_mailbox[ 'encryption' ] !== 'None' && $this->_mailbox[ 'ssl_cert_verify' ] == ON ) ? '. This could possibly be because SSL certificate verification failed' : NULL ) );
+			$this->custom_error( 'No valid mail engine selected.' );
+			return( FALSE );
 		}
+
+		$t_connectresult = $this->_mail_api->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ] );
+
+		if ( $t_connectresult !== TRUE )
+		{
+			$this->custom_error( 'Failed to connect to the mail server.' . ( ( $this->_mailbox[ 'encryption' ] !== 'None' && $this->_mailbox[ 'ssl_cert_verify' ] == ON ) ? ' This could possibly be because SSL certificate verification failed' : NULL ) );
+			return( FALSE );
+		}
+
+		try
+		{
+			$t_loginresult = $this->mailbox_login();
+
+			if ( $t_loginresult === FALSE )
+			{
+				// A error in mailbox_login could be other then mail transport. Like an OAuth type error.
+				if ( $this->_mail_api->hasError() )
+				{
+					$this->custom_error( $this->_mail_api->getError() . ( ( $this->_mailbox[ 'auth_method' ] === 'XOAUTH2' ) ? ' This could also be a permission issue where the application has no permission to access the given mailbox.' : NULL ), TRUE, 'Attempt login' );
+				}
+				return( FALSE );
+			}
+
+			if ( $this->_test_only === TRUE )
+			{
+				return( TRUE );
+			}
+
+			$t_project_enabled = project_get_field( $this->_mailbox[ 'project_id' ], 'enabled' );
+			if ( $t_project_enabled == OFF )
+			{
+				$t_project_name = project_get_field( $this->_mailbox[ 'project_id' ], 'name' );
+				$this->custom_error( 'Project is disabled: ' . $t_project_name );
+				return( FALSE );
+			}
+
+			$t_ListMsgs = $this->_mail_api->getListing();
+
+			if ( $t_ListMsgs === FALSE )
+			{
+				$this->custom_error( $this->_mail_api->getError(), TRUE, 'Retrieve list of messages' );
+				return( FALSE );
+			}
+
+			while ( !empty( $t_ListMsgs ) )
+			{
+				$t_Msg = array_shift( $t_ListMsgs );
+				$t_emailresult = $this->process_single_email( $t_Msg[ 'msg_id' ] );
+
+				if ( $this->_mail_delete && $t_emailresult === TRUE )
+				{
+					$t_deleteresult = $this->_mail_api->deleteMsg( $t_Msg[ 'msg_id' ] );
+
+					if ( $t_deleteresult === FALSE )
+					{
+						$this->custom_error( $this->_mail_api->getError(), TRUE, 'Attempt delete email' );
+						return( FALSE );
+					}
+				}
+			}
+		}
+		finally
+		{
+			$this->_mail_api->disconnect();
+		}
+
+		return( TRUE );
 	}
 
 	# --------------------
 	# process all mails for an imap mailbox
 	private function process_imap_mailbox()
 	{
-		$this->_mail_api = new ERP_PEAR_IMAP_Transport( $this->_mailbox[ 'ssl_cert_verify' ] );
+		if ( $this->_mail_engine === 'PEAR' )
+		{
+			plugin_require_api( 'core/Mail/PEAR_api.php' );
+			$this->_mail_api = new ERP_PEAR_IMAP_Transport( $this->_mailbox[ 'ssl_cert_verify' ] );
+		}
+		else
+		{
+			$this->custom_error( 'No valid mail engine selected.' );
+			return( FALSE );
+		}
 
-		$this->_mail_api->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ], $this->_mailbox[ 'encryption' ] );
+		$t_connectresult = $this->_mail_api->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ], $this->_mailbox[ 'encryption' ] );
 
-		if ( $this->_mail_api->_connected === TRUE )
+		if ( $t_connectresult !== TRUE )
+		{
+			$this->custom_error( 'Failed to connect to the mail server' . ( ( $this->_mailbox[ 'encryption' ] !== 'None' && $this->_mailbox[ 'ssl_cert_verify' ] == ON ) ? '. This could possibly be because SSL certificate verification failed' : NULL ) );
+			return( FALSE );
+		}
+
+		try
 		{
 			$t_loginresult = $this->mailbox_login();
 
-			if ( !$this->pear_error( 'Attempt login', $t_loginresult ) )
+			if ( $t_loginresult === FALSE )
 			{
-				// If basefolder is empty we try to select the inbox folder
-				if ( is_blank( $this->_mailbox[ 'imap_basefolder' ] ) )
+				// A error in mailbox_login could be other then mail transport. Like an OAuth type error.
+				if ( $this->_mail_api->hasError() )
 				{
-					$this->_mailbox[ 'imap_basefolder' ] = $this->_mail_api->getCurrentMailbox();
+					$this->custom_error( $this->_mail_api->getError() . ( ( $this->_mailbox[ 'auth_method' ] === 'XOAUTH2' ) ? ' This could also be a permission issue where the application has no permission to access the given mailbox.' : NULL ), TRUE, 'Attempt login' );
 				}
+				return( FALSE );
+			}
 
-				if ( $this->_mail_api->mailboxExist( $this->_mailbox[ 'imap_basefolder' ] ) )
+			// If basefolder is empty we try to select the inbox folder
+			if ( is_blank( $this->_mailbox[ 'imap_basefolder' ] ) )
+			{
+				$this->_mailbox[ 'imap_basefolder' ] = $this->_mail_api->getCurrentMailbox();
+			}
+
+			$t_basefolder_exists = $this->_mail_api->mailboxExist( $this->_mailbox[ 'imap_basefolder' ] );
+
+			if ( $t_basefolder_exists === FALSE )
+			{
+				if ( $this->_mail_api->hasError() )
 				{
-					if ( $this->_test_only === FALSE )
-					{
-						// There does not seem to be a viable api function which removes this plugins dependability on table column names
-						// So if a column name is changed it might cause problems if the code below depends on it.
-						// Luckily we only depend on id, name and enabled
-						if ( $this->_mailbox[ 'imap_createfolderstructure' ] == ON )
-						{
-							$t_projects = project_get_all_rows();
-						}
-						else
-						{
-							$t_projects = array( 0 => project_get_row( $this->_mailbox[ 'project_id' ] ) );
-						}
-
-						$t_hierarchydelimiter = $this->_mail_api->getHierarchyDelimiter();
-
-						foreach ( $t_projects AS $t_project )
-						{
-							if ( $t_project[ 'enabled' ] == ON )
-							{
-								$t_project_name = $this->cleanup_project_name( $t_project[ 'name' ] );
-
-								$t_foldername = str_replace( '/', $t_hierarchydelimiter, $this->_mailbox[ 'imap_basefolder' ] ) . ( ( $this->_mailbox[ 'imap_createfolderstructure' ] ) ? $t_hierarchydelimiter . $t_project_name : NULL );
-
-								// We don't need to check twice whether the mailbox exist incase createfolderstructure is false
-								if ( !$this->_mailbox[ 'imap_createfolderstructure' ] || $this->_mail_api->mailboxExist( $t_foldername ) === TRUE )
-								{
-									// Exchange does not seem to like numMsg so that was changed to getListing
-									// getListing returns an error when there are no emails in an IMAP folder.
-									// After 10 errors Exchange will ignore the connection and any further commands will fail with ", "
-									// 10 errors or more can happen when imap_createfolderstructure is ON
-									// examineMailbox allows EmailReporting to check whether or not there are emails in the folder without producing an error
-									$t_examineresult = $this->_mail_api->examineMailbox( $t_foldername );
-
-									if ( !$this->pear_error( 'Examine IMAP folder', $t_examineresult ) && $t_examineresult[ 'EXISTS' ] > 0 )
-									{
-										$t_selectresult = $this->_mail_api->selectMailbox( $t_foldername );
-
-										if ( !$this->pear_error( 'Select IMAP folder', $t_selectresult ) )
-										{
-											$t_ListMsgs = $this->_mail_api->getListing();
-
-											if ( !$this->pear_error( 'Retrieve list of messages', $t_ListMsgs ) )
-											{
-												$t_flags = $this->_mail_api->getFlags();
-
-												while ( $t_Msg = array_pop( $t_ListMsgs ) )
-												{
-													$t_isDeleted = $this->_mail_api->isDeleted( $t_Msg[ 'msg_id' ], $t_flags );
-
-													if ( $this->pear_error( 'Check email deleted flag', $t_isDeleted ) )
-													{
-														// Should we stop processing if the flag cannot be verified or process the email?
-														// Let's ignore the email and hope the check works on the next run
-														$t_isDeleted = TRUE;
-													}
-
-													if ( $t_isDeleted === TRUE )
-													{
-														// Email marked as deleted. Do nothing
-													}
-													else
-													{
-														$t_emailresult = $this->process_single_email( $t_Msg[ 'msg_id' ], (int) $t_project[ 'id' ] );
-
-														if ( $t_emailresult === TRUE )
-														{
-															$t_deleteresult = $this->_mail_api->deleteMsg( $t_Msg[ 'msg_id' ] );
-
-															$this->pear_error( 'Attempt delete email', $t_deleteresult );
-														}
-													}
-												}
-											}
-										}
-									}
-								}
-								elseif ( $this->_mailbox[ 'imap_createfolderstructure' ] == ON )
-								{
-									// create this mailbox
-									$t_createresult = $this->_mail_api->createMailbox( $t_foldername );
-
-									$this->pear_error( 'Create IMAP folder: "' . $t_foldername . '"', $t_createresult );
-								}
-							}
-							elseif ( $this->_mailbox[ 'imap_createfolderstructure' ] == OFF )
-							{
-								$this->custom_error( 'Project is disabled: ' . $t_project[ 'name' ] );
-							}
-						}
-					}
+					$this->custom_error( $this->_mail_api->getError(), TRUE, 'Check exist IMAP basefolder' );
 				}
 				else
 				{
 					$this->custom_error( 'IMAP basefolder not found' );
 				}
+				return( FALSE );
 			}
 
+			if ( $this->_test_only === TRUE )
+			{
+				return( TRUE );
+			}
+
+			// There does not seem to be a viable api function which removes this plugins dependability on table column names
+			// So if a column name is changed it might cause problems if the code below depends on it.
+			// Luckily we only depend on id, name and enabled
+			if ( $this->_mailbox[ 'imap_createfolderstructure' ] == ON )
+			{
+				$t_projects = project_get_all_rows();
+			}
+			else
+			{
+				$t_projects = array( 0 => project_get_row( $this->_mailbox[ 'project_id' ] ) );
+			}
+
+			$t_hierarchydelimiter = $this->_mail_api->getHierarchyDelimiter();
+
+			foreach ( $t_projects AS $t_project )
+			{
+				if ( $t_project[ 'enabled' ] == OFF )
+				{
+					if ( $this->_mailbox[ 'imap_createfolderstructure' ] == OFF )
+					{
+						$this->custom_error( 'Project is disabled: ' . $t_project[ 'name' ] );
+					}
+					continue;
+				}
+
+				$t_project_name = $this->cleanup_project_name( $t_project[ 'name' ] );
+
+				$t_foldername = str_replace( '/', $t_hierarchydelimiter, $this->_mailbox[ 'imap_basefolder' ] ) . ( ( $this->_mailbox[ 'imap_createfolderstructure' ] ) ? $t_hierarchydelimiter . $t_project_name : NULL );
+
+				// We don't need to check twice whether the mailbox exist incase createfolderstructure is false
+				$t_projectfolder_exists = ( ( $this->_mailbox[ 'imap_createfolderstructure' ] == ON ) ? $this->_mail_api->mailboxExist( $t_foldername ) : TRUE );
+
+				if ( $t_projectfolder_exists === FALSE )
+				{
+					if ( $this->_mail_api->hasError() )
+					{
+						$this->custom_error( $this->_mail_api->getError(), TRUE, 'Check exist IMAP project folder' );
+						return( FALSE );
+					}
+
+					if ( $this->_mailbox[ 'imap_createfolderstructure' ] == ON )
+					{
+						// create this mailbox
+						$t_createresult = $this->_mail_api->createMailbox( $t_foldername );
+
+						if ( $t_createresult === FALSE )
+						{
+							$this->custom_error( $this->_mail_api->getError(), TRUE, 'Create IMAP folder: "' . $t_foldername . '"' );
+							return( FALSE );
+						}
+					}
+					else
+					{
+						$this->custom_error( 'Unknown situation. I should never get here.' );
+						return( FALSE );
+					}
+				}
+
+				// Exchange does not seem to like numMsg so that was changed to getListing
+				// getListing returns an error when there are no emails in an IMAP folder.
+				// After 10 errors Exchange will ignore the connection and any further commands will fail with ", "
+				// 10 errors or more can happen when imap_createfolderstructure is ON
+				// examineMailbox allows EmailReporting to check whether or not there are emails in the folder without producing an error
+				$t_examineresult = $this->_mail_api->examineMailbox( $t_foldername );
+
+				if ( $t_examineresult === FALSE )
+				{
+					$this->custom_error( $this->_mail_api->getError(), TRUE, 'Examine IMAP folder' );
+					return( FALSE );
+				}
+
+				if ( $t_examineresult[ 'EXISTS' ] == 0 )
+				{
+					continue;
+				}
+
+				$t_selectresult = $this->_mail_api->selectMailbox( $t_foldername );
+
+				if ( $t_selectresult === FALSE )
+				{
+					$this->custom_error( $this->_mail_api->getError(), TRUE, 'Select IMAP folder' );
+					return( FALSE );
+				}
+
+				$t_ListMsgs = $this->_mail_api->getListing();
+
+				if ( $t_ListMsgs === FALSE )
+				{
+					$this->custom_error( $this->_mail_api->getError(), TRUE, 'Retrieve list of messages' );
+					return( FALSE );
+				}
+
+				while ( !empty( $t_ListMsgs ) )
+				{
+					$t_Msg = array_shift( $t_ListMsgs );
+					$t_isDeleted = $this->_mail_api->isDeleted( $t_Msg[ 'msg_id' ] );
+
+					if ( $t_isDeleted === FALSE && $this->_mail_api->hasError() )
+					{
+						$this->custom_error( $this->_mail_api->getError(), TRUE, 'Check email deleted flag' );
+
+						// Should we stop processing if the flag cannot be verified or process the email?
+						// Let's ignore the email and hope the check works on the next run
+						$t_isDeleted = TRUE;
+					}
+
+					if ( $t_isDeleted === TRUE )
+					{
+						continue;
+					}
+
+					$t_emailresult = $this->process_single_email( $t_Msg[ 'msg_id' ], (int) $t_project[ 'id' ] );
+
+					if ( $t_emailresult === TRUE )
+					{
+						$t_deleteresult = $this->_mail_api->deleteMsg( $t_Msg[ 'msg_id' ] );
+
+						if ( $t_deleteresult === FALSE )
+						{
+							$this->custom_error( $this->_mail_api->getError(), TRUE, 'Attempt delete email' );
+							return( FALSE );
+						}
+					}
+				}
+			}
+		}
+		finally
+		{
 			//$this->_mail_api->expunge(); //disabled as this is handled by the disconnect
 
 			// mail_delete decides whether to perform the expunge command before closing the connection
 			$this->_mail_api->disconnect( (bool) $this->_mail_delete );
 		}
-		else
-		{
-			$this->custom_error( 'Failed to connect to the mail server' . ( ( $this->_mailbox[ 'encryption' ] !== 'None' && $this->_mailbox[ 'ssl_cert_verify' ] == ON ) ? '. This could possibly be because SSL certificate verification failed' : NULL ) );
-		}
+
+		return( TRUE );
 	}
 
 	# --------------------
@@ -572,6 +652,8 @@ class ERP_mailbox_api
 	# Get an OAuth accesstoken for XOAUTH2
 	private function get_OAuth2_AccessToken()
 	{
+		plugin_require_api( 'core/oauth2_api.php' );
+
 		if ( $this->_mailbox[ 'auth_method' ] === 'XOAUTH2' )
 		{
 			if ( !extension_loaded( 'openssl' ) )
@@ -639,8 +721,9 @@ class ERP_mailbox_api
 
 		$t_msg = $this->_mail_api->getMsg( $p_i );
 
-		if ( $this->pear_error( 'Retrieve raw message', $t_msg ) )
+		if ( $t_msg === FALSE )
 		{
+			$this->custom_error( $this->_mail_api->getError(), TRUE, 'Retrieve raw message' );
 			return( FALSE );
 		}
 
