@@ -1,6 +1,10 @@
 Changelog:
 ??? - EmailReporting-0.12.1
 	- Fix incorrect variable passed to ParseTNEF
+	- Moved Net_POP3 and Net_IMAP code to separate class.
+	- Improved error handling IMAP and POP3 connection
+	- Add option mail_engine
+	- Add option mail_max_memory_usage
 
 Aug 2026 - EmailReporting-0.12.0
 	- Drop support for MantisBT 1.3.x
