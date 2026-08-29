@@ -200,101 +200,96 @@ class ERP_mailbox_api
 		
 		$this->_mailbox = $p_mailbox + ERP_get_default_mailbox();
 
-		if ( $this->_functionality_enabled )
+		if ( $this->_functionality_enabled === FALSE )
 		{
-			if ( $this->_mailbox[ 'enabled' ] )
+			$this->custom_error( 'EmailReporting not initialised properly' );
+			return( $this->_result );
+		}
+
+		if ( $this->_mailbox[ 'enabled' ] == FALSE )
+		{
+			$this->custom_error( 'Mailbox disabled' );
+			return( $this->_result );
+		}
+
+		// Check whether EmailReporting supports the mailbox type. The check is based on available default ports
+		if ( !isset( $this->_default_ports[ $this->_mailbox[ 'mailbox_type' ] ] ) )
+		{
+			$this->custom_error( 'Unknown mailbox type' );
+			return( $this->_result );
+		}
+
+		if ( !project_exists( $this->_mailbox[ 'project_id' ] ) )
+		{
+			$this->custom_error( 'Project does not exist' );
+			return( $this->_result );
+		}
+
+		if ( !category_exists( $this->_mailbox[ 'global_category_id' ] ) )
+		{
+			$this->custom_error( 'Category does not exist' );
+			return( $this->_result );
+		}
+
+		$t_upload_folder_passed = TRUE;
+
+		if ( $this->_allow_file_upload && $this->_file_upload_method == DISK )
+		{
+			$t_upload_folder_passed = FALSE;
+
+			$t_file_path = project_get_field( $this->_mailbox[ 'project_id' ], 'file_path' );
+			if( $t_file_path == '' )
 			{
-				// Check whether EmailReporting supports the mailbox type. The check is based on available default ports
-				if ( isset( $this->_default_ports[ $this->_mailbox[ 'mailbox_type' ] ] ) )
-				{
-					if ( project_exists( $this->_mailbox[ 'project_id' ] ) )
-					{
-						if ( category_exists( $this->_mailbox[ 'global_category_id' ] ) )
-						{
-							$t_upload_folder_passed = TRUE;
+				$t_file_path = config_get( 'absolute_path_default_upload_folder' );
+			}
 
-							if ( $this->_allow_file_upload && $this->_file_upload_method == DISK )
-							{
-								$t_upload_folder_passed = FALSE;
+			$t_file_path = ERP_prepare_directory_string( $t_file_path, TRUE );
+			$t_real_file_path = ERP_prepare_directory_string( $t_file_path );
 
-								$t_file_path = project_get_field( $this->_mailbox[ 'project_id' ], 'file_path' );
-								if( $t_file_path == '' )
-								{
-									$t_file_path = config_get( 'absolute_path_default_upload_folder' );
-								}
-
-								$t_file_path = ERP_prepare_directory_string( $t_file_path, TRUE );
-								$t_real_file_path = ERP_prepare_directory_string( $t_file_path );
-
-								if( !file_exists( $t_file_path ) || !is_dir( $t_file_path ) || !is_writable( $t_file_path ) || !is_readable( $t_file_path ) )
-								{
-									$this->custom_error( 'Upload folder is not writable: ' . $t_file_path . "\n" );
-								}
-								elseif ( strcasecmp( $t_real_file_path, $t_file_path ) !== 0 )
-								{
-									$this->custom_error( 'Upload folder is not an absolute path' . "\n" .
-										'Upload folder: ' . $t_file_path . "\n" .
-										'Absolute path: ' . $t_real_file_path . "\n" );
-								}
-								else
-								{
-									$t_upload_folder_passed = TRUE;
-								}
-							}
-
-							if ( $t_upload_folder_passed )
-							{
-								if ( !$this->_test_only && $this->_mail_debug )
-								{
-									var_dump( $this->_mailbox );
-									echo "\n";
-								}
-
-								$this->show_memory_usage( 'Start process mailbox' );
-
-								$this->prepare_mailbox_hostname();
-
-								if ( $this->_mailbox[ 'auth_method' ] === 'XOAUTH2' )
-								{
-									$this->_mailbox[ 'access_token' ] = $this->get_OAuth2_AccessToken();
-
-									if ( $this->_mailbox[ 'access_token' ] === FALSE )
-									{
-										unset( $this->_mailbox[ 'access_token' ] );
-										return( $this->_result );
-									}
-								}
-
-								$t_process_mailbox_function = 'process_' . strtolower( $this->_mailbox[ 'mailbox_type' ] ) . '_mailbox';
-
-								$this->$t_process_mailbox_function();
-
-								$this->show_memory_usage( 'Finished process mailbox' );
-							}
-						}
-						else
-						{
-							$this->custom_error( 'Category does not exist' );
-						}
-					}
-					else
-					{
-						$this->custom_error( 'Project does not exist' );
-					}
-				}
-				else
-				{
-					$this->custom_error( 'Unknown mailbox type' );
-				}
+			if( !file_exists( $t_file_path ) || !is_dir( $t_file_path ) || !is_writable( $t_file_path ) || !is_readable( $t_file_path ) )
+			{
+				$this->custom_error( 'Upload folder is not writable: ' . $t_file_path . "\n" );
+			}
+			elseif ( strcasecmp( $t_real_file_path, $t_file_path ) !== 0 )
+			{
+				$this->custom_error( 'Upload folder is not an absolute path' . "\n" .
+					'Upload folder: ' . $t_file_path . "\n" .
+					'Absolute path: ' . $t_real_file_path . "\n" );
 			}
 			else
 			{
-				$this->custom_error( 'Mailbox disabled' );
+				$t_upload_folder_passed = TRUE;
 			}
 		}
-		else
+
+		if ( $t_upload_folder_passed )
 		{
-			$this->custom_error( 'EmailReporting not initialised properly' );
+			if ( !$this->_test_only && $this->_mail_debug )
+			{
+				var_dump( $this->_mailbox );
+				echo "\n";
+			}
+
+			$this->show_memory_usage( 'Start process mailbox' );
+
+			$this->prepare_mailbox_hostname();
+
+			if ( $this->_mailbox[ 'auth_method' ] === 'XOAUTH2' )
+			{
+				$this->_mailbox[ 'access_token' ] = $this->get_OAuth2_AccessToken();
+
+				if ( $this->_mailbox[ 'access_token' ] === FALSE )
+				{
+					unset( $this->_mailbox[ 'access_token' ] );
+					return( $this->_result );
+				}
+			}
+
+			$t_process_mailbox_function = 'process_' . strtolower( $this->_mailbox[ 'mailbox_type' ] ) . '_mailbox';
+
+			$this->$t_process_mailbox_function();
+
+			$this->show_memory_usage( 'Finished process mailbox' );
 		}
 
 		return( $this->_result );
