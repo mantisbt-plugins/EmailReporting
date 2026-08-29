@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+/**
+ * Error handling contract:
+ *
+ **- Methods return their normal success/failure values.
+ * - Transport errors are stored internally.
+ * - callers must check hasError()/getError() after a failed operation.
+ * * getError() clears the stored error.
+ */
+
 abstract class ERP_OAuthProvider
 {
 	private ?string $cachedAccessToken = null;
