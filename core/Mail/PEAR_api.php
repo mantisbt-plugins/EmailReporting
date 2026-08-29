@@ -73,7 +73,7 @@ abstract class ERP_PEAR_Transport
 	{
 		if ( PEAR::isError( $p_pear ) )
 		{
-			$this->setError( $p_pear->getMessage() );
+			$this->setError( $p_pear->getMessage() . '(' . $p_pear->getCode . ')' );
 
 			return( TRUE );
 		}
