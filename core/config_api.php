@@ -986,7 +986,7 @@ function ERP_custom_function_print_auth_method_option_list( $p_sel_value )
 	}
 	else
 	{
-		$this->custom_error( 'No valid mail engine selected.' );
+		echo '<option>No valid mail engine selected.</option>' ;
 		return( FALSE );
 	}
 
