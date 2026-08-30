@@ -1092,12 +1092,12 @@ function ERP_custom_function_print_global_category_option_list( $p_sel_value )
 			echo '<optgroup label="' . string_attribute( $t_project_name ) . '">';
 		}
 
-		$t_cat_arr = category_get_all_rows( $t_project_id, false, false, false );
+		$t_cat_arr = category_get_all_rows( $t_project_id, FALSE, FALSE, FALSE );
 		foreach( $t_cat_arr as $t_category_row )
 		{
 			$t_category_id = (int) $t_category_row[ 'id' ];
 			$t_disabled = $t_category_row[ 'status' ] == CATEGORY_STATUS_DISABLED;
-			$t_category_name = category_full_name( $t_category_id, false );
+			$t_category_name = category_full_name( $t_category_id, FALSE );
 			echo '<option value="' . $t_category_id . '"';
 			check_selected( $t_sel_values, $t_category_id );
 			if ( $t_disabled )
@@ -1139,9 +1139,16 @@ function ERP_custom_function_print_projects_option_list( $p_sel_value )
 
 	foreach ( $t_projects_sorted AS $t_project_id => $t_project_name )
 	{
-		echo '<option value="' . $t_all_projects[ $t_project_id ][ 'id' ] . '"';
-		check_selected( (array) $p_sel_value, (int) $t_all_projects[ $t_project_id ][ 'id' ] );
-		echo '>' . ( ( $t_all_projects[ $t_project_id ][ 'enabled' ] == FALSE ) ? '* ' : NULL ) . string_attribute( $t_all_projects[ $t_project_id ][ 'name' ] ) . '</option>' . "\n";
+		$t_project_id = (int) $t_all_projects[ $t_project_id ][ 'id' ];
+		$t_disabled = $t_all_projects[ $t_project_id ][ 'enabled' ] == FALSE;
+		$t_project_name = $t_all_projects[ $t_project_id ][ 'name' ];
+		echo '<option value="' . $t_project_id . '"';
+		check_selected( (array) $p_sel_value, $t_project_id );
+		if ( $t_disabled )
+		{
+			$t_project_name = '* ' . $t_project_name;
+		}
+		echo '>' . string_attribute( $t_project_name ) . '</option>' . "\n";
 	}
 }
 
