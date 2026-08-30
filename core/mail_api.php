@@ -228,7 +228,7 @@ class ERP_mailbox_api
 		$t_project_enabled = project_enabled( $this->_mailbox[ 'project_id' ] );
 		if ( $t_project_enabled == FALSE )
 		{
-			$t_project_name = project_get_field( $this->_mailbox[ 'project_id' ], 'name' );
+			$t_project_name = project_get_name( $this->_mailbox[ 'project_id' ] );
 			$this->custom_error( 'Project is disabled: ' . $t_project_name );
 			return( $this->_result );
 		}
@@ -244,7 +244,7 @@ class ERP_mailbox_api
 			$t_category_enabled = category_is_enabled( $this->_mailbox[ 'global_category_id' ] );
 			if ( $t_category_enabled == CATEGORY_STATUS_DISABLED )
 			{
-				$t_category_name = category_get_field( $this->_mailbox[ 'global_category_id' ], 'name' );
+				$t_category_name = category_get_name( $this->_mailbox[ 'global_category_id' ] );
 				$this->custom_error( 'Category is disabled: ' . $t_category_name );
 				return( $this->_result );
 			}
