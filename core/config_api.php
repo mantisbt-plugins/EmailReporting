@@ -1058,6 +1058,7 @@ function ERP_custom_function_print_encryption_option_list( $p_sel_value )
 function ERP_custom_function_print_global_category_option_list( $p_sel_value )
 {
 	// Fix for older MantisBT pre 2.27 versions
+	// Set to 1 because old mantisbt would return 0 as enabled
 	if ( !defined( "CATEGORY_STATUS_DISABLED" ) )
 	{
 		define( "CATEGORY_STATUS_DISABLED", 1 );
@@ -1099,7 +1100,10 @@ function ERP_custom_function_print_global_category_option_list( $p_sel_value )
 			$t_category_name = category_full_name( $t_category_id, false );
 			echo '<option value="' . $t_category_id . '"';
 			check_selected( $t_sel_values, $t_category_id );
-			check_disabled( $t_disabled );
+			if ( $t_disabled )
+			{
+				$t_category_name = '* ' . $t_category_name;
+			}
 			echo '>';
 			echo string_attribute( $t_category_name ), '</option>', PHP_EOL;
 		}
