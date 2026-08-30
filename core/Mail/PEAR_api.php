@@ -35,7 +35,7 @@ abstract class ERP_PEAR_Transport
 	{
 		$t_loginresult = $this->_mailserver->login( $p_mailbox_username, $p_mailbox_password, $p_mailbox_auth_method );
 
-		if ( $this->pear_error( $t_loginresult ) )
+		if ( $this->isError( $t_loginresult ) )
 		{
 			return( FALSE );
 		}
@@ -49,7 +49,7 @@ abstract class ERP_PEAR_Transport
 	{
 		$t_deleteresult = $this->_mailserver->deleteMsg( $p_msg_id );
 
-		if ( $this->pear_error( $t_deleteresult ) )
+		if ( $this->isError( $t_deleteresult ) )
 		{
 			return( FALSE );
 		}
@@ -67,13 +67,14 @@ abstract class ERP_PEAR_Transport
 	}
 
 	# --------------------
-	# Set pear error when pear operation failed
-	#  return a boolean for whether the mailbox has failed
-	protected function pear_error( &$p_pear )
+	# Check whether an operation result contains an error.
+	# When an error is detected it is stored internally.
+	# Returns TRUE when an error was detected.
+	protected function isError( &$p_result )
 	{
-		if ( PEAR::isError( $p_pear ) )
+		if ( PEAR::isError( $p_result ) )
 		{
-			$this->setError( $p_pear->getMessage() . '(' . $p_pear->getCode() . ')' );
+			$this->setError( $p_result->getMessage() . ' (' . $p_result->getCode() . ')' );
 
 			return( TRUE );
 		}
@@ -123,7 +124,7 @@ class ERP_PEAR_POP3_Transport extends ERP_PEAR_Transport
 	{
 		$t_connectresult = $this->_mailserver->connect( $p_hostname, $p_port, $this->get_StreamContextOptions() );
 
-		if ( $this->pear_error( $t_connectresult ) )
+		if ( $this->isError( $t_connectresult ) )
 		{
 			return( FALSE );
 		}
@@ -142,7 +143,7 @@ class ERP_PEAR_POP3_Transport extends ERP_PEAR_Transport
 
 		$t_disconnectresult = $this->_mailserver->disconnect();
 
-		if ( $this->pear_error( $t_disconnectresult ) )
+		if ( $this->isError( $t_disconnectresult ) )
 		{
 			return( FALSE );
 		}
@@ -156,7 +157,7 @@ class ERP_PEAR_POP3_Transport extends ERP_PEAR_Transport
 	{
 		$t_ListMsgs = $this->_mailserver->getListing();
 
-		if ( $this->pear_error( $t_ListMsgs ) )
+		if ( $this->isError( $t_ListMsgs ) )
 		{
 			return( FALSE );
 		}
@@ -176,7 +177,7 @@ class ERP_PEAR_POP3_Transport extends ERP_PEAR_Transport
 
 		$t_msg = $this->_mailserver->getMsg( $p_msg_id );
 
-		if ( $this->pear_error( $t_msg ) )
+		if ( $this->isError( $t_msg ) )
 		{
 			return( FALSE );
 		}
@@ -216,7 +217,7 @@ class ERP_PEAR_IMAP_Transport extends ERP_PEAR_Transport
 
 		$t_connectresult = $this->_mailserver->connect( $p_hostname, $p_port, $p_STARTTLS );
 
-		if ( $this->pear_error( $t_connectresult ) )
+		if ( $this->isError( $t_connectresult ) )
 		{
 			return( FALSE );
 		}
@@ -241,7 +242,7 @@ class ERP_PEAR_IMAP_Transport extends ERP_PEAR_Transport
 
 		$t_disconnectresult = $this->_mailserver->disconnect( (bool) $p_expunge );
 
-		if ( $this->pear_error( $t_disconnectresult ) )
+		if ( $this->isError( $t_disconnectresult ) )
 		{
 			return( FALSE );
 		}
@@ -279,7 +280,7 @@ class ERP_PEAR_IMAP_Transport extends ERP_PEAR_Transport
 
 		$t_ListMsgs = $this->_mailserver->getListing();
 
-		if ( $this->pear_error( $t_ListMsgs ) )
+		if ( $this->isError( $t_ListMsgs ) )
 		{
 			return( FALSE );
 		}
@@ -304,7 +305,7 @@ class ERP_PEAR_IMAP_Transport extends ERP_PEAR_Transport
 		// Net_IMAP 1.1.0 and 1.1.2 seems to have a somewhat broken getMsg function.
 		$t_msg = $this->_mailserver->getMessages( $p_msg_id, TRUE );
 
-		if ( $this->pear_error( $t_msg ) )
+		if ( $this->isError( $t_msg ) )
 		{
 			return( FALSE );
 		}
@@ -331,7 +332,7 @@ class ERP_PEAR_IMAP_Transport extends ERP_PEAR_Transport
 		{
 			$this->_getFlags = $this->_mailserver->getFlags();
 
-			if ( $this->pear_error( $this->_getFlags ) )
+			if ( $this->isError( $this->_getFlags ) )
 			{
 				return( FALSE );
 			}
@@ -358,7 +359,7 @@ class ERP_PEAR_IMAP_Transport extends ERP_PEAR_Transport
 	{
 		$t_getCurrentMailbox = $this->_mailserver->getCurrentMailbox();
 
-		if ( $this->pear_error( $t_getCurrentMailbox ) )
+		if ( $this->isError( $t_getCurrentMailbox ) )
 		{
 			return( FALSE );
 		}
@@ -373,7 +374,7 @@ class ERP_PEAR_IMAP_Transport extends ERP_PEAR_Transport
 	{
 		$t_mailboxExist = $this->_mailserver->mailboxExist( $p_foldername );
 
-		if ( $this->pear_error( $t_mailboxExist ) )
+		if ( $this->isError( $t_mailboxExist ) )
 		{
 			return( FALSE );
 		}
@@ -387,7 +388,7 @@ class ERP_PEAR_IMAP_Transport extends ERP_PEAR_Transport
 	{
 		$t_getHierarchyDelimiter = $this->_mailserver->getHierarchyDelimiter();
 
-		if ( $this->pear_error( $t_getHierarchyDelimiter ) )
+		if ( $this->isError( $t_getHierarchyDelimiter ) )
 		{
 			return( FALSE );
 		}
@@ -401,7 +402,7 @@ class ERP_PEAR_IMAP_Transport extends ERP_PEAR_Transport
 	{
 		$t_examineMailbox = $this->_mailserver->examineMailbox( $p_foldername );
 
-		if ( $this->pear_error( $t_examineMailbox ) )
+		if ( $this->isError( $t_examineMailbox ) )
 		{
 			return( FALSE );
 		}
@@ -415,7 +416,7 @@ class ERP_PEAR_IMAP_Transport extends ERP_PEAR_Transport
 	{
 		$t_selectMailbox = $this->_mailserver->selectMailbox( $p_foldername );
 
-		if ( $this->pear_error( $t_selectMailbox ) )
+		if ( $this->isError( $t_selectMailbox ) )
 		{
 			return( FALSE );
 		}
@@ -432,7 +433,7 @@ class ERP_PEAR_IMAP_Transport extends ERP_PEAR_Transport
 	{
 		$t_createMailbox = $this->_mailserver->createMailbox( $p_foldername );
 
-		if ( $this->pear_error( $t_createMailbox ) )
+		if ( $this->isError( $t_createMailbox ) )
 		{
 			return( FALSE );
 		}
