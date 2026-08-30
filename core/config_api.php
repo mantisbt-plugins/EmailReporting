@@ -1137,11 +1137,10 @@ function ERP_custom_function_print_projects_option_list( $p_sel_value )
 
 	natcasesort( $t_projects_sorted );
 
-	foreach ( $t_projects_sorted AS $t_project_id => $t_project_name )
+	foreach ( $t_projects_sorted AS $t_key => $t_project_name )
 	{
-		$t_project_id = (int) $t_all_projects[ $t_project_id ][ 'id' ];
-		$t_disabled = $t_all_projects[ $t_project_id ][ 'enabled' ] == FALSE;
-		$t_project_name = $t_all_projects[ $t_project_id ][ 'name' ];
+		$t_project_id = (int) $t_all_projects[ $t_key ][ 'id' ];
+		$t_disabled = $t_all_projects[ $t_key ][ 'enabled' ] == FALSE;
 		echo '<option value="' . $t_project_id . '"';
 		check_selected( (array) $p_sel_value, $t_project_id );
 		if ( $t_disabled )
