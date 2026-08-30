@@ -225,10 +225,29 @@ class ERP_mailbox_api
 			return( $this->_result );
 		}
 
+		$t_project_enabled = project_enabled( $this->_mailbox[ 'project_id' ] );
+		if ( $t_project_enabled == FALSE )
+		{
+			$t_project_name = project_get_field( $this->_mailbox[ 'project_id' ], 'name' );
+			$this->custom_error( 'Project is disabled: ' . $t_project_name );
+			return( $this->_result );
+		}
+
 		if ( !category_exists( $this->_mailbox[ 'global_category_id' ] ) )
 		{
 			$this->custom_error( 'Category does not exist' );
 			return( $this->_result );
+		}
+
+		if ( function_exists( 'category_is_enabled' ) )
+		{
+			$t_category_enabled = category_is_enabled( $this->_mailbox[ 'global_category_id' ] );
+			if ( $t_category_enabled == CATEGORY_STATUS_DISABLED )
+			{
+				$t_category_name = category_get_field( $this->_mailbox[ 'global_category_id' ], 'name' );
+				$this->custom_error( 'Category is disabled: ' . $t_category_name );
+				return( $this->_result );
+			}
 		}
 
 		$t_upload_folder_passed = TRUE;
@@ -365,14 +384,6 @@ class ERP_mailbox_api
 				return( TRUE );
 			}
 
-			$t_project_enabled = project_get_field( $this->_mailbox[ 'project_id' ], 'enabled' );
-			if ( $t_project_enabled == OFF )
-			{
-				$t_project_name = project_get_field( $this->_mailbox[ 'project_id' ], 'name' );
-				$this->custom_error( 'Project is disabled: ' . $t_project_name );
-				return( FALSE );
-			}
-
 			$t_ListMsgs = $this->_mail_api->getListing();
 
 			if ( $t_ListMsgs === FALSE )
@@ -493,6 +504,7 @@ class ERP_mailbox_api
 
 			foreach ( $t_projects AS $t_project )
 			{
+				// Possibly duplicate check but since we can loop through multiple projects with imap_createfolderstructure this needs to stay here
 				if ( $t_project[ 'enabled' ] == OFF )
 				{
 					if ( $this->_mailbox[ 'imap_createfolderstructure' ] == OFF )
