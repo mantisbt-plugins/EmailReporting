@@ -73,7 +73,7 @@ abstract class ERP_PEAR_Transport
 	{
 		if ( PEAR::isError( $p_pear ) )
 		{
-			$this->setError( $p_pear->getMessage() . '(' . $p_pear->getCode . ')' );
+			$this->setError( $p_pear->getMessage() . '(' . $p_pear->getCode() . ')' );
 
 			return( TRUE );
 		}
@@ -221,6 +221,12 @@ class ERP_PEAR_IMAP_Transport extends ERP_PEAR_Transport
 			return( FALSE );
 		}
 
+		if ( $this->_connected !== $t_connectresult )
+		{
+			$this->setError( 'IMAP state discrepency: _connected and connectresult show different states.' );
+			return( FALSE );
+		}
+
 		return( $t_connectresult );
 	}
 
@@ -248,6 +254,29 @@ class ERP_PEAR_IMAP_Transport extends ERP_PEAR_Transport
 	# Needed a workaround to sort IMAP emails in a certain order
 	public function getListing()
 	{
+		// Exchange does not seem to like numMsg so that was changed to getListing
+		// getListing returns an error when there are no emails in an IMAP folder.
+		// After 10 errors Exchange will ignore the connection and any further commands will fail with ", "
+		// examineMailbox allows EmailReporting to check whether or not there are emails in the folder without producing an error
+
+		$t_foldername = $this->getCurrentMailbox();
+		if ( $t_foldername === FALSE )
+		{
+			return( FALSE );
+		}
+
+		$t_examineresult = $this->examineMailbox( $t_foldername );
+
+		if ( $t_examineresult === FALSE )
+		{
+			return( FALSE );
+		}
+
+		if ( $t_examineresult[ 'EXISTS' ] == 0 )
+		{
+			return( array() );
+		}
+
 		$t_ListMsgs = $this->_mailserver->getListing();
 
 		if ( $this->pear_error( $t_ListMsgs ) )
@@ -255,9 +284,12 @@ class ERP_PEAR_IMAP_Transport extends ERP_PEAR_Transport
 			return( FALSE );
 		}
 
-		$t_ListMsgs = array_column( $t_ListMsgs, NULL, 'uidl' );
+		if ( !empty( $t_ListMsgs ) )
+		{
+			$t_ListMsgs = array_column( $t_ListMsgs, NULL, 'uidl' );
 
-		ksort( $t_ListMsgs );
+			ksort( $t_ListMsgs );
+		}
 
 		return( $t_ListMsgs );
 	}
@@ -288,7 +320,7 @@ class ERP_PEAR_IMAP_Transport extends ERP_PEAR_Transport
 	# --------------------
 	# Check whether a email is deleted
 	# Handles a workaround for problems with Net_IMAP 1.1.x with the hasFlag function (isDeleted uses that function)
-	# If FALSE is returned, check with hasError whether there was an error or if the folder did not exist
+	# If FALSE is returned, check with hasError whether there was an error or if the state is FALSE (not marked as deleted)
 	public function isDeleted( $p_msg_id )
 	{
 //		return $this->hasFlag($message_nro, '\Deleted');
@@ -365,7 +397,7 @@ class ERP_PEAR_IMAP_Transport extends ERP_PEAR_Transport
 
 	# --------------------
 	# Examine the mailbox folder
-	public function examineMailbox( $p_foldername )
+	private function examineMailbox( $p_foldername )
 	{
 		$t_examineMailbox = $this->_mailserver->examineMailbox( $p_foldername );
 

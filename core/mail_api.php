@@ -446,7 +446,15 @@ class ERP_mailbox_api
 			// If basefolder is empty we try to select the inbox folder
 			if ( is_blank( $this->_mailbox[ 'imap_basefolder' ] ) )
 			{
-				$this->_mailbox[ 'imap_basefolder' ] = $this->_mail_api->getCurrentMailbox();
+				$t_getCurrentMailbox = $this->_mail_api->getCurrentMailbox();
+
+				if ( $t_getCurrentMailbox === FALSE )
+				{
+					$this->custom_error( $this->_mail_api->getError(), TRUE, 'Get current IMAP folder' );
+					return( FALSE );
+				}
+
+				$this->_mailbox[ 'imap_basefolder' ] = $t_getCurrentMailbox;
 			}
 
 			$t_basefolder_exists = $this->_mail_api->mailboxExist( $this->_mailbox[ 'imap_basefolder' ] );
@@ -525,24 +533,6 @@ class ERP_mailbox_api
 						$this->custom_error( 'Unknown situation. I should never get here.' );
 						return( FALSE );
 					}
-				}
-
-				// Exchange does not seem to like numMsg so that was changed to getListing
-				// getListing returns an error when there are no emails in an IMAP folder.
-				// After 10 errors Exchange will ignore the connection and any further commands will fail with ", "
-				// 10 errors or more can happen when imap_createfolderstructure is ON
-				// examineMailbox allows EmailReporting to check whether or not there are emails in the folder without producing an error
-				$t_examineresult = $this->_mail_api->examineMailbox( $t_foldername );
-
-				if ( $t_examineresult === FALSE )
-				{
-					$this->custom_error( $this->_mail_api->getError(), TRUE, 'Examine IMAP folder' );
-					return( FALSE );
-				}
-
-				if ( $t_examineresult[ 'EXISTS' ] == 0 )
-				{
-					continue;
 				}
 
 				$t_selectresult = $this->_mail_api->selectMailbox( $t_foldername );
