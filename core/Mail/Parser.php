@@ -120,10 +120,12 @@ class ERP_Mail_Parser
 		}
 	}
 
+	# Passed by reference to minimise memory usage when
+	# handling large result objects and mailbox data.
 	public function setInputString( &$content )
 	{
 		$this->_file = NULL;
-		$this->_content = $content;
+		$this->_content = &$content;
 	}
 
 	public function setInputFile( $file )
@@ -271,6 +273,8 @@ class ERP_Mail_Parser
 		return( $t_encode );
 	}
 
+	# Passed by reference to minimise memory usage when
+	# handling large result objects and mailbox data.
 	private function decode( &$email )
 	{
 		$decoder = new Mail_mimeDecode( $email );
@@ -291,6 +295,8 @@ class ERP_Mail_Parser
 		return( $structure );
 	}
 
+	# Passed by reference to minimise memory usage when
+	# handling large result objects and mailbox data.
 	private function parse_signed_content( &$structure )
 	{
 		if ( is_object( $structure ) )
@@ -374,6 +380,8 @@ class ERP_Mail_Parser
 		return( $this->_is_auto_reply );
 	}
 
+	# Passed by reference to minimise memory usage when
+	# handling large result objects and mailbox data.
 	private function parseStructure( &$structure )
 	{
 		if ( isset( $structure->headers[ 'from' ] ) )
@@ -577,6 +585,8 @@ class ERP_Mail_Parser
 		return( TRUE );
 	}
 
+	# Passed by reference to minimise memory usage when
+	# handling large result objects and mailbox data.
 	private function setParts( &$parts, $attachment = FALSE, $p_attached_email_subject = NULL )
 	{
 		if ( !array_key_exists( 0, $parts ) )
@@ -676,7 +686,8 @@ class ERP_Mail_Parser
 		}
 	}
 
-	// @TODO doesn't yet deal with TNEF decode errors
+	# Passed by reference to minimise memory usage when
+	# handling large result objects and mailbox data.
 	private function ParseTNEF( &$TNEFpart )
 	{
 		if ( $this->_parse_tnef )
@@ -714,6 +725,8 @@ class ERP_Mail_Parser
 		}
 	}
 
+	# Passed by reference to minimise memory usage when
+	# handling large result objects and mailbox data.
 	private function addPart( &$part, $p_alternative_name = NULL )
 	{
 		if ( $this->_add_attachments )

@@ -68,8 +68,12 @@ abstract class ERP_PEAR_Transport
 
 	# --------------------
 	# Check whether an operation result contains an error.
+	#
 	# When an error is detected it is stored internally.
 	# Returns TRUE when an error was detected.
+	#
+	# Passed by reference to minimise memory usage when
+	# handling large result objects and mailbox data.
 	protected function isError( &$p_result )
 	{
 		if ( PEAR::isError( $p_result ) )

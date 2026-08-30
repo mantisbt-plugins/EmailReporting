@@ -760,6 +760,9 @@ class ERP_mailbox_api
 
 	# --------------------
 	# parse the email using mimeDecode for Mantis
+	#
+	# Passed by reference to minimise memory usage when
+	# handling large result objects and mailbox data.
 	private function parse_content( &$p_msg )
 	{
 		$this->show_memory_usage( 'Start Mail Parser' );
@@ -938,6 +941,9 @@ class ERP_mailbox_api
 	# --------------------
 	# Adds a bug which is reported via email
 	# Taken from bug_report.php in MantisBT 1.2.0
+	#
+	# Passed by reference to minimise memory usage when
+	# handling large result objects and mailbox data.
 	private function add_bug( &$p_email, $p_overwrite_project_id = FALSE )
 	{
 		$this->show_memory_usage( 'Start add bug' );
@@ -1263,6 +1269,9 @@ class ERP_mailbox_api
 	# --------------------
 	# Very dirty: Adds a file to a bug.
 	# returns true on success and the filename with reason on error
+	#
+	# Passed by reference to minimise memory usage when
+	# handling large result objects and mailbox data.
 	private function add_file( $p_bug_id, &$p_part, $p_bugnote_id = NULL )
 	{
 		# Handle the file upload
@@ -1737,6 +1746,9 @@ class ERP_mailbox_api
 	# --------------------
 	# Saves the complete email to file
 	# Only works in debug mode
+	#
+	# Passed by reference to minimise memory usage when
+	# handling large result objects and mailbox data.
 	private function save_message_to_file( $message_type, &$p_msg )
 	{
 		if ( $this->_mail_debug )
@@ -1784,6 +1796,9 @@ class ERP_mailbox_api
 	# --------------------
 	# Fixes an empty subject and description with a predefined default text
 	#  $p_mail is passed by reference so no return value needed
+	#
+	# Passed by reference to minimise memory usage when
+	# handling large result objects and mailbox data.
 	private function fix_empty_fields( &$p_email )
 	{
 		if ( is_blank( $p_email[ 'Subject' ] ) )
@@ -1829,6 +1844,9 @@ class ERP_mailbox_api
 
 	# --------------------
 	# Add additional info if enabled
+	#
+	# Passed by reference to minimise memory usage when
+	# handling large result objects and mailbox data.
 	private function add_additional_info( $p_type, &$p_email, $p_description )
 	{
 		$t_additional_info = NULL;
@@ -1853,6 +1871,9 @@ class ERP_mailbox_api
 
 	# --------------------
 	# Limit email body size
+	#
+	# Passed by reference to minimise memory usage when
+	# handling large result objects and mailbox data.
 	private function limit_body_size( $p_type, $p_description, &$p_email )
 	{
 		$t_description = $p_description;
