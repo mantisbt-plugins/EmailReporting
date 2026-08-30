@@ -6,6 +6,7 @@ Changelog:
 	- Add option mail_engine
 	- Add option mail_max_memory_usage
 	- Add check for category enabled
+	- Minor improvements to category and projects handling
 
 Aug 2026 - EmailReporting-0.12.0
 	- Drop support for MantisBT 1.3.x
