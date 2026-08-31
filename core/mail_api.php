@@ -291,7 +291,7 @@ class ERP_mailbox_api
 
 			$this->show_memory_usage( 'Start process mailbox' );
 
-			$this->prepare_mailbox_hostname();
+			$this->prepare_mailbox_port();
 
 			if ( $this->_mailbox[ 'auth_method' ] === 'XOAUTH2' )
 			{
@@ -315,8 +315,8 @@ class ERP_mailbox_api
 	}
 
 	# --------------------
-	# Show non-pear error
-	#  set $this->result to an array with the error or show it
+	# Show an error
+	#  set $this->result to an array with the error and show it when not testing
 	private function custom_error( $p_error_text, $p_is_error = TRUE, $p_location = NULL )
 	{
 		$t_error_text = 'Message: ' . $p_error_text . "\n";
@@ -357,7 +357,7 @@ class ERP_mailbox_api
 			return( FALSE );
 		}
 
-		$t_connectresult = $this->_mail_api->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ] );
+		$t_connectresult = $this->_mail_api->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ], $this->_mailbox[ 'encryption' ] );
 
 		if ( $t_connectresult !== TRUE )
 		{
@@ -1391,33 +1391,25 @@ class ERP_mailbox_api
 	}
 
 	# --------------------
-	# return the hostname parsed into a hostname + port
-	private function prepare_mailbox_hostname()
+	# Set the default port number incase it is empty
+	private function prepare_mailbox_port()
 	{
-		$t_def_mailbox_port_index = 'normal';
-		$this->_mailbox[ 'port' ] = (int) $this->_mailbox[ 'port' ];
-
-		if ( $this->_mailbox[ 'encryption' ] !== 'None' && $this->_mailbox[ 'encryption' ] !== 'STARTTLS' )
+		if ( !extension_loaded( 'openssl' ) )
 		{
-			if ( extension_loaded( 'openssl' ) )
-			{
-				$t_def_mailbox_port_index = 'encrypted';
-
-				// The IMAP pear package will enable encryption after the connection is established if the default port is used. So we need to work around that
-				// No longer needed since we disabled the code in question in IMAPProtocol.php
-//				if ( !( $this->_mailbox[ 'mailbox_type' ] === 'IMAP' && ( $this->_mailbox[ 'port' ] <= 0 || $this->_mailbox[ 'port' ] === $this->_default_ports[ $this->_mailbox[ 'mailbox_type' ] ][ $t_def_mailbox_port_index ] ) ) )
-				{
-					$this->_mailbox[ 'hostname' ] = strtolower( $this->_mailbox[ 'encryption' ] ) . '://' . $this->_mailbox[ 'hostname' ];
-				}
-			}
-			else
-			{
-				$this->custom_error( 'OpenSSL plugin not available even though the mailbox is configured to use it. Please check whether OpenSSL is properly being loaded' );
-			}
+			$this->custom_error( 'OpenSSL plugin not available even though the mailbox is configured to use it. Please check whether OpenSSL is properly being loaded.' );
 		}
+
+		$this->_mailbox[ 'port' ] = (int) $this->_mailbox[ 'port' ];
 
 		if ( $this->_mailbox[ 'port' ] <= 0 )
 		{
+			$t_def_mailbox_port_index = 'normal';
+
+			if ( $this->_mailbox[ 'encryption' ] !== 'None' && $this->_mailbox[ 'encryption' ] !== 'STARTTLS' )
+			{
+				$t_def_mailbox_port_index = 'encrypted';
+			}
+
 			$this->_mailbox[ 'port' ] = (int) $this->_default_ports[ $this->_mailbox[ 'mailbox_type' ] ][ $t_def_mailbox_port_index ];
 		}
 	}

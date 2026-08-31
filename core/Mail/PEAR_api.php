@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Error handling contract:
  *
@@ -11,27 +13,62 @@
 
 abstract class ERP_PEAR_Transport
 {
-	protected $_ssl_cert_verify;
+	protected bool $_ssl_cert_verify = TRUE;
 
-	protected $_mailserver = NULL;
+	protected ?object $_mailserver = NULL;
 
 	private array $_error = array();
 
 	# Return Stream Context Options array
-	protected function get_StreamContextOptions()
+	protected function get_StreamContextOptions(): array
 	{
 		return( array(
 			'ssl' => array
 			(
-				'verify_peer'      => (bool) $this->_ssl_cert_verify,
-				'verify_peer_name' => (bool) $this->_ssl_cert_verify
+				'verify_peer'      => $this->_ssl_cert_verify,
+				'verify_peer_name' => $this->_ssl_cert_verify
 			)
 		) );
 	}
 
 	# --------------------
+	# return the hostname with an encryption prefix (if applicable)
+	protected function prepare_mailbox_hostname( string $p_hostname, string|false $p_encryption = FALSE ): string|FALSE
+	{
+		$t_hostname = $p_hostname;
+
+		if ( $p_encryption === FALSE || $p_encryption === 'None' || $p_encryption === 'STARTTLS' )
+		{
+			return( $t_hostname );
+		}
+
+		if ( !extension_loaded( 'openssl' ) )
+		{
+			$this->setError( 'OpenSSL plugin not available even though the mailbox is configured to use it. Please check whether OpenSSL is properly being loaded.' );
+			return( FALSE );
+		}
+
+		$t_socket_transports = stream_get_transports();
+
+		if ( !in_array( strtolower( $p_encryption ), $t_socket_transports, TRUE ) )
+		{
+			$this->setError( 'Unknown encryption selected: ' . $p_encryption );
+			return( FALSE );
+		}
+
+		// The IMAP pear package will enable encryption after the connection is established if the default port is used. So we need to work around that
+		// No longer needed since we disabled the code in question in IMAPProtocol.php
+		//if ( !( $this->_mailbox[ 'mailbox_type' ] === 'IMAP' && ( $this->_mailbox[ 'port' ] <= 0 || $this->_mailbox[ 'port' ] === $this->_default_ports[ $this->_mailbox[ 'mailbox_type' ] ][ $t_def_mailbox_port_index ] ) ) )
+		{
+			$t_hostname = strtolower( $p_encryption ) . '://' . $t_hostname;
+		}
+
+		return( $t_hostname );
+	}
+
+	# --------------------
 	# Perform the login to the mailbox
-	public function login( $p_mailbox_username, $p_mailbox_password, $p_mailbox_auth_method )
+	public function login( string $p_mailbox_username, string $p_mailbox_password, string $p_mailbox_auth_method ): bool
 	{
 		$t_loginresult = $this->_mailserver->login( $p_mailbox_username, $p_mailbox_password, $p_mailbox_auth_method );
 
@@ -45,7 +82,7 @@ abstract class ERP_PEAR_Transport
 
 	# --------------------
 	# Delete a single email from a mailbox
-	public function deleteMsg( $p_msg_id )
+	public function deleteMsg( int $p_msg_id ): bool
 	{
 		$t_deleteresult = $this->_mailserver->deleteMsg( $p_msg_id );
 
@@ -59,7 +96,7 @@ abstract class ERP_PEAR_Transport
 
 	# --------------------
 	# Get supported auth methods
-	public function getsupportedAuthMethods()
+	public function getsupportedAuthMethods(): array
 	{
 		$t_supportedAuthMethods = $this->_mailserver->supportedAuthMethods;
 
@@ -74,7 +111,7 @@ abstract class ERP_PEAR_Transport
 	#
 	# Passed by reference to minimise memory usage when
 	# handling large result objects and mailbox data.
-	protected function isError( &$p_result )
+	protected function isError( mixed &$p_result ): bool
 	{
 		if ( PEAR::isError( $p_result ) )
 		{
@@ -114,9 +151,9 @@ class ERP_PEAR_POP3_Transport extends ERP_PEAR_Transport
 {
 	# --------------------
 	# Constructor
-	public function __construct( $p_ssl_cert_verify = TRUE )
+	public function __construct( int|bool $p_ssl_cert_verify = TRUE )
 	{
-		$this->_ssl_cert_verify = $p_ssl_cert_verify;
+		$this->_ssl_cert_verify = (bool) $p_ssl_cert_verify;
 
 		$this->_mailserver = new Net_POP3();
 		$this->_mailserver->_timeout = 3;
@@ -124,9 +161,16 @@ class ERP_PEAR_POP3_Transport extends ERP_PEAR_Transport
 
 	# --------------------
 	# Connnect to a mailbox
-	public function connect( $p_hostname, $p_port )
+	public function connect( string $p_hostname, int $p_port, string|FALSE $p_encryption = FALSE ): bool
 	{
-		$t_connectresult = $this->_mailserver->connect( $p_hostname, $p_port, $this->get_StreamContextOptions() );
+		$t_hostname = $this->prepare_mailbox_hostname( $p_hostname, $p_encryption );
+
+		if ( $t_hostname === FALSE )
+		{
+			return( FALSE );
+		}
+
+		$t_connectresult = $this->_mailserver->connect( $t_hostname, $p_port, $this->get_StreamContextOptions() );
 
 		if ( $this->isError( $t_connectresult ) )
 		{
@@ -138,7 +182,7 @@ class ERP_PEAR_POP3_Transport extends ERP_PEAR_Transport
 
 	# --------------------
 	# Disconnect from a mailbox
-	public function disconnect()
+	public function disconnect(): bool
 	{
 		if ( $this->_mailserver->_state === NET_POP3_STATE_DISCONNECTED )
 		{
@@ -157,7 +201,7 @@ class ERP_PEAR_POP3_Transport extends ERP_PEAR_Transport
 
 	# --------------------
 	# Return a list of emails in the mailbox
-	public function getListing()
+	public function getListing(): array|FALSE
 	{
 		$t_ListMsgs = $this->_mailserver->getListing();
 
@@ -175,10 +219,8 @@ class ERP_PEAR_POP3_Transport extends ERP_PEAR_Transport
 
 	# --------------------
 	# Return a single raw email
-	public function getMsg( $p_msg_id )
+	public function getMsg( int $p_msg_id ): string|FALSE
 	{
-		$t_msg = NULL;
-
 		$t_msg = $this->_mailserver->getMsg( $p_msg_id );
 
 		if ( $this->isError( $t_msg ) )
@@ -192,15 +234,15 @@ class ERP_PEAR_POP3_Transport extends ERP_PEAR_Transport
 
 class ERP_PEAR_IMAP_Transport extends ERP_PEAR_Transport
 {
-	private $_connected = FALSE;
+	private bool $_connected = FALSE;
 
-	private $_getFlags = array();
+	private array $_getFlags = array();
 
 	# --------------------
 	# Constructor
-	public function __construct( $p_ssl_cert_verify = TRUE )
+	public function __construct( int|bool $p_ssl_cert_verify = TRUE )
 	{
-		$this->_ssl_cert_verify = $p_ssl_cert_verify;
+		$this->_ssl_cert_verify = (bool) $p_ssl_cert_verify;
 
 		$this->_mailserver = new Net_IMAP( NULL );
 		$this->_mailserver->setTimeout( 3 );
@@ -212,14 +254,18 @@ class ERP_PEAR_IMAP_Transport extends ERP_PEAR_Transport
 
 	# --------------------
 	# Connect to a mailbox
-	public function connect( $p_hostname, $p_port, $p_STARTTLS = FALSE )
+	public function connect( string $p_hostname, int $p_port, string|FALSE $p_encryption = FALSE ): bool
 	{
-		$p_STARTTLS = (
-			$p_STARTTLS === TRUE ||
-			$p_STARTTLS === 'STARTTLS'
-		);
+		$t_hostname = $this->prepare_mailbox_hostname( $p_hostname, $p_encryption );
 
-		$t_connectresult = $this->_mailserver->connect( $p_hostname, $p_port, $p_STARTTLS );
+		if ( $t_hostname === FALSE )
+		{
+			return( FALSE );
+		}
+
+		$t_STARTTLS = $p_encryption === 'STARTTLS';
+
+		$t_connectresult = $this->_mailserver->connect( $t_hostname, $p_port, $t_STARTTLS );
 
 		if ( $this->isError( $t_connectresult ) )
 		{
@@ -237,7 +283,7 @@ class ERP_PEAR_IMAP_Transport extends ERP_PEAR_Transport
 
 	# --------------------
 	# Disconnect from a mailbox
-	public function disconnect( $p_expunge = FALSE )
+	public function disconnect( bool $p_expunge = FALSE ): bool
 	{
 		if ( $this->_connected !== TRUE )
 		{
@@ -257,7 +303,7 @@ class ERP_PEAR_IMAP_Transport extends ERP_PEAR_Transport
 	# --------------------
 	# Return a list of emails in the mailbox
 	# Needed a workaround to sort IMAP emails in a certain order
-	public function getListing()
+	public function getListing(): array|FALSE
 	{
 		// Exchange does not seem to like numMsg so that was changed to getListing
 		// getListing returns an error when there are no emails in an IMAP folder.
@@ -302,10 +348,8 @@ class ERP_PEAR_IMAP_Transport extends ERP_PEAR_Transport
 	# --------------------
 	# Return a single raw email
 	# Handles a workaround for problems with Net_IMAP 1.1.x concerning the getMsg function
-	public function getMsg( $p_msg_id )
+	public function getMsg( int $p_msg_id ): string|FALSE
 	{
-		$t_msg = NULL;
-
 		// Net_IMAP 1.1.0 and 1.1.2 seems to have a somewhat broken getMsg function.
 		$t_msg = $this->_mailserver->getMessages( $p_msg_id, TRUE );
 
@@ -326,7 +370,7 @@ class ERP_PEAR_IMAP_Transport extends ERP_PEAR_Transport
 	# Check whether a email is deleted
 	# Handles a workaround for problems with Net_IMAP 1.1.x with the hasFlag function (isDeleted uses that function)
 	# If FALSE is returned, check with hasError whether there was an error or if the state is FALSE (not marked as deleted)
-	public function isDeleted( $p_msg_id )
+	public function isDeleted( int $p_msg_id ): bool
 	{
 //		return $this->hasFlag($message_nro, '\Deleted');
 		$flag = '\Deleted';
@@ -359,7 +403,7 @@ class ERP_PEAR_IMAP_Transport extends ERP_PEAR_Transport
 
 	# --------------------
 	# Get the current folder for the mailbox
-	public function getCurrentMailbox()
+	public function getCurrentMailbox(): string|FALSE
 	{
 		$t_getCurrentMailbox = $this->_mailserver->getCurrentMailbox();
 
@@ -374,7 +418,7 @@ class ERP_PEAR_IMAP_Transport extends ERP_PEAR_Transport
 	# --------------------
 	# Check whether a folder exists.
 	# If FALSE is returned, check with hasError whether there was an error or if the folder did not exist
-	public function mailboxExist( $p_foldername )
+	public function mailboxExist( string $p_foldername ): bool
 	{
 		$t_mailboxExist = $this->_mailserver->mailboxExist( $p_foldername );
 
@@ -388,7 +432,7 @@ class ERP_PEAR_IMAP_Transport extends ERP_PEAR_Transport
 
 	# --------------------
 	# Get the hierarchy delimiter
-	public function getHierarchyDelimiter()
+	public function getHierarchyDelimiter(): string|FALSE
 	{
 		$t_getHierarchyDelimiter = $this->_mailserver->getHierarchyDelimiter();
 
@@ -402,7 +446,7 @@ class ERP_PEAR_IMAP_Transport extends ERP_PEAR_Transport
 
 	# --------------------
 	# Examine the mailbox folder
-	private function examineMailbox( $p_foldername )
+	private function examineMailbox( string $p_foldername ): array|FALSE
 	{
 		$t_examineMailbox = $this->_mailserver->examineMailbox( $p_foldername );
 
@@ -416,7 +460,7 @@ class ERP_PEAR_IMAP_Transport extends ERP_PEAR_Transport
 
 	# --------------------
 	# Select a mailbox folder
-	public function selectMailbox( $p_foldername )
+	public function selectMailbox( string $p_foldername ): bool
 	{
 		$t_selectMailbox = $this->_mailserver->selectMailbox( $p_foldername );
 
@@ -433,7 +477,7 @@ class ERP_PEAR_IMAP_Transport extends ERP_PEAR_Transport
 
 	# --------------------
 	# Create the mailbox folder
-	public function createMailbox( $p_foldername )
+	public function createMailbox( string $p_foldername ): bool
 	{
 		$t_createMailbox = $this->_mailserver->createMailbox( $p_foldername );
 
