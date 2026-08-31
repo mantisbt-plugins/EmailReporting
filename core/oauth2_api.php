@@ -13,16 +13,16 @@ declare(strict_types=1);
 
 abstract class ERP_OAuthProvider
 {
-	private ?string $cachedAccessToken = null;
-	private ?int $cachedAccessTokenExpiresAt = null;
+	private ?string $cachedAccessToken = NULL;
+	private ?int $cachedAccessTokenExpiresAt = NULL;
 
 	private array $_error = array();
 
-	abstract protected function requestAccessToken(): array|false;
+	abstract protected function requestAccessToken(): array|FALSE;
 
 	# --------------------
 	# get the accesstoken for M365
-	public function getAccessToken(): string|false
+	public function getAccessToken(): string|FALSE
 	{
 		if ($this->cachedAccessToken && $this->cachedAccessTokenExpiresAt)
 		{
@@ -54,7 +54,7 @@ abstract class ERP_OAuthProvider
 
 	# --------------------
 	# Return an XOAUTH2 formatted auth string
-	public function createXoauth2String( string $mailbox ): string|false
+	public function createXoauth2String( string $mailbox ): string|FALSE
 	{
 		$accessToken = $this->getAccessToken();
 
@@ -100,7 +100,7 @@ class ERP_Microsoft365OAuthProvider extends ERP_OAuthProvider
 	private bool $UseClientSecret = FALSE;
 	private bool $UseCertificateCredential = FALSE;
 
-	private ?array $certificateData = null;
+	private ?array $certificateData = NULL;
 
 	public function __construct(
 		private readonly string $tenantId,
@@ -109,7 +109,7 @@ class ERP_Microsoft365OAuthProvider extends ERP_OAuthProvider
 		private readonly string $pfxPath = '',
 		private readonly string $pfxPassword = '',
 		private readonly string $scope = self::DEFAULT_SCOPE,
-		?GuzzleHttp\ClientInterface $httpClient = null
+		?GuzzleHttp\ClientInterface $httpClient = NULL
 	)
 	{
 		$this->httpClient = $httpClient ?? new GuzzleHttp\Client([
@@ -143,7 +143,7 @@ class ERP_Microsoft365OAuthProvider extends ERP_OAuthProvider
 
 	# --------------------
 	# Request accesstoken from M365
-	protected function requestAccessToken(): array|false
+	protected function requestAccessToken(): array|FALSE
 	{
 		$tokenEndpoint = $this->getTokenEndpoint();
 
@@ -190,7 +190,7 @@ class ERP_Microsoft365OAuthProvider extends ERP_OAuthProvider
 
 			if (
 				$e instanceof GuzzleHttp\Exception\RequestException &&
-				$e->getResponse() !== null
+				$e->getResponse() !== NULL
 			)
 			{
 				$responseBody = (string)$e->getResponse()->getBody();
@@ -209,7 +209,7 @@ class ERP_Microsoft365OAuthProvider extends ERP_OAuthProvider
 		}
 
 		$body = (string)$response->getBody();
-		$data = json_decode($body, true);
+		$data = json_decode( $body, TRUE );
 
 		if ( !is_array( $data ) )
 		{
@@ -228,7 +228,7 @@ class ERP_Microsoft365OAuthProvider extends ERP_OAuthProvider
 
 	# --------------------
 	# Create the ClientAssertion
-	private function createClientAssertion(): string|false
+	private function createClientAssertion(): string|FALSE
 	{
 		$certificateData = $this->readPfx();
 		if ( $certificateData === FALSE )
@@ -265,16 +265,16 @@ class ERP_Microsoft365OAuthProvider extends ERP_OAuthProvider
 			$payload,
 			$certificateData[ 'privateKeyPem' ],
 			'PS256',
-			null,
+			NULL,
 			$headers
 		) );
 	}
 
 	# --------------------
 	# Read the pfx certificate
-	private function readPfx(): array|false
+	private function readPfx(): array|FALSE
 	{
-		if ( $this->certificateData !== null )
+		if ( $this->certificateData !== NULL )
 		{
 			return( $this->certificateData );
 		}
@@ -340,7 +340,7 @@ class ERP_Microsoft365OAuthProvider extends ERP_OAuthProvider
 
 	# --------------------
 	# Pem certificate to Der
-	private function pemCertificateToDer( string $certificatePem ): string|false
+	private function pemCertificateToDer( string $certificatePem ): string|FALSE
 	{
 		$certificateDer = preg_replace(
 			'/-----BEGIN CERTIFICATE-----|-----END CERTIFICATE-----|\s/',
@@ -416,7 +416,7 @@ class ERP_GoogleOAuthProvider extends ERP_OAuthProvider
 
 	# --------------------
 	# Request access token from Google
-	protected function requestAccessToken(): array|false
+	protected function requestAccessToken(): array|FALSE
 	{
 		$credentials = new Google\Auth\Credentials\ServiceAccountCredentials(
 			$this->scope,
