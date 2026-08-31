@@ -1127,6 +1127,8 @@ function ERP_custom_function_print_priority_option_list( $p_sel_value )
 # Based on MantisBT 1.2.5 function: print_project_option_list
 function ERP_custom_function_print_projects_option_list( $p_sel_value )
 {
+	$t_sel_values = (array) $p_sel_value;
+
 	$t_all_projects = project_get_all_rows();
 
 	$t_projects_sorted = array();
@@ -1142,7 +1144,7 @@ function ERP_custom_function_print_projects_option_list( $p_sel_value )
 		$t_project_id = (int) $t_all_projects[ $t_key ][ 'id' ];
 		$t_disabled = $t_all_projects[ $t_key ][ 'enabled' ] == FALSE;
 		echo '<option value="' . $t_project_id . '"';
-		check_selected( (array) $p_sel_value, $t_project_id );
+		check_selected( $t_sel_values, $t_project_id );
 		if ( $t_disabled )
 		{
 			$t_project_name = '* ' . $t_project_name;
