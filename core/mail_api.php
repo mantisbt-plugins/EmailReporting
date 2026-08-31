@@ -349,13 +349,14 @@ class ERP_mailbox_api
 		if ( $this->_mail_engine === 'PEAR' )
 		{
 			plugin_require_api( 'core/Mail/PEAR_api.php' );
-			$this->_mail_api = new ERP_PEAR_POP3_Transport( $this->_mailbox[ 'ssl_cert_verify' ] );
 		}
 		else
 		{
 			$this->custom_error( 'No valid mail engine selected.' );
 			return( FALSE );
 		}
+
+		$this->_mail_api = new ERP_POP3_Transport( $this->_mailbox[ 'ssl_cert_verify' ] );
 
 		$t_connectresult = $this->_mail_api->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ], $this->_mailbox[ 'encryption' ] );
 
@@ -424,13 +425,14 @@ class ERP_mailbox_api
 		if ( $this->_mail_engine === 'PEAR' )
 		{
 			plugin_require_api( 'core/Mail/PEAR_api.php' );
-			$this->_mail_api = new ERP_PEAR_IMAP_Transport( $this->_mailbox[ 'ssl_cert_verify' ] );
 		}
 		else
 		{
 			$this->custom_error( 'No valid mail engine selected.' );
 			return( FALSE );
 		}
+
+		$this->_mail_api = new ERP_IMAP_Transport( $this->_mailbox[ 'ssl_cert_verify' ] );
 
 		$t_connectresult = $this->_mail_api->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ], $this->_mailbox[ 'encryption' ] );
 

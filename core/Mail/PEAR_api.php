@@ -11,7 +11,7 @@ declare(strict_types=1);
  * * getError() clears the stored error.
  */
 
-abstract class ERP_PEAR_Transport
+abstract class ERP_Transport
 {
 	protected bool $_ssl_cert_verify = TRUE;
 
@@ -147,7 +147,7 @@ abstract class ERP_PEAR_Transport
 	}
 }
 
-class ERP_PEAR_POP3_Transport extends ERP_PEAR_Transport
+class ERP_POP3_Transport extends ERP_Transport
 {
 	# --------------------
 	# Constructor
@@ -232,7 +232,7 @@ class ERP_PEAR_POP3_Transport extends ERP_PEAR_Transport
 	}
 }
 
-class ERP_PEAR_IMAP_Transport extends ERP_PEAR_Transport
+class ERP_IMAP_Transport extends ERP_Transport
 {
 	private bool $_connected = FALSE;
 

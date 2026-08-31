@@ -981,14 +981,15 @@ function ERP_custom_function_print_auth_method_option_list( $p_sel_value )
 	if ( plugin_config_get( 'mail_engine' ) === 'PEAR' )
 	{
 		plugin_require_api( 'core/Mail/PEAR_api.php' );
-		$t_pop3 = new ERP_PEAR_POP3_Transport();
-		$t_imap = new ERP_PEAR_IMAP_Transport();
 	}
 	else
 	{
 		echo '<option>No valid mail engine selected.</option>' ;
 		return( FALSE );
 	}
+
+	$t_pop3 = new ERP_POP3_Transport();
+	$t_imap = new ERP_IMAP_Transport();
 
 	$t_supported_auth_methods = array_unique( array_merge( $t_pop3->getsupportedAuthMethods(), $t_imap->getsupportedAuthMethods() ) );
 	natcasesort( $t_supported_auth_methods );
