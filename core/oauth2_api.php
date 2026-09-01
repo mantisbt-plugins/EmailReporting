@@ -11,12 +11,12 @@ declare(strict_types=1);
  * * getError() clears the stored error.
  */
 
-abstract class ERP_OAuthProvider
+plugin_require_api( 'core/error_api.php' );
+
+abstract class ERP_OAuthProvider extends ERP_ErrorHandling
 {
 	private ?string $cachedAccessToken = NULL;
 	private ?int $cachedAccessTokenExpiresAt = NULL;
-
-	private array $_error = array();
 
 	abstract protected function requestAccessToken(): array|FALSE;
 
@@ -67,27 +67,6 @@ abstract class ERP_OAuthProvider
 			'user=' . $mailbox . "\x01" .
 			'auth=Bearer ' . $accessToken . "\x01\x01"
 		) );
-	}
-
-	# --------------------
-	# Check whether there are stored errors
-	public function hasError(): bool
-	{
-		return( !empty( $this->_error ) );
-	}
-
-	# --------------------
-	# Add an error to _error
-	protected function setError( string $error ): void
-	{
-		$this->_error[] = $error;
-	}
-
-	# --------------------
-	# Return the first error in _error
-	public function getError(): ?string
-	{
-		return( array_shift( $this->_error ) );
 	}
 }
 

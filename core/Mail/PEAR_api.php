@@ -11,13 +11,14 @@ declare(strict_types=1);
  * * getError() clears the stored error.
  */
 
-abstract class ERP_Transport
+plugin_require_api( 'core/error_api.php' );
+
+abstract class ERP_Transport extends ERP_ErrorHandling
 {
+	protected bool $_test_only = FALSE;
 	protected bool $_ssl_cert_verify = TRUE;
 
 	protected ?object $_mailserver = NULL;
-
-	private array $_error = array();
 
 	# Return Stream Context Options array
 	protected function get_StreamContextOptions(): array
@@ -72,7 +73,8 @@ abstract class ERP_Transport
 	{
 		$t_loginresult = $this->_mailserver->login( $p_mailbox_username, $p_mailbox_password, $p_mailbox_auth_method );
 
-		if ( $this->isError( $t_loginresult ) )
+		$t_additionalstring = ( ( $p_mailbox_auth_method === 'XOAUTH2' ) ? ' This could also be a permission issue where the application has no permission to access the given mailbox.' : '' );
+		if ( $this->isError( $t_loginresult, $t_additionalstring ) )
 		{
 			return( FALSE );
 		}
@@ -84,6 +86,11 @@ abstract class ERP_Transport
 	# Delete a single email from a mailbox
 	public function deleteMsg( int $p_msg_id ): bool
 	{
+		if ( $this->_test_only === TRUE )
+		{
+			return( TRUE );
+		}
+
 		$t_deleteresult = $this->_mailserver->deleteMsg( $p_msg_id );
 
 		if ( $this->isError( $t_deleteresult ) )
@@ -111,11 +118,11 @@ abstract class ERP_Transport
 	#
 	# Passed by reference to minimise memory usage when
 	# handling large result objects and mailbox data.
-	protected function isError( mixed &$p_result ): bool
+	protected function isError( mixed &$p_result, string $t_additionalstring = '' ): bool
 	{
 		if ( PEAR::isError( $p_result ) )
 		{
-			$this->setError( $p_result->getMessage() . ' (' . $p_result->getCode() . ')' );
+			$this->setError( $p_result->getMessage() . ' (' . $p_result->getCode() . ').' . $t_additionalstring );
 
 			return( TRUE );
 		}
@@ -124,35 +131,15 @@ abstract class ERP_Transport
 			return( FALSE );
 		}
 	}
-
-	# --------------------
-	# Check whether there are stored errors
-	public function hasError(): bool
-	{
-		return( !empty( $this->_error ) );
-	}
-
-	# --------------------
-	# Add an error to _error 
-	protected function setError( string $error ): void
-	{
-		$this->_error[] = $error;
-	}
-
-	# --------------------
-	# Return the first error in _error
-	public function getError(): ?string
-	{
-		return( array_shift( $this->_error ) );
-	}
 }
 
 class ERP_POP3_Transport extends ERP_Transport
 {
 	# --------------------
 	# Constructor
-	public function __construct( int|bool $p_ssl_cert_verify = TRUE )
+	public function __construct( bool $p_test_only = FALSE, int|bool $p_ssl_cert_verify = TRUE )
 	{
+		$this->_test_only = (bool) $p_test_only;
 		$this->_ssl_cert_verify = (bool) $p_ssl_cert_verify;
 
 		$this->_mailserver = new Net_POP3();
@@ -172,9 +159,15 @@ class ERP_POP3_Transport extends ERP_Transport
 
 		$t_connectresult = $this->_mailserver->connect( $t_hostname, $p_port, $this->get_StreamContextOptions() );
 
-		if ( $this->isError( $t_connectresult ) )
+		$t_additionalstring = ( ( $p_encryption !== FALSE && $p_encryption !== 'None' && $this->_ssl_cert_verify === TRUE ) ? ' This could possibly be because SSL certificate verification failed.' : '' );
+		if ( $this->isError( $t_connectresult, $t_additionalstring ) )
 		{
 			return( FALSE );
+		}
+
+		if ( $t_connectresult === FALSE )
+		{
+			$this->setError( 'Failed to connect to the mail server.' . $t_additionalstring );
 		}
 
 		return( $t_connectresult );
@@ -203,6 +196,11 @@ class ERP_POP3_Transport extends ERP_Transport
 	# Return a list of emails in the mailbox
 	public function getListing(): array|FALSE
 	{
+		if ( $this->_test_only === TRUE )
+		{
+			return( array() );
+		}
+
 		$t_ListMsgs = $this->_mailserver->getListing();
 
 		if ( $this->isError( $t_ListMsgs ) )
@@ -221,6 +219,11 @@ class ERP_POP3_Transport extends ERP_Transport
 	# Return a single raw email
 	public function getMsg( int $p_msg_id ): string|FALSE
 	{
+		if ( $this->_test_only === TRUE )
+		{
+			return( '' );
+		}
+
 		$t_msg = $this->_mailserver->getMsg( $p_msg_id );
 
 		if ( $this->isError( $t_msg ) )
@@ -240,8 +243,9 @@ class ERP_IMAP_Transport extends ERP_Transport
 
 	# --------------------
 	# Constructor
-	public function __construct( int|bool $p_ssl_cert_verify = TRUE )
+	public function __construct( bool $p_test_only = FALSE, int|bool $p_ssl_cert_verify = TRUE )
 	{
+		$this->_test_only = (bool) $p_test_only;
 		$this->_ssl_cert_verify = (bool) $p_ssl_cert_verify;
 
 		$this->_mailserver = new Net_IMAP( NULL );
@@ -267,7 +271,8 @@ class ERP_IMAP_Transport extends ERP_Transport
 
 		$t_connectresult = $this->_mailserver->connect( $t_hostname, $p_port, $t_STARTTLS );
 
-		if ( $this->isError( $t_connectresult ) )
+		$t_additionalstring = ( ( $p_encryption !== FALSE && $p_encryption !== 'None' && $this->_ssl_cert_verify === TRUE ) ? ' This could possibly be because SSL certificate verification failed.' : '' );
+		if ( $this->isError( $t_connectresult, $t_additionalstring ) )
 		{
 			return( FALSE );
 		}
@@ -276,6 +281,11 @@ class ERP_IMAP_Transport extends ERP_Transport
 		{
 			$this->setError( 'IMAP state discrepency: _connected and connectresult show different states.' );
 			return( FALSE );
+		}
+
+		if ( $t_connectresult === FALSE )
+		{
+			$this->setError( 'Failed to connect to the mail server.' . $t_additionalstring );
 		}
 
 		return( $t_connectresult );
@@ -290,6 +300,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 			return( TRUE );
 		}
 
+		//$this->_mailserver->->expunge(); //disabled as this is handled by the disconnect
 		$t_disconnectresult = $this->_mailserver->disconnect( (bool) $p_expunge );
 
 		if ( $this->isError( $t_disconnectresult ) )
@@ -305,6 +316,11 @@ class ERP_IMAP_Transport extends ERP_Transport
 	# Needed a workaround to sort IMAP emails in a certain order
 	public function getListing(): array|FALSE
 	{
+		if ( $this->_test_only === TRUE )
+		{
+			return( array() );
+		}
+
 		// Exchange does not seem to like numMsg so that was changed to getListing
 		// getListing returns an error when there are no emails in an IMAP folder.
 		// After 10 errors Exchange will ignore the connection and any further commands will fail with ", "
@@ -350,6 +366,11 @@ class ERP_IMAP_Transport extends ERP_Transport
 	# Handles a workaround for problems with Net_IMAP 1.1.x concerning the getMsg function
 	public function getMsg( int $p_msg_id ): string|FALSE
 	{
+		if ( $this->_test_only === TRUE )
+		{
+			return( '' );
+		}
+
 		// Net_IMAP 1.1.0 and 1.1.2 seems to have a somewhat broken getMsg function.
 		$t_msg = $this->_mailserver->getMessages( $p_msg_id, TRUE );
 
@@ -372,7 +393,12 @@ class ERP_IMAP_Transport extends ERP_Transport
 	# If FALSE is returned, check with hasError whether there was an error or if the state is FALSE (not marked as deleted)
 	public function isDeleted( int $p_msg_id ): bool
 	{
-//		return $this->hasFlag($message_nro, '\Deleted');
+		if ( $this->_test_only === TRUE )
+		{
+			return( FALSE );
+		}
+
+		//return $this->hasFlag($message_nro, '\Deleted');
 		$flag = '\Deleted';
 
 		// Cache Flags results
@@ -462,6 +488,11 @@ class ERP_IMAP_Transport extends ERP_Transport
 	# Select a mailbox folder
 	public function selectMailbox( string $p_foldername ): bool
 	{
+		if ( $this->_test_only === TRUE )
+		{
+			return( TRUE );
+		}
+
 		$t_selectMailbox = $this->_mailserver->selectMailbox( $p_foldername );
 
 		if ( $this->isError( $t_selectMailbox ) )
@@ -479,6 +510,11 @@ class ERP_IMAP_Transport extends ERP_Transport
 	# Create the mailbox folder
 	public function createMailbox( string $p_foldername ): bool
 	{
+		if ( $this->_test_only === TRUE )
+		{
+			return( TRUE );
+		}
+
 		$t_createMailbox = $this->_mailserver->createMailbox( $p_foldername );
 
 		if ( $this->isError( $t_createMailbox ) )

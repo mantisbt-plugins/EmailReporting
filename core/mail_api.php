@@ -18,10 +18,11 @@ require_api( 'file_api.php' );
 
 require_once( config_get_global( 'absolute_path' ) . 'api/soap/mc_file_api.php' );
 
+plugin_require_api( 'core/error_api.php' );
 plugin_require_api( 'core/config_api.php' );
 plugin_require_api( 'core/Mail/Parser.php' );
 
-class ERP_mailbox_api
+class ERP_mailbox_api extends ERP_ErrorHandling
 {
 	private $_functionality_enabled = FALSE;
 	private $_test_only = FALSE;
@@ -30,7 +31,6 @@ class ERP_mailbox_api
 	public $_mailbox = array( 'description' => 'INITIALIZATION PHASE' );
 
 	private $_mail_api = NULL;
-	private $_result = TRUE;
 
 	private $_default_ports = array(
 		'POP3' => array( 'normal' => 110, 'encrypted' => 995 ),
@@ -59,7 +59,6 @@ class ERP_mailbox_api
 	private $_mail_debug_show_memory_usage;
 	private $_mail_delete;
 	private $_mail_disposable_email_checker;
-	private $_mail_engine;
 	private $_mail_fallback_mail_reporter;
 	private $_mail_ignore_auto_replies;
 	private $_mail_max_email_body;
@@ -115,7 +114,6 @@ class ERP_mailbox_api
 		$this->_mail_debug_show_memory_usage         = plugin_config_get( 'mail_debug_show_memory_usage' );
 		$this->_mail_delete                          = plugin_config_get( 'mail_delete' );
 		$this->_mail_disposable_email_checker        = plugin_config_get( 'mail_disposable_email_checker' );
-		$this->_mail_engine                          = plugin_config_get( 'mail_engine' );
 		$this->_mail_fallback_mail_reporter          = plugin_config_get( 'mail_fallback_mail_reporter' );
 		$this->_mail_ignore_auto_replies             = plugin_config_get( 'mail_ignore_auto_replies' );
 		$this->_mail_max_email_body                  = plugin_config_get( 'mail_max_email_body' );
@@ -180,13 +178,21 @@ class ERP_mailbox_api
 			ERP_set_temporary_overwrite( 'antispam_max_event_count', 0 );
 		}
 
-		$this->_functionality_enabled = TRUE;
-
 		// Because of a notice level error in core/email_api.php on line 516 in MantisBT 1.2.0 we need to fill this value
 		if ( !isset( $_SERVER[ 'REMOTE_ADDR' ] ) )
 		{
 			$_SERVER[ 'REMOTE_ADDR' ] = '127.0.0.1';
 		}
+
+		$t_result = ERP_select_mail_engine( plugin_config_get( 'mail_engine' ) );
+
+		if ( $t_result !== TRUE )
+		{
+			$this->custom_error( $t_result );
+			return;
+		}
+
+		$this->_functionality_enabled = TRUE;
 
 		$this->show_memory_usage( 'Finished __construct' );
 	}
@@ -202,27 +208,32 @@ class ERP_mailbox_api
 
 		if ( $this->_functionality_enabled === FALSE )
 		{
-			$this->custom_error( 'EmailReporting not initialised properly' );
-			return( $this->_result );
+			// Return error from construct if available otherwise return new error
+			if ( !$this->hasError() )
+			{
+				$this->custom_error( 'EmailReporting not initialised properly' );
+			}
+
+			return( FALSE );
 		}
 
 		if ( $this->_mailbox[ 'enabled' ] == FALSE )
 		{
 			$this->custom_error( 'Mailbox disabled' );
-			return( $this->_result );
+			return( FALSE );
 		}
 
 		// Check whether EmailReporting supports the mailbox type. The check is based on available default ports
 		if ( !isset( $this->_default_ports[ $this->_mailbox[ 'mailbox_type' ] ] ) )
 		{
 			$this->custom_error( 'Unknown mailbox type' );
-			return( $this->_result );
+			return( FALSE );
 		}
 
 		if ( !project_exists( $this->_mailbox[ 'project_id' ] ) )
 		{
 			$this->custom_error( 'Project does not exist' );
-			return( $this->_result );
+			return( FALSE );
 		}
 
 		$t_project_enabled = project_enabled( $this->_mailbox[ 'project_id' ] );
@@ -230,13 +241,13 @@ class ERP_mailbox_api
 		{
 			$t_project_name = project_get_name( $this->_mailbox[ 'project_id' ] );
 			$this->custom_error( 'Project is disabled: ' . $t_project_name );
-			return( $this->_result );
+			return( FALSE );
 		}
 
 		if ( !category_exists( $this->_mailbox[ 'global_category_id' ] ) )
 		{
 			$this->custom_error( 'Category does not exist' );
-			return( $this->_result );
+			return( FALSE );
 		}
 
 		if ( function_exists( 'category_is_enabled' ) )
@@ -246,7 +257,7 @@ class ERP_mailbox_api
 			{
 				$t_category_name = category_get_name( $this->_mailbox[ 'global_category_id' ] );
 				$this->custom_error( 'Category is disabled: ' . $t_category_name );
-				return( $this->_result );
+				return( FALSE );
 			}
 		}
 
@@ -293,17 +304,6 @@ class ERP_mailbox_api
 
 			$this->prepare_mailbox_port();
 
-			if ( $this->_mailbox[ 'auth_method' ] === 'XOAUTH2' )
-			{
-				$this->_mailbox[ 'access_token' ] = $this->get_OAuth2_AccessToken();
-
-				if ( $this->_mailbox[ 'access_token' ] === FALSE )
-				{
-					unset( $this->_mailbox[ 'access_token' ] );
-					return( $this->_result );
-				}
-			}
-
 			$t_process_mailbox_function = 'process_' . strtolower( $this->_mailbox[ 'mailbox_type' ] ) . '_mailbox';
 
 			$this->$t_process_mailbox_function();
@@ -311,7 +311,7 @@ class ERP_mailbox_api
 			$this->show_memory_usage( 'Finished process mailbox' );
 		}
 
-		return( $this->_result );
+		return( TRUE );
 	}
 
 	# --------------------
@@ -323,15 +323,7 @@ class ERP_mailbox_api
 
 		if ( $p_is_error === TRUE )
 		{
-			$this->_result = array(
-				'ERROR_TYPE'    => 'ERROR',
-				'ERROR_MESSAGE' => $t_error_text,
-			);
-
-			if ( $p_location !== NULL )
-			{
-				$this->_result[ 'ERP_location' ] = $p_location;
-			}
+			$this->setError( ( ( $p_location !== NULL ) ? 'Location: ' . $p_location . ".\n" : NULL ) . $t_error_text );
 		}
 
 		if ( !$this->_test_only )
@@ -346,43 +338,31 @@ class ERP_mailbox_api
 	# process all mails for a pop3 mailbox
 	private function process_pop3_mailbox()
 	{
-		if ( $this->_mail_engine === 'PEAR' )
+		$t_logininfo = $this->get_mailbox_logininfo();
+
+		if ( $t_logininfo === FALSE )
 		{
-			plugin_require_api( 'core/Mail/PEAR_api.php' );
-		}
-		else
-		{
-			$this->custom_error( 'No valid mail engine selected.' );
 			return( FALSE );
 		}
 
-		$this->_mail_api = new ERP_POP3_Transport( $this->_mailbox[ 'ssl_cert_verify' ] );
-
-		$t_connectresult = $this->_mail_api->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ], $this->_mailbox[ 'encryption' ] );
-
-		if ( $t_connectresult !== TRUE )
-		{
-			$this->custom_error( 'Failed to connect to the mail server.' . ( ( $this->_mailbox[ 'encryption' ] !== 'None' && $this->_mailbox[ 'ssl_cert_verify' ] == ON ) ? ' This could possibly be because SSL certificate verification failed' : NULL ) );
-			return( FALSE );
-		}
+		$this->_mail_api = new ERP_POP3_Transport( $this->_test_only, $this->_mailbox[ 'ssl_cert_verify' ] );
 
 		try
 		{
-			$t_loginresult = $this->mailbox_login();
+			$t_connectresult = $this->_mail_api->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ], $this->_mailbox[ 'encryption' ] );
 
-			if ( $t_loginresult === FALSE )
+			if ( $t_connectresult !== TRUE )
 			{
-				// A error in mailbox_login could be other then mail transport. Like an OAuth type error.
-				if ( $this->_mail_api->hasError() )
-				{
-					$this->custom_error( $this->_mail_api->getError() . ( ( $this->_mailbox[ 'auth_method' ] === 'XOAUTH2' ) ? ' This could also be a permission issue where the application has no permission to access the given mailbox.' : NULL ), TRUE, 'Attempt login' );
-				}
+				$this->custom_error( $this->_mail_api->getError(), TRUE, 'Connect mail server' );
 				return( FALSE );
 			}
 
-			if ( $this->_test_only === TRUE )
+			$t_loginresult = $this->_mail_api->login( $t_logininfo[ 'username' ], $t_logininfo[ 'password' ], $t_logininfo[ 'auth_method' ] );
+
+			if ( $t_loginresult === FALSE )
 			{
-				return( TRUE );
+				$this->custom_error( $this->_mail_api->getError(), TRUE, 'Attempt login' );
+				return( FALSE );
 			}
 
 			$t_ListMsgs = $this->_mail_api->getListing();
@@ -422,37 +402,30 @@ class ERP_mailbox_api
 	# process all mails for an imap mailbox
 	private function process_imap_mailbox()
 	{
-		if ( $this->_mail_engine === 'PEAR' )
+		$t_logininfo = $this->get_mailbox_logininfo();
+
+		if ( $t_logininfo === FALSE )
 		{
-			plugin_require_api( 'core/Mail/PEAR_api.php' );
-		}
-		else
-		{
-			$this->custom_error( 'No valid mail engine selected.' );
 			return( FALSE );
 		}
 
-		$this->_mail_api = new ERP_IMAP_Transport( $this->_mailbox[ 'ssl_cert_verify' ] );
-
-		$t_connectresult = $this->_mail_api->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ], $this->_mailbox[ 'encryption' ] );
-
-		if ( $t_connectresult !== TRUE )
-		{
-			$this->custom_error( 'Failed to connect to the mail server' . ( ( $this->_mailbox[ 'encryption' ] !== 'None' && $this->_mailbox[ 'ssl_cert_verify' ] == ON ) ? '. This could possibly be because SSL certificate verification failed' : NULL ) );
-			return( FALSE );
-		}
+		$this->_mail_api = new ERP_IMAP_Transport( $this->_test_only, $this->_mailbox[ 'ssl_cert_verify' ] );
 
 		try
 		{
-			$t_loginresult = $this->mailbox_login();
+			$t_connectresult = $this->_mail_api->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ], $this->_mailbox[ 'encryption' ] );
+
+			if ( $t_connectresult !== TRUE )
+			{
+				$this->custom_error( $this->_mail_api->getError(), TRUE, 'Connect mail server' );
+				return( FALSE );
+			}
+
+			$t_loginresult = $this->_mail_api->login( $t_logininfo[ 'username' ], $t_logininfo[ 'password' ], $t_logininfo[ 'auth_method' ] );
 
 			if ( $t_loginresult === FALSE )
 			{
-				// A error in mailbox_login could be other then mail transport. Like an OAuth type error.
-				if ( $this->_mail_api->hasError() )
-				{
-					$this->custom_error( $this->_mail_api->getError() . ( ( $this->_mailbox[ 'auth_method' ] === 'XOAUTH2' ) ? ' This could also be a permission issue where the application has no permission to access the given mailbox.' : NULL ), TRUE, 'Attempt login' );
-				}
+				$this->custom_error( $this->_mail_api->getError(), TRUE, 'Attempt login' );
 				return( FALSE );
 			}
 
@@ -483,11 +456,6 @@ class ERP_mailbox_api
 					$this->custom_error( 'IMAP basefolder not found' );
 				}
 				return( FALSE );
-			}
-
-			if ( $this->_test_only === TRUE )
-			{
-				return( TRUE );
 			}
 
 			// There does not seem to be a viable api function which removes this plugins dependability on table column names
@@ -601,8 +569,6 @@ class ERP_mailbox_api
 		}
 		finally
 		{
-			//$this->_mail_api->expunge(); //disabled as this is handled by the disconnect
-
 			// mail_delete decides whether to perform the expunge command before closing the connection
 			$this->_mail_api->disconnect( (bool) $this->_mail_delete );
 		}
@@ -612,7 +578,7 @@ class ERP_mailbox_api
 
 	# --------------------
 	# Perform the login to the mailbox
-	private function mailbox_login()
+	private function get_mailbox_logininfo()
 	{
 		$t_mailbox_auth_method = $this->_mailbox[ 'auth_method' ];
 
@@ -633,8 +599,12 @@ class ERP_mailbox_api
 				return( FALSE );
 			}
 
-			$t_mailbox_password = $this->_mailbox[ 'access_token' ];
-			unset( $this->_mailbox[ 'access_token' ] );
+			$t_mailbox_password = $this->get_OAuth2_AccessToken();
+
+			if ( $t_mailbox_password === FALSE )
+			{
+				return( FALSE );
+			}
 		}
 		else
 		{
@@ -642,9 +612,11 @@ class ERP_mailbox_api
 			$t_mailbox_password = base64_decode( $this->_mailbox[ 'erp_password' ] );
 		}
 
-		$t_loginresult = $this->_mail_api->login( $t_mailbox_username, $t_mailbox_password, $t_mailbox_auth_method );
-
-		return( $t_loginresult );
+		return( array(
+			'username'    => $t_mailbox_username,
+			'password'    => $t_mailbox_password,
+			'auth_method' => $t_mailbox_auth_method,
+		) );
 	}
 
 	# --------------------
@@ -686,11 +658,9 @@ class ERP_mailbox_api
 				return( FALSE );
 			}
 
-			$constructError = $provider->getError();
-
-			if ( $constructError !== NULL )
+			if ( $provider->hasError() )
 			{
-				$this->custom_error( $constructError );
+				$this->custom_error( $provider->getError() );
 				return( FALSE );
 			}
 

@@ -119,12 +119,12 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 	$t_result = $t_mailbox_api->process_mailbox( $t_mailbox );
 	echo '</pre>';
 
-	$t_is_custom_error = ( ( is_array( $t_result ) && isset( $t_result[ 'ERROR_TYPE' ] ) && $t_result[ 'ERROR_TYPE' ] === 'ERROR' ) || ( is_bool( $t_result ) && $t_result === FALSE ) );
+	$t_is_error = ( $t_mailbox_api->hasError() );
 ?>
 <br /><div class="center">
 <?php
 	$t_message = '';
-	$t_message .= plugin_lang_get( ( ( $t_is_custom_error ) ? 'test_failure' : 'test_success' ) ) . '<br /><br />';
+	$t_message .= plugin_lang_get( ( ( $t_is_error ) ? 'test_failure' : 'test_success' ) ) . '<br /><br />';
 
 	$t_mailbox = $t_mailbox_api->_mailbox;
 	foreach ( $t_mailbox AS $t_key => $t_value )
@@ -147,9 +147,12 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 		}
 	}
 
-	$t_message .= '<br />' . ( ( $t_is_custom_error ) ? ( ( isset( $t_result[ 'ERP_location' ] ) ) ? 'Location: ' . $t_result[ 'ERP_location' ] . '<br />' : NULL ) . nl2br( $t_result[ 'ERROR_MESSAGE' ] ) : NULL );
+	while ( $t_mailbox_api->hasError() )
+	{
+		$t_message .= '<br />' . nl2br( $t_mailbox_api->getError() );
+	}
 
-	if ( ( $t_is_custom_error ) )
+	if ( ( $t_is_error ) )
 	{
 		html_operation_failure( plugin_page( 'manage_mailbox', TRUE ), $t_message );
 	}
