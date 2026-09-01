@@ -102,6 +102,23 @@ function ERP_get_mailboxes( $p_mailbox_id = FALSE, $p_mailbox_plugin_content = T
 }
 
 # --------------------
+# Select the mail engine and import the class
+function ERP_select_mail_engine( $p_mail_engine )
+{
+	switch ( $p_mail_engine )
+	{
+		case 'PEAR':
+			plugin_require_api( 'core/Mail/PEAR_api.php' );
+			break;
+
+		default:
+			return( 'No valid mail engine selected: ' . $p_mail_engine );
+	}
+
+	return( TRUE );
+}
+
+# --------------------
 # Page header en beginning.
 function ERP_page_begin( $p_page = '' )
 {
@@ -978,14 +995,12 @@ function ERP_print_custom_field_input( $p_sel_value, $p_field_def )
 # output a option list for authentication methods for POP3 and IMAP
 function ERP_custom_function_print_auth_method_option_list( $p_sel_value )
 {
-	if ( plugin_config_get( 'mail_engine' ) === 'PEAR' )
+	$t_result = ERP_select_mail_engine( plugin_config_get( 'mail_engine' ) );
+
+	if ( $t_result !== TRUE )
 	{
-		plugin_require_api( 'core/Mail/PEAR_api.php' );
-	}
-	else
-	{
-		echo '<option>No valid mail engine selected.</option>' ;
-		return( FALSE );
+		echo '<option>' . $t_result . '</option>';
+		return;
 	}
 
 	$t_pop3 = new ERP_POP3_Transport();
