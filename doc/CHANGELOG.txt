@@ -1,5 +1,5 @@
 Changelog:
-??? - EmailReporting-0.12.1
+??? - EmailReporting-0.13.0
 	- Fix incorrect variable passed to ParseTNEF
 	- Moved Net_POP3 and Net_IMAP code to separate class.
 	- Improved error handling IMAP and POP3 connection
