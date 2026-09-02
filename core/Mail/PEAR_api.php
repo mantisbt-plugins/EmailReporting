@@ -208,9 +208,9 @@ class ERP_POP3_Transport extends ERP_Transport
 			return( FALSE );
 		}
 
-		$t_ListMsgs = array_column( $t_ListMsgs, NULL, 'msg_id' );
+		$t_ListMsgs = array_column( $t_ListMsgs, 'msg_id' );
 
-		ksort( $t_ListMsgs );
+		sort( $t_ListMsgs );
 
 		return( $t_ListMsgs );
 	}
@@ -353,7 +353,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 
 		if ( !empty( $t_ListMsgs ) )
 		{
-			$t_ListMsgs = array_column( $t_ListMsgs, NULL, 'uidl' );
+			$t_ListMsgs = array_column( $t_ListMsgs, 'msg_id', 'uidl' );
 
 			ksort( $t_ListMsgs );
 		}

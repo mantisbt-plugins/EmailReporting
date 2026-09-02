@@ -381,12 +381,12 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 
 			while ( !empty( $t_ListMsgs ) )
 			{
-				$t_Msg = array_shift( $t_ListMsgs );
-				$t_emailresult = $this->process_single_email( $t_Msg[ 'msg_id' ] );
+				$t_MsgId = array_shift( $t_ListMsgs );
+				$t_emailresult = $this->process_single_email( $t_MsgId );
 
 				if ( $this->_mail_delete && $t_emailresult === TRUE )
 				{
-					$t_deleteresult = $this->_mail_api->deleteMsg( $t_Msg[ 'msg_id' ] );
+					$t_deleteresult = $this->_mail_api->deleteMsg( $t_MsgId );
 
 					if ( $t_deleteresult === FALSE )
 					{
@@ -547,8 +547,8 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 
 				while ( !empty( $t_ListMsgs ) )
 				{
-					$t_Msg = array_shift( $t_ListMsgs );
-					$t_isDeleted = $this->_mail_api->isDeleted( $t_Msg[ 'msg_id' ] );
+					$t_MsgId = array_shift( $t_ListMsgs );
+					$t_isDeleted = $this->_mail_api->isDeleted( $t_MsgId );
 
 					if ( $t_isDeleted === FALSE && $this->_mail_api->hasError() )
 					{
@@ -564,11 +564,11 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 						continue;
 					}
 
-					$t_emailresult = $this->process_single_email( $t_Msg[ 'msg_id' ], (int) $t_project[ 'id' ] );
+					$t_emailresult = $this->process_single_email( $t_MsgId, (int) $t_project[ 'id' ] );
 
 					if ( $t_emailresult === TRUE )
 					{
-						$t_deleteresult = $this->_mail_api->deleteMsg( $t_Msg[ 'msg_id' ] );
+						$t_deleteresult = $this->_mail_api->deleteMsg( $t_MsgId );
 
 						if ( $t_deleteresult === FALSE )
 						{
@@ -696,11 +696,11 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 	# --------------------
 	# Process a single email from either a pop3 or imap mailbox
 	# Returns true or false based on succesfull email retrieval from the mailbox
-	private function process_single_email( $p_i, $p_overwrite_project_id = FALSE )
+	private function process_single_email( $p_MsgId, $p_overwrite_project_id = FALSE )
 	{
 		$this->show_memory_usage( 'Start process single email' );
 
-		$t_msg = $this->_mail_api->getMsg( $p_i );
+		$t_msg = $this->_mail_api->getMsg( $p_MsgId );
 
 		if ( $t_msg === FALSE )
 		{
