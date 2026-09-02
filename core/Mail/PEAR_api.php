@@ -332,14 +332,14 @@ class ERP_IMAP_Transport extends ERP_Transport
 			return( FALSE );
 		}
 
-		$t_examineresult = $this->examineMailbox( $t_foldername );
+		$t_examineMailbox = $this->_mailserver->examineMailbox( $t_foldername );
 
-		if ( $t_examineresult === FALSE )
+		if ( $this->isError( $t_examineMailbox ) )
 		{
 			return( FALSE );
 		}
 
-		if ( $t_examineresult[ 'EXISTS' ] == 0 )
+		if ( $t_examineMailbox[ 'EXISTS' ] == 0 )
 		{
 			return( array() );
 		}
@@ -468,20 +468,6 @@ class ERP_IMAP_Transport extends ERP_Transport
 		}
 
 		return( $t_getHierarchyDelimiter );
-	}
-
-	# --------------------
-	# Examine the mailbox folder
-	private function examineMailbox( string $p_foldername ): array|FALSE
-	{
-		$t_examineMailbox = $this->_mailserver->examineMailbox( $p_foldername );
-
-		if ( $this->isError( $t_examineMailbox ) )
-		{
-			return( FALSE );
-		}
-
-		return( $t_examineMailbox );
 	}
 
 	# --------------------
