@@ -125,7 +125,7 @@ class ERP_Mail_Parser
 	public function setInputString( &$content )
 	{
 		$this->_file = NULL;
-		$this->_content = &$content;
+		$this->_content = $content;
 	}
 
 	public function setInputFile( $file )
@@ -313,6 +313,11 @@ class ERP_Mail_Parser
 
 	public function parse()
 	{
+		if ( empty( $this->_content ) )
+		{
+			return( FALSE );
+		}
+
 		$this->show_memory_usage( 'Start parse' );
 
 		$structure = $this->decode( $this->_content );
