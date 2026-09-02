@@ -210,7 +210,7 @@ class ERP_POP3_Transport extends ERP_Transport
 
 		$t_ListMsgs = array_column( $t_ListMsgs, NULL, 'msg_id' );
 
-		krsort( $t_ListMsgs );
+		ksort( $t_ListMsgs );
 
 		return( $t_ListMsgs );
 	}
