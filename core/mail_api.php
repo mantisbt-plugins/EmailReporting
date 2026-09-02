@@ -347,6 +347,12 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 
 		$this->_mail_api = new ERP_POP3_Transport( $this->_test_only, $this->_mailbox[ 'ssl_cert_verify' ] );
 
+		if ( $this->_mail_api->hasError() )
+		{
+			$this->custom_error( $this->_mail_api->getError(), TRUE, 'Initialize transport class' );
+			return( FALSE );
+		}
+
 		try
 		{
 			$t_connectresult = $this->_mail_api->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ], $this->_mailbox[ 'encryption' ] );
@@ -410,6 +416,12 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 		}
 
 		$this->_mail_api = new ERP_IMAP_Transport( $this->_test_only, $this->_mailbox[ 'ssl_cert_verify' ] );
+
+		if ( $this->_mail_api->hasError() )
+		{
+			$this->custom_error( $this->_mail_api->getError(), TRUE, 'Initialize transport class' );
+			return( FALSE );
+		}
 
 		try
 		{
