@@ -344,7 +344,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 			return( array() );
 		}
 
-		$t_ListMsgs = $this->_mailserver->getListing();
+		$t_ListMsgs = $this->_mailserver->getMessagesList();
 
 		if ( $this->isError( $t_ListMsgs ) )
 		{
