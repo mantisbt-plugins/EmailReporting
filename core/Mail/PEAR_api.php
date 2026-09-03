@@ -300,7 +300,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 			return( TRUE );
 		}
 
-		//$this->_mailserver->->expunge(); //disabled as this is handled by the disconnect
+		//$this->_mailserver->expunge(); //disabled as this is handled by the disconnect
 		$t_disconnectresult = $this->_mailserver->disconnect( (bool) $p_expunge );
 
 		if ( $this->isError( $t_disconnectresult ) )
@@ -399,7 +399,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 		}
 
 		//return $this->hasFlag($message_nro, '\Deleted');
-		$flag = '\Deleted';
+		$t_flag = '\Deleted';
 
 		// Cache Flags results
 		if ( empty( $this->_getFlags ) )
@@ -411,13 +411,14 @@ class ERP_IMAP_Transport extends ERP_Transport
 				return( FALSE );
 			}
 		}
+
 		$t_getFlags = $this->_getFlags;
 
 		if ( isset( $t_getFlags[ $p_msg_id ] ) )
 		{
 			if ( is_array( $t_getFlags[ $p_msg_id ] ) )
 			{
-				if ( in_array( $flag, $t_getFlags[ $p_msg_id ] ) )
+				if ( in_array( $t_flag, $t_getFlags[ $p_msg_id ] ) )
 				{
 					return( TRUE );
 				}
