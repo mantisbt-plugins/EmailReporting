@@ -493,6 +493,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 					{
 						$this->custom_error( 'Project is disabled: ' . $t_project[ 'name' ] );
 					}
+
 					continue;
 				}
 
@@ -763,10 +764,6 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 	{
 		$this->show_memory_usage( 'Start Mail Parser' );
 
-		$t_mp = new ERP_Mail_Parser( $this->_mp_options, $this->_mailbox_starttime );
-
-		$t_mp->setInputString( $p_msg );
-
 		if ( $this->_mail_add_complete_email )
 		{
 			$t_part = array(
@@ -775,6 +772,10 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 				'body' => $p_msg,
 			);
 		}
+
+		$t_mp = new ERP_Mail_Parser( $this->_mp_options, $this->_mailbox_starttime );
+
+		$t_mp->setInputString( $p_msg );
 
 		$p_msg = NULL;
 

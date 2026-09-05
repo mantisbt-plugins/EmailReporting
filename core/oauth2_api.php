@@ -407,7 +407,7 @@ class ERP_GoogleOAuthProvider extends ERP_OAuthProvider
 		{
 			$tokenResponse = $credentials->fetchAuthToken();
 		}
-		catch ( Throwable $e )
+		catch ( \Throwable $e )
 		{
 			$this->setError(
 				'Failed to request Google Workspace access token: ' .
