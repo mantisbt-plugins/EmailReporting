@@ -3,12 +3,10 @@
 declare(strict_types=1);
 
 /**
- * Error handling contract:
- *
- **- Methods return their normal success/failure values.
- * - Transport errors are stored internally.
- * - callers must check hasError()/getError() after a failed operation.
- * * getError() clears the stored error.
+ * EmailReporting adapters for PEAR Net_IMAP & Net_POP3.
+ * Composer:
+ * - sl-gundam/net_imap
+ * - sl-gundam/net_pop3
  */
 
 plugin_require_api( 'core/error_api.php' );
@@ -123,7 +121,6 @@ abstract class ERP_Transport extends ERP_ErrorHandling
 		if ( PEAR::isError( $p_result ) )
 		{
 			$this->setError( $p_result->getMessage() . ' (' . $p_result->getCode() . ').' . $t_additionalstring );
-
 			return( TRUE );
 		}
 		else
