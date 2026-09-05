@@ -9,6 +9,7 @@ Changelog:
 	- Minor improvements to category and projects handling
 	- Corrected class declaration for ParseTNEF
 	- Clarified the auth_method list
+	- Updated headers used for priority selection
 
 Aug 2026 - EmailReporting-0.12.0
 	- Drop support for MantisBT 1.3.x

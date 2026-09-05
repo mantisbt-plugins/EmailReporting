@@ -399,17 +399,23 @@ class ERP_Mail_Parser
 			$this->setSubject( $structure->headers[ 'subject' ] );
 		}
 
-		if ( isset( $structure->headers[ 'x-priority' ] ) )
+		// Clients MAY use a Priority, X-Priority, or X-MSMail-Priority header instead of an Importance header to set the value of the PidTagImportance property. However, if an Importance header is present, MIME readers SHOULD use its value in preference to any of the others.
+		// Source: https://learn.microsoft.com/en-us/openspecs/exchange_server_protocols/ms-oxcmail/2bb19f1b-b35e-4966-b1cb-1afd044e83ab
+		if ( isset( $structure->headers[ 'importance' ] ) )
+		{
+			$this->setPriority( $structure->headers[ 'importance' ] );
+		}
+		elseif ( isset( $structure->headers[ 'priority' ] ) )
+		{
+			$this->setPriority( $structure->headers[ 'priority' ] );
+		}
+		elseif ( isset( $structure->headers[ 'x-priority' ] ) )
 		{
 			$this->setPriority( $structure->headers[ 'x-priority' ] );
 		}
 		elseif ( isset( $structure->headers[ 'x-msmail-priority' ] ) )
 		{
 			$this->setPriority( $structure->headers[ 'x-msmail-priority' ] );
-		}
-		elseif ( isset( $structure->headers[ 'importance' ] ) )
-		{
-			$this->setPriority( $structure->headers[ 'importance' ] );
 		}
 
 		if ( isset( $structure->headers[ 'message-id' ] ) )
