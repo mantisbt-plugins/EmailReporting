@@ -172,11 +172,12 @@ $s_plugin_EmailReporting_rule_wildcards = 'Platzhalter';
 $s_plugin_EmailReporting_rule_wildcards_help = '- Charaktere für Platzhalter: * ?
 - Falls keine Platzhalter verwendet werden, wird ein exakter Abgleich angestrebt';
 
-$s_plugin_EmailReporting_rule_conditions_help = 'NULL';
+$s_plugin_EmailReporting_rule_conditions_help = '- Unselect multiselect items by using the ctrl key';
 
 $s_plugin_EmailReporting_rule_actions_help = '- "[any]" bedeuetet, die Aktion wird ignoriert
 - Benutzerdefinierte Felder, die keinem Projekt zugeordnet sind, dem das gerade erstellte Ticket angehört, werden ignoriert
-- Auswahllisten in benutzerdefinierten Feldern sollten einen leeren Listeneintrag enthalten. Ansonsten wird der Standardwert des Feldes jedes Mal zugewiesen, wenn die spezifizierten Konditionen zutreffen.';
+- Auswahllisten in benutzerdefinierten Feldern sollten einen leeren Listeneintrag enthalten. Ansonsten wird der Standardwert des Feldes jedes Mal zugewiesen, wenn die spezifizierten Konditionen zutreffen.
+- Unselect multiselect items by using the ctrl key';
 
 $s_plugin_EmailReporting_rule_exceptions_help = 'NULL';
 
