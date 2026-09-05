@@ -703,7 +703,7 @@ class ERP_Mail_Parser
 				$TNEFattachment->decodeTnef( $TNEFpart->body );
 				$TNEFfiles = $TNEFattachment->getFiles();
 			}
-			catch (Throwable $e)
+			catch ( \Throwable $e )
 			{
 				$TNEFfiles = array();
 				$this->addPart( $TNEFpart, 'winmail CORRUPT.dat' );
@@ -717,7 +717,7 @@ class ERP_Mail_Parser
 				$part = new class{
 					public string $ctype_primary = '';
 					public string $ctype_secondary = '';
-					public string $name = '';
+					public string $ctype_parameters = array();
 					public string $body = '';
 				};
 
