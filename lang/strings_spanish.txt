@@ -189,6 +189,7 @@ $s_plugin_EmailReporting_cond_issue_description = 'Descripción de la Solicitud'
 
 $s_plugin_EmailReporting_act_issue_severity = 'Actualizar severidad';
 $s_plugin_EmailReporting_act_issue_status = 'Actualizar estado';
+$s_plugin_EmailReporting_act_issue_view_state = 'Actualizar el estado de la vista';
 $s_plugin_EmailReporting_act_issue_category = 'Actualizar Categoria';
 $s_plugin_EmailReporting_act_issue_tag = 'Agregar etiquetas';
 $s_plugin_EmailReporting_act_issue_custom_field = 'Actualizar campo personalizado';

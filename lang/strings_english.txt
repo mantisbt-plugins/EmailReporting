@@ -192,6 +192,7 @@ $s_plugin_EmailReporting_cond_issue_description = 'Issue description';
 
 $s_plugin_EmailReporting_act_issue_severity = 'Update severity';
 $s_plugin_EmailReporting_act_issue_status = 'Update status';
+$s_plugin_EmailReporting_act_issue_view_state = 'Update view state';
 $s_plugin_EmailReporting_act_issue_category = 'Update category';
 $s_plugin_EmailReporting_act_issue_tag = 'Add tags';
 $s_plugin_EmailReporting_act_issue_custom_field = 'Update custom field';

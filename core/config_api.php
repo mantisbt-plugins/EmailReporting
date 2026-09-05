@@ -1218,6 +1218,20 @@ function ERP_custom_function_print_reporter_option_list( $p_sel_value )
 }
 
 # --------------------
+# output a option list with all priorities in the MantisBT system
+function ERP_custom_function_print_severity_option_list( $p_sel_value )
+{
+	print_enum_string_option_list( 'severity', (array) $p_sel_value );
+}
+
+# --------------------
+# output a option list with all priorities in the MantisBT system
+function ERP_custom_function_print_status_option_list( $p_sel_value )
+{
+	print_enum_string_option_list( 'status', (array) $p_sel_value );
+}
+
+# --------------------
 # output a option list with the tags currently known in the Mantis system
 # Based on MantisBT function print_tag_option_list
 function ERP_custom_function_print_tag_attach_option_list( $p_sel_value )
@@ -1238,6 +1252,13 @@ function ERP_custom_function_print_tag_attach_option_list( $p_sel_value )
 		check_selected( (array) $p_sel_value, (int) $row[ 'id' ] );
 		echo '>', string_attribute( $t_string ), '</option>';
 	}
+}
+
+# --------------------
+# output a option list with all priorities in the MantisBT system
+function ERP_custom_function_print_view_state_option_list( $p_sel_value )
+{
+	print_enum_string_option_list( 'view_state', (array) $p_sel_value );
 }
 
 # --------------------
