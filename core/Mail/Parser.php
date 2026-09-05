@@ -715,10 +715,10 @@ class ERP_Mail_Parser
 				list( $ctype_primary, $ctype_secondary ) = array_pad( explode( '/', $TNEFfile->type, 2 ), 2, '' );
 
 				$part = new class{
-					public string $ctype_primary = '';
-					public string $ctype_secondary = '';
-					public string $ctype_parameters = array();
-					public string $body = '';
+					public string $ctype_primary;
+					public string $ctype_secondary;
+					public string $ctype_parameters;
+					public string $body;
 				};
 
 				$part->ctype_primary    = $ctype_primary;
