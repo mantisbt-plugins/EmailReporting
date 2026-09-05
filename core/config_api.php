@@ -1006,14 +1006,35 @@ function ERP_custom_function_print_auth_method_option_list( $p_sel_value )
 	$t_pop3 = new ERP_POP3_Transport();
 	$t_imap = new ERP_IMAP_Transport();
 
-	$t_supported_auth_methods = array_unique( array_merge( $t_pop3->getsupportedAuthMethods(), $t_imap->getsupportedAuthMethods() ) );
-	natcasesort( $t_supported_auth_methods );
+	$t_supported_auth_methods[ 'POP3' ] = array_diff( $t_pop3->getsupportedAuthMethods(), $t_imap->getsupportedAuthMethods() );
+	$t_supported_auth_methods[ 'IMAP' ] = array_diff( $t_imap->getsupportedAuthMethods(), $t_pop3->getsupportedAuthMethods() );
+	$t_supported_auth_methods[ 'BOTH' ] = array_intersect( $t_pop3->getsupportedAuthMethods(), $t_imap->getsupportedAuthMethods() );
 
-	foreach ( $t_supported_auth_methods AS $t_supported_auth_method )
+	ksort( $t_supported_auth_methods );
+
+	foreach ( $t_supported_auth_methods AS $t_key => $t_auth_methods )
 	{
-		echo '<option';
-		check_selected( (string) $p_sel_value, $t_supported_auth_method );
-		echo '>' . string_attribute( $t_supported_auth_method ) . '</option>';
+		if ( !empty( $t_auth_methods ) )
+		{
+			if ( $t_key !== 'BOTH' )
+			{
+				echo '<optgroup label="' . string_attribute( $t_key ) . '">';
+			}
+
+			natcasesort( $t_auth_methods );
+
+			foreach ( $t_auth_methods AS $t_auth_method )
+			{
+				echo '<option';
+				check_selected( (string) $p_sel_value, $t_auth_method );
+				echo '>' . string_attribute( $t_auth_method ) . '</option>';
+			}
+
+			if ( $t_key !== 'BOTH' )
+			{
+				echo '</optgroup>';
+			}
+		}
 	}
 }
 
