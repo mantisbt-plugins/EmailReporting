@@ -1272,7 +1272,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 	private function add_file( $p_bug_id, &$p_part, $p_bugnote_id = NULL )
 	{
 		# Handle the file upload
-		$t_part_name = ( ( isset( $p_part[ 'name' ] ) ) ? trim( (string)$p_part[ 'name' ] ) : NULL );
+		$t_part_name = ( ( isset( $p_part[ 'name' ] ) ) ? trim( (string)$p_part[ 'name' ] ) : '' );
 		$t_strlen_body = strlen( $p_part[ 'body' ] );
 
 		if ( is_blank( $t_part_name ) )
@@ -1301,7 +1301,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 		{
 			return( $t_part_name . ' = attachment size exceeds maximum allowed file size (' . $t_strlen_body . ' / ' . $this->_max_file_size . ')' . "\n" );
 		}
-		elseif ( in_array( $t_body_md5, $this->_mail_block_attachments_md5, TRUE ) )
+		elseif ( !empty( $t_body_md5 ) && in_array( $t_body_md5, $this->_mail_block_attachments_md5, TRUE ) )
 		{
 			if ( $this->_mail_block_attachments_logging )
 			{

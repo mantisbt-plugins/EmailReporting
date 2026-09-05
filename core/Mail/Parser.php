@@ -749,23 +749,26 @@ class ERP_Mail_Parser
 		{
 			$p[ 'ctype' ] = $part->ctype_primary . "/" . $part->ctype_secondary;
 
-			if ( isset( $part->ctype_parameters[ 'name' ] ) ) {
+			if ( isset( $part->ctype_parameters[ 'name' ] ) )
+			{
 				$p[ 'name' ] = $part->ctype_parameters[ 'name' ];
 			}
-			elseif ( isset( $part->headers[ 'content-disposition' ] ) && strpos( $part->headers[ 'content-disposition' ], 'filename="' ) !== FALSE )
+			elseif ( isset( $part->ctype_parameters[ 'filename' ] ) )
 			{
-				$p[ 'name' ] = $this->custom_substr( $part->headers[ 'content-disposition' ], 'filename="', '"' );
+				$p[ 'name' ] = $part->ctype_parameters[ 'filename' ];
 			}
-			elseif ( isset( $part->headers[ 'content-type' ] ) && strpos( $part->headers[ 'content-type' ], 'name="' ) !== FALSE )
+			elseif ( isset( $part->headers[ 'content-disposition' ] ) && preg_match( '/(?:^|;)\s*filename="([^"]*)"/i', $part->headers[ 'content-disposition' ], $t_matches ) )
 			{
-				$p[ 'name' ] = $this->custom_substr( $part->headers[ 'content-type' ], 'name="', '"' );
+				$p[ 'name' ] = $t_matches[1];
+			}
+			elseif ( isset( $part->headers[ 'content-type' ] ) && preg_match( '/(?:^|;)\s*name="([^"]*)"/i', $part->headers[ 'content-type' ], $t_matches ) )
+			{
+				$p[ 'name' ] = $t_matches[1];
 			}
 			elseif ( 'text' == strtolower( $part->ctype_primary ) && in_array( strtolower( $part->ctype_secondary ), array( 'plain', 'html' ), TRUE ) && !empty( $p_alternative_name ) )
 			{
 				$p[ 'name' ] = $p_alternative_name . ( ( strtolower( $part->ctype_secondary ) === 'plain' ) ? '.txt' : '.html' );
 			}
-
-			$p[ 'body' ] = ( ( isset( $part->body ) ) ? $part->body : NULL );
 
 			if ( extension_loaded( 'mbstring' ) && !empty( $p[ 'name' ] ) )
 			{
@@ -783,17 +786,10 @@ class ERP_Mail_Parser
 				$p[ 'name' ] = $p_alternative_name;
 			}
 
+			$p[ 'body' ] = ( ( isset( $part->body ) ) ? $part->body : NULL );
+
 			$this->_parts[] = $p;
 		}
-	}
-
-	private function custom_substr( $p_string, $p_string_start, $p_string_end )
-	{
-		$t_start = stripos( $p_string, $p_string_start ) + strlen( $p_string_start );
-		$t_end = stripos( $p_string, $p_string_end, $t_start );
-		$t_result = substr( $p_string, $t_start, ( $t_end - $t_start ) );
-
-		return( $t_result );
 	}
 
 	# --------------------
