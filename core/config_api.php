@@ -652,7 +652,7 @@ function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, $p_fun
 		case 'radio_buttons':
 ?>
 <tr>
-	<td class="center" colspan="3">
+	<td class="center" colspan="3" class="width-100">
 <?php
 
 			if ( function_exists( $t_function_name ) )
@@ -708,14 +708,14 @@ function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, $p_fun
 			{
 				case 'boolean':
 ?>
-<td class="center" width="25%">
+<td class="center width-25">
 	<label>
 		<input id="<?php echo $t_input_name ?>" class="ace" <?php echo helper_get_tab_index() ?> type="radio" name="<?php echo $t_input_name ?>" value="<?php echo ON ?>" <?php
 					check_checked( (int) $t_value, ON );
 ?>/><span class="lbl"><?php echo lang_get( 'yes' ) ?></span>
 	</label>
 </td>
-<td class="center" width="25%">
+<td class="center width-25">
 	<label>
 		<input id="<?php echo $t_input_name ?>" class="ace" <?php echo helper_get_tab_index() ?> type="radio" name="<?php echo $t_input_name ?>" value="<?php echo OFF ?>" <?php
 					// NULL can also be interpreted as 0. But in this case NULL means no option chosen
@@ -769,10 +769,10 @@ function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, $p_fun
 						$t_result_is_writable_text = NULL;
 					}
 ?>
-<td width="25%">
+<td class="width-25">
 	<input id="<?php echo $t_input_name ?>" class="input-sm" <?php echo helper_get_tab_index() ?> type="text" size="64" maxlength="250" name="<?php echo $t_input_name ?>" value="<?php echo string_attribute( $t_dirfile ) ?>"/>
 </td>
-<td width="25%">
+<td class="width-25">
 	<span class="<?php echo $t_result_is_dir_color ?>"><?php echo $t_result_is_dir_text ?></span><br />
 	<span class="<?php echo $t_result_is_writable_color ?>"><?php echo $t_result_is_writable_text ?></span>
 </td>
@@ -782,7 +782,7 @@ function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, $p_fun
 
 				case 'disabled':
 ?>
-<td colspan="2">
+<td colspan="2" class="width-50">
 <?php
 					echo plugin_lang_get( 'disabled' );
 					ERP_output_config_option( $t_input_name, 'hidden', $t_value );
@@ -795,8 +795,8 @@ function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, $p_fun
 				case 'integer':
 				case 'string':
 ?>
-<td colspan="2">
-	<input id="<?php echo $t_input_name ?>" class="input-sm" <?php echo helper_get_tab_index() ?> type="text" size="64" maxlength="100" name="<?php echo $t_input_name ?>" value="<?php echo string_attribute( $t_value ) ?>"/>
+<td colspan="2" class="width-50">
+	<input id="<?php echo $t_input_name ?>" class="input-sm" <?php echo helper_get_tab_index() ?> type="text" size="80" maxlength="100" name="<?php echo $t_input_name ?>" value="<?php echo string_attribute( $t_value ) ?>"/>
 </td>
 <?php
 
@@ -805,8 +805,8 @@ function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, $p_fun
 				case 'string_multiline':
 				case 'string_multiline_array':
 ?>
-<td colspan="2">
-	<textarea id="<?php echo $t_input_name ?>" class="form-control" <?php echo helper_get_tab_index() ?> cols="64" rows="6" name="<?php echo $t_input_name ?>"><?php
+<td colspan="2" class="width-50">
+	<textarea id="<?php echo $t_input_name ?>" class="form-control" <?php echo helper_get_tab_index() ?> cols="70" rows="6" name="<?php echo $t_input_name ?>"><?php
 
 					if ( is_array( $t_value ) )
 					{
@@ -841,8 +841,8 @@ function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, $p_fun
 
 				case 'string_password':
 ?>
-<td colspan="2">
-	<input id="<?php echo $t_input_name ?>" class="input-sm" <?php echo helper_get_tab_index() ?> type="password" size="64" name="<?php echo $t_input_name ?>" value="<?php echo string_attribute( base64_decode( (string) $t_value ) ) ?>"/>
+<td colspan="2" class="width-50">
+	<input id="<?php echo $t_input_name ?>" class="input-sm" <?php echo helper_get_tab_index() ?> type="password" size="80" name="<?php echo $t_input_name ?>" value="<?php echo string_attribute( base64_decode( (string) $t_value ) ) ?>"/>
 </td>
 <?php
 
@@ -853,7 +853,7 @@ function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, $p_fun
 				case 'dropdown_multiselect':
 				case 'dropdown_multiselect_any':
 ?>
-<td colspan="2">
+<td colspan="2" class="width-50">
 <?php
 
 					if ( function_exists( $t_function_name ) )
@@ -898,7 +898,7 @@ function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, $p_fun
 
 				default:
 ?>
-<td colspan="2">
+<td colspan="2" class="width-50">
 	<span class="red negative"><?php echo plugin_lang_get( 'unknown_setting', 'EmailReporting' ) . $p_name ?> -> level 2</span>
 </td>
 <?php
@@ -919,7 +919,7 @@ function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, $p_fun
 			{
 ?>
 <tr>
-	<td colspan="3">
+	<td colspan="3" class="width-100">
 		<span class="red negative"><?php echo plugin_lang_get( 'function_not_found', 'EmailReporting' ) . ': ' . $t_function_name ?></span>
 	</td>
 </tr>
@@ -930,7 +930,7 @@ function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, $p_fun
 		default:
 ?>
 <tr>
-	<td colspan="3">
+	<td colspan="3" class="width-100">
 		<span class="red negative"><?php echo plugin_lang_get( 'unknown_setting', 'EmailReporting' ) . $p_name ?> -> level 1</span>
 	</td>
 </tr>
@@ -950,13 +950,13 @@ function ERP_custom_function_print_custom_fields( $p_name, $p_sel_value )
 
 ?>
 <tr>
-	<td class="category">
+	<td class="category" class="width-50">
 <?php
 		ERP_print_documentation_link( $p_name );
 		echo ': ' . string_display( lang_get_defaulted( $t_def[ 'name' ] ) );
 ?>
 	</td>
-	<td colspan="2">
+	<td colspan="2" class="width-50">
 <?php
 		ERP_print_custom_field_input( ( ( is_array( $p_sel_value ) && isset( $p_sel_value[ $t_field_id ] ) ) ? $p_sel_value[ $t_field_id ] : NULL ), $t_def );
 ?>
@@ -973,7 +973,7 @@ function ERP_print_custom_field_input( $p_sel_value, $p_field_def )
 {
 	if( $p_sel_value === NULL )
 	{
-		$t_custom_field_value = custom_field_default_to_value( $p_field_def[ 'default_value' ], $p_field_def[ 'type' ] );
+		$t_custom_field_value = '';//custom_field_default_to_value( $p_field_def[ 'default_value' ], $p_field_def[ 'type' ] );
 	}
 	else
 	{
@@ -1285,7 +1285,7 @@ function ERP_custom_function_print_rule_action_radio_buttons( $p_input_name, $p_
 
 function ERP_print_action_radio_buttons( $p_input_name, $p_sel_value, $p_variable_array, $p_actions_list )
 {
-	echo '<table border=0 width="100%"><tr>';
+	echo '<table border=0 class="width-100"><tr>';
 
 	foreach ( $p_actions_list AS $t_action_key => $t_actions )
 	{
