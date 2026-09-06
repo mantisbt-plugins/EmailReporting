@@ -352,34 +352,38 @@ function ERP_prepare_directory_string( $p_path, $p_no_realpath = FALSE )
 	}
 }
 
-# --------------------
-# Function does not exist yet for the plugin api
-# Based on plugin_lang_get with lang_get_defaulted functionality
-function ERP_plugin_lang_get_defaulted( $p_name, $p_basename = null )
+// Copy of MantisBT 2.28.4 plugin_lang_get_defaulted
+/**
+ * Get a defaulted language string for the plugin.
+ *
+ * Automatically prepends `plugin_<basename>` to the string requested.
+ * - If found, return the appropriate string.
+ * - If not found, no default supplied, return the supplied string as is.
+ * - If not found, default supplied, return default.
+ * @see lang_get_defaulted()
+ *
+ * @param string $p_name     Language string name.
+ * @param string $p_default  The default value to return.
+ * @param string $p_basename Plugin basename.
+ *
+ * @return string Language string
+ */
+if ( !function_exists( 'plugin_lang_get_defaulted' ) )
 {
-	if( $p_basename === NULL )
-	{
+	function plugin_lang_get_defaulted( $p_name, $p_default = NULL, $p_basename = NULL ) {
+		if( !is_null( $p_basename ) ) {
+			plugin_push_current( $p_basename );
+		}
 		$t_basename = plugin_get_current();
-	}
-	else
-	{
-		$t_basename = $p_basename;
-	}
+		$t_name = 'plugin_' . $t_basename . '_' . $p_name;
+		$t_string = lang_get_defaulted( $t_name, $p_default );
 
-	$t_name = 'plugin_' . $t_basename . '_' . $p_name;
-
-	$t_lang = lang_get_defaulted( $t_name );
-
-	if ( $t_name === $t_lang )
-	{
-		return( $p_name );
-	}
-	else
-	{
-		return( $t_lang );
+		if( !is_null( $p_basename ) ) {
+			plugin_pop_current();
+		}
+		return $t_string;
 	}
 }
-
 
 # --------------------
 # Return the username of the OS user account thats currently running this script
@@ -423,173 +427,6 @@ function ERP_set_temporary_overwrite( $p_config_name, $p_value )
 
 	$g_cache_bypass_lookup[ $p_config_name ] = TRUE;
 	config_set_global( $p_config_name, $p_value );
-}
-
-/**
- * Copy of the function in /admin/check/check_api.php (MantisBT 2.25)
- * ERP - Removed the global variable
- * ERP - Changed output method
- */
-/**
- * Print Check Test Result
- * @param integer $p_result One of BAD|GOOD|WARN.
- * @return void
- */
-function ERP_check_print_test_result( $p_result ) {
-	$t_output = NULL;
-
-	switch( $p_result ) {
-		case BAD:
-			$t_output .= "\t\t" . '<td class="alert alert-danger">FAIL</td>' . "\n";
-			break;
-		case GOOD:
-			$t_output .= "\t\t" . '<td class="alert alert-success">PASS</td>' . "\n";
-			break;
-		case WARN:
-			$t_output .= "\t\t" . '<td class="alert alert-warning">WARN</td>' . "\n";
-			break;
-	}
-
-	return $t_output;
-}
-
-/**
- * Copy of the function in /admin/check/check_api.php (MantisBT 2.25)
- * ERP - Changed global $g_showall to local variable and forced it to FALSE
- * ERP - suppress p_pass return value
- * ERP - Changed output method
- */
-/**
- * Print Check Test Row
- * @param string  $p_description Description.
- * @param boolean $p_pass        Whether test passed.
- * @param string  $p_info        Information.
- * @return boolean
- */
-function ERP_check_print_test_row( $p_description, $p_pass, $p_info = null ) {
-	$t_output = NULL;
-
-	$g_show_all = FALSE;
-	$t_unhandled = FALSE;//check_unhandled_errors_exist();
-	if( !$g_show_all && $p_pass && !$t_unhandled ) {
-		return NULL;//$p_pass;
-	}
-
-	$t_output .= "\t<tr>\n\t\t<td>$p_description";
-	if( $p_info !== null ) {
-		if( is_array( $p_info ) && isset( $p_info[$p_pass] ) ) {
-			$t_output .= '<br /><em>' . $p_info[$p_pass] . '</em>';
-		} else if( !is_array( $p_info ) ) {
-			$t_output .= '<br /><em>' . $p_info . '</em>';
-		}
-	}
-	$t_output .= "</td>\n";
-
-	if( $p_pass && !$t_unhandled ) {
-		$t_result = GOOD;
-	} elseif( $t_unhandled == E_DEPRECATED ) {
-		$t_result = WARN;
-	} else {
-		$t_result = BAD;
-	}
-	$t_output .= ERP_check_print_test_result( $t_result );
-	$t_output .= "\t</tr>\n";
-
-	if( $t_unhandled ) {
-		ERP_check_print_error_rows();
-	}
-//	return $p_pass;
-
-	return $t_output;
-}
-
-/**
- * Copy of the function in /admin/check/check_api.php (MantisBT 2.25)
- */
-/**
- * Verifies that the given collation is UTF-8
- * @param string $p_collation
- * @return boolean True if UTF-8
- */
-if ( !function_exists( 'check_is_collation_utf8' ) )
-{
-	function check_is_collation_utf8( $p_collation ) {
-		return substr( $p_collation, 0, 4 ) === 'utf8';
-	}
-}
-
-/**
- * Copy of the code in /admin/check/check_database_inc.php (MantisBT 2.25)
- * ERP - Changed output method
- * ERP - Changed config variable method
- */
-/**
- * Check the DB colation if its MySQL
- */
-function ERP_test_database_utf8() {
-	$t_output = NULL;
-
-	$t_table_prefix = config_get_global( 'db_table_prefix' );
-	$t_table_suffix = config_get_global( 'db_table_suffix' );
-
-	if( db_is_mysql() ) {
-		# Check DB's default collation
-		$t_query = 'SELECT default_collation_name
-			FROM information_schema.schemata
-			WHERE schema_name = ' . db_param();
-		$t_collation = db_result( db_query( $t_query, array( config_get_global( 'database_name' ) ) ) );
-		$t_output .= ERP_check_print_test_row(
-			'Database default collation is UTF-8',
-			check_is_collation_utf8( $t_collation ),
-			array( false => 'Database is using '
-				. htmlentities( $t_collation )
-				. ' collation where UTF-8 collation is required.' )
-		);
-
-		$t_table_regex = '/^'
-			. preg_quote( $t_table_prefix, '/' ) . '.+?'
-			. preg_quote( $t_table_suffix, '/' ) . '$/';
-
-		$t_result = db_query( 'SHOW TABLE STATUS' );
-		while( $t_row = db_fetch_array( $t_result ) ) {
-			if( $t_row['comment'] !== 'VIEW' &&
-				preg_match( $t_table_regex, $t_row['name'] )
-			) {
-				$t_output .= ERP_check_print_test_row(
-					'Table <em>' . htmlentities( $t_row['name'] ) . '</em> is using UTF-8 collation',
-					check_is_collation_utf8( $t_row['collation'] ),
-					array( false => 'Table ' . htmlentities( $t_row['name'] )
-						. ' is using ' . htmlentities( $t_row['collation'] )
-						. ' collation where UTF-8 collation is required.' )
-				);
-			}
-		}
-
-		foreach( db_get_table_list() as $t_table ) {
-			if( preg_match( $t_table_regex, $t_table ) ) {
-				$t_result = db_query( 'SHOW FULL FIELDS FROM ' . $t_table );
-				while( $t_row = db_fetch_array( $t_result ) ) {
-					if( $t_row['collation'] === null ) {
-						continue;
-					}
-					$t_output .= ERP_check_print_test_row(
-						'Text column <em>' . htmlentities( $t_row['field'] )
-						. '</em> of type <em>' . $t_row['type']
-						. '</em> on table <em>' . htmlentities( $t_table )
-						. '</em> is using UTF-8 collation',
-						check_is_collation_utf8( $t_row['collation'] ),
-						array( false => 'Text column ' . htmlentities( $t_row['field'] )
-							. ' of type ' . $t_row['type']
-							. ' on table ' . htmlentities( $t_table )
-							. ' is using ' . htmlentities( $t_row['collation'] )
-							. ' collation where UTF-8 collation is required.' )
-					);
-				}
-			}
-		}
-	}
-
-	return $t_output ;
 }
 
 # --------------------
@@ -989,7 +826,7 @@ function ERP_custom_function_print_custom_fields( $p_name, $p_sel_value )
 
 # --------------------
 # output a single custom field row
-# Based on MantisBT function print_custom_field_input
+# Based on MantisBT 2.28.4 function print_custom_field_input
 function ERP_print_custom_field_input( $p_sel_value, $p_field_def )
 {
 	if( $p_sel_value === NULL )
@@ -1005,6 +842,7 @@ function ERP_print_custom_field_input( $p_sel_value, $p_field_def )
 	if( isset( $g_custom_field_type_definition[ $p_field_def[ 'type' ] ][ '#function_print_input' ] ) )
 	{
 		call_user_func( $g_custom_field_type_definition[ $p_field_def[ 'type' ] ][ '#function_print_input' ], $p_field_def, $t_custom_field_value );
+		print_hidden_input( custom_field_presence_field_name( $p_field_def['id'] ), '1' );
 	}
 	else
 	{
@@ -1071,7 +909,7 @@ function ERP_custom_function_print_descriptions_option_list( $p_sel_value, $p_op
 		if ( !is_array( $t_option_array ) )
 		{
 			$t_option_key = $t_option_array;
-			$t_option_array = array( 'description' => ERP_plugin_lang_get_defaulted( $t_option_array ) );
+			$t_option_array = array( 'description' => plugin_lang_get_defaulted( $t_option_array, $t_option_array ) );
 		}
 
 		$t_options_sorted[ $t_option_key ] = $t_option_array[ 'description' ];
@@ -1081,9 +919,10 @@ function ERP_custom_function_print_descriptions_option_list( $p_sel_value, $p_op
 
 	foreach ( $t_options_sorted AS $t_option_key => $t_description )
 	{
+		$t_enabled = ( ( isset( $p_options_array[ $t_option_key ][ 'enabled' ] ) ) ? $p_options_array[ $t_option_key ][ 'enabled' ] : TRUE );
 		echo '<option value="' . string_attribute( $t_option_key ) . '"';
 		check_selected( $t_sel_value, $t_option_key );
-		echo '>' . ( ( isset( $p_options_array[ $t_option_key ][ 'enabled' ] ) && $p_options_array[ $t_option_key ][ 'enabled' ] == FALSE ) ? '* ' : NULL ) . string_attribute( $t_description ) . '</option>';
+		echo '>' . ( ( $t_enabled == FALSE ) ? '* ' : NULL ) . string_attribute( $t_description ) . '</option>';
 	}
 }
 
@@ -1182,7 +1021,7 @@ function ERP_custom_function_print_priority_option_list( $p_sel_value )
 
 # --------------------
 # output a option list with all the projects in the MantisBT system
-# Based on MantisBT 1.2.5 function: print_project_option_list
+# Based on MantisBT 2.28.4 function: print_project_option_list
 function ERP_custom_function_print_projects_option_list( $p_sel_value )
 {
 	$t_sel_values = (array) $p_sel_value;
@@ -1192,7 +1031,10 @@ function ERP_custom_function_print_projects_option_list( $p_sel_value )
 	$t_projects_sorted = array();
 	foreach( $t_all_projects AS $t_project_key => $t_project )
 	{
-		$t_projects_sorted[ $t_project_key ] = $t_project[ 'name' ];
+		if ( project_hierarchy_is_toplevel( $t_project[ 'id' ], TRUE ) )
+		{
+			$t_projects_sorted[ $t_project_key ] = $t_project[ 'name' ];
+		}
 	}
 
 	natcasesort( $t_projects_sorted );
@@ -1208,6 +1050,7 @@ function ERP_custom_function_print_projects_option_list( $p_sel_value )
 			$t_project_name = '* ' . $t_project_name;
 		}
 		echo '>' . string_attribute( $t_project_name ) . '</option>' . "\n";
+		print_subproject_option_list( $t_project_id );
 	}
 }
 
@@ -1254,24 +1097,18 @@ function ERP_custom_function_print_status_option_list( $p_sel_value )
 
 # --------------------
 # output a option list with the tags currently known in the Mantis system
-# Based on MantisBT function print_tag_option_list
-function ERP_custom_function_print_tag_attach_option_list( $p_sel_value )
+# Based on MantisBT 2.28.4 function print_tag_option_list
+function ERP_custom_function_print_tag_option_list( $p_sel_value )
 {
 	require_api( 'tag_api.php' );
 
 	$t_rows = tag_get_candidates_for_bug( 0 );
 
-	foreach ( $t_rows as $row )
+	foreach ( $t_rows as $t_row )
 	{
-		$t_string = $row[ 'name' ];
-		if ( !empty( $row[ 'description' ] ) )
-		{
-			$t_string .= ' - ' . mb_substr( $row[ 'description' ], 0, 20 );
-		}
-
-		echo '<option value="', $row[ 'id' ], '" title="', string_attribute( $row[ 'name' ] ), '"';
-		check_selected( (array) $p_sel_value, (int) $row[ 'id' ] );
-		echo '>', string_attribute( $t_string ), '</option>';
+		echo '<option value="', $t_row[ 'id' ], '" title="', string_attribute( $t_row[ 'description' ] ), '"';
+		check_selected( (array) $p_sel_value, (int) $t_row[ 'id' ] );
+		echo '>', string_attribute( $t_row[ 'name' ] ), '</option>';
 	}
 }
 

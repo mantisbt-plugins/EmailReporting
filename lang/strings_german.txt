@@ -148,7 +148,6 @@ $s_plugin_EmailReporting_link_rules = 'Regel selektieren';
 $s_plugin_EmailReporting_mail_bug_priority_array_failure = 'Das übergebene Format ist kein gültiges Array.';
 $s_plugin_EmailReporting_recorddisabled = '* = Deaktivieren';
 $s_plugin_EmailReporting_mbstring_unavailable = '<span class="negative">Warning</span>: PHP mbstring Erweiterung nicht verfügbar. Das könnte Probleme beim Empfang von Mails verursachen.';
-$s_plugin_EmailReporting_db_utf8_issue = 'Beheben Sie die unten aufgezeigten Zeichen-Codierungs Probleme da es an sonsten zu zu Fehlern kommen kann!';
 $s_plugin_EmailReporting_missing_user = 'Ausgewählter Benutzer nicht vorhanden. Bitte einen anderen selektieren.';
 $s_plugin_EmailReporting_openssl_unavailable = 'PHP OpenSSL Erweiterung nicht verfügbar';
 $s_plugin_EmailReporting_test_failure = 'Operation fehlgeschlagen';

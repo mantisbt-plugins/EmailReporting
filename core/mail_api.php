@@ -978,7 +978,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 			$t_description = event_signal( 'EVENT_ERP_BUGNOTE_DATA', $t_description, $t_bug_id );
 
 			# Check reopen permissions
-			$t_bug = bug_get( $t_bug_id, true );
+			$t_bug = bug_get( $t_bug_id, TRUE );
 
 			if ( $this->_mail_reopen_bugs
 				&& bug_is_resolved( $t_bug_id )
@@ -987,11 +987,11 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 				if ( !is_blank( $t_description ) )
 				{
 					# Reopen issue and add a bug note
-					$t_bugnote_id = bugnote_add( $t_bug_id, $t_description, '0:00', config_get( 'default_bugnote_view_status' ) == VS_PRIVATE, BUGNOTE, '', null, false );
+					$t_bugnote_id = bugnote_add( $t_bug_id, $t_description, '0:00', config_get( 'default_bugnote_view_status' ) == VS_PRIVATE, BUGNOTE, '', NULL, FALSE );
 					bugnote_process_mentions( $t_bug_id, $t_bugnote_id, $t_description );
 					bug_reopen( $t_bug_id );
 
-					$t_updated_bug = bug_get( $t_bug_id, true );
+					$t_updated_bug = bug_get( $t_bug_id, TRUE );
 					event_signal( 'EVENT_UPDATE_BUG', array( $t_bug, $t_updated_bug ) );
 				}
 			}
@@ -1010,17 +1010,17 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 						# Process the mentions in the added note
 						bugnote_process_mentions( $t_bug->id, $t_bugnote_id, $t_description );
 
-						/* Code based on MantisBT 1.3.4 */
+						/* Code based on MantisBT 2.28.4 bug_update.php */
 						# Handle the reassign on feedback feature. Note that this feature generally
 						# won't work very well with custom workflows as it makes a lot of assumptions
 						# that may not be true. It assumes you don't have any statuses in the workflow
 						# between 'bug_submit_status' and 'bug_feedback_status'. It assumes you only
 						# have one feedback, assigned and submitted status.
 						if( config_get( 'reassign_on_feedback' ) &&
-							 $t_bug->status === config_get( 'bug_feedback_status' ) &&
-							 $t_bug->handler_id !== (int) auth_get_current_user_id() &&
-							 $t_bug->reporter_id === (int) auth_get_current_user_id() ) {
-							if( $t_bug->handler_id !== NO_USER ) {
+							 $t_bug->status == config_get( 'bug_feedback_status' ) &&
+							 $t_bug->handler_id != (int) auth_get_current_user_id() &&
+							 $t_bug->reporter_id == (int) auth_get_current_user_id() ) {
+							if( $t_bug->handler_id != NO_USER ) {
 								bug_set_field( $t_bug->id, 'status', config_get( 'bug_assigned_status' ) );
 							} else {
 								bug_set_field( $t_bug->id, 'status', config_get( 'bug_submit_status' ) );
@@ -1118,7 +1118,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 						trigger_error( ERROR_EMPTY_FIELD, ERROR );
 					}
 
-					if( !custom_field_validate( $t_id, gpc_get_custom_field( 'custom_field_' . $t_id, $t_def['type'], null ) ) ) {
+					if( !custom_field_validate( $t_id, gpc_get_custom_field( 'custom_field_' . $t_id, $t_def['type'], NULL ) ) ) {
 						error_parameters( lang_get_defaulted( custom_field_get_field( $t_id, 'name' ) ) );
 						trigger_error( ERROR_CUSTOM_FIELD_INVALID_VALUE, ERROR );
 					}
@@ -1152,7 +1152,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 					$t_def = custom_field_get_definition( $t_id );
 					$t_default_value = custom_field_default_to_value( $t_def['default_value'], $t_def['type'] );
 					$t_value = $t_default_value; //gpc_get_custom_field( 'custom_field_' . $t_id, $t_def['type'], $t_default_value );
-					if ( !custom_field_set_value( $t_id, $t_bug_id, $t_value, /* log insert */ false ) )
+					if ( !custom_field_set_value( $t_id, $t_bug_id, $t_value, /* log insert */ FALSE ) )
 					{
 /*
 						error_parameters( lang_get_defaulted( custom_field_get_field( $t_id, 'name' ) ) );
@@ -1177,7 +1177,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 					history_log_event_special( $t_bug_id, BUG_ADD_RELATIONSHIP, $t_rel_type, $t_master_bug_id );
 
 					# Send the email notification
-					email_relationship_added( $t_master_bug_id, $t_bug_id, relationship_get_complementary_type( $t_rel_type ), false );
+					email_relationship_added( $t_master_bug_id, $t_bug_id, relationship_get_complementary_type( $t_rel_type ), FALSE );
 				}
 
 				helper_call_custom_function( 'issue_create_notify', array( $t_bug_id ) );
@@ -1321,7 +1321,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 			$t_file_number = 0;
 			$t_opt_name = '';
 			$t_dot_index = strripos( $t_part_name, '.' );
-			if( $t_dot_index === false )
+			if( $t_dot_index === FALSE )
 			{
 				$t_extension = '';
 				$t_file_name = $t_part_name;
@@ -1957,81 +1957,100 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 	/**
 	 * Gets the username from LDAP given the email address
 	 *
-	 * @todo Implement caching by retrieving all needed information in one query.
-	 * @todo Implement logging to LDAP queries same way like DB queries.
+	 * Values are retrieved from the LDAP cache.
+	 * {@see ldap_cache_user_data()} for the list of valid field names.
 	 *
 	 * @param string $p_email_address The email address.
 	 * @return string The username or null if not found.
 	 *
-	 * Based on ldap_get_field_from_username from MantisBT 1.2.14
+	 * Based on ldap_get_field_from_username from MantisBT 2.28.4
 	 */
 	private function ldap_get_username_from_email( $p_email_address )
 	{
 		if ( $this->_login_method == LDAP )
 		{
-			$t_email_field = 'mail';
+			global $g_cache_ldap_data;
 
-			$t_ldap_organization    = config_get( 'ldap_organization' );
-			$t_ldap_root_dn         = config_get( 'ldap_root_dn' );
-			$t_ldap_uid_field       = config_get( 'ldap_uid_field' );
+			# Return cached data if available
+			if( isset( $g_cache_ldap_data[$p_email_address] ) ) {
+				return $g_cache_ldap_data[$p_email_address];
+			}
 
-			$c_email_address = ldap_escape_string( $p_email_address );
+			log_event( LOG_LDAP, "Retrieving data for '$p_email_address' from LDAP server" );
 
-			log_event( LOG_LDAP, "Retrieving field '$t_ldap_uid_field' for '$p_email_address'" );
-
-			# Bind
-			log_event( LOG_LDAP, "Binding to LDAP server" );
+			# Bind and connect.
+			# We suppress errors, because failing to connect is not blocking in this
+			# context, it just means we won't be able to retrieve user data from LDAP.
 			$t_ds = @ldap_connect_bind();
-			if ( $t_ds === false ) {
-				ldap_log_error( $t_ds );
-				return null;
+			if ( $t_ds === FALSE ) {
+				log_event( LOG_LDAP, "ERROR: could not bind to LDAP server" );
+				return FALSE;
 			}
 
 			# Search
-			$t_search_filter        = "(&$t_ldap_organization($t_email_field=$c_email_address))";
-			$t_search_attrs         = array( $t_ldap_uid_field, $t_email_field, 'dn' );
+			$t_ldap_organization    = config_get_global( 'ldap_organization' );
+			$t_ldap_root_dn         = config_get_global( 'ldap_root_dn' );
+			$t_ldap_uid_field       = config_get_global( 'ldap_uid_field' );
+			$t_ldap_email_field     = config_get_global( 'ldap_email_field' );
 
-			log_event( LOG_LDAP, "Searching for $t_search_filter" );
+			log_event( LOG_LDAP, "Retrieving field '$t_ldap_uid_field' for '$p_email_address'" );
+
+			$t_search_filter = '(&' . $t_ldap_organization
+				. '(' . $t_ldap_email_field . '=' . ldap_escape_string( $p_email_address ) . '))';
+			$t_search_attrs = array(
+				$t_ldap_uid_field,
+				$t_ldap_email_field,
+				'dn'
+			);
+
+			log_event( LOG_LDAP, "Searching for '$t_search_filter'" );
 			$t_sr = @ldap_search( $t_ds, $t_ldap_root_dn, $t_search_filter, $t_search_attrs );
-			if ( $t_sr === false ) {
+			if ( $t_sr === FALSE ) {
 				ldap_log_error( $t_ds );
 				ldap_unbind( $t_ds );
-				log_event( LOG_LDAP, "ldap search failed" );
-				return null;
+				log_event( LOG_LDAP, "Search '$t_search_filter' failed" );
+				return FALSE;
 			}
 
 			# Get results
-			$t_info = ldap_get_entries( $t_ds, $t_sr );
-			if ( $t_info === false ) {
-				ldap_log_error( $t_ds );
-				log_event( LOG_LDAP, "ldap_get_entries() returned false." );
-				return null;
+			$t_entry = ldap_first_entry( $t_ds, $t_sr );
+			if( $t_entry === FALSE ) {
+				log_event( LOG_LDAP, 'No matches found.' );
+				$g_cache_ldap_data[$p_username] = FALSE;
+				return FALSE;
 			}
 
-			# Free results / unbind
-			log_event( LOG_LDAP, "Unbinding from LDAP server" );
-			ldap_free_result( $t_sr );
+			$t_data = array();
+			foreach( $t_search_attrs as $t_attr ) {
+				# Suppress error to avoid Warning in case an invalid attribute was specified
+				$t_value = @ldap_get_values( $t_ds, $t_entry, $t_attr );
+				if( $t_value === FALSE ) {
+					log_event( LOG_LDAP, "WARNING: field '$t_attr' does not exist" );
+					continue;
+				}
+				$t_data[$t_attr] = $t_value[0];
+			}
+			if( empty( $t_data ) ) {
+				$t_data = FALSE;
+			}
+
+			# Store data in the cache
+			$g_cache_ldap_data[$p_email_address] = $t_data;
+
+
+			# Unbind
+			log_event( LOG_LDAP, 'Unbinding from LDAP server' );
 			ldap_unbind( $t_ds );
 
-			# If no matches, return null.
-			if ( $t_info['count'] == 0 ) {
-				log_event( LOG_LDAP, "No matches found." );
-				return null;
+			# Make sure LDAP data is available and the requested field exists
+			if( !$t_data || !isset( $t_data[ strtolower( $t_ldap_uid_field ) ] ) ) {
+				return NULL;
 			}
 
-			# Make sure the requested field exists
-			if( is_array($t_info[0]) && array_key_exists( strtolower( $t_ldap_uid_field ), $t_info[0] ) ) {
-				$t_value = $t_info[0][ strtolower( $t_ldap_uid_field ) ][0];
-				log_event( LOG_LDAP, "Found value '{$t_value}' for field '{$t_ldap_uid_field}'." );
-			} else {
-				log_event( LOG_LDAP, "WARNING: field '$t_ldap_uid_field' does not exist" );
-				return null;
-			}
-
-			return $t_value;
+			return $t_data[$p_field];
 		}
 
-		return null;
+		return NULL;
 	}
 }
 

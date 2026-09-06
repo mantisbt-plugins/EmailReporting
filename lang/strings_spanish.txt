@@ -148,7 +148,6 @@ $s_plugin_EmailReporting_link_rules = 'Seleccionar reglas';
 $s_plugin_EmailReporting_mail_bug_priority_array_failure = 'El formato indicado no es un array aceptable.';
 $s_plugin_EmailReporting_recorddisabled = '* = Inhabilitado';
 $s_plugin_EmailReporting_mbstring_unavailable = '<span class="negative">Advertencia</span>: Extensión "PHP mbstring" no disponible. Esto puede causar problemas con la recepción de emails.';
-$s_plugin_EmailReporting_db_utf8_issue = 'Corrija cualquier problema de colación que se muestra a continuación, de lo contrario MantisBT puede devolver errores de consulta';
 $s_plugin_EmailReporting_missing_user = 'Usuario no encontrado, por favor seleccione otro.';
 $s_plugin_EmailReporting_openssl_unavailable = 'Extensión PHP OpenSSL no disponible';
 $s_plugin_EmailReporting_test_failure = 'Operación NO satisfactoria';

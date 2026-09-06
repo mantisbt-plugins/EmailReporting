@@ -81,7 +81,7 @@ ERP_output_config_option( 'act_issue_severity', 'dropdown_any', $t_rule, 'print_
 ERP_output_config_option( 'act_issue_status', 'dropdown_any', $t_rule, 'print_status_option_list' );
 ERP_output_config_option( 'act_issue_view_state', 'dropdown_any', $t_rule, 'print_view_state_option_list' );
 ERP_output_config_option( 'act_issue_category', 'dropdown_any', $t_rule, 'print_global_category_option_list' );
-ERP_output_config_option( 'act_issue_tag', 'dropdown_multiselect', $t_rule, 'print_tag_attach_option_list' );
+ERP_output_config_option( 'act_issue_tag', 'dropdown_multiselect', $t_rule, 'print_tag_option_list' );
 ERP_output_config_option( 'act_issue_custom_field', 'custom', $t_rule, 'print_custom_fields' );
 ERP_output_table_close();
 

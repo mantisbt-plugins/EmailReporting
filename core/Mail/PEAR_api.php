@@ -32,7 +32,7 @@ abstract class ERP_Transport extends ERP_ErrorHandling
 
 	# --------------------
 	# return the hostname with an encryption prefix (if applicable)
-	protected function prepare_mailbox_hostname( string $p_hostname, string|false $p_encryption = FALSE ): string|FALSE
+	protected function prepare_mailbox_hostname( string $p_hostname, string|FALSE $p_encryption = FALSE ): string|FALSE
 	{
 		$t_hostname = $p_hostname;
 
@@ -207,7 +207,7 @@ class ERP_POP3_Transport extends ERP_Transport
 
 		$t_ListMsgs = array_column( $t_ListMsgs, 'msg_id' );
 
-		sort( $t_ListMsgs );
+		sort( $t_ListMsgs, SORT_NUMERIC );
 
 		return( $t_ListMsgs );
 	}
@@ -352,7 +352,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 		{
 			$t_ListMsgs = array_column( $t_ListMsgs, 'msg_id', 'uidl' );
 
-			ksort( $t_ListMsgs );
+			ksort( $t_ListMsgs, SORT_NUMERIC );
 		}
 
 		return( $t_ListMsgs );

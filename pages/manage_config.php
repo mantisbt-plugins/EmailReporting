@@ -38,26 +38,6 @@ if ( !extension_loaded( 'mbstring' ) )
 	ERP_output_note_close();
 }
 
-// Output utf8 info box
-elseif ( $t_results_utf_test = ERP_test_database_utf8() )
-{
-	ERP_output_note_open();
-?>
-<p><i class="fa fa-info-circle"></i> 
-<?php
-	echo plugin_lang_get( 'db_utf8_issue' );
-?>
-</p>
-
-<table class="table table-bordered table-condensed table-striped">
-<?php
-	echo $t_results_utf_test;
-?>
-</table>
-<?php
-	ERP_output_note_close();
-}
-
 // Output scheduled job users warning box
 $t_job_users = (array) plugin_config_get( 'job_users' );
 $t_username = ERP_get_current_os_user();

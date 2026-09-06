@@ -579,8 +579,8 @@ class ERP_Mail_Parser
 			}
 			else
 			{
-				$htmlToText = new PHPCore\SimpleHtmlDom\HtmlDocument( null, true, true, $this->_encoding, false );
-				$htmlToText->load( $body, true, false );
+				$htmlToText = new PHPCore\SimpleHtmlDom\HtmlDocument( NULL, TRUE, TRUE, $this->_encoding, FALSE );
+				$htmlToText->load( $body, TRUE, FALSE );
 
 				// extract text from HTML
 				$this->_body = $htmlToText->plaintext;
