@@ -10,12 +10,33 @@ require_once( __DIR__ . '/../vendor/autoload.php' );
 # Return the default mailbox options
 function ERP_get_default_mailbox()
 {
+	$t_result = ERP_select_mail_engine( plugin_config_get( 'mail_engine' ) );
+
+	$t_mailbox_type = 'POP3';
+	$t_auth_method = 'USER';
+
+	if ( $t_result === TRUE )
+	{
+		$t_pop3 = new ERP_POP3_Transport();
+		$t_imap = new ERP_IMAP_Transport();
+
+		if ( empty( $t_pop3->getsupportedAuthMethods() ) )
+		{
+			$t_mailbox_type = 'IMAP';
+		}
+
+		if ( !in_array( $t_auth_method, ( $t_pop3->getsupportedAuthMethods() + $t_imap->getsupportedAuthMethods() ) ) )
+		{
+			$t_auth_method = 'PLAIN';
+		}
+	}
+
 	$t_mailbox = array(
 		'enabled'               => ON,
-		'mailbox_type'          => 'POP3',
+		'mailbox_type'          => $t_mailbox_type,
 		'encryption'            => 'None',
 		'ssl_cert_verify'       => ON,
-		'auth_method'           => 'USER',
+		'auth_method'           => $t_auth_method,
 	);
 
 	return( $t_mailbox );
@@ -1006,11 +1027,11 @@ function ERP_custom_function_print_auth_method_option_list( $p_sel_value )
 	$t_pop3 = new ERP_POP3_Transport();
 	$t_imap = new ERP_IMAP_Transport();
 
-	$t_supported_auth_methods[ 'POP3' ] = array_diff( $t_pop3->getsupportedAuthMethods(), $t_imap->getsupportedAuthMethods() );
-	$t_supported_auth_methods[ 'IMAP' ] = array_diff( $t_imap->getsupportedAuthMethods(), $t_pop3->getsupportedAuthMethods() );
-	$t_supported_auth_methods[ 'BOTH' ] = array_intersect( $t_pop3->getsupportedAuthMethods(), $t_imap->getsupportedAuthMethods() );
-
-	ksort( $t_supported_auth_methods );
+	$t_supported_auth_methods = array(
+		'BOTH' => array_intersect( $t_pop3->getsupportedAuthMethods(), $t_imap->getsupportedAuthMethods() ),
+		'IMAP' => array_diff( $t_imap->getsupportedAuthMethods(), $t_pop3->getsupportedAuthMethods() ),
+		'POP3' => array_diff( $t_pop3->getsupportedAuthMethods(), $t_imap->getsupportedAuthMethods() ),
+	);
 
 	foreach ( $t_supported_auth_methods AS $t_key => $t_auth_methods )
 	{
