@@ -71,7 +71,7 @@ abstract class ERP_Transport extends ERP_ErrorHandling
 	{
 		$t_loginresult = $this->_mailserver->login( $p_mailbox_username, $p_mailbox_password, $p_mailbox_auth_method );
 
-		$t_additionalstring = ( ( $p_mailbox_auth_method === 'XOAUTH2' ) ? ' This could also be a permission issue where the application has no permission to access the given mailbox.' : '' );
+		$t_additionalstring = ( ( $p_mailbox_auth_method === 'XOAUTH2' ) ? 'This could also be a permission issue where the application has no permission to access the given mailbox.' : '' );
 		if ( $this->isError( $t_loginresult, $t_additionalstring ) )
 		{
 			return( FALSE );
@@ -120,7 +120,7 @@ abstract class ERP_Transport extends ERP_ErrorHandling
 	{
 		if ( PEAR::isError( $p_result ) )
 		{
-			$this->setError( $p_result->getMessage() . ' (' . $p_result->getCode() . ').' . $t_additionalstring );
+			$this->setError( $p_result->getMessage() . ' (' . $p_result->getCode() . ').' . ( ( !empty( $t_additionalstring ) ) ? ' ' . $t_additionalstring : '' ) );
 			return( TRUE );
 		}
 		else
@@ -156,7 +156,7 @@ class ERP_POP3_Transport extends ERP_Transport
 
 		$t_connectresult = $this->_mailserver->connect( $t_hostname, $p_port, $this->get_StreamContextOptions() );
 
-		$t_additionalstring = ( ( $p_encryption !== FALSE && $p_encryption !== 'None' && $this->_ssl_cert_verify === TRUE ) ? ' This could possibly be because SSL certificate verification failed.' : '' );
+		$t_additionalstring = ( ( $p_encryption !== FALSE && $p_encryption !== 'None' && $this->_ssl_cert_verify === TRUE ) ? 'This could possibly be because SSL certificate verification failed.' : '' );
 		if ( $this->isError( $t_connectresult, $t_additionalstring ) )
 		{
 			return( FALSE );
@@ -268,7 +268,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 
 		$t_connectresult = $this->_mailserver->connect( $t_hostname, $p_port, $t_STARTTLS );
 
-		$t_additionalstring = ( ( $p_encryption !== FALSE && $p_encryption !== 'None' && $this->_ssl_cert_verify === TRUE ) ? ' This could possibly be because SSL certificate verification failed.' : '' );
+		$t_additionalstring = ( ( $p_encryption !== FALSE && $p_encryption !== 'None' && $this->_ssl_cert_verify === TRUE ) ? 'This could possibly be because SSL certificate verification failed.' : '' );
 		if ( $this->isError( $t_connectresult, $t_additionalstring ) )
 		{
 			return( FALSE );
