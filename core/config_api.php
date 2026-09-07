@@ -23,9 +23,9 @@ function ERP_get_default_mailbox()
 		if ( empty( $t_pop3->getsupportedAuthMethods() ) )
 		{
 			$t_mailbox_type = 'IMAP';
+			$t_auth_method = 'PLAIN';
 		}
-
-		if ( !in_array( $t_auth_method, ( $t_pop3->getsupportedAuthMethods() + $t_imap->getsupportedAuthMethods() ) ) )
+		elseif ( !in_array( $t_auth_method, $t_pop3->getsupportedAuthMethods() ) )
 		{
 			$t_auth_method = 'PLAIN';
 		}
