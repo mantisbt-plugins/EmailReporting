@@ -93,7 +93,7 @@ abstract class ERP_Transport extends ERP_ErrorHandling
 	# Delete a single email from a mailbox
 	public function deleteMsg( int $p_msg_id ): bool
 	{
-		if ( $this->_test_only === TRUE )
+		if ( $this->_test_only )
 		{
 			return( TRUE );
 		}
@@ -195,7 +195,7 @@ class ERP_POP3_Transport extends ERP_Transport
 	# Return a list of emails in the mailbox
 	public function getListing(): array|FALSE
 	{
-		if ( $this->_test_only === TRUE )
+		if ( $this->_test_only )
 		{
 			return( array() );
 		}
@@ -218,7 +218,7 @@ class ERP_POP3_Transport extends ERP_Transport
 	# Return a single raw email
 	public function getMsg( int $p_msg_id ): string|FALSE
 	{
-		if ( $this->_test_only === TRUE )
+		if ( $this->_test_only )
 		{
 			return( '' );
 		}
@@ -315,7 +315,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 	# Needed a workaround to sort IMAP emails in a certain order
 	public function getListing(): array|FALSE
 	{
-		if ( $this->_test_only === TRUE )
+		if ( $this->_test_only )
 		{
 			return( array() );
 		}
@@ -373,7 +373,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 	# Handles a workaround for problems with Net_IMAP 1.1.x concerning the getMsg function
 	public function getMsg( int $p_msg_id ): string|FALSE
 	{
-		if ( $this->_test_only === TRUE )
+		if ( $this->_test_only )
 		{
 			return( '' );
 		}
@@ -400,7 +400,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 	# If FALSE is returned, check with hasError whether there was an error or if the state is FALSE (not marked as deleted)
 	public function isDeleted( int $p_msg_id ): bool
 	{
-		if ( $this->_test_only === TRUE )
+		if ( $this->_test_only )
 		{
 			return( FALSE );
 		}
@@ -482,7 +482,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 	# Select a mailbox folder
 	public function selectMailbox( string $p_foldername ): bool
 	{
-		if ( $this->_test_only === TRUE )
+		if ( $this->_test_only )
 		{
 			return( TRUE );
 		}
@@ -504,7 +504,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 	# Create the mailbox folder
 	public function createMailbox( string $p_foldername ): bool
 	{
-		if ( $this->_test_only === TRUE )
+		if ( $this->_test_only )
 		{
 			return( TRUE );
 		}
