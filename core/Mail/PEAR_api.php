@@ -96,7 +96,9 @@ abstract class ERP_Transport extends ERP_ErrorHandling
 			return( FALSE );
 		}
 
-		return( $t_deleteresult );
+		// POP3 deleteMsg could return '+OK Message deleted.' (or variant thereof). Fixed in 1.3.9.7
+		// Cast to bool should fix that.
+		return( (bool) $t_deleteresult );
 	}
 
 	# --------------------
@@ -339,6 +341,14 @@ class ERP_IMAP_Transport extends ERP_Transport
 		if ( $t_examineMailbox[ 'EXISTS' ] == 0 )
 		{
 			return( array() );
+		}
+
+		// Need to do a selectMailbox after examineMailbox otherwise deletemsg will report error with Exchange
+		$t_selectMailbox = $this->selectMailbox( $t_foldername );
+
+		if ( $t_selectMailbox === FALSE )
+		{
+			return( FALSE );
 		}
 
 		$t_ListMsgs = $this->_mailserver->getMessagesList();
