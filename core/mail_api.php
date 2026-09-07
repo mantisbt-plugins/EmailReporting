@@ -2016,7 +2016,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 			$t_entry = ldap_first_entry( $t_ds, $t_sr );
 			if( $t_entry === FALSE ) {
 				log_event( LOG_LDAP, 'No matches found.' );
-				$g_cache_ldap_data[$p_username] = FALSE;
+				$g_cache_ldap_data[$p_email_address] = FALSE;
 				return FALSE;
 			}
 
