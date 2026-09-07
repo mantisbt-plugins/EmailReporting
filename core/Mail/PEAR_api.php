@@ -31,6 +31,15 @@ abstract class ERP_Transport extends ERP_ErrorHandling
 	}
 
 	# --------------------
+	# Get supported auth methods
+	public function getsupportedAuthMethods(): array
+	{
+		$t_supportedAuthMethods = $this->_mailserver->supportedAuthMethods;
+
+		return( $t_supportedAuthMethods );
+	}
+
+	# --------------------
 	# return the hostname with an encryption prefix (if applicable)
 	protected function prepare_mailbox_hostname( string $p_hostname, string|FALSE $p_encryption = FALSE ): string|FALSE
 	{
@@ -99,15 +108,6 @@ abstract class ERP_Transport extends ERP_ErrorHandling
 		// POP3 deleteMsg could return '+OK Message deleted.' (or variant thereof). Fixed in 1.3.9.7
 		// Cast to bool should fix that.
 		return( (bool) $t_deleteresult );
-	}
-
-	# --------------------
-	# Get supported auth methods
-	public function getsupportedAuthMethods(): array
-	{
-		$t_supportedAuthMethods = $this->_mailserver->supportedAuthMethods;
-
-		return( $t_supportedAuthMethods );
 	}
 
 	# --------------------
@@ -436,6 +436,20 @@ class ERP_IMAP_Transport extends ERP_Transport
 	}
 
 	# --------------------
+	# Get the hierarchy delimiter
+	public function getHierarchyDelimiter(): string|FALSE
+	{
+		$t_getHierarchyDelimiter = $this->_mailserver->getHierarchyDelimiter();
+
+		if ( $this->isError( $t_getHierarchyDelimiter ) )
+		{
+			return( FALSE );
+		}
+
+		return( $t_getHierarchyDelimiter );
+	}
+
+	# --------------------
 	# Get the current folder for the mailbox
 	public function getCurrentMailbox(): string|FALSE
 	{
@@ -462,20 +476,6 @@ class ERP_IMAP_Transport extends ERP_Transport
 		}
 
 		return( $t_mailboxExist );
-	}
-
-	# --------------------
-	# Get the hierarchy delimiter
-	public function getHierarchyDelimiter(): string|FALSE
-	{
-		$t_getHierarchyDelimiter = $this->_mailserver->getHierarchyDelimiter();
-
-		if ( $this->isError( $t_getHierarchyDelimiter ) )
-		{
-			return( FALSE );
-		}
-
-		return( $t_getHierarchyDelimiter );
 	}
 
 	# --------------------
