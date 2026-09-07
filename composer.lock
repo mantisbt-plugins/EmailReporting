@@ -1491,16 +1491,16 @@
         },
         {
             "name": "sl-gundam/net_pop3",
-            "version": "v1.3.9.7",
+            "version": "v1.3.9.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SL-Gundam/Net_POP3.git",
-                "reference": "9ea8abc45c5f8b5e105aef2bfcc214112fbe2fc4"
+                "reference": "325c491987226249fbb58981e69f76c0a96a6404"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SL-Gundam/Net_POP3/zipball/9ea8abc45c5f8b5e105aef2bfcc214112fbe2fc4",
-                "reference": "9ea8abc45c5f8b5e105aef2bfcc214112fbe2fc4",
+                "url": "https://api.github.com/repos/SL-Gundam/Net_POP3/zipball/325c491987226249fbb58981e69f76c0a96a6404",
+                "reference": "325c491987226249fbb58981e69f76c0a96a6404",
                 "shasum": ""
             },
             "require": {
@@ -1552,7 +1552,7 @@
                 "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=Net_POP3",
                 "source": "https://github.com/pear/Net_POP3"
             },
-            "time": "2026-09-07T16:04:09+00:00"
+            "time": "2026-09-07T18:49:22+00:00"
         },
         {
             "name": "sl-gundam/net_socket",
