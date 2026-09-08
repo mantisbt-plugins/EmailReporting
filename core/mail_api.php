@@ -1828,7 +1828,15 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 	# Select the fragments of interest to us
 	private function selectFragments( EmailReplyParser\Fragment $fragment )
 	{
-		return( !( $fragment->isEmpty() ) && !( $this->_mail_remove_replies && $fragment->isQuoted() ) && !( $this->_mail_strip_signature && $fragment->isSignature() ) );
+		// filter out:
+		// - empty fragments
+		// - qouted fragments (if _mail_remove_replies)
+		// - signature fragments (if _mail_strip_signature)
+		return(
+			!( $fragment->isEmpty() ) &&
+			!( $this->_mail_remove_replies && $fragment->isQuoted() ) &&
+			!( $this->_mail_strip_signature && $fragment->isSignature() )
+		);
 	}
 
 	# --------------------
