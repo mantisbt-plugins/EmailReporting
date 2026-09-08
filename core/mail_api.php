@@ -1963,7 +1963,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 	 * @param string $p_email_address The email address.
 	 * @return string The username or null if not found.
 	 *
-	 * Based on ldap_get_field_from_username from MantisBT 2.28.4
+	 * Based on ldap_get_field_from_username and ldap_cache_user_data from MantisBT 2.28.4
 	 */
 	private function ldap_get_username_from_email( $p_email_address )
 	{
@@ -2034,20 +2034,20 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 				$t_data = FALSE;
 			}
 
-			# Store data in the cache
-			$g_cache_ldap_data[$p_email_address] = $t_data;
+			# Make sure LDAP data is available and the requested field exists
+			if( !$t_data || !isset( $t_data[$t_ldap_uid_field] ) ) {
+				$g_cache_ldap_data[$p_email_address] = NULL;
+				return NULL;
+			}
 
+			# Store data in the cache
+			$g_cache_ldap_data[$p_email_address] = $t_data[$t_ldap_uid_field];
 
 			# Unbind
 			log_event( LOG_LDAP, 'Unbinding from LDAP server' );
 			ldap_unbind( $t_ds );
 
-			# Make sure LDAP data is available and the requested field exists
-			if( !$t_data || !isset( $t_data[ strtolower( $t_ldap_uid_field ) ] ) ) {
-				return NULL;
-			}
-
-			return $t_data[$p_field];
+			return $t_data[$t_ldap_uid_field];
 		}
 
 		return NULL;
