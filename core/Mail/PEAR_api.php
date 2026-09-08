@@ -136,13 +136,13 @@ class ERP_POP3_Transport extends ERP_Transport
 {
 	# --------------------
 	# Constructor
-	public function __construct( bool $p_test_only = FALSE, int|bool $p_ssl_cert_verify = TRUE )
+	public function __construct( bool $p_test_only = FALSE, int|bool $p_ssl_cert_verify = TRUE, int $p_timeout = 30 )
 	{
 		$this->_test_only = (bool) $p_test_only;
 		$this->_ssl_cert_verify = (bool) $p_ssl_cert_verify;
 
 		$this->_mailserver = new Net_POP3();
-		$this->_mailserver->_timeout = 3;
+		$this->_mailserver->_timeout = $p_timeout;
 	}
 
 	# --------------------
@@ -242,13 +242,13 @@ class ERP_IMAP_Transport extends ERP_Transport
 
 	# --------------------
 	# Constructor
-	public function __construct( bool $p_test_only = FALSE, int|bool $p_ssl_cert_verify = TRUE )
+	public function __construct( bool $p_test_only = FALSE, int|bool $p_ssl_cert_verify = TRUE, int $p_timeout = 30 )
 	{
 		$this->_test_only = (bool) $p_test_only;
 		$this->_ssl_cert_verify = (bool) $p_ssl_cert_verify;
 
 		$this->_mailserver = new Net_IMAP( NULL );
-		$this->_mailserver->setTimeout( 3 );
+		$this->_mailserver->setTimeout( $p_timeout );
 
 		$this->_mailserver->setStreamContextOptions( $this->get_StreamContextOptions() );
 

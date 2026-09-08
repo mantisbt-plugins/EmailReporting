@@ -345,7 +345,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 			return( FALSE );
 		}
 
-		$this->_mail_api = new ERP_POP3_Transport( $this->_test_only, $this->_mailbox[ 'ssl_cert_verify' ] );
+		$this->_mail_api = new ERP_POP3_Transport( $this->_test_only, $this->_mailbox[ 'ssl_cert_verify' ], 5 );
 
 		if ( $this->_mail_api->hasError() )
 		{
@@ -415,7 +415,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 			return( FALSE );
 		}
 
-		$this->_mail_api = new ERP_IMAP_Transport( $this->_test_only, $this->_mailbox[ 'ssl_cert_verify' ] );
+		$this->_mail_api = new ERP_IMAP_Transport( $this->_test_only, $this->_mailbox[ 'ssl_cert_verify' ], 5 );
 
 		if ( $this->_mail_api->hasError() )
 		{
