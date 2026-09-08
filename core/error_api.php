@@ -35,6 +35,45 @@ abstract class ERP_ErrorHandling
 	{
 		return( array_shift( $this->_error ) );
 	}
+
+	# --------------------
+	# Third-party compatibility helper.
+	# Call a function while catching errors as exceptions
+	#
+	# Third-party code emits PHP warnings instead of
+	# proper exceptions. Temporarily convert warnings
+	# to exceptions so they can be handled through the
+	# normal EmailReporting error handling stack.
+	public function runWithErrorAsException( string $p_command, ?object &$p_object = NULL, mixed ...$p_args ): mixed
+	{
+		$t_result = NULL;
+
+		set_error_handler(
+			static function ( $severity, $message, $file, $line )
+			{
+				throw new \ErrorException( $message, 0, $severity, $file, $line );
+			},
+			E_ALL
+		);
+
+		try
+		{
+			if ( $p_object === NULL )
+			{
+				$t_result = $p_command( ...$p_args );
+			}
+			else
+			{
+				$t_result = $p_object->$p_command( ...$p_args );
+			}
+		}
+		finally
+		{
+			restore_error_handler();
+		}
+
+		return( $t_result );
+	}
 }
 
 ?>
