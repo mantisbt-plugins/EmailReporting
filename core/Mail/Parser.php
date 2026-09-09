@@ -121,7 +121,7 @@ class ERP_Mail_Parser
 	}
 
 	# Passed by reference to minimise memory usage when
-	# handling large result objects and mailbox data.
+	# handling large amounts of mailbox data.
 	public function setInputString( &$content )
 	{
 		$this->_file = NULL;
@@ -273,12 +273,10 @@ class ERP_Mail_Parser
 		return( $t_encode );
 	}
 
-	# Passed by reference to minimise memory usage when
-	# handling large result objects and mailbox data.
-	private function decode( &$email )
+	private function decode()
 	{
-		$decoder = new Mail_mimeDecode( $email );
-		$email = NULL;
+		$decoder = new Mail_mimeDecode( $this->_content );
+		$this->_content = NULL;
 		$decoder->_input = NULL;
 
 		$this->show_memory_usage( 'mimeDecode initiated' );
@@ -295,9 +293,7 @@ class ERP_Mail_Parser
 		return( $structure );
 	}
 
-	# Passed by reference to minimise memory usage when
-	# handling large result objects and mailbox data.
-	private function parse_signed_content( &$structure )
+	private function parse_signed_content( $structure )
 	{
 		if ( is_object( $structure ) )
 		{
@@ -320,8 +316,7 @@ class ERP_Mail_Parser
 
 		$this->show_memory_usage( 'Start parse' );
 
-		$structure = $this->decode( $this->_content );
-		$this->_content = NULL;
+		$structure = $this->decode();
 
 		$this->parse_signed_content( $structure );
 
@@ -385,9 +380,7 @@ class ERP_Mail_Parser
 		return( $this->_is_auto_reply );
 	}
 
-	# Passed by reference to minimise memory usage when
-	# handling large result objects and mailbox data.
-	private function parseStructure( &$structure )
+	private function parseStructure( $structure )
 	{
 		if ( isset( $structure->headers[ 'from' ] ) )
 		{
@@ -506,7 +499,7 @@ class ERP_Mail_Parser
 	private function setReferences( $p_references )
 	{
 		// Some email servers mishandle the references header and split one ID over multiple lines causing an extra space
-		$t_references = str_replace( ' ', '', $p_references );
+		$t_references = str_replace( array( ' ', "\r\n", "\r", "\n" ), '', $p_references );
 		preg_match_all( '/<\S*?>/m', $t_references, $t_matches );
 		$references = array_map( 'trim', $t_matches[ 0 ] );
 
@@ -596,9 +589,7 @@ class ERP_Mail_Parser
 		return( TRUE );
 	}
 
-	# Passed by reference to minimise memory usage when
-	# handling large result objects and mailbox data.
-	private function setParts( &$parts, $attachment = FALSE, $p_attached_email_subject = NULL )
+	private function setParts( $parts, $attachment = FALSE, $p_attached_email_subject = NULL )
 	{
 		if ( !array_key_exists( 0, $parts ) )
 		{
@@ -697,9 +688,7 @@ class ERP_Mail_Parser
 		}
 	}
 
-	# Passed by reference to minimise memory usage when
-	# handling large result objects and mailbox data.
-	private function ParseTNEF( &$TNEFpart )
+	private function ParseTNEF( $TNEFpart )
 	{
 		if ( $this->_parse_tnef )
 		{
@@ -741,9 +730,7 @@ class ERP_Mail_Parser
 		}
 	}
 
-	# Passed by reference to minimise memory usage when
-	# handling large result objects and mailbox data.
-	private function addPart( &$part, $p_alternative_name = NULL )
+	private function addPart( $part, $p_alternative_name = NULL )
 	{
 		if ( $this->_add_attachments )
 		{

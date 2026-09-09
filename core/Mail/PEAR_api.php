@@ -19,7 +19,7 @@ abstract class ERP_Transport extends ERP_ErrorHandling
 	protected ?object $_mailserver = NULL;
 
 	# Return Stream Context Options array
-	protected function get_StreamContextOptions(): array
+	protected function getStreamContextOptions(): array
 	{
 		return( array(
 			'ssl' => array
@@ -41,7 +41,7 @@ abstract class ERP_Transport extends ERP_ErrorHandling
 
 	# --------------------
 	# return the hostname with an encryption prefix (if applicable)
-	protected function prepare_mailbox_hostname( string $p_hostname, string|FALSE $p_encryption = FALSE ): string|FALSE
+	protected function prepareMailboxHostname( string $p_hostname, string|FALSE $p_encryption = FALSE ): string|FALSE
 	{
 		$t_hostname = $p_hostname;
 
@@ -115,10 +115,7 @@ abstract class ERP_Transport extends ERP_ErrorHandling
 	#
 	# When an error is detected it is stored internally.
 	# Returns TRUE when an error was detected.
-	#
-	# Passed by reference to minimise memory usage when
-	# handling large result objects and mailbox data.
-	protected function isError( mixed &$p_result, string $t_additionalstring = '' ): bool
+	protected function isError( mixed $p_result, string $t_additionalstring = '' ): bool
 	{
 		if ( PEAR::isError( $p_result ) )
 		{
@@ -149,14 +146,14 @@ class ERP_POP3_Transport extends ERP_Transport
 	# Connnect to a mailbox
 	public function connect( string $p_hostname, int $p_port, string|FALSE $p_encryption = FALSE ): bool
 	{
-		$t_hostname = $this->prepare_mailbox_hostname( $p_hostname, $p_encryption );
+		$t_hostname = $this->prepareMailboxHostname( $p_hostname, $p_encryption );
 
 		if ( $t_hostname === FALSE )
 		{
 			return( FALSE );
 		}
 
-		$t_connectresult = $this->_mailserver->connect( $t_hostname, $p_port, $this->get_StreamContextOptions() );
+		$t_connectresult = $this->_mailserver->connect( $t_hostname, $p_port, $this->getStreamContextOptions() );
 
 		$t_additionalstring = ( ( $p_encryption !== FALSE && $p_encryption !== 'None' && $this->_ssl_cert_verify === TRUE ) ? 'This could possibly be because SSL certificate verification failed.' : '' );
 		if ( $this->isError( $t_connectresult, $t_additionalstring ) )
@@ -236,9 +233,9 @@ class ERP_POP3_Transport extends ERP_Transport
 
 class ERP_IMAP_Transport extends ERP_Transport
 {
-	private bool $_connected = FALSE;
-
 	private array $_getFlags = array();
+
+	private ?string $_hierarchydelimiter = NULL;
 
 	# --------------------
 	# Constructor
@@ -250,16 +247,14 @@ class ERP_IMAP_Transport extends ERP_Transport
 		$this->_mailserver = new Net_IMAP( NULL );
 		$this->_mailserver->setTimeout( $p_timeout );
 
-		$this->_mailserver->setStreamContextOptions( $this->get_StreamContextOptions() );
-
-		$this->_connected = &$this->_mailserver->_connected;
+		$this->_mailserver->setStreamContextOptions( $this->getStreamContextOptions() );
 	}
 
 	# --------------------
 	# Connect to a mailbox
 	public function connect( string $p_hostname, int $p_port, string|FALSE $p_encryption = FALSE ): bool
 	{
-		$t_hostname = $this->prepare_mailbox_hostname( $p_hostname, $p_encryption );
+		$t_hostname = $this->prepareMailboxHostname( $p_hostname, $p_encryption );
 
 		if ( $t_hostname === FALSE )
 		{
@@ -276,7 +271,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 			return( FALSE );
 		}
 
-		if ( $this->_connected !== $t_connectresult )
+		if ( $this->_mailserver->_connected !== $t_connectresult )
 		{
 			$this->setError( 'IMAP state discrepency: _connected and connectresult show different states.' );
 			return( FALSE );
@@ -294,7 +289,9 @@ class ERP_IMAP_Transport extends ERP_Transport
 	# Disconnect from a mailbox
 	public function disconnect( bool $p_expunge = FALSE ): bool
 	{
-		if ( $this->_connected !== TRUE )
+		$this->_hierarchydelimiter = NULL;
+
+		if ( $this->_mailserver->_connected !== TRUE )
 		{
 			return( TRUE );
 		}
@@ -326,6 +323,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 		// examineMailbox allows EmailReporting to check whether or not there are emails in the folder without producing an error
 
 		$t_foldername = $this->getCurrentMailbox();
+
 		if ( $t_foldername === FALSE )
 		{
 			return( FALSE );
@@ -437,16 +435,41 @@ class ERP_IMAP_Transport extends ERP_Transport
 
 	# --------------------
 	# Get the hierarchy delimiter
-	public function getHierarchyDelimiter(): string|FALSE
+	private function getHierarchyDelimiter(): string|FALSE
 	{
-		$t_getHierarchyDelimiter = $this->_mailserver->getHierarchyDelimiter();
+		if ( $this->_hierarchydelimiter === NULL )
+		{
+			$t_hierarchydelimiter = $this->_mailserver->getHierarchyDelimiter();
 
-		if ( $this->isError( $t_getHierarchyDelimiter ) )
+			if ( $this->isError( $t_hierarchydelimiter ) )
+			{
+				return( FALSE );
+			}
+
+			$this->_hierarchydelimiter = $t_hierarchydelimiter;
+		}
+
+		return( $this->_hierarchydelimiter );
+	}
+
+	# --------------------
+	# Prepare foldername
+	private function prepareFoldername( string $p_foldername ): string|FALSE
+	{
+		$t_hierarchydelimiter = $this->getHierarchyDelimiter();
+
+		if ( $t_hierarchydelimiter === FALSE )
 		{
 			return( FALSE );
 		}
 
-		return( $t_getHierarchyDelimiter );
+		$t_foldername = $p_foldername;
+		if ( $t_hierarchydelimiter !== '/' )
+		{
+			$t_foldername = str_replace( '/', $t_hierarchydelimiter, $t_foldername );
+		}
+
+		return( $t_foldername );
 	}
 
 	# --------------------
@@ -460,7 +483,14 @@ class ERP_IMAP_Transport extends ERP_Transport
 			return( FALSE );
 		}
 
-		return( $t_getCurrentMailbox );
+		$t_foldername = $this->prepareFoldername( $t_getCurrentMailbox );
+
+		if ( $t_foldername === FALSE )
+		{
+			return( FALSE );
+		}
+
+		return( $t_foldername );
 	}
 
 	# --------------------
@@ -468,7 +498,14 @@ class ERP_IMAP_Transport extends ERP_Transport
 	# If FALSE is returned, check with hasError whether there was an error or if the folder did not exist
 	public function mailboxExist( string $p_foldername ): bool
 	{
-		$t_mailboxExist = $this->_mailserver->mailboxExist( $p_foldername );
+		$t_foldername = $this->prepareFoldername( $p_foldername );
+
+		if ( $t_foldername === FALSE )
+		{
+			return( FALSE );
+		}
+
+		$t_mailboxExist = $this->_mailserver->mailboxExist( $t_foldername );
 
 		if ( $this->isError( $t_mailboxExist ) )
 		{
@@ -487,7 +524,14 @@ class ERP_IMAP_Transport extends ERP_Transport
 			return( TRUE );
 		}
 
-		$t_selectMailbox = $this->_mailserver->selectMailbox( $p_foldername );
+		$t_foldername = $this->prepareFoldername( $p_foldername );
+
+		if ( $t_foldername === FALSE )
+		{
+			return( FALSE );
+		}
+
+		$t_selectMailbox = $this->_mailserver->selectMailbox( $t_foldername );
 
 		if ( $this->isError( $t_selectMailbox ) )
 		{
@@ -509,7 +553,14 @@ class ERP_IMAP_Transport extends ERP_Transport
 			return( TRUE );
 		}
 
-		$t_createMailbox = $this->_mailserver->createMailbox( $p_foldername );
+		$t_foldername = $this->prepareFoldername( $p_foldername );
+
+		if ( $t_foldername === FALSE )
+		{
+			return( FALSE );
+		}
+
+		$t_createMailbox = $this->_mailserver->createMailbox( $t_foldername );
 
 		if ( $this->isError( $t_createMailbox ) )
 		{
