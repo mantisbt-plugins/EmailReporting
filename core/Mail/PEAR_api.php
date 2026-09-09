@@ -299,8 +299,17 @@ class ERP_IMAP_Transport extends ERP_Transport
 			return( TRUE );
 		}
 
-		//$this->_mailserver->expunge(); //disabled as this is handled by the disconnect
-		$t_disconnectresult = $this->_mailserver->disconnect( (bool) $p_expunge );
+		if ( $p_expunge )
+		{
+			$t_expungeresult = $this->_mailserver->expunge();
+
+			if ( $this->isError( $t_expungeresult ) )
+			{
+				return( FALSE );
+			}
+		}
+
+		$t_disconnectresult = $this->_mailserver->disconnect( FALSE );
 
 		if ( $this->isError( $t_disconnectresult ) )
 		{
@@ -370,32 +379,6 @@ class ERP_IMAP_Transport extends ERP_Transport
 	}
 
 	# --------------------
-	# Return a single raw email
-	# Handles a workaround for problems with Net_IMAP 1.1.x concerning the getMsg function
-	public function getMsg( int $p_msg_id ): string|FALSE
-	{
-		if ( $this->_test_only )
-		{
-			return( '' );
-		}
-
-		// Net_IMAP 1.1.0 and 1.1.2 seems to have a somewhat broken getMsg function.
-		$t_msg = $this->_mailserver->getMessages( $p_msg_id, TRUE );
-
-		if ( $this->isError( $t_msg ) )
-		{
-			return( FALSE );
-		}
-
-		if ( is_array( $t_msg ) && count( $t_msg ) === 1 )
-		{
-			$t_msg = $t_msg[ key( $t_msg ) ];
-		}
-
-		return( $t_msg );
-	}
-
-	# --------------------
 	# Check whether a email is deleted
 	# Handles a workaround for problems with Net_IMAP 1.1.x with the hasFlag function (isDeleted uses that function)
 	# If FALSE is returned, check with hasError whether there was an error or if the state is FALSE (not marked as deleted)
@@ -434,6 +417,32 @@ class ERP_IMAP_Transport extends ERP_Transport
 		}
 
 		return( FALSE );
+	}
+
+	# --------------------
+	# Return a single raw email
+	# Handles a workaround for problems with Net_IMAP 1.1.x concerning the getMsg function
+	public function getMsg( int $p_msg_id ): string|FALSE
+	{
+		if ( $this->_test_only )
+		{
+			return( '' );
+		}
+
+		// Net_IMAP 1.1.0 and 1.1.2 seems to have a somewhat broken getMsg function.
+		$t_msg = $this->_mailserver->getMessages( $p_msg_id, TRUE );
+
+		if ( $this->isError( $t_msg ) )
+		{
+			return( FALSE );
+		}
+
+		if ( is_array( $t_msg ) && count( $t_msg ) === 1 )
+		{
+			$t_msg = $t_msg[ key( $t_msg ) ];
+		}
+
+		return( $t_msg );
 	}
 
 	# --------------------
