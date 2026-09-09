@@ -204,9 +204,12 @@ class ERP_POP3_Transport extends ERP_Transport
 			return( FALSE );
 		}
 
-		$t_ListMsgs = array_column( $t_ListMsgs, 'msg_id' );
+		if ( !empty( $t_ListMsgs ) )
+		{
+			$t_ListMsgs = array_column( $t_ListMsgs, 'msg_id' );
 
-		sort( $t_ListMsgs, SORT_NUMERIC );
+			sort( $t_ListMsgs, SORT_NUMERIC );
+		}
 
 		return( $t_ListMsgs );
 	}
@@ -524,6 +527,9 @@ class ERP_IMAP_Transport extends ERP_Transport
 			return( TRUE );
 		}
 
+		// reset Flags cache
+		$this->_getFlags = array();
+
 		$t_foldername = $this->prepareFoldername( $p_foldername );
 
 		if ( $t_foldername === FALSE )
@@ -537,9 +543,6 @@ class ERP_IMAP_Transport extends ERP_Transport
 		{
 			return( FALSE );
 		}
-
-		// reset Flags cache
-		$this->_getFlags = array();
 
 		return( $t_selectMailbox );
 	}
