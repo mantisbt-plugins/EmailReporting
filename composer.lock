@@ -1426,16 +1426,16 @@
         },
         {
             "name": "sl-gundam/net_imap",
-            "version": "1.1.4.3",
+            "version": "1.1.4.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SL-Gundam/Net_IMAP.git",
-                "reference": "eb37c5bc6ca5503274374be7b8b8abef801711e7"
+                "reference": "77b671d336582278d83cc8fdde6e531453256fe2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SL-Gundam/Net_IMAP/zipball/eb37c5bc6ca5503274374be7b8b8abef801711e7",
-                "reference": "eb37c5bc6ca5503274374be7b8b8abef801711e7",
+                "url": "https://api.github.com/repos/SL-Gundam/Net_IMAP/zipball/77b671d336582278d83cc8fdde6e531453256fe2",
+                "reference": "77b671d336582278d83cc8fdde6e531453256fe2",
                 "shasum": ""
             },
             "require": {
@@ -1487,7 +1487,7 @@
                 "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=Net_IMAP",
                 "source": "https://github.com/pear/Net_IMAP"
             },
-            "time": "2026-08-26T20:42:49+00:00"
+            "time": "2026-09-09T19:14:01+00:00"
         },
         {
             "name": "sl-gundam/net_pop3",
