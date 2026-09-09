@@ -398,7 +398,13 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 		}
 		finally
 		{
-			$this->_mail_api->disconnect();
+			$t_disconnect = $this->_mail_api->disconnect();
+
+			if ( $t_disconnect === FALSE )
+			{
+				$this->custom_error( $this->_mail_api->getError(), TRUE, 'Disconnect from mail server' );
+				return( FALSE );
+			}
 		}
 
 		return( TRUE );
@@ -581,7 +587,13 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 		finally
 		{
 			// mail_delete decides whether to perform the expunge command before closing the connection
-			$this->_mail_api->disconnect( (bool) $this->_mail_delete );
+			$t_disconnect = $this->_mail_api->disconnect( (bool) $this->_mail_delete );
+
+			if ( $t_disconnect === FALSE )
+			{
+				$this->custom_error( $this->_mail_api->getError(), TRUE, 'Disconnect from mail server' );
+				return( FALSE );
+			}
 		}
 
 		return( TRUE );
