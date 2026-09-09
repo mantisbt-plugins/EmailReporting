@@ -110,13 +110,16 @@ $s_plugin_EmailReporting_email_no_domain = 'Dirección Email sin nombre de domin
 $s_plugin_EmailReporting_from_ldap = 'De LDAP';
 
 $s_plugin_EmailReporting_mailboxes = 'Buzones';
+$s_plugin_EmailReporting_rules = 'Reglas';
 $s_plugin_EmailReporting_add_action = 'Agregar';
 $s_plugin_EmailReporting_copy_action = 'Copiar';
 $s_plugin_EmailReporting_edit_action = 'Editar';
 $s_plugin_EmailReporting_delete_action = 'Borrar';
 $s_plugin_EmailReporting_test_action = 'Probar';
 $s_plugin_EmailReporting_complete_test_action = 'Prueba completa';
+$s_plugin_EmailReporting_describe_action = 'Describir';
 $s_plugin_EmailReporting_select_mailbox = 'Seleccionar buzón';
+$s_plugin_EmailReporting_select_rule = 'Seleccionar regla';
 $s_plugin_EmailReporting_update_configuration = 'Actualizar Configuración';
 
 $s_plugin_EmailReporting_enabled = 'Habilitado';
@@ -160,9 +163,6 @@ $s_plugin_EmailReporting_complete_test_action_note = '<span class="negative">Adv
 Existen aún pequeñas diferencias en comparación con el trabajo programado (bug_report_mail.php). Por ejemplo una de las diferencias podría ser los usuarios que ejecuta el trabajo. Use con cuidado';
 $s_plugin_EmailReporting_apisoap_error = '"api/soap/mc_file_api.php" no se puede encontrar. EmailReporting requiere este fichero para funcionar.';
 $s_plugin_EmailReporting_sensitive_data_storage = '<span class="negative">Advertencia</span>: Por motivos de seguridad, guarde el certificado PFX de M365 o las credenciales de la cuenta de servicio de Google (archivo JSON) fuera del directorio raíz de los servidores web.';
-
-$s_plugin_EmailReporting_rules = 'Reglas';
-$s_plugin_EmailReporting_select_rule = 'Seleccionar regla';
 
 $s_plugin_EmailReporting_rule_wildcards = 'Comodines';
 $s_plugin_EmailReporting_rule_wildcards_help = '- Carácter Comodín: * ?

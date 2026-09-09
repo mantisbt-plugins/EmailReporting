@@ -110,13 +110,16 @@ $s_plugin_EmailReporting_email_no_domain = 'Email address without the domain nam
 $s_plugin_EmailReporting_from_ldap = 'From LDAP';
 
 $s_plugin_EmailReporting_mailboxes = 'Mailboxes';
+$s_plugin_EmailReporting_rules = 'Rules';
 $s_plugin_EmailReporting_add_action = 'Add';
 $s_plugin_EmailReporting_copy_action = 'Copy';
 $s_plugin_EmailReporting_edit_action = 'Edit';
 $s_plugin_EmailReporting_delete_action = 'Delete';
 $s_plugin_EmailReporting_test_action = 'Test';
 $s_plugin_EmailReporting_complete_test_action = 'Complete test';
+$s_plugin_EmailReporting_describe_action = 'Describe';
 $s_plugin_EmailReporting_select_mailbox = 'Select mailbox';
+$s_plugin_EmailReporting_select_rule = 'Select rule';
 $s_plugin_EmailReporting_update_configuration = 'Update configuration';
 
 $s_plugin_EmailReporting_enabled = 'Enabled';
@@ -163,9 +166,6 @@ There are still minor differences compared to the scheduled job (bug_report_mail
 Use with care.';
 $s_plugin_EmailReporting_apisoap_error = '"api/soap/mc_file_api.php" is missing. EmailReporting requires this file to work.';
 $s_plugin_EmailReporting_sensitive_data_storage = '<span class="negative">Warning</span>: Please store the M365 PFX certificate or the Google Service Account credentials (JSON file) outside the web servers document root for safety reasons.';
-
-$s_plugin_EmailReporting_rules = 'Rules';
-$s_plugin_EmailReporting_select_rule = 'Select rule';
 
 $s_plugin_EmailReporting_rule_wildcards = 'Wildcards';
 $s_plugin_EmailReporting_rule_wildcards_help = '- Wildcard characters: * ?

@@ -110,13 +110,16 @@ $s_plugin_EmailReporting_email_no_domain = 'Emailadress ohne Domäne';
 $s_plugin_EmailReporting_from_ldap = 'Von LDAP';
 
 $s_plugin_EmailReporting_mailboxes = 'Mailboxen';
+$s_plugin_EmailReporting_rules = 'Regeln';
 $s_plugin_EmailReporting_add_action = 'Hinzufügen';
 $s_plugin_EmailReporting_copy_action = 'Kopieren';
 $s_plugin_EmailReporting_edit_action = 'Editieren';
 $s_plugin_EmailReporting_delete_action = 'Löschen';
 $s_plugin_EmailReporting_test_action = 'Test';
 $s_plugin_EmailReporting_complete_test_action = 'Kompletter Test';
+$s_plugin_EmailReporting_describe_action = 'Beschreiben';
 $s_plugin_EmailReporting_select_mailbox = 'Selektiere die Mailbox';
+$s_plugin_EmailReporting_select_rule = 'Regel selektieren';
 $s_plugin_EmailReporting_update_configuration = 'Aktualisiere die Konfiguration';
 
 $s_plugin_EmailReporting_enabled = 'Aktivieren';
@@ -163,9 +166,6 @@ Es gibt immernoch kleine Unterschiede zum zeitgesteuerten Job (bug_report_mail.p
 Benutze diese Funktion mit Bedacht';
 $s_plugin_EmailReporting_apisoap_error = 'Die Datei "api/soap/mc_file_api.php" ist nicht vorhanden. EmailReporting benötigt diese Datei zum Betrieb.';
 $s_plugin_EmailReporting_sensitive_data_storage = '<span class="negative">Warning</span>: Bitte speichern Sie das M365 PFX-Zertifikat oder die Anmeldeinformationen für das Google-Dienstkonto (JSON-Datei) aus Sicherheitsgründen außerhalb des Dokumentenstamms des Webservers.';
-
-$s_plugin_EmailReporting_rules = 'Regeln';
-$s_plugin_EmailReporting_select_rule = 'Regel selektieren';
 
 $s_plugin_EmailReporting_rule_wildcards = 'Platzhalter';
 $s_plugin_EmailReporting_rule_wildcards_help = '- Charaktere für Platzhalter: * ?

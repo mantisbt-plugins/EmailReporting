@@ -1135,7 +1135,7 @@ function ERP_custom_function_print_rule_action_radio_buttons( $p_input_name, $p_
 {
 	$t_actions_list = array(
 		0 => array( 'add' ),
-		1 => array( 'copy', 'edit', 'delete' ),
+		1 => array( 'copy', 'edit', 'delete', 'describe' ),
 	);
 
 	ERP_print_action_radio_buttons( $p_input_name, (string) $p_sel_value, $p_variable_array, $t_actions_list );
