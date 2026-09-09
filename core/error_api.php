@@ -44,7 +44,7 @@ abstract class ERP_ErrorHandling
 	# proper exceptions. Temporarily convert warnings
 	# to exceptions so they can be handled through the
 	# normal EmailReporting error handling stack.
-	public function runWithErrorAsException( string $p_command, ?object $p_object = NULL, mixed ...$p_args ): mixed
+	protected function runWithErrorAsException( string $p_command, ?object $p_object = NULL, mixed ...$p_args ): mixed
 	{
 		$t_result = NULL;
 
