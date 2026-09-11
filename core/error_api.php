@@ -24,9 +24,9 @@ abstract class ERP_ErrorHandling
 
 	# --------------------
 	# Add an error to _error
-	protected function setError( string $error ): void
+	protected function setError( string $p_error ): void
 	{
-		$this->_error[] = $error;
+		$this->_error[] = $p_error;
 	}
 
 	# --------------------
