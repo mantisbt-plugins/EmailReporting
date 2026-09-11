@@ -337,7 +337,7 @@ class EmailReportingPlugin extends MantisPlugin
 			return array();
 		}
 
-		return array( '<a href="' . plugin_page( 'manage_mailbox' ) . '">' . plugin_lang_get( 'manage' ) . ' ' . plugin_lang_get( 'plugin_title' ) . '</a>', );
+		return array( '<a href="' . plugin_page( 'manage_mailbox' ) . '">' . plugin_lang_get( 'plugin_title' ) . '</a>', );
 	}
 
 	/*

@@ -3,21 +3,20 @@ $s_plugin_EmailReporting_plugin_title = 'Reportes por Email';
 $s_plugin_EmailReporting_plugin_description = 'Ofrece la funcionalidad de crear notas y realizar solicitudes por Email';
 $s_plugin_EmailReporting_plugin_author = 'Indy y varias personas despues de él.';
 
-$s_plugin_EmailReporting_manage = 'Administrar';
-$s_plugin_EmailReporting_manage_config = 'Administrar Opciones de Configuración';
-$s_plugin_EmailReporting_manage_mailbox = 'Administrar Buzones';
-$s_plugin_EmailReporting_manage_rule = 'Administrar Reglas';
+$s_plugin_EmailReporting_manage_config = 'Opciones de Configuración';
+$s_plugin_EmailReporting_manage_mailbox = 'Buzones';
+$s_plugin_EmailReporting_manage_rule = 'Reglas';
 
 $s_plugin_EmailReporting_jobsetup = 'Para recolectar los emails de los buzones, necesitas agregar una tarea programada que ejecute el script. Puedes ejecutar el script desde 2 sitios pero solo uno trabajaria desde una tarea programada. Ambos realizan la misma tarea. Vé la documentación para ejemplos de como se pueden programar.';
 $s_plugin_EmailReporting_job_users = '<span class="negative">Advertencia</span>: Parece que la tarea programada no se ejecuta con la misma cuenta de usuario que el webserver o proceso PHP. Esto puede causar problemas con los adjuntos.<br />The SAPI for the scheduled job is most likely "cli".<br />El webserver se ejecuta bajo la siguiente cuenta de usuario: ';
 
-$s_plugin_EmailReporting_mailbox_settings = 'Configuración de Buzón';
-$s_plugin_EmailReporting_mailbox_settings_logininfo = 'Información de inicio de sesión del buzón de correo';
-$s_plugin_EmailReporting_mailbox_settings_oauth = 'Configuración de OAuth del buzón de correo';
-$s_plugin_EmailReporting_mailbox_settings_oauth_microsoft = 'Configuración de Microsoft OAuth para buzones de correo';
-$s_plugin_EmailReporting_mailbox_settings_oauth_google = 'Configuración de Google OAuth para el buzón de correo';
-$s_plugin_EmailReporting_mailbox_settings_imap = 'Configuración del Buzón IMAP.';
-$s_plugin_EmailReporting_mailbox_settings_issue = 'Configuración de fallas de buzón';
+$s_plugin_EmailReporting_mailbox_settings = 'Buzón';
+$s_plugin_EmailReporting_mailbox_settings_logininfo = 'Información de inicio de sesión';
+$s_plugin_EmailReporting_mailbox_settings_oauth = 'OAuth del buzón de correo';
+$s_plugin_EmailReporting_mailbox_settings_oauth_microsoft = 'Microsoft OAuth para buzones de correo';
+$s_plugin_EmailReporting_mailbox_settings_oauth_google = 'Google OAuth para el buzón de correo';
+$s_plugin_EmailReporting_mailbox_settings_imap = 'Buzón IMAP.';
+$s_plugin_EmailReporting_mailbox_settings_issue = 'Fallas de buzón';
 $s_plugin_EmailReporting_problems = 'Para reiniciar una configuración, por favor borre la configuración desde la página "<a href="adm_config_report.php">Reporte de Configuración</a>".';
 
 $s_plugin_EmailReporting_rule_settings = 'Configuración de Reglas';

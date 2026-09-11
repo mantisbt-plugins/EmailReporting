@@ -3,21 +3,20 @@ $s_plugin_EmailReporting_plugin_title = 'Email Reporting';
 $s_plugin_EmailReporting_plugin_description = 'Eingehende Mails zu Tickets und Notizen verarbeiten.';
 $s_plugin_EmailReporting_plugin_author = 'Indy und diverse weitere Entwickler.';
 
-$s_plugin_EmailReporting_manage = 'Anpassen';
-$s_plugin_EmailReporting_manage_config = 'Konfiguration anpassen';
-$s_plugin_EmailReporting_manage_mailbox = 'Mailkonten anpassen';
-$s_plugin_EmailReporting_manage_rule = 'Regeln anpassen';
+$s_plugin_EmailReporting_manage_config = 'Konfiguration';
+$s_plugin_EmailReporting_manage_mailbox = 'Mailkonten';
+$s_plugin_EmailReporting_manage_rule = 'Regeln';
 
 $s_plugin_EmailReporting_jobsetup = 'Um Emails aus den eingerichteten Mailboxen auszulesen, muss ein zeitgesteuerter Job eingerichtet werden, der ein Script ausführt. Dieses Script kann auf zwei verschiedene Arten gestartet werden, aber nur eine davon ermöglicht eine zeitgesteuerte Ausführung. Beide Optionen erfüllen aber denselben Zweck. In der Dokumentation werden Beispiele beschrieben, wie ein solcher Job auszusehen hat.';
 $s_plugin_EmailReporting_job_users = '<span class="negative">Warning</span>: Es scheint so, als laufe der zeitgesteuerte Job mit einem anderen Benutzerkonto, als der Webserver / PHP-Prozess. Dies könnte Probleme mit Emailanhängen verursachen<br />Der SAPI für den zeitgesteuerten Job ist meistens „cli“.<br />Der Webserver läuft zurzeit unter folgendem Benutzerkonto: ';
 
-$s_plugin_EmailReporting_mailbox_settings = 'Mailkontoeinstellungen';
-$s_plugin_EmailReporting_mailbox_settings_logininfo = 'Informationen zum Postfach-Login';
-$s_plugin_EmailReporting_mailbox_settings_oauth = 'Mailbox-OAuth-Einstellungen';
-$s_plugin_EmailReporting_mailbox_settings_oauth_microsoft = 'Microsoft OAuth-Einstellungen für das Postfach';
-$s_plugin_EmailReporting_mailbox_settings_oauth_google = 'Google OAuth-Einstellungen für das Postfach';
+$s_plugin_EmailReporting_mailbox_settings = 'Kontoeinstellungen';
+$s_plugin_EmailReporting_mailbox_settings_logininfo = 'Informationen zum Login';
+$s_plugin_EmailReporting_mailbox_settings_oauth = 'OAuth-Einstellungen';
+$s_plugin_EmailReporting_mailbox_settings_oauth_microsoft = 'Microsoft OAuth-Einstellungen';
+$s_plugin_EmailReporting_mailbox_settings_oauth_google = 'Google OAuth-Einstellungen';
 $s_plugin_EmailReporting_mailbox_settings_imap = 'IMAP Kontoeinstellungen';
-$s_plugin_EmailReporting_mailbox_settings_issue = 'Ticketeinstellungen für Mailkonten';
+$s_plugin_EmailReporting_mailbox_settings_issue = 'Ticketeinstellungen';
 $s_plugin_EmailReporting_problems = 'Um eine Konfigurationsoption auf ihren Standardwert zurückzusetzen, lösche einfach die Konfigurationsoption vom <a href="adm_config_report.php">“Konfigurationsreport</a>".';
 
 $s_plugin_EmailReporting_rule_settings = 'Regeleinstellungen';
