@@ -352,7 +352,7 @@ function ERP_prepare_directory_string( $p_path, $p_no_realpath = FALSE )
 	}
 }
 
-// Copy of MantisBT 2.28.4 plugin_lang_get_defaulted
+// Copy of MantisBT 2.29.0 plugin_lang_get_defaulted
 /**
  * Get a defaulted language string for the plugin.
  *
@@ -376,7 +376,7 @@ if ( !function_exists( 'plugin_lang_get_defaulted' ) )
 		}
 		$t_basename = plugin_get_current();
 		$t_name = 'plugin_' . $t_basename . '_' . $p_name;
-		$t_string = lang_get_defaulted( $t_name, $p_default );
+		$t_string = lang_get_defaulted( $t_name, $p_default ?? $p_name );
 
 		if( !is_null( $p_basename ) ) {
 			plugin_pop_current();
@@ -909,6 +909,7 @@ function ERP_custom_function_print_descriptions_option_list( $p_sel_value, $p_op
 		if ( !is_array( $t_option_array ) )
 		{
 			$t_option_key = $t_option_array;
+			// Need to supply a default as plugin_lang_get_defaulted had an issue which was fixed in 2.29.0
 			$t_option_array = array( 'description' => plugin_lang_get_defaulted( $t_option_array, $t_option_array ) );
 		}
 
