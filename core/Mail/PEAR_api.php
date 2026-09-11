@@ -299,7 +299,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 			return( TRUE );
 		}
 
-		if ( $p_expunge )
+		if ( $p_expunge && !$this->_test_only )
 		{
 			$t_expungeresult = $this->_mailserver->expunge();
 
