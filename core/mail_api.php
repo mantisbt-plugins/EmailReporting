@@ -622,7 +622,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 				return( FALSE );
 			}
 
-			$t_mailbox_password = $this->get_OAuth2_AccessToken();
+			$t_mailbox_password = $this->get_oauth2_accesstoken();
 
 			if ( $t_mailbox_password === FALSE )
 			{
@@ -644,7 +644,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 
 	# --------------------
 	# Get an OAuth accesstoken for XOAUTH2
-	private function get_OAuth2_AccessToken()
+	private function get_oauth2_accesstoken()
 	{
 		plugin_require_api( 'core/oauth2_api.php' );
 
@@ -1823,7 +1823,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 			$bodyParsed = $EmailBodyParser->parse( $t_description );
 			$bodyfragments = $bodyParsed->getFragments();
 
-			$selectedFragments = array_filter( $bodyfragments, array( $this, 'selectFragments' ) );
+			$selectedFragments = array_filter( $bodyfragments, array( $this, 'select_fragments' ) );
 
 			$t_description = rtrim( (string)implode( "\n", $selectedFragments ) );
 		}
@@ -1833,7 +1833,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 
 	# --------------------
 	# Select the fragments of interest to us
-	private function selectFragments( EmailReplyParser\Fragment $fragment )
+	private function select_fragments( EmailReplyParser\Fragment $fragment )
 	{
 		// filter out:
 		// - empty fragments
