@@ -311,6 +311,7 @@ class EmailReportingPlugin extends MantisPlugin
 				)
 			),
 			array( 'CreateIndexSQL', array( 'idx_erp_msgids_msgid', plugin_table( 'msgids' ), 'msg_id', array( 'UNIQUE' ) ) ),
+			array( 'CreateIndexSQL', array( 'idx_erp_msgids_issueid', plugin_table( 'msgids' ), 'issue_id', array( 'INDEX' ) ) ),
 		);
 	}
 
