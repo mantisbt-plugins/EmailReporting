@@ -417,7 +417,11 @@ function ERP_print_documentation_link( $p_a_name = '', $p_other_description = FA
 	}
 
 	echo plugin_lang_get( $t_description );
-	echo ' <a href="http://www.mantisbt.org/wiki/doku.php/mantisbt:plugins:emailreporting#' . strtolower( $t_a_name ) . '" target="_blank">[?]</a>';
+
+	if ( plugin_get_current() === 'EmailReporting' )
+	{
+		echo ' <a href="http://www.mantisbt.org/wiki/doku.php/mantisbt:plugins:emailreporting#' . strtolower( $t_a_name ) . '" target="_blank">[?]</a>';
+	}
 }
 
 # This overwrites a specific configuration option for the current request
@@ -871,6 +875,11 @@ function ERP_custom_function_print_auth_method_option_list( $p_sel_value )
 		'POP3' => array_diff( $t_pop3->getsupportedAuthMethods(), $t_imap->getsupportedAuthMethods() ),
 	);
 
+	if ( !empty( $p_sel_value ) && !in_array( $p_sel_value, $t_imap->getsupportedAuthMethods(), TRUE ) && !in_array( $p_sel_value, $t_pop3->getsupportedAuthMethods(), TRUE ) )
+	{
+		$t_supported_auth_methods[ 'NOT FOUND' ][] = $p_sel_value;
+	}
+
 	foreach ( $t_supported_auth_methods AS $t_key => $t_auth_methods )
 	{
 		if ( !empty( $t_auth_methods ) )
@@ -886,6 +895,10 @@ function ERP_custom_function_print_auth_method_option_list( $p_sel_value )
 			{
 				echo '<option';
 				check_selected( (string) $p_sel_value, $t_auth_method );
+				if ( $t_key === 'NOT FOUND' )
+				{
+					echo ' class="red negative"';
+				}
 				echo '>' . string_attribute( $t_auth_method ) . '</option>';
 			}
 
@@ -918,11 +931,24 @@ function ERP_custom_function_print_descriptions_option_list( $p_sel_value, $p_op
 
 	natcasesort( $t_options_sorted );
 
+	foreach ( $t_sel_value AS $t_value )
+	{
+		if ( !isset( $t_options_sorted[ $t_value ] ) )
+		{
+			$t_options_sorted[ $t_value ] = $t_value;
+			$t_not_found[ $t_value ] = TRUE;
+		}
+	}
+
 	foreach ( $t_options_sorted AS $t_option_key => $t_description )
 	{
 		$t_enabled = ( ( isset( $p_options_array[ $t_option_key ][ 'enabled' ] ) ) ? $p_options_array[ $t_option_key ][ 'enabled' ] : TRUE );
 		echo '<option value="' . string_attribute( $t_option_key ) . '"';
 		check_selected( $t_sel_value, $t_option_key );
+		if ( isset( $t_not_found[ $t_option_key ] ) )
+		{
+			echo ' class="red negative"';
+		}
 		echo '>' . ( ( $t_enabled == FALSE ) ? '* ' : NULL ) . string_attribute( $t_description ) . '</option>';
 	}
 }
@@ -933,16 +959,28 @@ function ERP_custom_function_print_encryption_option_list( $p_sel_value )
 {
 	if ( extension_loaded( 'openssl' ) )
 	{
-		$t_socket_transports = stream_get_transports();
-		$t_supported_encryptions = array( 'None', 'SSL', 'TLS', 'STARTTLS' );
-		foreach ( $t_supported_encryptions AS $t_encryption )
+		$t_socket_transports = array_intersect( stream_get_transports(), array( 'ssl', 'tls' ) );
+		$t_supported_encryptions = array_map( 'strtoupper', $t_socket_transports );
+		array_unshift( $t_supported_encryptions, 'None' );
+		if ( function_exists( 'stream_socket_enable_crypto' ) )
 		{
-			if ( $t_encryption === 'None' || ( $t_encryption === 'STARTTLS' && function_exists('stream_socket_enable_crypto') ) || in_array( strtolower( $t_encryption ), $t_socket_transports, TRUE ) )
+			array_push( $t_supported_encryptions, 'STARTTLS' );
+		}
+
+		if ( !empty( $p_sel_value ) && !in_array( $p_sel_value, $t_supported_encryptions, TRUE ) )
+		{
+			$t_supported_encryptions[ 'NOT FOUND' ] = $p_sel_value;
+		}
+
+		foreach ( $t_supported_encryptions AS $t_key => $t_encryption )
+		{
+			echo '<option';
+			check_selected( (string) $p_sel_value, $t_encryption );
+			if ( $t_key === 'NOT FOUND' )
 			{
-				echo '<option';
-				check_selected( (string) $p_sel_value, $t_encryption );
-				echo '>' . string_attribute( $t_encryption ) . '</option>';
+				echo ' class="red negative"';
 			}
+			echo '>' . string_attribute( $t_encryption ) . '</option>';
 		}
 	}
 	else

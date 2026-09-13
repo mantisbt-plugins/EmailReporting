@@ -16,7 +16,7 @@ $GLOBALS[ 't_mailboxes' ] = plugin_config_get( 'mailboxes' );
 $t_rules = plugin_config_get( 'rules' );
 
 $f_mailbox_action = gpc_get_string( 'mailbox_action', 'add' );
-$f_select_mailbox = gpc_get_int( 'select_mailbox', -1 );
+$f_select_mailbox = ( ( gpc_isset( 'select_mailbox' ) ) ? gpc_get_int( 'select_mailbox' ) : array() );
 
 // the defaults different from the default NULL value
 $t_mailbox = ERP_get_default_mailbox();

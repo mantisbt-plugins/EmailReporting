@@ -34,7 +34,7 @@ ERP_output_note_close();
 $t_rules = plugin_config_get( 'rules' );
 
 $f_rule_action = gpc_get_string( 'rule_action', 'add' );
-$f_select_rule = gpc_get_int( 'select_rule', -1 );
+$f_select_rule = ( ( gpc_isset( 'select_rule' ) ) ? gpc_get_int( 'select_rule' ) : array() );
 
 $t_rule = array();
 
