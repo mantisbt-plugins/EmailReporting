@@ -138,7 +138,13 @@ class ERP_POP3_Transport extends ERP_Transport
 		$this->_test_only = (bool) $p_test_only;
 		$this->_ssl_cert_verify = (bool) $p_ssl_cert_verify;
 
-		$this->_mailserver = new Net_POP3();
+		if ( !class_exists( '\Net_POP3' ) )
+		{
+			$this->setError( 'PEAR/Net_POP3 composer package missing.' );
+			return;
+		}
+
+		$this->_mailserver = new \Net_POP3();
 		$this->_mailserver->_timeout = $p_timeout;
 	}
 
@@ -247,7 +253,13 @@ class ERP_IMAP_Transport extends ERP_Transport
 		$this->_test_only = (bool) $p_test_only;
 		$this->_ssl_cert_verify = (bool) $p_ssl_cert_verify;
 
-		$this->_mailserver = new Net_IMAP( NULL );
+		if ( !class_exists( '\Net_IMAP' ) )
+		{
+			$this->setError( 'PEAR/Net_IMAP composer package missing.' );
+			return;
+		}
+
+		$this->_mailserver = new \Net_IMAP( NULL );
 		$this->_mailserver->setTimeout( $p_timeout );
 
 		$this->_mailserver->setStreamContextOptions( $this->getStreamContextOptions() );
