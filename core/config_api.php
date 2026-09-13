@@ -132,6 +132,26 @@ function ERP_select_mail_engine( $p_mail_engine )
 			plugin_require_api( 'core/Mail/PEAR_api.php' );
 			break;
 
+		case 'Horde/Imap_Client (Legacy)':
+			plugin_require_api( 'core/Mail/HordeLegacy_api.php' );
+			break;
+
+		case 'Horde/Imap_Client (Modern)':
+			plugin_require_api( 'core/Mail/HordeModern_api.php' );
+			break;
+
+		case 'Javanile/PHP-IMAP2':
+			plugin_require_api( 'core/Mail/Javanile_api.php' );
+			break;
+
+		case 'Webklex/PHP-IMAP':
+			plugin_require_api( 'core/Mail/Webklex_api.php' );
+			break;
+
+		case 'ZetaComponents/Mail':
+			plugin_require_api( 'core/Mail/ZetaComponents_api.php' );
+			break;
+
 		default:
 			return( 'No valid mail engine selected: ' . $p_mail_engine );
 	}

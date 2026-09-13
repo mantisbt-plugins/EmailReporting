@@ -1,0 +1,16 @@
+{
+    "name": "module/testing",
+    "description": "testing new modules for ERP",
+    "type": "project",
+    "require": {
+        "horde/imap_client": "^3.1",
+        "javanile/php-imap2": "^0.1.10",
+        "webklex/php-imap": "^6.2",
+        "zetacomponents/mail": "^1.10"
+    },
+    "config": {
+        "allow-plugins": {
+            "horde/horde-installer-plugin": true
+        }
+    }
+}
