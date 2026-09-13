@@ -466,6 +466,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 
 	# --------------------
 	# Prepare foldername
+	# All p_foldernames should use / as folder separator
 	private function prepareFoldername( string $p_foldername ): string|FALSE
 	{
 		$t_hierarchydelimiter = $this->getHierarchyDelimiter();
