@@ -61,24 +61,20 @@ function ERP_get_current_mailbox( $p_mailbox_plugin_content = TRUE )
 
 	if ( isset( $GLOBALS[ $t_mailbox_api_index ] ) && is_object( $GLOBALS[ $t_mailbox_api_index ] ) && is_array( $GLOBALS[ $t_mailbox_api_index ]->_mailbox ) )
 	{
-		if ( $p_mailbox_plugin_content )
-		{
-			if ( isset( $GLOBALS[ $t_mailbox_api_index ]->_mailbox[ 'plugin_content' ][ plugin_get_current() ] ) )
-			{
-				return( $GLOBALS[ $t_mailbox_api_index ]->_mailbox[ 'plugin_content' ][ plugin_get_current() ] );
-			}
-		}
-		else
+		if ( !$p_mailbox_plugin_content )
 		{
 			return( $GLOBALS[ $t_mailbox_api_index ]->_mailbox );
 		}
 
+		if ( isset( $GLOBALS[ $t_mailbox_api_index ]->_mailbox[ 'plugin_content' ][ plugin_get_current() ] ) )
+		{
+			return( $GLOBALS[ $t_mailbox_api_index ]->_mailbox[ 'plugin_content' ][ plugin_get_current() ] );
+		}
+
 		return( array() );
 	}
-	else
-	{
-		return( FALSE );
-	}
+
+	return( FALSE );
 }
 
 # --------------------
@@ -92,34 +88,28 @@ function ERP_get_mailboxes( $p_mailbox_id = FALSE, $p_mailbox_plugin_content = T
 
 	if ( isset( $GLOBALS[ $t_mailboxes_index ] ) && is_array( $GLOBALS[ $t_mailboxes_index ] ) )
 	{
-		if ( $p_mailbox_id !== FALSE )
-		{
-			if ( isset( $GLOBALS[ $t_mailboxes_index ][ $p_mailbox_id ] ) )
-			{
-				if ( $p_mailbox_plugin_content )
-				{
-					if ( isset( $GLOBALS[ $t_mailboxes_index ][ $p_mailbox_id ][ 'plugin_content' ][ plugin_get_current() ] ) )
-					{
-						return( $GLOBALS[ $t_mailboxes_index ][ $p_mailbox_id ][ 'plugin_content' ][ plugin_get_current() ] );
-					}
-				}
-				else
-				{
-					return( $GLOBALS[ $t_mailboxes_index ][ $p_mailbox_id ] );
-				}
-			}
-		}
-		else
+		if ( $p_mailbox_id === FALSE )
 		{
 			return( $GLOBALS[ $t_mailboxes_index ] );
 		}
 
+		if ( isset( $GLOBALS[ $t_mailboxes_index ][ $p_mailbox_id ] ) )
+		{
+			if ( !$p_mailbox_plugin_content )
+			{
+				return( $GLOBALS[ $t_mailboxes_index ][ $p_mailbox_id ] );
+			}
+
+			if ( isset( $GLOBALS[ $t_mailboxes_index ][ $p_mailbox_id ][ 'plugin_content' ][ plugin_get_current() ] ) )
+			{
+				return( $GLOBALS[ $t_mailboxes_index ][ $p_mailbox_id ][ 'plugin_content' ][ plugin_get_current() ] );
+			}
+		}
+
 		return( array() );
 	}
-	else
-	{
-		return( FALSE );
-	}
+
+	return( FALSE );
 }
 
 # --------------------
