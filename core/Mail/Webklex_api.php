@@ -382,7 +382,13 @@ class ERP_IMAP_Transport extends ERP_Transport
 					return( FALSE );
 				}
 
-				$t_getCurrentMailbox = $this->_mailserver->getActiveFolder() ?? $t_foldername; // Need to catch the NULL value since we cannot return it. Happens with _test_only
+				$t_getCurrentMailbox = $this->_mailserver->getActiveFolder(); 
+
+				// Need to catch the NULL value since we cannot return it. Happens with _test_only
+				if ( $t_getCurrentMailbox === NULL && $this->_test_only )
+				{
+					$t_getCurrentMailbox = $t_foldername;
+				}
 			}
 		}
 		catch ( \Throwable $t_exception )
