@@ -161,7 +161,7 @@ class ERP_POP3_Transport extends ERP_Transport
 
 		$t_connectresult = $this->_mailserver->connect( $t_hostname, $p_port, $this->getStreamContextOptions() );
 
-		$t_additionalstring = ( ( $p_encryption !== FALSE && $p_encryption !== 'None' && $this->_ssl_cert_verify === TRUE ) ? 'This could possibly be because SSL certificate verification failed.' : '' );
+		$t_additionalstring = ( ( $p_encryption !== FALSE && $p_encryption !== 'None' && $this->_ssl_cert_verify ) ? 'This could possibly be because SSL certificate verification failed.' : '' );
 		if ( $this->isError( $t_connectresult, $t_additionalstring ) )
 		{
 			return( FALSE );
