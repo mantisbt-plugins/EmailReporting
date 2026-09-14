@@ -3,7 +3,10 @@
 declare(strict_types=1);
 
 # Load Composer autoloader module tester
-require_once( __DIR__ . '/vendor/autoload.php' );
+if ( file_exists( __DIR__ . '/vendor/autoload.php' ) )
+{
+	require_once( __DIR__ . '/vendor/autoload.php' );
+}
 
 /**
  * EmailReporting adapter for webklex/php-imap 6.x.
@@ -15,6 +18,7 @@ plugin_require_api( 'core/error_api.php' );
 abstract class ERP_Transport extends ERP_ErrorHandling
 {
 	protected bool $_test_only = FALSE;
+	protected bool $_ssl_cert_verify = TRUE;
 
 	protected ?object $_mailserver = NULL;
 
@@ -29,7 +33,7 @@ abstract class ERP_Transport extends ERP_ErrorHandling
 	{
 		if ( $p_result Instanceof \Throwable )
 		{
-			$t_error = $p_result->getMessage() . ' (' . $p_result->getCode() . ').' . $t_additionalstring;
+			$t_error = $p_result->getMessage() . ' (' . $p_result->getCode() . ').' . ( ( !empty( $t_additionalstring ) ) ? ' ' . $t_additionalstring : '' );
 
 			$t_previous = $p_result->getPrevious();
 			if ( $t_previous Instanceof \Throwable )
@@ -93,8 +97,9 @@ class ERP_IMAP_Transport extends ERP_Transport
 	public function __construct( bool $p_test_only = FALSE, int|bool $p_ssl_cert_verify = TRUE, int $p_timeout = 30 )
 	{
 		$this->_test_only = (bool) $p_test_only;
+		$this->_ssl_cert_verify = (bool) $p_ssl_cert_verify;
 
-		$this->_options[ 'validate_cert' ] = (bool) $p_ssl_cert_verify;
+		$this->_options[ 'validate_cert' ] = $this->_ssl_cert_verify;
 		$this->_options[ 'protocol' ] = 'imap';
 		$this->_options[ 'timeout' ] = $p_timeout;
 
@@ -198,7 +203,10 @@ class ERP_IMAP_Transport extends ERP_Transport
 		}
 		catch ( \Throwable $t_exception )
 		{
-			$this->handleThrowable( $t_exception );
+			$t_additionalstring = ( ( $this->_ssl_cert_verify ) ? 'This could possibly be because SSL certificate verification failed.' : '' );
+			$t_additionalstring .= ' ' . ( ( $p_mailbox_auth_method === 'XOAUTH2' ) ? 'This could also be a permission issue where the application has no permission to access the given mailbox.' : '' );
+			$t_additionalstring = trim( $t_additionalstring );
+			$this->handleThrowable( $t_exception, $t_additionalstring );
 			return( FALSE );
 		}
 
