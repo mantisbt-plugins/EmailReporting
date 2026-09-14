@@ -22,6 +22,8 @@ Please use forum to get help in installing and using EmailReporting plugin. Visi
 Bug Tracker:
 To report an issue or feature request for the EmailReporting plugin, visit http://www.mantisbt.org/bugs/set_project.php?project_id=10. (Make sure that you select the correct project from the drop-down)
 
+Wiki:
+The can be reached by clicking "[?]" next to a specific configuration option. Or here: http://www.mantisbt.org/wiki/doku.php/mantisbt:plugins:emailreporting 
 
 Debug mode:
 For debugging controls there is a switch to add the complete email to the
