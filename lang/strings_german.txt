@@ -193,6 +193,7 @@ $s_plugin_EmailReporting_act_issue_severity = 'Aktualisierungsschweregrad';
 $s_plugin_EmailReporting_act_issue_status = 'Status aktualisieren';
 $s_plugin_EmailReporting_act_issue_view_state = 'Ansichtsstatus aktualisieren';
 $s_plugin_EmailReporting_act_issue_category = 'Kategorie aktualisieren';
+$s_plugin_EmailReporting_act_issue_duedate = 'Fälligkeitsdatum aktualisieren';
 $s_plugin_EmailReporting_act_issue_tag = 'Tag hinzufügen';
 $s_plugin_EmailReporting_act_issue_custom_field = 'Benutzerdefiniertes Feld aktualisieren';
 

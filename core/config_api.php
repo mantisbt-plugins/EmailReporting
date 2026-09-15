@@ -785,7 +785,7 @@ function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, $p_fun
 		case 'custom':
 			if ( function_exists( $t_function_name ) )
 			{
-				$t_function_name( $p_name, $t_value, $p_function_parameter );
+				$t_function_name( $p_name, $t_input_name, $t_value, $p_function_parameter );
 			}
 			else
 			{
@@ -812,7 +812,7 @@ function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, $p_fun
 
 # --------------------
 # output all custom fields
-function ERP_custom_function_print_custom_fields( $p_name, $p_sel_value )
+function ERP_custom_function_print_custom_fields( $p_name, $p_input_name, $p_sel_value )
 {
 	# Custom Fields
 	$t_custom_fields = custom_field_get_ids();
@@ -961,6 +961,45 @@ function ERP_custom_function_print_descriptions_option_list( $p_sel_value, $p_op
 		}
 		echo '>' . ( ( $t_enabled == FALSE ) ? '* ' : NULL ) . string_attribute( $t_description ) . '</option>';
 	}
+}
+
+# --------------------
+# Output a duedate adjuster
+function ERP_custom_function_print_duedate( $p_name, $p_input_name, $p_sel_value )
+{
+	if ( !is_array( $p_sel_value ) )
+	{
+		$t_sel_value[ 'modifier' ] = '';
+		$t_sel_value[ 'amount' ] = '';
+	}
+	else
+	{
+		$t_sel_value = $p_sel_value;
+	}
+?>
+<tr>
+	<td class="category" class="width-50">
+<?php
+	ERP_print_documentation_link( $p_name );
+?>
+	</td>
+	<td colspan="2" class="width-50">
+		<select id="<?php echo $p_input_name ?>_modifier" class="input-sm" <?php echo helper_get_tab_index() ?> name="<?php echo $p_input_name . '[modifier]'; ?>">
+<?php
+	$t_options = array( '', 'current', 'now' );
+	foreach ( $t_options AS $t_option )
+	{
+		echo '<option value="' . string_attribute( $t_option ) . '"';
+		check_selected( $t_sel_value[ 'modifier' ], $t_option );
+		echo '>' . string_attribute( $t_option ) . '</option>';
+	}
+?>
+		</select>
+		+
+		<input id="<?php echo $p_input_name ?>_amount" class="input-sm" <?php echo helper_get_tab_index() ?> type="text" size="20" maxlength="10" name="<?php echo $p_input_name ?>[amount]" value="<?php echo string_attribute( $t_sel_value[ 'amount' ] ) ?>"/>
+	</td>
+</tr>
+<?php
 }
 
 # --------------------
