@@ -508,14 +508,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 			return( FALSE );
 		}
 
-		$t_foldername = $this->prepareFoldername( $t_getCurrentMailbox );
-
-		if ( $t_foldername === FALSE )
-		{
-			return( FALSE );
-		}
-
-		return( $t_foldername );
+		return( $t_getCurrentMailbox );
 	}
 
 	# --------------------
