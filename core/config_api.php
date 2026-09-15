@@ -130,10 +130,6 @@ function ERP_select_mail_engine( $p_mail_engine )
 			plugin_require_api( 'core/Mail/HordeModern_api.php' );
 			break;
 
-		case 'Javanile/PHP-IMAP2':
-			plugin_require_api( 'core/Mail/Javanile_api.php' );
-			break;
-
 		case 'Webklex/PHP-IMAP':
 			plugin_require_api( 'core/Mail/Webklex_api.php' );
 			break;
