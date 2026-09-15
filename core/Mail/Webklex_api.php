@@ -239,7 +239,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 			$this->_messages = $t_folder->messages()->UNDELETED()->get();
 
 			$t_ListMsgs = array();
-			foreach ( $this->_messages AS $t_key => $t_message )
+			foreach ( $this->_messages->keys() AS $t_key )
 			{
 				$t_ListMsgs[] = (int) $t_key;
 			}
