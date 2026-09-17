@@ -37,6 +37,41 @@ abstract class ERP_ErrorHandling
 	}
 
 	# --------------------
+	# Check whether an operation result contains an PEAR error.
+	#
+	# When an error is detected it is stored internally.
+	# Returns TRUE when an error was detected.
+	protected function isPearError( mixed $p_result, string $p_additionalstring = '' ): bool
+	{
+		if ( PEAR::isError( $p_result ) )
+		{
+			$this->setError( $p_result->getMessage() . ' (' . $p_result->getCode() . ').' . ( ( !empty( $p_additionalstring ) ) ? ' ' . $p_additionalstring : '' ) );
+			return( TRUE );
+		}
+		else
+		{
+			return( FALSE );
+		}
+	}
+
+	# --------------------
+	# Handle throwable error.
+	#
+	# It is stored internally.
+	protected function handleThrowable( \Throwable $p_exception, string $p_additionalstring = '' ): void
+	{
+		$t_error = $p_exception->getMessage() . ' (' . $p_exception->getCode() . ').' . ( ( !empty( $p_additionalstring ) ) ? ' ' . $p_additionalstring : '' );
+
+		$t_previous = $p_exception->getPrevious();
+		if ( $t_previous Instanceof \Throwable )
+		{
+			$t_error .= "\n" . $t_previous->getMessage() . ' (' . $t_previous->getCode() . ').';
+		}
+
+		$this->setError( $t_error );
+	}
+
+	# --------------------
 	# Third-party compatibility helper.
 	# Call a function while catching errors as exceptions
 	#

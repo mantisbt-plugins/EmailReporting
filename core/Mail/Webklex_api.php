@@ -21,25 +21,6 @@ abstract class ERP_Transport extends ERP_ErrorHandling
 	protected bool $_ssl_cert_verify = TRUE;
 
 	protected ?object $_mailserver = NULL;
-
-	protected array $_options = array();
-
-	# --------------------
-	# Handle throwable error.
-	#
-	# It is stored internally.
-	protected function handleThrowable( \Throwable $p_exception, string $p_additionalstring = '' ): void
-	{
-		$t_error = $p_exception->getMessage() . ' (' . $p_exception->getCode() . ').' . ( ( !empty( $p_additionalstring ) ) ? ' ' . $p_additionalstring : '' );
-
-		$t_previous = $p_exception->getPrevious();
-		if ( $t_previous Instanceof \Throwable )
-		{
-			$t_error .= "\n" . $t_previous->getMessage() . ' (' . $t_previous->getCode() . ').';
-		}
-
-		$this->setError( $t_error );
-	}
 }
 
 class ERP_POP3_Transport extends ERP_Transport
@@ -79,6 +60,8 @@ class ERP_POP3_Transport extends ERP_Transport
 
 class ERP_IMAP_Transport extends ERP_Transport
 {
+	private array $_options = array();
+
 	private ?object $_messages = NULL;
 
 	private ?string $_hierarchydelimiter = NULL;
