@@ -63,7 +63,7 @@ Libraries
 ---------
 * [PHP Simple HTML DOM Parser](http://sourceforge.net/projects/simplehtmldom/) -> Fork: [php-core/simplehtmldom](https://packagist.org/packages/php-core/simplehtmldom)
 * [pixel418/markdownify](https://packagist.org/packages/pixel418/markdownify) -> Fork: [SL-Gundam/Markdownify](https://github.com/SL-Gundam/Markdownify)
-* [willdurand/email-reply-parser](https://packagist.org/packages/willdurand/email-reply-parser)
+* [willdurand/email-reply-parser](https://packagist.org/packages/willdurand/email-reply-parser) -> Fork: [SL-Gundam/EmailReplyParser](https://github.com/SL-Gundam/EmailReplyParser)
 * [qualityunit/tnef-decoder](https://packagist.org/packages/qualityunit/tnef-decoder)
 * [firebase/php-jwt](https://packagist.org/packages/firebase/php-jwt)
 * [google/auth](https://packagist.org/packages/google/auth)

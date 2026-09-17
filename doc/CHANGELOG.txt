@@ -16,6 +16,7 @@ Changelog:
 	- Remove the text "Manage" from menu options
 	- Remove the text "Mailbox" from headers
 	- Add index on issue_id for msgids table
+	- willdurand/email-reply-parser replaced with fork SL-Gundam/EmailReplyParser
 
 Aug 2026 - EmailReporting-0.12.0
 	- Drop support for MantisBT 1.3.x
