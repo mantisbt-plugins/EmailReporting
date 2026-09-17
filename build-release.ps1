@@ -56,6 +56,8 @@ function Fail {
         [string]$Message
     )
 
+    write-host $Message -ForegroundColor Red
+    [void][System.Console]::ReadLine()
     throw $Message
 }
 
@@ -545,6 +547,5 @@ Write-Host 'The release builder was removed from the release package.'
 Write-Host ''
 Write-Host ''
 Write-Host "`nPress Enter to close this window..." -ForegroundColor Yellow
-[void](Read-Host)
+[void][System.Console]::ReadLine()
 #```
- 
