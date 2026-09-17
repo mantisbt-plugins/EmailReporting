@@ -1305,16 +1305,16 @@
         },
         {
             "name": "sl-gundam/emailreplyparser",
-            "version": "2.10.0.2",
+            "version": "2.10.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SL-Gundam/EmailReplyParser.git",
-                "reference": "77888df77b823c3a710c14d88f4265232af23051"
+                "reference": "fc06c5cf6a88af0b99dc23460ec85c53c387fe96"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SL-Gundam/EmailReplyParser/zipball/77888df77b823c3a710c14d88f4265232af23051",
-                "reference": "77888df77b823c3a710c14d88f4265232af23051",
+                "url": "https://api.github.com/repos/SL-Gundam/EmailReplyParser/zipball/fc06c5cf6a88af0b99dc23460ec85c53c387fe96",
+                "reference": "fc06c5cf6a88af0b99dc23460ec85c53c387fe96",
                 "shasum": ""
             },
             "require": {
@@ -1353,9 +1353,9 @@
                 "reply-parser"
             ],
             "support": {
-                "source": "https://github.com/SL-Gundam/EmailReplyParser/tree/2.10.0.2"
+                "source": "https://github.com/SL-Gundam/EmailReplyParser/tree/2.10.0.3"
             },
-            "time": "2026-09-17T19:31:18+00:00"
+            "time": "2026-09-17T20:00:02+00:00"
         },
         {
             "name": "sl-gundam/mail_mimedecode",
