@@ -5,7 +5,8 @@
     "require": {
         "horde/imap_client": "^3.1",
         "webklex/php-imap": "^6.2",
-        "zetacomponents/mail": "^1.10"
+        "zetacomponents/mail": "^1.10",
+        "directorytree/imapengine": "^1.25"
     },
     "config": {
         "allow-plugins": {

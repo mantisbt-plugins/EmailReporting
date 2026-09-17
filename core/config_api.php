@@ -122,6 +122,10 @@ function ERP_select_mail_engine( $p_mail_engine )
 			plugin_require_api( 'core/Mail/PEAR_api.php' );
 			break;
 
+		case 'DirectoryTree/ImapEngine':
+			plugin_require_api( 'core/Mail/DTImapEngine_api.php' );
+			break;
+
 		case 'Horde/Imap_Client (Legacy)':
 			plugin_require_api( 'core/Mail/HordeLegacy_api.php' );
 			break;
