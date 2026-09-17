@@ -115,11 +115,11 @@ abstract class ERP_Transport extends ERP_ErrorHandling
 	#
 	# When an error is detected it is stored internally.
 	# Returns TRUE when an error was detected.
-	protected function isError( mixed $p_result, string $t_additionalstring = '' ): bool
+	protected function isError( mixed $p_result, string $p_additionalstring = '' ): bool
 	{
 		if ( PEAR::isError( $p_result ) )
 		{
-			$this->setError( $p_result->getMessage() . ' (' . $p_result->getCode() . ').' . ( ( !empty( $t_additionalstring ) ) ? ' ' . $t_additionalstring : '' ) );
+			$this->setError( $p_result->getMessage() . ' (' . $p_result->getCode() . ').' . ( ( !empty( $p_additionalstring ) ) ? ' ' . $p_additionalstring : '' ) );
 			return( TRUE );
 		}
 		else

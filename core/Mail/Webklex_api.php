@@ -25,29 +25,20 @@ abstract class ERP_Transport extends ERP_ErrorHandling
 	protected array $_options = array();
 
 	# --------------------
-	# Check whether an operation result contains an error.
+	# Handle throwable error.
 	#
-	# When an error is detected it is stored internally.
-	# Returns TRUE when an error was detected.
-	protected function handleThrowable( mixed $p_result, string $t_additionalstring = '' ): bool
+	# It is stored internally.
+	protected function handleThrowable( \Throwable $p_exception, string $p_additionalstring = '' ): void
 	{
-		if ( $p_result Instanceof \Throwable )
-		{
-			$t_error = $p_result->getMessage() . ' (' . $p_result->getCode() . ').' . ( ( !empty( $t_additionalstring ) ) ? ' ' . $t_additionalstring : '' );
+		$t_error = $p_exception->getMessage() . ' (' . $p_exception->getCode() . ').' . ( ( !empty( $p_additionalstring ) ) ? ' ' . $p_additionalstring : '' );
 
-			$t_previous = $p_result->getPrevious();
-			if ( $t_previous Instanceof \Throwable )
-			{
-				$t_error .= "\n" . $t_previous->getMessage() . ' (' . $t_previous->getCode() . ').';
-			}
-
-			$this->setError( $t_error );
-			return( TRUE );
-		}
-		else
+		$t_previous = $p_exception->getPrevious();
+		if ( $t_previous Instanceof \Throwable )
 		{
-			return( FALSE );
+			$t_error .= "\n" . $t_previous->getMessage() . ' (' . $t_previous->getCode() . ').';
 		}
+
+		$this->setError( $t_error );
 	}
 }
 
