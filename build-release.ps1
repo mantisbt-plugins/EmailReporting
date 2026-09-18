@@ -197,7 +197,9 @@ $RobocopyArguments = @(
     '.git'
     '.github'
     'vendor'
-    'release'
+    $SourceRoot+'\release'
+    $SourceRoot+'\core\Mail\var'
+    $SourceRoot+'\core\Mail\web'
 )
 
 & robocopy @RobocopyArguments | Out-Host
