@@ -204,6 +204,9 @@ class EmailReportingPlugin extends MantisPlugin
 
 			// Whether to identify notes using Message-ID in the mail header
 			'mail_use_message_id'             => ON,
+
+			# The account's id for the rule system
+			'rule_user_id'                    => 'I don\'t exist yet',
 		);
 	}
 
@@ -226,7 +229,6 @@ class EmailReportingPlugin extends MantisPlugin
 
 		if ( $t_mail_reporter_id === 'Mail' )
 		{
-			// The plugin variable path_erp is not yet available. So path_erp cannot be used here
 			plugin_require_api( 'core/config_api.php' );
 
 			# We need to allow blank emails for a sec
@@ -234,7 +236,7 @@ class EmailReportingPlugin extends MantisPlugin
 
 			$t_rand = mt_rand( 1000, 99999 );
 
-			$t_username = $t_mail_reporter_id . $t_rand;
+			$t_username = 'ERP_Mail_' . $t_rand;
 
 			$t_email = '';
 
@@ -243,8 +245,10 @@ class EmailReportingPlugin extends MantisPlugin
 			# Create random password
 			$t_password = auth_generate_random_password( $t_seed );
 
+			$t_permission = config_get( 'report_bug_threshold', NULL, ALL_USERS, ALL_PROJECTS );
+
 			# create the user
-			$t_result_user_create = user_create( $t_username, $t_password, $t_email, config_get_global( 'report_bug_threshold' ), FALSE, TRUE, 'Mail Reporter', plugin_lang_get( 'plugin_title' ) );
+			$t_result_user_create = user_create( $t_username, $t_password, $t_email, $t_permission, TRUE, TRUE, 'ERP Mail Reporter', plugin_lang_get( 'plugin_title' ) );
 
 			# Save these after the user has been created successfully
 			if ( $t_result_user_create )

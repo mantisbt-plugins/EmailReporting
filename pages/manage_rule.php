@@ -31,6 +31,44 @@ ERP_output_note_close();
 
 <?php
 
+# check whether rule user exists
+$t_rule_user_id = plugin_config_get( 'rule_user_id' );
+
+if ( !( is_int( $t_rule_user_id ) && user_exists( $t_rule_user_id ) ) )
+{
+	# We need to allow blank emails for a sec
+	ERP_set_temporary_overwrite( 'allow_blank_email', ON );
+
+	$t_rand = mt_rand( 1000, 99999 );
+
+	$t_username = 'ERP_Rule_system_' . $t_rand;
+
+	$t_email = '';
+
+	$t_seed = $t_email . $t_username;
+
+	# Create random password
+	$t_password = auth_generate_random_password( $t_seed );
+
+	# Get the highest needed permission for this user
+	$t_permission = max(
+		config_get( 'update_bug_threshold', NULL, ALL_USERS, ALL_PROJECTS ),
+		config_get( 'private_bug_threshold', NULL, ALL_USERS, ALL_PROJECTS ),
+		config_get( 'handle_bug_threshold', NULL, ALL_USERS, ALL_PROJECTS ),
+	);
+
+	# create the user
+	$t_result_user_create = user_create( $t_username, $t_password, $t_email, $t_permission, TRUE, TRUE, 'ERP Rule system', plugin_lang_get( 'plugin_title' ) );
+
+	# Save these after the user has been created successfully
+	if ( $t_result_user_create )
+	{
+		$t_user_id = user_get_id_by_name( $t_username );
+
+		plugin_config_set( 'rule_user_id', $t_user_id );
+	}
+}
+
 $t_rules = plugin_config_get( 'rules' );
 
 $f_rule_action = gpc_get_string( 'rule_action', 'add' );
@@ -82,7 +120,7 @@ ERP_output_config_option( 'cond_issue_attachments', 'dropdown', $t_rule, 'print_
 ERP_output_table_close();
 
 ERP_output_table_open( 'rule_actions' );
-ERP_output_config_option( 'act_issue_project', 'dropdown_any', $t_rule, 'print_projects_option_list' ); // @TODO might too messy to do here
+ERP_output_config_option( 'act_issue_project', 'dropdown_any', $t_rule, 'print_projects_option_list' ); // @TODO might be too messy to do here
 ERP_output_config_option( 'act_issue_category', 'dropdown_any', $t_rule, 'print_global_category_option_list' );
 ERP_output_config_option( 'act_issue_severity', 'dropdown_any', $t_rule, 'print_severity_option_list' );
 ERP_output_config_option( 'act_issue_status', 'dropdown_any', $t_rule, 'print_status_option_list' );
