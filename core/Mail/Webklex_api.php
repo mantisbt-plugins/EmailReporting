@@ -189,7 +189,6 @@ class ERP_IMAP_Transport extends ERP_Transport
 
 	# --------------------
 	# Return a list of emails in the mailbox
-	# Needed a workaround to sort IMAP emails in a certain order
 	public function getListing(): array|FALSE
 	{
 		if ( $this->_test_only )
@@ -229,7 +228,6 @@ class ERP_IMAP_Transport extends ERP_Transport
 
 	# --------------------
 	# Check whether a email is deleted
-	# Handles a workaround for problems with Net_IMAP 1.1.x with the hasFlag function (isDeleted uses that function)
 	# If FALSE is returned, check with hasError whether there was an error or if the state is FALSE (not marked as deleted)
 	public function isDeleted( int $p_msg_id ): bool
 	{
@@ -255,7 +253,6 @@ class ERP_IMAP_Transport extends ERP_Transport
 
 	# --------------------
 	# Return a single raw email
-	# Handles a workaround for problems with Net_IMAP 1.1.x concerning the getMsg function
 	public function getMsg( int $p_msg_id ): string|FALSE
 	{
 		if ( $this->_test_only )
