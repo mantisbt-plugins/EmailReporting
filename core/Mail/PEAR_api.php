@@ -342,17 +342,20 @@ class ERP_IMAP_Transport extends ERP_Transport
 			return( FALSE );
 		}
 
-		if ( $t_examineMailbox[ 'EXISTS' ] == 0 )
-		{
-			return( array() );
-		}
-
 		// Need to do a selectMailbox after examineMailbox otherwise deletemsg will report error with Exchange
+		// NO, Command received in Invalid state. ().
 		$t_selectMailbox = $this->selectMailbox( $t_foldername );
 
 		if ( $t_selectMailbox === FALSE )
 		{
 			return( FALSE );
+		}
+
+		// Need to do this check after select otherwise Exchange will give an expunge error:
+		// NO, Command received in Invalid state. ().
+		if ( $t_examineMailbox[ 'EXISTS' ] == 0 )
+		{
+			return( array() );
 		}
 
 		$t_ListMsgs = $this->_mailserver->getMessagesList();
