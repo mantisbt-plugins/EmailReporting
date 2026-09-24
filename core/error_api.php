@@ -45,7 +45,11 @@ abstract class ERP_ErrorHandling
 	{
 		if ( PEAR::isError( $p_result ) )
 		{
-			$this->setError( $p_result->getMessage() . ' (' . $p_result->getCode() . ').' . ( ( !empty( $p_additionalstring ) ) ? ' ' . $p_additionalstring : '' ) );
+			$this->setError(
+				$p_result->getMessage() .
+				( ( !empty( $p_result->getCode() ) ) ? ' (' . $p_result->getCode() . ').' : '' ) .
+				( ( !empty( $p_additionalstring ) ) ? ' ' . $p_additionalstring : '' )
+			);
 			return( TRUE );
 		}
 		else
