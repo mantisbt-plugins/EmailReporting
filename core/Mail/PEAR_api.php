@@ -287,13 +287,14 @@ class ERP_IMAP_Transport extends ERP_Transport
 	public function disconnect( bool $p_expunge = FALSE ): bool
 	{
 		$this->_hierarchydelimiter = NULL;
+		$this->_getFlags = array();
 
 		if ( $this->_mailserver->_connected !== TRUE )
 		{
 			return( TRUE );
 		}
 
-		if ( $p_expunge && !$this->_test_only )
+		if ( $p_expunge && !$this->_test_only && !empty( $this->getCurrentMailbox() ) )
 		{
 			$t_expungeresult = $this->_mailserver->expunge();
 
@@ -478,6 +479,9 @@ class ERP_IMAP_Transport extends ERP_Transport
 		{
 			$t_foldername = str_replace( '/', $t_hierarchydelimiter, $t_foldername );
 		}
+
+		// Net_IMAP handles this
+		//$t_foldername = mb_convert_encoding( $t_foldername, "UTF7-IMAP" );
 
 		return( $t_foldername );
 	}

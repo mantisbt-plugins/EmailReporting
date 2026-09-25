@@ -108,8 +108,6 @@ class ERP_IMAP_Transport extends ERP_Transport
 	# Disconnect from a mailbox
 	public function disconnect( bool $p_expunge = FALSE ): bool
 	{
-		$this->_messages = NULL;
-
 		if ( $this->_mailserver === NULL )
 		{
 			return( TRUE );
@@ -123,7 +121,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 
 		try
 		{
-			if ( $p_expunge && !$this->_test_only )
+			if ( $p_expunge && !$this->_test_only && $this->_mailserver->getActiveFolder() !== NULL )
 			{
 				$this->_mailserver->expunge();
 			}
@@ -136,6 +134,8 @@ class ERP_IMAP_Transport extends ERP_Transport
 			return( FALSE );
 		}
 
+		$this->_messages = NULL;
+		$this->_hierarchydelimiter = NULL;
 		$this->_mailserver = NULL;
 
 		return( TRUE );
@@ -216,6 +216,8 @@ class ERP_IMAP_Transport extends ERP_Transport
 			{
 				$t_ListMsgs[] = (int) $t_key;
 			}
+
+			// No sort or UID's as keys. Webklex should already provide a date sorted list.
 		}
 		catch ( \Throwable $t_exception )
 		{
@@ -229,6 +231,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 	# --------------------
 	# Check whether a email is deleted
 	# If FALSE is returned, check with hasError whether there was an error or if the state is FALSE (not marked as deleted)
+	# Webklex returns only the messages with the flag DELETED not set (see getListing)
 	public function isDeleted( int $p_msg_id ): bool
 	{
 		if ( $this->_test_only )
@@ -339,6 +342,9 @@ class ERP_IMAP_Transport extends ERP_Transport
 			$t_foldername = str_replace( '/', $t_hierarchydelimiter, $t_foldername );
 		}
 
+		// Webklex handles this
+		//$t_foldername = mb_convert_encoding( $t_foldername, "UTF7-IMAP" );
+
 		return( $t_foldername );
 	}
 
@@ -350,24 +356,10 @@ class ERP_IMAP_Transport extends ERP_Transport
 		{
 			$t_getCurrentMailbox = $this->_mailserver->getActiveFolder();
 
-			if ( $t_getCurrentMailbox === NULL )
+			// Need to catch the NULL value since we cannot return it. Happens with _test_only
+			if ( $t_getCurrentMailbox === NULL && $this->_test_only )
 			{
-				$t_foldername = $this->_mailserver->getConfig()->get( 'options.common_folders.root' );
-
-				$t_selectresult = $this->selectMailbox( $t_foldername );
-
-				if ( $t_selectresult === FALSE )
-				{
-					return( FALSE );
-				}
-
-				$t_getCurrentMailbox = $this->_mailserver->getActiveFolder(); 
-
-				// Need to catch the NULL value since we cannot return it. Happens with _test_only
-				if ( $t_getCurrentMailbox === NULL && $this->_test_only )
-				{
-					$t_getCurrentMailbox = $t_foldername;
-				}
+				$t_getCurrentMailbox = $t_foldername;
 			}
 		}
 		catch ( \Throwable $t_exception )
