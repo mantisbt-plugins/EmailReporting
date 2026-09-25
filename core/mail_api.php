@@ -382,6 +382,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 			while ( !empty( $t_ListMsgs ) )
 			{
 				$t_MsgId = array_shift( $t_ListMsgs );
+
 				$t_emailresult = $this->process_single_email( $t_MsgId );
 
 				if ( $this->_mail_delete && $t_emailresult === TRUE )
@@ -512,7 +513,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 				{
 					if ( $this->_mail_api->hasError() )
 					{
-						$this->custom_error( $this->_mail_api->getError(), TRUE, 'Check exist IMAP project folder' );
+						$this->custom_error( $this->_mail_api->getError(), TRUE, 'Check exist IMAP project folder: "' . $t_foldername . '"' );
 						return( FALSE );
 					}
 
@@ -553,6 +554,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 				while ( !empty( $t_ListMsgs ) )
 				{
 					$t_MsgId = array_shift( $t_ListMsgs );
+
 					$t_isDeleted = $this->_mail_api->isDeleted( $t_MsgId );
 
 					if ( $t_isDeleted === FALSE && $this->_mail_api->hasError() )
