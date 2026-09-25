@@ -112,7 +112,7 @@ class ERP_POP3_Transport extends ERP_Transport
 	# Get supported auth methods
 	public function getsupportedAuthMethods(): array
 	{
-		$t_supportedAuthMethods = array( 'APOP', 'LOGIN', 'PLAIN', 'USER' );
+		$t_supportedAuthMethods = array( 'APOP', 'PLAIN' );
 
 		return( $t_supportedAuthMethods );
 	}
@@ -153,9 +153,16 @@ class ERP_POP3_Transport extends ERP_Transport
 
 		try
 		{
+			$t_auth_method = match( $p_mailbox_auth_method )
+			{
+				'APOP'   => \ezcMailPop3Transport::AUTH_APOP,
+				'PLAIN'  => \ezcMailPop3Transport::AUTH_PLAIN_TEXT,
+				default  => $p_mailbox_auth_method,
+			};
+
 			$this->_mailserver = new \ezcMailPop3Transport( $this->_hostname, $this->_port, $this->_options );
 
-			$this->_mailserver->authenticate( $p_mailbox_username, $p_mailbox_password, $p_mailbox_auth_method );
+			$this->_mailserver->authenticate( $p_mailbox_username, $p_mailbox_password, $t_auth_method );
 		}
 		catch ( \Throwable $t_exception )
 		{
@@ -221,7 +228,11 @@ class ERP_IMAP_Transport extends ERP_Transport
 	# Get supported auth methods
 	public function getsupportedAuthMethods(): array
 	{
-		$t_supportedAuthMethods = \ezcMailImapTransport::getSupportedAuthMethods();
+		$t_supportedAuthMethods = array();
+		if ( class_exists( '\ezcMailImapTransport' ) )
+		{
+			$t_supportedAuthMethods = \ezcMailImapTransport::getSupportedAuthMethods();
+		}
 
 		return( $t_supportedAuthMethods );
 	}

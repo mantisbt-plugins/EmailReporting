@@ -34,7 +34,11 @@ abstract class ERP_Transport extends ERP_ErrorHandling
 	# Get supported auth methods
 	public function getsupportedAuthMethods(): array
 	{
-		$t_supportedAuthMethods = $this->_mailserver->supportedAuthMethods;
+		$t_supportedAuthMethods = array();
+		if ( is_object( $this->_mailserver ) )
+		{
+			$t_supportedAuthMethods = $this->_mailserver->supportedAuthMethods;
+		}
 
 		return( $t_supportedAuthMethods );
 	}
