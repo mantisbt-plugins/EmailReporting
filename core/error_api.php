@@ -64,12 +64,16 @@ abstract class ERP_ErrorHandling
 	# It is stored internally.
 	protected function handleThrowable( \Throwable $p_exception, string $p_additionalstring = '' ): void
 	{
-		$t_error = $p_exception->getMessage() . ' (' . $p_exception->getCode() . ').' . ( ( !empty( $p_additionalstring ) ) ? ' ' . $p_additionalstring : '' );
+		$t_error = 
+			$p_exception->getMessage() .
+			( ( !empty( $p_exception->getCode() ) ) ? ' (' . $p_exception->getCode() . ').' : '' ) .
+			( ( !empty( $p_additionalstring ) ) ? ' ' . $p_additionalstring : '' );
 
 		$t_previous = $p_exception->getPrevious();
 		if ( $t_previous Instanceof \Throwable )
 		{
-			$t_error .= "\n" . $t_previous->getMessage() . ' (' . $t_previous->getCode() . ').';
+			$t_error .= "\n" . $t_previous->getMessage() .
+				( ( !empty( $t_previous->getCode() ) ) ? ' (' . $t_previous->getCode() . ').' : '' );
 		}
 
 		$this->setError( $t_error );
