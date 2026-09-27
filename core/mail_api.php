@@ -584,12 +584,23 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 						}
 					}
 				}
+
+				// mail_delete decides whether to perform the expunge command
+				if ( $this->_mail_delete == ON )
+				{
+					$t_expunge = $this->_mail_api->expunge();
+
+					if ( $t_expunge === FALSE )
+					{
+						$this->custom_error( $this->_mail_api->getError(), TRUE, 'Expunge deleted email: "' . $t_foldername . '"' );
+						return( FALSE );
+					}
+				}
 			}
 		}
 		finally
 		{
-			// mail_delete decides whether to perform the expunge command before closing the connection
-			$t_disconnect = $this->_mail_api->disconnect( (bool) $this->_mail_delete );
+			$t_disconnect = $this->_mail_api->disconnect();
 
 			if ( $t_disconnect === FALSE )
 			{

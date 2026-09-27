@@ -106,7 +106,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 
 	# --------------------
 	# Disconnect from a mailbox
-	public function disconnect( bool $p_expunge = FALSE ): bool
+	public function disconnect(): bool
 	{
 		if ( $this->_mailserver === NULL )
 		{
@@ -121,11 +121,6 @@ class ERP_IMAP_Transport extends ERP_Transport
 
 		try
 		{
-			if ( $p_expunge && !$this->_test_only && $this->_mailserver->getActiveFolder() !== NULL )
-			{
-				$this->_mailserver->expunge();
-			}
-
 			$this->_mailserver->disconnect();
 		}
 		catch ( \Throwable $t_exception )
@@ -466,5 +461,28 @@ class ERP_IMAP_Transport extends ERP_Transport
 
 		return( TRUE );
 	}
+
+	# --------------------
+	# Expunge deleted email from current folder
+	public function expunge(): bool
+	{
+		if ( $this->_test_only )
+		{
+			return( TRUE );
+		}
+
+		try
+		{
+			$this->_mailserver->expunge();
+		}
+		catch ( \Throwable $t_exception )
+		{
+			$this->handleThrowable( $t_exception );
+			return( FALSE );
+		}
+
+		return( TRUE );
+	}
 }
+
 ?>

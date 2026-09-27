@@ -288,7 +288,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 
 	# --------------------
 	# Disconnect from a mailbox
-	public function disconnect( bool $p_expunge = FALSE ): bool
+	public function disconnect(): bool
 	{
 		$this->_hierarchydelimiter = NULL;
 		$this->_getFlags = array();
@@ -296,16 +296,6 @@ class ERP_IMAP_Transport extends ERP_Transport
 		if ( $this->_mailserver->_connected !== TRUE )
 		{
 			return( TRUE );
-		}
-
-		if ( $p_expunge && !$this->_test_only && !empty( $this->getCurrentMailbox() ) )
-		{
-			$t_expungeresult = $this->_mailserver->expunge();
-
-			if ( $this->isPearError( $t_expungeresult ) )
-			{
-				return( FALSE );
-			}
 		}
 
 		$t_disconnectresult = $this->_mailserver->disconnect( FALSE );
@@ -580,5 +570,25 @@ class ERP_IMAP_Transport extends ERP_Transport
 
 		return( $t_createMailbox );
 	}
+
+	# --------------------
+	# Expunge deleted email from current folder
+	public function expunge(): bool
+	{
+		if ( $this->_test_only )
+		{
+			return( TRUE );
+		}
+
+		$t_expungeresult = $this->_mailserver->expunge();
+
+		if ( $this->isPearError( $t_expungeresult ) )
+		{
+			return( FALSE );
+		}
+
+		return( $t_expungeresult );
+	}
 }
+
 ?>
