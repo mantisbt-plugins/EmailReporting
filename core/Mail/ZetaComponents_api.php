@@ -391,16 +391,26 @@ class ERP_IMAP_Transport extends ERP_Transport
 
 	# --------------------
 	# Get the current folder for the mailbox
+	# @TODO Unable to access selectedMailbox as its protected. Found no other way to access it yet
 	public function getCurrentMailbox(): string|FALSE
 	{
-		$t_current_mailbox = ( ( $this->_current_mailbox !== '' ) ? $this->_current_mailbox : FALSE );
+		$t_getCurrentMailbox = $this->_current_mailbox;
 
-		if ( $t_current_mailbox === FALSE )
+		// Need to catch the empty value since we cannot return it. Happens with _test_only
+		if ( $t_getCurrentMailbox === '' )
 		{
-			return( FALSE );
+			if ( $this->_test_only )
+			{
+				$t_getCurrentMailbox = 'INBOX';
+			}
+			else
+			{
+				$this->setError( 'No current mailbox set.' );
+				return( FALSE );
+			}
 		}
 
-		return( $t_current_mailbox );
+		return( $t_getCurrentMailbox );
 	}
 
 	# --------------------
@@ -417,9 +427,17 @@ class ERP_IMAP_Transport extends ERP_Transport
 
 		try
 		{
-			$t_mailboxes = $this->_mailserver->listMailboxes( '', $t_foldername );
+			// listMailboxes only returns selectable mailboxes which is an issue for the IMAP basefolder if the IMAP server does not allow select on folders with subfolders.
+			// That is why the partial match has been added using str_starts_with
+			$t_mailboxes = $this->_mailserver->listMailboxes( '', '*' );
 
-			$t_mailboxExist = in_array( $t_foldername, $t_mailboxes, TRUE );
+			foreach ( $t_mailboxes AS $t_mailbox )
+			{
+				if ( $t_mailbox === $t_foldername || str_starts_with( $t_mailbox, $t_foldername . $this->getHierarchyDelimiter() ) )
+				{
+					return( TRUE );
+				}
+			}
 		}
 		catch ( \Throwable $t_exception )
 		{
@@ -427,7 +445,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 			return( FALSE );
 		}
 
-		return( $t_mailboxExist );
+		return( FALSE );
 	}
 
 	# --------------------
