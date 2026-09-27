@@ -539,7 +539,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 
 				if ( $t_selectresult === FALSE )
 				{
-					$this->custom_error( $this->_mail_api->getError(), TRUE, 'Select IMAP folder' );
+					$this->custom_error( $this->_mail_api->getError(), TRUE, 'Select IMAP folder: "' . $t_foldername . '"' );
 					return( FALSE );
 				}
 
