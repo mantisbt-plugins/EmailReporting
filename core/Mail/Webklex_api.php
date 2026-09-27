@@ -352,9 +352,17 @@ class ERP_IMAP_Transport extends ERP_Transport
 			$t_getCurrentMailbox = $this->_mailserver->getActiveFolder();
 
 			// Need to catch the NULL value since we cannot return it. Happens with _test_only
-			if ( $t_getCurrentMailbox === NULL && $this->_test_only )
+			if ( $t_getCurrentMailbox === NULL )
 			{
-				$t_getCurrentMailbox = $t_foldername;
+				if ( $this->_test_only )
+				{
+					$t_getCurrentMailbox = 'INBOX';
+				}
+				else
+				{
+					$this->setError( 'No current mailbox set.' );
+					return( FALSE );
+				}
 			}
 		}
 		catch ( \Throwable $t_exception )
