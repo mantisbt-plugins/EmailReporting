@@ -468,11 +468,11 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 			{
 				if ( $this->_mail_api->hasError() )
 				{
-					$this->custom_error( $this->_mail_api->getError(), TRUE, 'Check exist IMAP basefolder' );
+					$this->custom_error( $this->_mail_api->getError(), TRUE, 'Check exist IMAP basefolder: "' . $this->_mailbox[ 'imap_basefolder' ] . '"' );
 				}
 				else
 				{
-					$this->custom_error( 'IMAP basefolder not found' );
+					$this->custom_error( 'IMAP basefolder not found: "' . $this->_mailbox[ 'imap_basefolder' ] . '"' );
 				}
 				return( FALSE );
 			}
@@ -496,7 +496,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 				{
 					if ( $this->_mailbox[ 'imap_createfolderstructure' ] == OFF )
 					{
-						$this->custom_error( 'Project is disabled: ' . $t_project[ 'name' ] );
+						$this->custom_error( 'Project is disabled: "' . $t_project[ 'name' ] . '"' );
 					}
 
 					continue;
