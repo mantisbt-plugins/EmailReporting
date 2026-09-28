@@ -212,7 +212,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 				$t_ListMsgs[] = (int) $t_key;
 			}
 
-			// No sort or UID's as keys. Webklex should already provide a date sorted list.
+			// No sort or UID's as keys. Webklex should already provide a sorted list.
 		}
 		catch ( \Throwable $t_exception )
 		{
@@ -260,7 +260,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 
 		try
 		{
-			$t_rawmessage = (string) $this->_messages[ $p_msg_id ]->getHeader()->raw . (string) $this->_messages[ $p_msg_id ]->getRawBody();
+			$t_rawmessage = rtrim( (string) $this->_messages[ $p_msg_id ]->getHeader()->raw ) . "\r\n\r\n" . ltrim( (string) $this->_messages[ $p_msg_id ]->getRawBody() );
 		}
 		catch ( \Throwable $t_exception )
 		{
