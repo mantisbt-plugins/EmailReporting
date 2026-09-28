@@ -255,6 +255,9 @@ class ERP_IMAP_Transport extends ERP_Transport
 
 		try
 		{
+			// Possible future memory optimization
+			//var_dump($this->_current_mailbox->mailbox()->connection()->bodyHeader($uid));
+			//var_dump($this->_current_mailbox->mailbox()->connection()->bodyText($uid));
 			$t_rawmessage = $this->_messages[ $p_msg_id ]->__toString();
 		}
 		catch ( \Throwable $t_exception )
