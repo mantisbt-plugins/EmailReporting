@@ -109,6 +109,10 @@ class ERP_IMAP_Transport extends ERP_Transport
 	# Disconnect from a mailbox
 	public function disconnect(): bool
 	{
+		$this->_current_mailbox = NULL;
+		$this->_messages = NULL;
+		$this->_hierarchydelimiter = NULL;
+
 		if ( $this->_mailserver === NULL )
 		{
 			return( TRUE );
@@ -130,9 +134,6 @@ class ERP_IMAP_Transport extends ERP_Transport
 			return( FALSE );
 		}
 
-		$this->_current_mailbox = NULL;
-		$this->_messages = NULL;
-		$this->_hierarchydelimiter = NULL;
 		$this->_mailserver = NULL;
 
 		return( TRUE );

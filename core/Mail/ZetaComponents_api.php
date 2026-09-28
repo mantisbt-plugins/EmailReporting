@@ -203,7 +203,7 @@ class ERP_POP3_Transport extends ERP_Transport
 class ERP_IMAP_Transport extends ERP_Transport
 {
 	// Zeta has a 'selectedMailbox' variable but it is protected and there is no way to retrieve it
-	private string $_current_mailbox = '';
+	private ?string $_current_mailbox = NULL;
 
 	private ?string $_hierarchydelimiter = NULL;
 
@@ -241,6 +241,9 @@ class ERP_IMAP_Transport extends ERP_Transport
 	# Disconnect from a mailbox
 	public function disconnect(): bool
 	{
+		$this->_current_mailbox = NULL;
+		$this->_hierarchydelimiter = NULL;
+
 		if ( $this->_mailserver === NULL )
 		{
 			return( TRUE );
@@ -256,8 +259,6 @@ class ERP_IMAP_Transport extends ERP_Transport
 			return( FALSE );
 		}
 
-		$this->_current_mailbox = '';
-		$this->_hierarchydelimiter = NULL;
 		$this->_mailserver = NULL;
 
 		return( TRUE );
@@ -267,6 +268,10 @@ class ERP_IMAP_Transport extends ERP_Transport
 	# Perform the login to the mailbox
 	public function login( string $p_mailbox_username, string $p_mailbox_password, string $p_mailbox_auth_method ): bool
 	{
+		$this->_current_mailbox = NULL;
+		$this->_hierarchydelimiter = NULL;
+		$this->_mailserver = NULL;
+
 		try
 		{
 			$this->_mailserver = new \ezcMailImapTransport( $this->_hostname, $this->_port, $this->_options );
@@ -397,7 +402,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 		$t_getCurrentMailbox = $this->_current_mailbox;
 
 		// Need to catch the empty value since we cannot return it. Happens with _test_only
-		if ( $t_getCurrentMailbox === '' )
+		if ( $t_getCurrentMailbox === NULL )
 		{
 			if ( $this->_test_only )
 			{

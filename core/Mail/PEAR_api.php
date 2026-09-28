@@ -255,6 +255,9 @@ class ERP_IMAP_Transport extends ERP_Transport
 	# Connect to a mailbox
 	public function connect( string $p_hostname, int $p_port, string|FALSE $p_encryption = FALSE ): bool
 	{
+		$this->_hierarchydelimiter = NULL;
+		$this->_getFlags = array();
+
 		$t_hostname = $this->prepareMailboxHostname( $p_hostname, $p_encryption );
 
 		if ( $t_hostname === FALSE )
@@ -317,6 +320,9 @@ class ERP_IMAP_Transport extends ERP_Transport
 		{
 			return( array() );
 		}
+
+		// reset Flags cache
+		$this->_getFlags = array();
 
 		// Exchange does not seem to like numMsg so that was changed to getListing
 		// getListing returns an error when there are no emails in an IMAP folder.
