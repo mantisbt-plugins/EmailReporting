@@ -193,9 +193,8 @@ class ERP_IMAP_Transport extends ERP_Transport
 
 		$this->_messages = NULL;
 
-		if ( $this->_current_mailbox === NULL )
+		if ( $this->getCurrentMailbox() === FALSE )
 		{
-			$this->setError( 'No current mailbox set.' );
 			return( FALSE );
 		}
 
@@ -360,6 +359,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 			if ( $t_getCurrentMailbox === FALSE )
 			{
 				$this->setError( 'Selected mailbox out-of-sync.' );
+				return( FALSE );
 			}
 		}
 		catch ( \Throwable $t_exception )
@@ -405,11 +405,6 @@ class ERP_IMAP_Transport extends ERP_Transport
 	# Select a mailbox folder
 	public function selectMailbox( string $p_foldername ): bool
 	{
-		if ( $this->_test_only )
-		{
-			return( TRUE );
-		}
-
 		$this->_current_mailbox = NULL;
 		$this->_messages = NULL;
 
@@ -487,9 +482,8 @@ class ERP_IMAP_Transport extends ERP_Transport
 			return( TRUE );
 		}
 
-		if ( $this->_current_mailbox === NULL )
+		if ( $this->getCurrentMailbox() === FALSE )
 		{
-			$this->setError( 'No current mailbox set.' );
 			return( FALSE );
 		}
 

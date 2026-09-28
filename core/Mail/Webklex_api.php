@@ -414,11 +414,6 @@ class ERP_IMAP_Transport extends ERP_Transport
 	# Select a mailbox folder
 	public function selectMailbox( string $p_foldername ): bool
 	{
-		if ( $this->_test_only )
-		{
-			return( TRUE );
-		}
-
 		$this->_messages = NULL;
 
 		$t_foldername = $this->prepareFoldername( $p_foldername );

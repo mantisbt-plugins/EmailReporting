@@ -520,11 +520,6 @@ class ERP_IMAP_Transport extends ERP_Transport
 	# Select a mailbox folder
 	public function selectMailbox( string $p_foldername ): bool
 	{
-		if ( $this->_test_only )
-		{
-			return( TRUE );
-		}
-
 		// reset Flags cache
 		$this->_getFlags = array();
 
