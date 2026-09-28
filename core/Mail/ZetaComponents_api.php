@@ -304,9 +304,9 @@ class ERP_IMAP_Transport extends ERP_Transport
 			$t_messages = $this->_mailserver->listUniqueIdentifiers();
 
 			$t_ListMsgs = array();
-			foreach ( $t_messages AS $t_number => $t_uid )
+			foreach ( $t_messages AS $t_key => $t_uid )
 			{
-				$t_ListMsgs[ (int) $t_uid ] = (int) $t_number;
+				$t_ListMsgs[ (int) $t_uid ] = (int) $t_key;
 			}
 
 			ksort( $t_ListMsgs, SORT_NUMERIC );
