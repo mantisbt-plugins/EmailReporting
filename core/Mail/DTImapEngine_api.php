@@ -201,6 +201,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 
 		try
 		{
+			// There are issues with the amount of returned emails when oldest() is removed/replaced
 			$this->_messages = $this->_current_mailbox->messages()->withFlags()->withBody()->withHeaders()->oldest()->UNDELETED()->get();
 
 			$t_ListMsgs = array();
