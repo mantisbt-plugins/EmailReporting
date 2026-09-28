@@ -41,7 +41,7 @@ if ( !( is_int( $t_rule_user_id ) && user_exists( $t_rule_user_id ) ) )
 
 	$t_rand = mt_rand( 1000, 99999 );
 
-	$t_username = 'ERP_Rule_system_' . $t_rand;
+	$t_username = 'ERP_Rule_System_' . $t_rand;
 
 	$t_email = '';
 
@@ -58,7 +58,7 @@ if ( !( is_int( $t_rule_user_id ) && user_exists( $t_rule_user_id ) ) )
 	);
 
 	# create the user
-	$t_result_user_create = user_create( $t_username, $t_password, $t_email, $t_permission, TRUE, TRUE, 'ERP Rule system', plugin_lang_get( 'plugin_title' ) );
+	$t_result_user_create = user_create( $t_username, $t_password, $t_email, $t_permission, TRUE, TRUE, 'ERP Rule System', plugin_lang_get( 'plugin_title' ) );
 
 	# Save these after the user has been created successfully
 	if ( $t_result_user_create )

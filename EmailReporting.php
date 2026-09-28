@@ -236,7 +236,7 @@ class EmailReportingPlugin extends MantisPlugin
 
 			$t_rand = mt_rand( 1000, 99999 );
 
-			$t_username = 'ERP_Mail_' . $t_rand;
+			$t_username = 'ERP_Mail_Reporter_' . $t_rand;
 
 			$t_email = '';
 
