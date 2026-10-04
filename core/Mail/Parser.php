@@ -273,10 +273,12 @@ class ERP_Mail_Parser
 		return( $t_encode );
 	}
 
-	private function decode()
+	# Passed by reference to minimise memory usage when
+	# handling large amounts of mailbox data.
+	private function decode( &$email )
 	{
-		$decoder = new Mail_mimeDecode( $this->_content );
-		$this->_content = NULL;
+		$decoder = new Mail_mimeDecode( $email );
+		$email = NULL;
 		$decoder->_input = NULL;
 
 		$this->show_memory_usage( 'mimeDecode initiated' );
@@ -316,7 +318,8 @@ class ERP_Mail_Parser
 
 		$this->show_memory_usage( 'Start parse' );
 
-		$structure = $this->decode();
+		$structure = $this->decode( $this->_content );
+		$this->_content = NULL;
 
 		$this->parse_signed_content( $structure );
 
@@ -712,7 +715,7 @@ class ERP_Mail_Parser
 				$part = new class{
 					public string $ctype_primary;
 					public string $ctype_secondary;
-					public string $ctype_parameters;
+					public array $ctype_parameters;
 					public string $body;
 				};
 
