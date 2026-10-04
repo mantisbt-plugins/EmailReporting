@@ -68,7 +68,7 @@ Libraries
 * [firebase/php-jwt](https://packagist.org/packages/firebase/php-jwt)
 * [google/auth](https://packagist.org/packages/google/auth)
 * [guzzlehttp/guzzle](https://packagist.org/packages/guzzlehttp/guzzle)
-* [phpseclib/phpseclib](https://packagist.org/packages/phpseclib/phpseclib)
+* [phpseclib/phpseclib](https://packagist.org/packages/phpseclib/phpseclib) - We require phpseclib3. firebase/php-jwt does not support phpseclib4 just yet.
 
 Plus any dependencies these packages require.
 
