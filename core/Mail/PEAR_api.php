@@ -22,8 +22,7 @@ abstract class ERP_Transport extends ERP_ErrorHandling
 	protected function getStreamContextOptions(): array
 	{
 		return( array(
-			'ssl' => array
-			(
+			'ssl' => array(
 				'verify_peer'      => $this->_ssl_cert_verify,
 				'verify_peer_name' => $this->_ssl_cert_verify
 			)
@@ -80,11 +79,16 @@ abstract class ERP_Transport extends ERP_ErrorHandling
 
 	# --------------------
 	# Perform the login to the mailbox
-	public function login( string $p_mailbox_username, string $p_mailbox_password, string $p_mailbox_auth_method ): bool
+	public function login(
+		string $p_mailbox_username, 
+		#[\SensitiveParameter]
+		string $p_mailbox_password,
+		string $p_mailbox_auth_method
+	): bool
 	{
 		$t_loginresult = $this->_mailserver->login( $p_mailbox_username, $p_mailbox_password, $p_mailbox_auth_method );
 
-		$t_additionalstring = ( ( $p_mailbox_auth_method === 'XOAUTH2' ) ? 'This could also be a permission issue where the application has no permission to access the given mailbox.' : '' );
+		$t_additionalstring = ( ( $p_mailbox_auth_method === 'XOAUTH2' ) ? "\n" . 'This could possibly be a permission issue where the application has no permission to access the given mailbox.' : '' );
 		if ( $this->isPearError( $t_loginresult, $t_additionalstring ) )
 		{
 			return( FALSE );
@@ -147,7 +151,7 @@ class ERP_POP3_Transport extends ERP_Transport
 
 		$t_connectresult = $this->_mailserver->connect( $t_hostname, $p_port, $this->getStreamContextOptions() );
 
-		$t_additionalstring = ( ( $p_encryption !== FALSE && $p_encryption !== 'None' && $this->_ssl_cert_verify ) ? 'This could possibly be because SSL certificate verification failed.' : '' );
+		$t_additionalstring = ( ( $p_encryption !== FALSE && $p_encryption !== 'None' && $this->_ssl_cert_verify ) ? "\n" . 'This could possibly be because SSL certificate verification failed.' : '' );
 		if ( $this->isPearError( $t_connectresult, $t_additionalstring ) )
 		{
 			return( FALSE );
@@ -269,7 +273,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 
 		$t_connectresult = $this->_mailserver->connect( $t_hostname, $p_port, $t_STARTTLS );
 
-		$t_additionalstring = ( ( $p_encryption !== FALSE && $p_encryption !== 'None' && $this->_ssl_cert_verify === TRUE ) ? 'This could possibly be because SSL certificate verification failed.' : '' );
+		$t_additionalstring = ( ( $p_encryption !== FALSE && $p_encryption !== 'None' && $this->_ssl_cert_verify === TRUE ) ? "\n" . 'This could possibly be because SSL certificate verification failed.' : '' );
 		if ( $this->isPearError( $t_connectresult, $t_additionalstring ) )
 		{
 			return( FALSE );

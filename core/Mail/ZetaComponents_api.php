@@ -96,7 +96,7 @@ class ERP_POP3_Transport extends ERP_Transport
 	public function __construct( bool $p_test_only = FALSE, int|bool $p_ssl_cert_verify = TRUE, int $p_timeout = 30 )
 	{
 		$this->_test_only = (bool) $p_test_only;
-		$this->_ssl_cert_verify = (bool) $p_ssl_cert_verify;
+		$this->_ssl_cert_verify = (bool) $p_ssl_cert_verify; // @TODO not yet used
 
 		if ( !class_exists( '\ezcMailPop3Transport' ) )
 		{
@@ -143,7 +143,12 @@ class ERP_POP3_Transport extends ERP_Transport
 
 	# --------------------
 	# Perform the login to the mailbox
-	public function login( string $p_mailbox_username, string $p_mailbox_password, string $p_mailbox_auth_method ): bool
+	public function login(
+		string $p_mailbox_username,
+		#[\SensitiveParameter]
+		string $p_mailbox_password,
+		string $p_mailbox_auth_method
+	): bool
 	{
 		if ( $p_mailbox_auth_method === 'XOAUTH2' )
 		{
@@ -166,7 +171,10 @@ class ERP_POP3_Transport extends ERP_Transport
 		}
 		catch ( \Throwable $t_exception )
 		{
-			$this->handleThrowable( $t_exception );
+			$t_additionalstring = '';//( ( $this->_ssl_cert_verify ) ? "\n" . 'This could possibly be because SSL certificate verification failed.' : '' );
+			$t_additionalstring .= ' ' . ( ( $p_mailbox_auth_method === 'XOAUTH2' ) ? "\n" . 'This could possibly be a permission issue where the application has no permission to access the given mailbox.' : '' );
+			$t_additionalstring = "\n" . trim( $t_additionalstring );
+			$this->handleThrowable( $t_exception, $t_additionalstring );
 			return( FALSE );
 		}
 
@@ -212,7 +220,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 	public function __construct( bool $p_test_only = FALSE, int|bool $p_ssl_cert_verify = TRUE, int $p_timeout = 30 )
 	{
 		$this->_test_only = (bool) $p_test_only;
-		$this->_ssl_cert_verify = (bool) $p_ssl_cert_verify;
+		$this->_ssl_cert_verify = (bool) $p_ssl_cert_verify; // @TODO not yet used
 
 		if ( !class_exists( '\ezcMailImapTransport' ) )
 		{
@@ -266,7 +274,12 @@ class ERP_IMAP_Transport extends ERP_Transport
 
 	# --------------------
 	# Perform the login to the mailbox
-	public function login( string $p_mailbox_username, string $p_mailbox_password, string $p_mailbox_auth_method ): bool
+	public function login(
+		string $p_mailbox_username,
+		#[\SensitiveParameter]
+		string $p_mailbox_password,
+		string $p_mailbox_auth_method
+	): bool
 	{
 		$this->_current_mailbox = NULL;
 		$this->_hierarchydelimiter = NULL;
@@ -287,7 +300,10 @@ class ERP_IMAP_Transport extends ERP_Transport
 		}
 		catch ( \Throwable $t_exception )
 		{
-			$this->handleThrowable( $t_exception );
+			$t_additionalstring = '';//( ( $this->_ssl_cert_verify ) ? "\n" . 'This could possibly be because SSL certificate verification failed.' : '' );
+			$t_additionalstring .= ' ' . ( ( $p_mailbox_auth_method === 'XOAUTH2' ) ? "\n" . 'This could possibly be a permission issue where the application has no permission to access the given mailbox.' : '' );
+			$t_additionalstring = "\n" . trim( $t_additionalstring );
+			$this->handleThrowable( $t_exception, $t_additionalstring );
 			return( FALSE );
 		}
 

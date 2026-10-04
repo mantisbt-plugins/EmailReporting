@@ -84,8 +84,11 @@ class ERP_Microsoft365OAuthProvider extends ERP_OAuthProvider
 	public function __construct(
 		private readonly string $tenantId,
 		private readonly string $clientId,
+		#[\SensitiveParameter]
 		private readonly string $clientSecret = '',
+		#[\SensitiveParameter]
 		private readonly string $pfxPath = '',
+		#[\SensitiveParameter]
 		private readonly string $pfxPassword = '',
 		private readonly string $scope = self::DEFAULT_SCOPE,
 		?GuzzleHttp\ClientInterface $httpClient = NULL
@@ -319,7 +322,10 @@ class ERP_Microsoft365OAuthProvider extends ERP_OAuthProvider
 
 	# --------------------
 	# Pem certificate to Der
-	private function pemCertificateToDer( string $certificatePem ): string|FALSE
+	private function pemCertificateToDer(
+		#[\SensitiveParameter]
+		string $certificatePem
+	): string|FALSE
 	{
 		$certificateDer = preg_replace(
 			'/-----BEGIN CERTIFICATE-----|-----END CERTIFICATE-----|\s/',
@@ -369,6 +375,7 @@ class ERP_GoogleOAuthProvider extends ERP_OAuthProvider
 	private const DEFAULT_SCOPE = 'https://www.googleapis.com/auth/gmail.imap_admin';
 
 	public function __construct(
+		#[\SensitiveParameter]
 		private readonly array|string $serviceAccountCredentials,
 		private readonly string $mailbox,
 		private readonly string $scope = self::DEFAULT_SCOPE

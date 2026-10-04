@@ -139,7 +139,12 @@ class ERP_IMAP_Transport extends ERP_Transport
 
 	# --------------------
 	# Perform the login to the mailbox
-	public function login( string $p_mailbox_username, string $p_mailbox_password, string $p_mailbox_auth_method ): bool
+	public function login(
+		string $p_mailbox_username,
+		#[\SensitiveParameter]
+		string $p_mailbox_password,
+		string $p_mailbox_auth_method
+	): bool
 	{
 		$this->_options[ 'username' ] = $p_mailbox_username;
 		$this->_options[ 'password' ] = $p_mailbox_password;
@@ -174,9 +179,9 @@ class ERP_IMAP_Transport extends ERP_Transport
 		}
 		catch ( \Throwable $t_exception )
 		{
-			$t_additionalstring = ( ( $this->_ssl_cert_verify ) ? 'This could possibly be because SSL certificate verification failed.' : '' );
-			$t_additionalstring .= ' ' . ( ( $p_mailbox_auth_method === 'XOAUTH2' ) ? 'This could also be a permission issue where the application has no permission to access the given mailbox.' : '' );
-			$t_additionalstring = trim( $t_additionalstring );
+			$t_additionalstring = ( ( $this->_ssl_cert_verify ) ? "\n" . 'This could possibly be because SSL certificate verification failed.' : '' );
+			$t_additionalstring .= ' ' . ( ( $p_mailbox_auth_method === 'XOAUTH2' ) ? "\n" . 'This could possibly be a permission issue where the application has no permission to access the given mailbox.' : '' );
+			$t_additionalstring = "\n" . trim( $t_additionalstring );
 			$this->handleThrowable( $t_exception, $t_additionalstring );
 			return( FALSE );
 		}

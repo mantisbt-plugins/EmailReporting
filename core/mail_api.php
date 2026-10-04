@@ -200,7 +200,10 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 	# --------------------
 	# process all mails for an mailbox
 	#  return a boolean for whether the mailbox was successfully processed
-	public function process_mailbox( $p_mailbox )
+	public function process_mailbox(
+		#[\SensitiveParameter]
+		$p_mailbox
+	)
 	{
 		$this->_mailbox_starttime = ERP_get_timestamp();
 		
