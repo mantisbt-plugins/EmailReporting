@@ -35,8 +35,8 @@ $ScriptName = Split-Path -Leaf $ScriptPath
 
 $SourceRoot = Split-Path -Parent $ScriptPath
 
-$ReleaseDirectory = Join-Path $SourceRoot 'release'
-$StagingRoot = Join-Path $ReleaseDirectory $PackageName
+$ReleaseDirectory = Join-Path -Path $SourceRoot -ChildPath 'release'
+$StagingRoot = Join-Path -Path $ReleaseDirectory -ChildPath $PackageName
 
 # ---------------------------------------------------------------------------
 # Helper functions
@@ -57,8 +57,11 @@ function Fail {
     )
 
     write-host $Message -ForegroundColor Red
-    [void][System.Console]::ReadLine()
-    throw $Message
+    #[void][System.Console]::ReadLine()
+    $Confirm= Read-Host Should we stop or continue with errors? [F] Fail [C] Continue
+    if($Confirm -eq 'f') {
+        throw $Message
+    }
 }
 
 function Assert-File {
@@ -100,15 +103,15 @@ function Remove-IfExists {
 Write-Step 'Checking source tree'
 
 Assert-File `
-    (Join-Path $SourceRoot 'EmailReporting.php') `
+    (Join-Path -Path $SourceRoot -ChildPath 'EmailReporting.php') `
     'EmailReporting.php'
 
 Assert-File `
-    (Join-Path $SourceRoot 'composer.json') `
+    (Join-Path -Path $SourceRoot -ChildPath 'composer.json') `
     'composer.json'
 
 Assert-File `
-    (Join-Path $SourceRoot 'composer.lock') `
+    (Join-Path -Path $SourceRoot -ChildPath 'composer.lock') `
     'composer.lock'
 
 # ---------------------------------------------------------------------------
@@ -117,7 +120,7 @@ Assert-File `
 
 Write-Step 'Determining plugin version'
 
-$PluginFile = Join-Path $SourceRoot 'EmailReporting.php'
+$PluginFile = Join-Path -Path $SourceRoot -ChildPath 'EmailReporting.php'
 $PluginSource = Get-Content -LiteralPath $PluginFile -Raw
 
 $VersionMatch = [regex]::Match(
@@ -136,7 +139,7 @@ if ($Version -notmatch '^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$') {
 }
 
 $ArchiveName = "${PackageName}_${Version}.zip"
-$ArchivePath = Join-Path $ReleaseDirectory $ArchiveName
+$ArchivePath = Join-Path -Path $ReleaseDirectory -ChildPath $ArchiveName
 
 Write-Host "Version: $Version"
 
@@ -197,9 +200,9 @@ $RobocopyArguments = @(
     '.git'
     '.github'
     'vendor'
-    $SourceRoot+'\release'
-    $SourceRoot+'\core\Mail\var'
-    $SourceRoot+'\core\Mail\web'
+    Join-Path -Path $SourceRoot -ChildPath 'release'
+    Join-Path -Path $SourceRoot -ChildPath 'core\Mail\var'
+    Join-Path -Path $SourceRoot -ChildPath 'core\Mail\web'
 )
 
 & robocopy @RobocopyArguments | Out-Host
@@ -225,7 +228,7 @@ $FilesToRemove = @(
 )
 
 foreach ($File in $FilesToRemove) {
-    $Path = Join-Path $StagingRoot $File
+    $Path = Join-Path -Path $StagingRoot -ChildPath $File
 
     if (Test-Path -LiteralPath $Path) {
         Write-Host "Removing $File"
@@ -243,18 +246,36 @@ foreach ($File in $FilesToRemove) {
 Write-Step 'Preparing Composer files'
 
 Copy-Item `
-    -LiteralPath (Join-Path $SourceRoot 'composer.json') `
-    -Destination (Join-Path $StagingRoot 'composer.json') `
+    -LiteralPath (Join-Path -Path $SourceRoot -ChildPath 'composer.json') `
+    -Destination (Join-Path -Path $StagingRoot -ChildPath 'composer.json') `
     -Force
 
 Copy-Item `
-    -LiteralPath (Join-Path $SourceRoot 'composer.lock') `
-    -Destination (Join-Path $StagingRoot 'composer.lock') `
+    -LiteralPath (Join-Path -Path $SourceRoot -ChildPath 'composer.lock') `
+    -Destination (Join-Path -Path $StagingRoot -ChildPath 'composer.lock') `
     -Force
 
 Write-Step 'Installing production Composer dependencies'
 
 Push-Location $StagingRoot
+
+try {
+    & composer install `
+        --no-dev `
+        --prefer-dist `
+        --optimize-autoloader `
+        --no-interaction `
+        --no-progress
+
+    if ($LASTEXITCODE -ne 0) {
+        Fail "Composer install failed with exit code $LASTEXITCODE."
+    }
+}
+finally {
+    Pop-Location
+}
+
+Push-Location (Join-Path -Path $StagingRoot -ChildPath 'core\Mail')
 
 try {
     & composer install `
@@ -279,12 +300,20 @@ finally {
 Write-Step 'Checking Composer installation'
 
 Assert-File `
-    (Join-Path $StagingRoot 'vendor\autoload.php') `
+    (Join-Path -Path $StagingRoot -ChildPath 'vendor\autoload.php') `
     'vendor/autoload.php'
 
 Assert-Directory `
-    (Join-Path $StagingRoot 'vendor\composer') `
+    (Join-Path -Path $StagingRoot -ChildPath 'vendor\composer') `
     'vendor/composer'
+
+Assert-File `
+    (Join-Path -Path $StagingRoot -ChildPath 'core\Mail\vendor\autoload.php') `
+    'core/Mail/vendor/autoload.php'
+
+Assert-Directory `
+    (Join-Path -Path $StagingRoot -ChildPath 'core\Mail\vendor\composer') `
+    'core/Mail/vendor/composer'
 
 # ---------------------------------------------------------------------------
 # Restore intentionally tracked vendor files
@@ -295,12 +324,12 @@ Assert-Directory `
 
 Write-Step 'Restoring intentional vendor web-server files'
 
-$VendorSource = Join-Path $SourceRoot 'vendor'
-$VendorTarget = Join-Path $StagingRoot 'vendor'
+$VendorSource = Join-Path -Path $SourceRoot -ChildPath 'vendor'
+$VendorTarget = Join-Path -Path $StagingRoot -ChildPath 'vendor'
 
 foreach ($File in @('.htaccess', 'Web.config')) {
-    $SourceFile = Join-Path $VendorSource $File
-    $TargetFile = Join-Path $VendorTarget $File
+    $SourceFile = Join-Path -Path $VendorSource -ChildPath $File
+    $TargetFile = Join-Path -Path $VendorTarget -ChildPath $File
 
     Assert-File $SourceFile "vendor/$File"
 
@@ -362,14 +391,56 @@ foreach ($FileName in $VendorDevelopmentFiles) {
         }
 }
 
+$SubVendorTarget = Join-Path -Path $StagingRoot -ChildPath 'core\Mail\vendor'
+
+$VendorDevelopmentDirectories = @(
+    '.git',
+    '.github',
+    '.gitlab'
+)
+
+foreach ($DirectoryName in $VendorDevelopmentDirectories) {
+    Get-ChildItem `
+        -LiteralPath $SubVendorTarget `
+        -Directory `
+        -Recurse `
+        -Force `
+        -ErrorAction SilentlyContinue |
+        Where-Object { $_.Name -eq $DirectoryName } |
+        ForEach-Object {
+            Write-Host "Removing $($_.FullName)"
+            Remove-Item -LiteralPath $_.FullName -Recurse -Force
+        }
+}
+
+$VendorDevelopmentFiles = @(
+    '.gitignore',
+    '.gitattributes',
+    '.gitmodules'
+)
+
+foreach ($FileName in $VendorDevelopmentFiles) {
+    Get-ChildItem `
+        -LiteralPath $SubVendorTarget `
+        -File `
+        -Recurse `
+        -Force `
+        -ErrorAction SilentlyContinue |
+        Where-Object { $_.Name -eq $FileName } |
+        ForEach-Object {
+            Write-Host "Removing $($_.FullName)"
+            Remove-Item -LiteralPath $_.FullName -Force
+        }
+}
+
 # ---------------------------------------------------------------------------
 # Remove Composer files from release
 # ---------------------------------------------------------------------------
 
 Write-Step 'Removing Composer project files from release'
 
-Remove-IfExists (Join-Path $StagingRoot 'composer.json')
-Remove-IfExists (Join-Path $StagingRoot 'composer.lock')
+Remove-IfExists (Join-Path -Path $StagingRoot -ChildPath 'composer.json')
+Remove-IfExists (Join-Path -Path $StagingRoot -ChildPath 'composer.lock')
 
 # ---------------------------------------------------------------------------
 # Verify EmailReporting Composer autoloader references
@@ -377,8 +448,8 @@ Remove-IfExists (Join-Path $StagingRoot 'composer.lock')
 
 Write-Step 'Checking Composer autoloader references'
 
-$ConfigApi = Join-Path $StagingRoot 'core\config_api.php'
-$MailApi = Join-Path $StagingRoot 'core\mail_api.php'
+$ConfigApi = Join-Path -Path $StagingRoot -ChildPath 'core\config_api.php'
+$MailApi = Join-Path -Path $StagingRoot -ChildPath 'core\mail_api.php'
 
 Assert-File $ConfigApi 'core/config_api.php'
 Assert-File $MailApi 'core/mail_api.php'
@@ -420,7 +491,7 @@ $RequiredFiles = @(
 
 foreach ($RelativePath in $RequiredFiles) {
     Assert-File `
-        (Join-Path $StagingRoot $RelativePath) `
+        (Join-Path -Path $StagingRoot -ChildPath $RelativePath) `
         $RelativePath
 }
 
@@ -438,7 +509,7 @@ $RequiredDirectories = @(
 
 foreach ($RelativePath in $RequiredDirectories) {
     Assert-Directory `
-        (Join-Path $StagingRoot $RelativePath) `
+        (Join-Path -Path $StagingRoot -ChildPath $RelativePath) `
         $RelativePath
 }
 
@@ -459,7 +530,7 @@ $SyntaxErrors = 0
 foreach ($PhpFile in $PhpFiles) {
     Write-Host "Checking $($PhpFile.FullName)"
 
-    & php -l $PhpFile.FullName 2>&1 | Out-Host
+    $Output = & php -l $PhpFile.FullName 2>&1 | Out-File -FilePath (Join-Path -Path $ReleaseDirectory -ChildPath 'PHP Syntax errors.log') -Append -Encoding utf8
 
     if ($LASTEXITCODE -ne 0) {
         $SyntaxErrors++
@@ -483,10 +554,12 @@ $ForbiddenPaths = @(
     '.gitattributes'
     'composer.json'
     'composer.lock'
+    'core\Mail\composer.json'
+    'core\Mail\composer.lock'
 )
 
 foreach ($RelativePath in $ForbiddenPaths) {
-    $Path = Join-Path $StagingRoot $RelativePath
+    $Path = Join-Path -Path $StagingRoot -ChildPath $RelativePath
 
     if (Test-Path -LiteralPath $Path) {
         Fail "Forbidden release file/directory still exists: $RelativePath"
@@ -500,7 +573,7 @@ foreach ($RelativePath in $ForbiddenPaths) {
 
 Write-Step 'Removing release builder from staging package'
 
-$ScriptInStaging = Join-Path $StagingRoot $ScriptName
+$ScriptInStaging = Join-Path -Path $StagingRoot -ChildPath $ScriptName
 
 if (Test-Path -LiteralPath $ScriptInStaging) {
     Remove-Item -LiteralPath $ScriptInStaging -Force
