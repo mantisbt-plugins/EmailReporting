@@ -1,2 +1,5 @@
 # Composer
 /vendor/
+/core/Mail/var
+/core/Mail/vendor
+/core/Mail/web
