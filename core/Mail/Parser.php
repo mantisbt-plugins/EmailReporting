@@ -301,7 +301,7 @@ class ERP_Mail_Parser
 		{
 			if ( 'multipart' === strtolower( $structure->ctype_primary ) && 'signed' === strtolower( $structure->ctype_secondary ) )
 			{
-				$structure_signed = $this->decode( $structure->parts['msg_body'] );
+				$structure_signed = $this->decode( $structure->parts[ 'msg_body' ] );
 				unset( $structure->parts[ 'msg_body' ], $structure->parts[ 'sig_hdr' ], $structure->parts[ 'sig_body' ] );
 
 				$structure = (object) array_replace_recursive( (array) $structure, (array) $structure_signed );
