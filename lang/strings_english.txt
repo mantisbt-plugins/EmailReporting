@@ -179,23 +179,34 @@ $s_plugin_EmailReporting_rule_actions_help = '- "[any]" means the action in ques
 
 $s_plugin_EmailReporting_rule_exceptions_help = 'NULL';
 
+$s_plugin_EmailReporting_add_note_actions = 'Add private note with actions performed';
+
 $s_plugin_EmailReporting_cond_issue_creation_method = 'Issue creation method';
 $s_plugin_EmailReporting_cond_mailbox = 'Apply to mailboxes';
 $s_plugin_EmailReporting_cond_issue_issue_issuenote = 'Apply to new issues and / or notes';
 $s_plugin_EmailReporting_cond_issue_reporter = 'Issue reporter';
+$s_plugin_EmailReporting_cond_email_from = 'Email address from (ERP)';
+$s_plugin_EmailReporting_cond_email_to = 'Email address to (ERP)';
+$s_plugin_EmailReporting_cond_issue_sendertype = 'Sendertype (ERP)';
 $s_plugin_EmailReporting_cond_issue_project = 'Issue project';
 $s_plugin_EmailReporting_cond_issue_category = 'Issue category';
 $s_plugin_EmailReporting_cond_issue_priority = 'Issue priority';
 $s_plugin_EmailReporting_cond_issue_summary = 'Issue summary';
 $s_plugin_EmailReporting_cond_issue_description = 'Issue description';
+$s_plugin_EmailReporting_cond_issue_attachments = 'Issue attachments';
 
+$s_plugin_EmailReporting_act_issue_category = 'Update category';
 $s_plugin_EmailReporting_act_issue_severity = 'Update severity';
 $s_plugin_EmailReporting_act_issue_status = 'Update status';
 $s_plugin_EmailReporting_act_issue_view_state = 'Update view state';
-$s_plugin_EmailReporting_act_issue_category = 'Update category';
+$s_plugin_EmailReporting_act_issue_reproducibility = 'Update reproducibility';
+$s_plugin_EmailReporting_act_issue_handler = 'Update assigned-to';
 $s_plugin_EmailReporting_act_issue_duedate = 'Update duedate';
+$s_plugin_EmailReporting_act_issue_priority = 'Update priority';
 $s_plugin_EmailReporting_act_issue_tag = 'Add tags';
 $s_plugin_EmailReporting_act_issue_custom_field = 'Update custom field';
 
+$s_plugin_EmailReporting_excep_issue_from = 'Email address from (ERP)';
 $s_plugin_EmailReporting_excep_issue_summary = 'Issue summary';
 $s_plugin_EmailReporting_excep_issue_description = 'Issue description';
+$s_plugin_EmailReporting_excep_issue_attachments = 'Issue attachments';

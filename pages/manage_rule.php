@@ -110,7 +110,7 @@ ERP_output_config_option( 'cond_issue_issue_issuenote', 'dropdown_multiselect', 
 ERP_output_config_option( 'cond_issue_reporter', 'dropdown_multiselect', $t_rule, 'print_reporter_option_list' );
 ERP_output_config_option( 'cond_email_from', 'string', $t_rule );
 ERP_output_config_option( 'cond_email_to', 'string', $t_rule );
-ERP_output_config_option( 'cond_issue_sendertype', 'string', $t_rule, 'print_descriptions_option_list', array( 'known_reporter', 'unknown_sender', 'registered_user', 'non_mantis_user' ) );
+ERP_output_config_option( 'cond_issue_sendertype', 'dropdown_multiselect', $t_rule, 'print_descriptions_option_list', array( 'known_reporter', 'unknown_sender', 'registered_user', 'non_mantis_user' ) );
 ERP_output_config_option( 'cond_issue_project', 'dropdown_multiselect', $t_rule, 'print_projects_option_list' );
 ERP_output_config_option( 'cond_issue_category', 'dropdown_multiselect', $t_rule, 'print_global_category_option_list' );
 ERP_output_config_option( 'cond_issue_priority', 'dropdown_multiselect', $t_rule, 'print_priority_option_list' );
@@ -120,12 +120,11 @@ ERP_output_config_option( 'cond_issue_attachments', 'dropdown', $t_rule, 'print_
 ERP_output_table_close();
 
 ERP_output_table_open( 'rule_actions' );
-ERP_output_config_option( 'act_issue_project', 'dropdown_any', $t_rule, 'print_projects_option_list' ); // @TODO might be too messy to do here
 ERP_output_config_option( 'act_issue_category', 'dropdown_any', $t_rule, 'print_global_category_option_list' );
 ERP_output_config_option( 'act_issue_severity', 'dropdown_any', $t_rule, 'print_severity_option_list' );
 ERP_output_config_option( 'act_issue_status', 'dropdown_any', $t_rule, 'print_status_option_list' );
 ERP_output_config_option( 'act_issue_view_state', 'dropdown_any', $t_rule, 'print_view_state_option_list' );
-ERP_output_config_option( 'act_issue_reproducible', 'dropdown_any', $t_rule, 'print_reproducible_list' );
+ERP_output_config_option( 'act_issue_reproducibility', 'dropdown_any', $t_rule, 'print_reproducibility_list' );
 ERP_output_config_option( 'act_issue_handler', 'dropdown_any', $t_rule, 'print_handler_option_list' );
 ERP_output_config_option( 'act_issue_duedate', 'custom', $t_rule, 'print_duedate' );
 ERP_output_config_option( 'act_issue_priority', 'dropdown_any', $t_rule, 'print_priority_option_list' );

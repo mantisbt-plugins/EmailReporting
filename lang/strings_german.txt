@@ -179,23 +179,34 @@ $s_plugin_EmailReporting_rule_actions_help = '- "[any]" bedeuetet, die Aktion wi
 
 $s_plugin_EmailReporting_rule_exceptions_help = 'NULL';
 
+$s_plugin_EmailReporting_add_note_actions = 'Füge eine private Notiz mit den durchgeführten Aktionen hinzu.';
+
 $s_plugin_EmailReporting_cond_issue_creation_method = 'Methode zur Ticketerstellung';
 $s_plugin_EmailReporting_cond_mailbox = 'Zur Mailbox hinzufügen';
 $s_plugin_EmailReporting_cond_issue_issue_issuenote = 'Neues Ticket und/oder Notiz hinzufügen';
 $s_plugin_EmailReporting_cond_issue_reporter = 'Reporter';
+$s_plugin_EmailReporting_cond_email_from = 'E-Mail-Adresse von (ERP)';
+$s_plugin_EmailReporting_cond_email_to = 'E-Mail-Adresse an (ERP)';
+$s_plugin_EmailReporting_cond_issue_sendertype = 'Sendertyp (ERP)';
 $s_plugin_EmailReporting_cond_issue_project = 'Projekt';
 $s_plugin_EmailReporting_cond_issue_category = 'Kategorie';
 $s_plugin_EmailReporting_cond_issue_priority = 'Priorität';
 $s_plugin_EmailReporting_cond_issue_summary = 'Zusammenfassung';
 $s_plugin_EmailReporting_cond_issue_description = 'Beschreibung';
+$s_plugin_EmailReporting_cond_issue_attachments = 'Anhänge zur Ausgabe';
 
+$s_plugin_EmailReporting_act_issue_category = 'Kategorie aktualisieren';
 $s_plugin_EmailReporting_act_issue_severity = 'Aktualisierungsschweregrad';
 $s_plugin_EmailReporting_act_issue_status = 'Status aktualisieren';
 $s_plugin_EmailReporting_act_issue_view_state = 'Ansichtsstatus aktualisieren';
-$s_plugin_EmailReporting_act_issue_category = 'Kategorie aktualisieren';
+$s_plugin_EmailReporting_act_issue_reproducibility = 'Reproduzierbarkeit der Aktualisierung';
+$s_plugin_EmailReporting_act_issue_handler = 'Aktualisierung zugewiesen an';
 $s_plugin_EmailReporting_act_issue_duedate = 'Fälligkeitsdatum aktualisieren';
+$s_plugin_EmailReporting_act_issue_priority = 'Aktualisierungspriorität';
 $s_plugin_EmailReporting_act_issue_tag = 'Tag hinzufügen';
 $s_plugin_EmailReporting_act_issue_custom_field = 'Benutzerdefiniertes Feld aktualisieren';
 
+$s_plugin_EmailReporting_excep_issue_from = 'E-Mail-Adresse von (ERP)';
 $s_plugin_EmailReporting_excep_issue_summary = 'Zusammenfassung';
 $s_plugin_EmailReporting_excep_issue_description = 'Beschreibung';
+$s_plugin_EmailReporting_excep_issue_attachments = 'Anhänge zur Ausgabe';

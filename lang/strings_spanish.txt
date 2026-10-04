@@ -176,23 +176,34 @@ $s_plugin_EmailReporting_rule_actions_help = '- "[any]" means the action in ques
 
 $s_plugin_EmailReporting_rule_exceptions_help = 'NULL';
 
+$s_plugin_EmailReporting_add_note_actions = 'Agregar nota privada con las acciones realizadas';
+
 $s_plugin_EmailReporting_cond_issue_creation_method = 'Metodo de cración de la solicitud';
 $s_plugin_EmailReporting_cond_mailbox = 'Aplicar a los buzones';
 $s_plugin_EmailReporting_cond_issue_issue_issuenote = 'Agregar nuevas solicitudes y / o notas';
 $s_plugin_EmailReporting_cond_issue_reporter = 'Informador de la Solicitud';
+$s_plugin_EmailReporting_cond_email_from = 'Dirección de correo electrónico del (ERP)';
+$s_plugin_EmailReporting_cond_email_to = 'Dirección de correo electrónico para (ERP)';
+$s_plugin_EmailReporting_cond_issue_sendertype = 'Tipo de remitente (ERP)';
 $s_plugin_EmailReporting_cond_issue_project = 'Proyecto de la Solicitud';
 $s_plugin_EmailReporting_cond_issue_category = 'Categoria d ela Solicitud';
 $s_plugin_EmailReporting_cond_issue_priority = 'Prioridad de la Solicitud';
 $s_plugin_EmailReporting_cond_issue_summary = 'Resumen de la Solicitud';
 $s_plugin_EmailReporting_cond_issue_description = 'Descripción de la Solicitud';
+$s_plugin_EmailReporting_cond_issue_attachments = 'Emitir archivos adjuntos';
 
+$s_plugin_EmailReporting_act_issue_category = 'Actualizar Categoria';
 $s_plugin_EmailReporting_act_issue_severity = 'Actualizar severidad';
 $s_plugin_EmailReporting_act_issue_status = 'Actualizar estado';
 $s_plugin_EmailReporting_act_issue_view_state = 'Actualizar el estado de la vista';
-$s_plugin_EmailReporting_act_issue_category = 'Actualizar Categoria';
+$s_plugin_EmailReporting_act_issue_reproducibility = 'Actualizar la reproducibilidad';
+$s_plugin_EmailReporting_act_issue_handler = 'Actualizar asignado a';
 $s_plugin_EmailReporting_act_issue_duedate = 'Actualizar fecha de vencimiento';
+$s_plugin_EmailReporting_act_issue_priority = 'Actualizar prioridad';
 $s_plugin_EmailReporting_act_issue_tag = 'Agregar etiquetas';
 $s_plugin_EmailReporting_act_issue_custom_field = 'Actualizar campo personalizado';
 
+$s_plugin_EmailReporting_excep_issue_from = 'Dirección de correo electrónico del (ERP)';
 $s_plugin_EmailReporting_excep_issue_summary = 'Resumen de Solicitud';
 $s_plugin_EmailReporting_excep_issue_description = 'Descripción de Solicitud';
+$s_plugin_EmailReporting_excep_issue_attachments = 'Emitir archivos adjuntos';
