@@ -128,7 +128,7 @@ class ERP_POP3_Transport extends ERP_Transport
 
 		if ( $p_mailbox_auth_method === 'XOAUTH2' )
 		{
-			$this->_options[ 'xoauth2_token' ] = $p_mailbox_password;
+			$this->_options[ 'xoauth2_token' ] = new \Horde_Imap_Client_Password_Xoauth2( $p_mailbox_username, $p_mailbox_password );
 		}
 
 		try
@@ -305,7 +305,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 
 		if ( $p_mailbox_auth_method === 'XOAUTH2' )
 		{
-			$this->_options[ 'xoauth2_token' ] = $p_mailbox_password;
+			$this->_options[ 'xoauth2_token' ] = new \Horde_Imap_Client_Password_Xoauth2( $p_mailbox_username, $p_mailbox_password );
 		}
 
 		try

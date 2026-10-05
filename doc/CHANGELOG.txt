@@ -1,5 +1,6 @@
 Changelog:
 ??? - EmailReporting-0.14.0
+	- Fix XOAUTH2 issue with Horde/Imap_Client (Legacy)
 
 Okt 2026 - EmailReporting-0.13.0
 	- Fix incorrect variable passed to ParseTNEF
