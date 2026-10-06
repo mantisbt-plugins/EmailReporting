@@ -449,7 +449,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 		try
 		{
 			$t_query = new \Horde\Imap\Client\ImapFetchQuery();
-			$t_query->fullMsg();
+			$t_query->fullMsg( NULL, NULL, FALSE );
 
 			$t_messages = $this->_mailserver->fetch(
 				$this->getCurrentMailbox(),
@@ -459,7 +459,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 
 			foreach ( $t_messages AS $t_uid => $t_message )
 			{
-				$t_raw_message = $t_message->getFullMsg()->getString();
+				$t_raw_message = $t_message->getFullMsg()->substring();
 			}
 
 			if ( empty( $t_raw_message ) )
