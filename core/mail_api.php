@@ -1589,6 +1589,14 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 
 		$t_realname = string_normalize( $t_realname );
 
+		// Fallback option
+		if ( empty( $t_realname ) )
+		{
+			$t_realname = $p_user_info[ 'name' ];
+
+			$t_realname = string_normalize( $t_realname );
+		}
+
 		if ( mb_strlen( $t_realname ) > DB_FIELD_SIZE_REALNAME )
 		{
 			$t_realname = mb_substr( $t_realname, 0, DB_FIELD_SIZE_REALNAME );
