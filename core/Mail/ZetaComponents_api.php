@@ -240,6 +240,9 @@ class ERP_IMAP_Transport extends ERP_Transport
 		if ( class_exists( '\ezcMailImapTransport' ) )
 		{
 			$t_supportedAuthMethods = \ezcMailImapTransport::getSupportedAuthMethods();
+
+			// We are converting PLAIN to LOGIN so not really supported.
+			$t_supportedAuthMethods[] = 'PLAIN';
 		}
 
 		return( $t_supportedAuthMethods );
@@ -284,6 +287,12 @@ class ERP_IMAP_Transport extends ERP_Transport
 		$this->_current_mailbox = NULL;
 		$this->_hierarchydelimiter = NULL;
 		$this->_mailserver = NULL;
+
+		// Let's make sure PLAIN auth works without issues
+		if ( $p_mailbox_auth_method === 'PLAIN' )
+		{
+			$p_mailbox_auth_method = 'LOGIN';
+		}
 
 		try
 		{

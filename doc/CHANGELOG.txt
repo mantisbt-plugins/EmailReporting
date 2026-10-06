@@ -2,6 +2,7 @@ Changelog:
 ??? - EmailReporting-0.14.0
 	- Fix XOAUTH2 issue with Horde/Imap_Client (Legacy)
 	- Fallback added for mail_preferred_realname
+	- Fake PLAIN auth method support for ZetaComponents_api
 
 Okt 2026 - EmailReporting-0.13.0
 	- Fix incorrect variable passed to ParseTNEF
