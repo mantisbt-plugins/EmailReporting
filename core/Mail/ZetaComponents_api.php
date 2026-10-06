@@ -51,11 +51,18 @@ abstract class ERP_Transport extends ERP_ErrorHandling
 		{
 			$t_msg_set = $this->_mailserver->fetchByMessageNr( $p_msg_id );
 
-			$t_parser = new ezcMailParser();
+			if ( !$t_msg_set->hasData() )
+			{
+				$this->setError( 'Empty message set encoutered.' );
+				return( FALSE );
+			}
 
-			$t_mail = $t_parser->parseMail( $t_msg_set );
-
-			$t_rawmsg = $t_mail[ 0 ]->generate();
+			$t_data = '';
+			$t_rawmsg = '';
+			while ( ( $t_data = $t_msg_set->getNextLine() ) !== null )
+			{
+				$t_rawmsg .= $t_data;
+			}
 		}
 		catch ( \Throwable $t_exception )
 		{
