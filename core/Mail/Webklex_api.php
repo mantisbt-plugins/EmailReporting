@@ -270,24 +270,24 @@ class ERP_IMAP_Transport extends ERP_Transport
 			// Workaround to avoid Webklex parsing the messagebody. Code based on parseBody()
 			$this->_messages[ $p_msg_id ]->getClient()->openFolder( $this->_messages[ $p_msg_id ]->getFolderPath() );
 
-			$sequence_id = $this->_messages[ $p_msg_id ]->getSequenceId();
+			$t_sequence_id = $this->_messages[ $p_msg_id ]->getSequenceId();
 			try
 			{
-				$contents = $this->_messages[ $p_msg_id ]->getClient()->getConnection()->content( [$sequence_id], $this->_messages[ $p_msg_id ]->getClient()->rfc, $this->_messages[ $p_msg_id ]->getSequence() )->validatedData();
+				$t_contents = $this->_messages[ $p_msg_id ]->getClient()->getConnection()->content( [$t_sequence_id], $this->_messages[ $p_msg_id ]->getClient()->rfc, $this->_messages[ $p_msg_id ]->getSequence() )->validatedData();
 			}
-			catch ( Exceptions\RuntimeException $e )
+			catch ( \Webklex\PHPIMAP\Exceptions\RuntimeException $e )
 			{
-				throw new MessageContentFetchingException( "failed to fetch content", 0, $e );
+				throw new \Webklex\PHPIMAP\Exceptions\MessageContentFetchingException( "failed to fetch content", 0, $e );
 			}
 
-			if ( !isset( $contents[ $sequence_id ] ) )
+			if ( !isset( $t_contents[ $t_sequence_id ] ) )
 			{
-				throw new MessageContentFetchingException( "no content found", 0 );
+				throw new \Webklex\PHPIMAP\Exceptions\MessageContentFetchingException( "no content found", 0 );
 			}
-			$content = $contents[ $sequence_id ];
+			$t_content = $t_contents[ $t_sequence_id ];
 			// Workaround end.
 
-			$t_rawmessage = rtrim( (string) $this->_messages[ $p_msg_id ]->getHeader()->raw ) . "\r\n\r\n" . ltrim( $content );
+			$t_rawmessage = rtrim( (string) $this->_messages[ $p_msg_id ]->getHeader()->raw ) . "\r\n\r\n" . ltrim( $t_content );
 		}
 		catch ( \Throwable $t_exception )
 		{
