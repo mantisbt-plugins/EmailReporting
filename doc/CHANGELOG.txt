@@ -4,6 +4,7 @@ Changelog:
 	- Fallback added for mail_preferred_realname
 	- Fake PLAIN auth method support for ZetaComponents_api
 	- Fixed issues with ZetaComponents_api and message retrieval
+	- Fix memory usage issues with webklex/php-imap
 
 Okt 2026 - EmailReporting-0.13.0
 	- Fix incorrect variable passed to ParseTNEF

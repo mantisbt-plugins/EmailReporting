@@ -211,7 +211,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 		{
 			$t_folder = $this->_mailserver->getFolderByPath( $t_foldername );
 
-			$this->_messages = $t_folder->messages()->UNDELETED()->get();
+			$this->_messages = $t_folder->messages()->setFetchBody( FALSE )->UNDELETED()->get();
 
 			$t_ListMsgs = array();
 			foreach ( $this->_messages->keys() AS $t_key )
@@ -267,7 +267,27 @@ class ERP_IMAP_Transport extends ERP_Transport
 
 		try
 		{
-			$t_rawmessage = rtrim( (string) $this->_messages[ $p_msg_id ]->getHeader()->raw ) . "\r\n\r\n" . ltrim( (string) $this->_messages[ $p_msg_id ]->getRawBody() );
+			// Workaround to avoid Webklex parsing the messagebody. Code based on parseBody()
+			$this->_messages[ $p_msg_id ]->getClient()->openFolder( $this->_messages[ $p_msg_id ]->getFolderPath() );
+
+			$sequence_id = $this->_messages[ $p_msg_id ]->getSequenceId();
+			try
+			{
+				$contents = $this->_messages[ $p_msg_id ]->getClient()->getConnection()->content( [$sequence_id], $this->_messages[ $p_msg_id ]->getClient()->rfc, $this->_messages[ $p_msg_id ]->getSequence() )->validatedData();
+			}
+			catch ( Exceptions\RuntimeException $e )
+			{
+				throw new MessageContentFetchingException( "failed to fetch content", 0, $e );
+			}
+
+			if ( !isset( $contents[ $sequence_id ] ) )
+			{
+				throw new MessageContentFetchingException( "no content found", 0 );
+			}
+			$content = $contents[ $sequence_id ];
+			// Workaround end.
+
+			$t_rawmessage = rtrim( (string) $this->_messages[ $p_msg_id ]->getHeader()->raw ) . "\r\n\r\n" . ltrim( $content );
 		}
 		catch ( \Throwable $t_exception )
 		{
