@@ -273,7 +273,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 			$t_sequence_id = $this->_messages[ $p_msg_id ]->getSequenceId();
 			try
 			{
-				$t_contents = $this->_messages[ $p_msg_id ]->getClient()->getConnection()->content( [$t_sequence_id], $this->_messages[ $p_msg_id ]->getClient()->rfc, $this->_messages[ $p_msg_id ]->getSequence() )->validatedData();
+				$t_contents = $this->_messages[ $p_msg_id ]->getClient()->getConnection()->content( array( $t_sequence_id ), $this->_messages[ $p_msg_id ]->getClient()->rfc, $this->_messages[ $p_msg_id ]->getSequence() )->validatedData();
 			}
 			catch ( \Webklex\PHPIMAP\Exceptions\RuntimeException $e )
 			{
@@ -287,7 +287,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 			$t_content = $t_contents[ $t_sequence_id ];
 			// Workaround end.
 
-			$t_rawmessage = rtrim( (string) $this->_messages[ $p_msg_id ]->getHeader()->raw ) . "\r\n\r\n" . ltrim( $t_content );
+			$t_rawmessage = rtrim( (string) $this->_messages[ $p_msg_id ]->getHeader()->raw ) . "\r\n\r\n" . ltrim( (string) $t_content );
 		}
 		catch ( \Throwable $t_exception )
 		{
