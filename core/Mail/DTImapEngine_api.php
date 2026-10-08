@@ -261,7 +261,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 
 		try
 		{
-			// Retrieve headers
+			// Retrieve headers. Code based on bodyHeader()
 			$t_header = $this->_current_mailbox->mailbox()->connection()->bodyHeader( $this->_messages[ $p_msg_id ]->uid(), FALSE );
 
 			if ( $t_header->isEmpty() )
@@ -283,7 +283,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 				throw new RuntimeException( 'Could not find [HEADER].' );
 			}
 
-			// Retrieve body
+			// Retrieve body. Code based on bodyHeader()
 			$t_body = $this->_current_mailbox->mailbox()->connection()->bodyText( $this->_messages[ $p_msg_id ]->uid(), FALSE );
 
 			if ( $t_body->isEmpty() )
