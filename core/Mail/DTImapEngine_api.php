@@ -207,7 +207,7 @@ class ERP_IMAP_Transport extends ERP_Transport
 		try
 		{
 			// There are issues with the amount of returned emails when oldest() is removed/replaced
-			$this->_messages = $this->_current_mailbox->messages()->withFlags()->withBody()->withHeaders()->oldest()->UNDELETED()->get();
+			$this->_messages = $this->_current_mailbox->messages()->withFlags()->withoutBody()->withoutHeaders()->oldest()->UNDELETED()->get();
 
 			$t_ListMsgs = array();
 			foreach ( $this->_messages->keys() AS $t_key )
@@ -261,10 +261,55 @@ class ERP_IMAP_Transport extends ERP_Transport
 
 		try
 		{
-			// @TODO Possible future memory optimization
-			//var_dump($this->_current_mailbox->mailbox()->connection()->bodyHeader($uid));
-			//var_dump($this->_current_mailbox->mailbox()->connection()->bodyText($uid));
-			$t_rawmessage = $this->_messages[ $p_msg_id ]->__toString();
+			// Retrieve headers
+			$t_header = $this->_current_mailbox->mailbox()->connection()->bodyHeader( $this->_messages[ $p_msg_id ]->uid(), FALSE );
+
+			if ( $t_header->isEmpty() )
+			{
+				throw new RuntimeException( 'No headers found.' );
+			}
+
+			$data = $t_header->first()->tokenAt( 3 );
+
+			if (! $data instanceof \DirectoryTree\ImapEngine\Connection\Responses\Data\ListData)
+			{
+				throw new RuntimeException( 'Unexpected content encountered.' );
+			}
+
+			$t_header = $data->lookup( '[HEADER]' )?->value;
+
+			if ( $t_header === NULL )
+			{
+				throw new RuntimeException( 'Could not find [HEADER].' );
+			}
+
+			// Retrieve body
+			$t_body = $this->_current_mailbox->mailbox()->connection()->bodyText( $this->_messages[ $p_msg_id ]->uid(), FALSE );
+
+			if ( $t_body->isEmpty() )
+			{
+				throw new RuntimeException( 'No body found.' );
+			}
+
+			$data = $t_body->first()->tokenAt( 3 );
+
+			if (! $data instanceof \DirectoryTree\ImapEngine\Connection\Responses\Data\ListData)
+			{
+				throw new RuntimeException( 'Unexpected content encountered.' );
+			}
+
+			$t_body = $data->lookup( '[TEXT]' )?->value;
+
+			if ( $t_body === NULL )
+			{
+				throw new RuntimeException( 'Could not find [TEXT].' );
+			}
+
+			// Merge t_header and t_body
+			$t_rawmessage = implode( "\r\n\r\n", array_filter( array(
+				rtrim( $t_header ),
+				ltrim( $t_body ),
+			) ) );
 		}
 		catch ( \Throwable $t_exception )
 		{

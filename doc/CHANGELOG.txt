@@ -5,6 +5,7 @@ Changelog:
 	- Fake PLAIN auth method support for ZetaComponents_api
 	- Fixed issues with ZetaComponents_api and message retrieval
 	- Fix memory usage issues with webklex/php-imap
+	- Memory usage improvement for DTImapEngine api
 
 Okt 2026 - EmailReporting-0.13.0
 	- Fix incorrect variable passed to ParseTNEF
