@@ -59,7 +59,7 @@ abstract class ERP_Transport extends ERP_ErrorHandling
 
 			$t_data = '';
 			$t_rawmsg = '';
-			while ( ( $t_data = $t_msg_set->getNextLine() ) !== null )
+			while ( ( $t_data = $t_msg_set->getNextLine() ) !== NULL )
 			{
 				$t_rawmsg .= $t_data;
 			}
