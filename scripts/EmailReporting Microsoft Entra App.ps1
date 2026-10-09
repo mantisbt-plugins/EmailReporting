@@ -114,13 +114,13 @@ $Module=Get-InstalledModule -Name Microsoft.Graph -ErrorAction SilentlyContinue
 if($Module.count -eq 0)
 {
     Write-Host Installing MSGraph. -ForegroundColor Green
-    Install-Module Microsoft.Graph -AllowClobber -Scope CurrentUser
+    Install-Module Microsoft.Graph -MinimumVersion 2.0.0 -AllowClobber -Scope CurrentUser
 }
 $Module=Get-InstalledModule -Name ExchangeOnlineManagement -ErrorAction SilentlyContinue
 if($Module.count -eq 0)
 {
     Write-Host Installing ExchangeOnlineManagement. -ForegroundColor Green
-    Install-Module ExchangeOnlineManagement -AllowClobber -Scope CurrentUser
+    Install-Module ExchangeOnlineManagement -MinimumVersion 3.0.0 -AllowClobber -Scope CurrentUser
 }
 
 Write-Host "Checking Microsoft Graph connection..." -ForegroundColor Cyan
