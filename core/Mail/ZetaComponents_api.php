@@ -51,6 +51,7 @@ abstract class ERP_Transport extends ERP_ErrorHandling
 		{
 			$t_msg_set = $this->_mailserver->fetchByMessageNr( $p_msg_id );
 
+			// Based on parseMail
 			if ( !$t_msg_set->hasData() )
 			{
 				$this->setError( 'Empty message set encoutered.' );
