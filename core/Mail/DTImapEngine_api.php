@@ -261,48 +261,48 @@ class ERP_IMAP_Transport extends ERP_Transport
 
 		try
 		{
-			// Retrieve headers. Code based on bodyHeader()
+			// Retrieve headers. Code based on fetchHead()
 			$t_header = $this->_current_mailbox->mailbox()->connection()->bodyHeader( $this->_messages[ $p_msg_id ]->uid(), FALSE );
 
 			if ( $t_header->isEmpty() )
 			{
-				throw new RuntimeException( 'No headers found.' );
+				throw new \RuntimeException( 'No headers found.' );
 			}
 
 			$data = $t_header->first()->tokenAt( 3 );
 
 			if (! $data instanceof \DirectoryTree\ImapEngine\Connection\Responses\Data\ListData)
 			{
-				throw new RuntimeException( 'Unexpected content encountered.' );
+				throw new \RuntimeException( 'Unexpected content encountered.' );
 			}
 
 			$t_header = $data->lookup( '[HEADER]' )?->value;
 
 			if ( $t_header === NULL )
 			{
-				throw new RuntimeException( 'Could not find [HEADER].' );
+				throw new \RuntimeException( 'Could not find [HEADER].' );
 			}
 
-			// Retrieve body. Code based on bodyHeader()
+			// Retrieve body. Code based on fetchHead()
 			$t_body = $this->_current_mailbox->mailbox()->connection()->bodyText( $this->_messages[ $p_msg_id ]->uid(), FALSE );
 
 			if ( $t_body->isEmpty() )
 			{
-				throw new RuntimeException( 'No body found.' );
+				throw new \RuntimeException( 'No body found.' );
 			}
 
 			$data = $t_body->first()->tokenAt( 3 );
 
 			if (! $data instanceof \DirectoryTree\ImapEngine\Connection\Responses\Data\ListData)
 			{
-				throw new RuntimeException( 'Unexpected content encountered.' );
+				throw new \RuntimeException( 'Unexpected content encountered.' );
 			}
 
 			$t_body = $data->lookup( '[TEXT]' )?->value;
 
 			if ( $t_body === NULL )
 			{
-				throw new RuntimeException( 'Could not find [TEXT].' );
+				throw new \RuntimeException( 'Could not find [TEXT].' );
 			}
 
 			// Merge t_header and t_body
