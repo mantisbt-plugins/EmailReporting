@@ -368,335 +368,305 @@ class EmailReportingPlugin extends MantisPlugin
 	 */
 	function ERP_update_check( )
 	{
-		# Intentionally not updated during execution.
+		# Intentionally not updated during installation.
 		# A version 0 installation will execute all upgrade steps sequentially.
 		$t_config_version = plugin_config_get( 'config_version' );
 
-		if ( $t_config_version === 0 )
+		/*
+		 * Intentionally uses switch fall-through.
+		 * Each version executes its own migration and all subsequent migrations.
+		 */
+		switch ( $t_config_version )
 		{
-			$t_username = plugin_config_get( 'mail_reporter', '' );
+			case 0:
+				$t_username = plugin_config_get( 'mail_reporter', '' );
 
-			if ( strlen( $t_username ) > 0 )
-			{
-				$t_user_id = user_get_id_by_name( $t_username );
-
-				if ( $t_user_id !== FALSE )
+				if ( strlen( $t_username ) > 0 )
 				{
-					$t_user_email = user_get_email( $t_user_id );
+					$t_user_id = user_get_id_by_name( $t_username );
 
-					if ( $t_user_email === 'nomail' )
+					if ( $t_user_id !== FALSE )
 					{
-						plugin_require_api( 'core/config_api.php' );
+						$t_user_email = user_get_email( $t_user_id );
 
-						# We need to allow blank emails for a sec
-						ERP_set_temporary_overwrite( 'allow_blank_email', ON );
-
-						user_set_email( $t_user_id, '' );
-					}
-				}
-			}
-
-			$t_schema = plugin_config_get( 'schema' );
-			$t_reset_schema = plugin_config_get( 'reset_schema' );
-			if ( $t_schema !== -1 && $t_reset_schema === 0 )
-			{
-				plugin_config_set( 'schema', -1 );
-				plugin_config_set( 'reset_schema', 1 );
-			}
-
-			plugin_config_set( 'config_version', 1 );
-		}
-
-		if ( $t_config_version <= 1 )
-		{
-			$t_mail_reporter = plugin_config_get( 'mail_reporter', '' );
-
-			if ( strlen( $t_mail_reporter ) > 0 )
-			{
-				$t_mail_reporter_id = user_get_id_by_name( $t_mail_reporter );
-				plugin_config_set( 'mail_reporter_id', $t_mail_reporter_id );
-			}
-
-			plugin_config_delete( 'mail_directory' );
-			plugin_config_delete( 'mail_reporter' );
-			plugin_config_delete( 'mail_additional' );
-			plugin_config_delete( 'random_user_number' );
-			plugin_config_delete( 'mail_bug_priority_default' );
-
-			plugin_config_set( 'config_version', 2 );
-		}
-
-		if ( $t_config_version <= 2 )
-		{
-			plugin_config_delete( 'mail_cronjob_present' );
-			plugin_config_delete( 'mail_check_timer' );
-			plugin_config_delete( 'mail_last_check' );
-
-			plugin_config_set( 'config_version', 3 );
-		}
-
-		if ( $t_config_version <= 3 )
-		{
-			$t_mailboxes = plugin_config_get( 'mailboxes', array() );
-			$t_indexes = array(
-				'mailbox_project' => 'mailbox_project_id',
-				'mailbox_global_category' => 'mailbox_global_category_id',
-			);
-
-			foreach ( $t_mailboxes AS $t_key => $t_array )
-			{
-				if ( isset( $t_array[ 'mailbox_hostname' ] ) )
-				{
-					# Correct the hostname if it is stored in an older format
-					$t_hostname = $t_array[ 'mailbox_hostname' ];
-
-					if ( !is_array( $t_hostname ) )
-					{
-						// ipv6 also uses : so we need to work around that
-						if ( substr_count( $t_hostname, ':' ) === 1 )
+						if ( $t_user_email === 'nomail' )
 						{
-							$t_hostname = explode( ':', $t_hostname, 2 );
-						}
-						else
-						{
-							$t_hostname = array( $t_hostname );
-						}
+							plugin_require_api( 'core/config_api.php' );
 
-						$t_hostname = array(
-							'hostname'  => $t_hostname[ 0 ],
-							'port'      => ( ( isset( $t_hostname[ 1 ] ) ) ? $t_hostname[ 1 ] : '' ),
-						);
+							# We need to allow blank emails for a sec
+							ERP_set_temporary_overwrite( 'allow_blank_email', ON );
 
-						$t_array[ 'mailbox_hostname' ] = $t_hostname;
+							user_set_email( $t_user_id, '' );
+						}
 					}
 				}
 
-				$t_mailboxes[ $t_key ] = $this->ERP_update_indexes( $t_array, $t_indexes );
-			}
-
-			plugin_config_set( 'mailboxes', $t_mailboxes );
-
-			plugin_config_set( 'config_version', 4 );
-		}
-
-		if ( $t_config_version <= 4 )
-		{
-			$t_mail_remove_mantis_email = plugin_config_get( 'mail_remove_mantis_email', -1 );
-			$t_mail_identify_reply      = plugin_config_get( 'mail_identify_reply', $t_mail_remove_mantis_email );
-
-			if ( $t_mail_remove_mantis_email !== -1 && $t_mail_identify_reply !== $t_mail_remove_mantis_email )
-			{
-				plugin_config_set( 'mail_remove_mantis_email', $t_mail_identify_reply );
-			}
-
-			plugin_config_delete( 'mail_identify_reply' );
-
-			plugin_config_set( 'config_version', 5 );
-		}
-
-		if ( $t_config_version <= 5 )
-		{
-			plugin_config_delete( 'mail_parse_mime' );
-
-			plugin_config_set( 'config_version', 6 );
-		}
-
-		if ( $t_config_version <= 6 )
-		{
-			$t_mailboxes = plugin_config_get( 'mailboxes', array() );
-			$t_indexes = array(
-				'mailbox_enabled' => 'enabled',
-				'mailbox_description' => 'description',
-				'mailbox_type' => 'type',
-				'mailbox_hostname' => 'hostname',
-				'mailbox_encryption' => 'encryption',
-				'mailbox_username' => 'username',
-				'mailbox_password' => 'password',
-				'mailbox_auth_method' => 'auth_method',
-				'mailbox_project_id' => 'project_id',
-				'mailbox_global_category_id' => 'global_category_id',
-				'mailbox_basefolder' => 'basefolder',
-				'mailbox_createfolderstructure' => 'createfolderstructure',
-			);
-
-			foreach ( $t_mailboxes AS $t_key => $t_array )
-			{
-				$t_mailboxes[ $t_key ] = $this->ERP_update_indexes( $t_array, $t_indexes );
-			}
-
-			plugin_config_set( 'mailboxes', $t_mailboxes );
-
-			plugin_config_set( 'config_version', 7 );
-		}
-
-		if ( $t_config_version <= 7 )
-		{
-			$t_mailboxes = plugin_config_get( 'mailboxes', array() );
-
-			foreach ( $t_mailboxes AS $t_key => $t_array )
-			{
-				if ( isset( $t_array[ 'hostname' ] ) )
+				$t_schema = plugin_config_get( 'schema' );
+				$t_reset_schema = plugin_config_get( 'reset_schema' );
+				if ( $t_schema !== -1 && $t_reset_schema === 0 )
 				{
-					$t_hostname = $t_array[ 'hostname' ];
+					plugin_config_set( 'schema', -1 );
+					plugin_config_set( 'reset_schema', 1 );
+				}
 
-					if ( is_array( $t_hostname ) )
+				plugin_config_set( 'config_version', ++$t_config_version );
+
+			case 1:
+				$t_mail_reporter = plugin_config_get( 'mail_reporter', '' );
+
+				if ( strlen( $t_mail_reporter ) > 0 )
+				{
+					$t_mail_reporter_id = user_get_id_by_name( $t_mail_reporter );
+					plugin_config_set( 'mail_reporter_id', $t_mail_reporter_id );
+				}
+
+				plugin_config_delete( 'mail_directory' );
+				plugin_config_delete( 'mail_reporter' );
+				plugin_config_delete( 'mail_additional' );
+				plugin_config_delete( 'random_user_number' );
+				plugin_config_delete( 'mail_bug_priority_default' );
+
+				plugin_config_set( 'config_version', ++$t_config_version );
+
+			case 2:
+				plugin_config_delete( 'mail_cronjob_present' );
+				plugin_config_delete( 'mail_check_timer' );
+				plugin_config_delete( 'mail_last_check' );
+
+				plugin_config_set( 'config_version', ++$t_config_version );
+
+			case 3:
+				$t_mailboxes = plugin_config_get( 'mailboxes', array() );
+				$t_indexes = array(
+					'mailbox_project' => 'mailbox_project_id',
+					'mailbox_global_category' => 'mailbox_global_category_id',
+				);
+
+				foreach ( $t_mailboxes AS $t_key => $t_array )
+				{
+					if ( isset( $t_array[ 'mailbox_hostname' ] ) )
 					{
-						$t_array[ 'hostname' ] = $t_hostname[ 'hostname' ];
-						$t_array[ 'port' ] = $t_hostname[ 'port' ];
+						# Correct the hostname if it is stored in an older format
+						$t_hostname = $t_array[ 'mailbox_hostname' ];
+
+						if ( !is_array( $t_hostname ) )
+						{
+							// ipv6 also uses : so we need to work around that
+							if ( substr_count( $t_hostname, ':' ) === 1 )
+							{
+								$t_hostname = explode( ':', $t_hostname, 2 );
+							}
+							else
+							{
+								$t_hostname = array( $t_hostname );
+							}
+
+							$t_hostname = array(
+								'hostname'  => $t_hostname[ 0 ],
+								'port'      => ( ( isset( $t_hostname[ 1 ] ) ) ? $t_hostname[ 1 ] : '' ),
+							);
+
+							$t_array[ 'mailbox_hostname' ] = $t_hostname;
+						}
 					}
 
-					$t_mailboxes[ $t_key ] = $t_array;
+					$t_mailboxes[ $t_key ] = $this->ERP_update_indexes( $t_array, $t_indexes );
 				}
-			}
 
-			plugin_config_set( 'mailboxes', $t_mailboxes );
-
-			plugin_config_set( 'config_version', 8 );
-		}
-
-		if ( $t_config_version <= 8 )
-		{
-			plugin_config_delete( 'mail_tmp_directory' );
-
-			plugin_config_set( 'config_version', 9 );
-		}
-
-		if ( $t_config_version <= 9 )
-		{
-			$t_mailboxes = plugin_config_get( 'mailboxes', array() );
-			$t_indexes = array(
-				'type' => 'mailbox_type',
-				'basefolder' => 'imap_basefolder',
-				'createfolderstructure' => 'imap_createfolderstructure',
-			);
-
-			foreach ( $t_mailboxes AS $t_key => $t_array )
-			{
-				$t_mailboxes[ $t_key ] = $this->ERP_update_indexes( $t_array, $t_indexes );
-			}
-
-			plugin_config_set( 'mailboxes', $t_mailboxes );
-
-			plugin_config_set( 'config_version', 10 );
-		}
-
-		if ( $t_config_version <= 10 )
-		{
-			plugin_config_delete( 'mail_rule_system' );
-
-			plugin_config_set( 'config_version', 11 );
-		}
-
-		if ( $t_config_version <= 11 )
-		{
-			$t_mailboxes = plugin_config_get( 'mailboxes', array() );
-			$t_indexes = array(
-				'username' => 'erp_username',
-				'password' => 'erp_password',
-			);
-
-			foreach ( $t_mailboxes AS $t_key => $t_array )
-			{
-				$t_mailboxes[ $t_key ] = $this->ERP_update_indexes( $t_array, $t_indexes );
-			}
-
-			plugin_config_set( 'mailboxes', $t_mailboxes );
-
-			plugin_config_delete( 'rules' );
-			plugin_config_delete( 'mail_encoding' );
-
-			plugin_config_set( 'config_version', 12 );
-		}
-
-		if ( $t_config_version <= 12 )
-		{
-			plugin_config_set( 'reset_schema', 1 );
-
-			plugin_config_set( 'config_version', 13 );
-		}
-
-		if ( $t_config_version <= 13 )
-		{
-			plugin_config_delete( 'mail_fetch_max' );
-
-			plugin_config_set( 'config_version', 14 );
-		}
-
-		if ( $t_config_version <= 14 )
-		{
-			$t_mail_reporter_id = plugin_config_get( 'mail_reporter_id', 'Mail' );
-			$t_report_bug_threshold = config_get_global( 'report_bug_threshold' );
-
-			if ( $t_mail_reporter_id !== 'Mail' && user_exists( $t_mail_reporter_id ) )
-			{
-				if ( !access_has_global_level( $t_report_bug_threshold, $t_mail_reporter_id ) )
-				{
-					user_set_field( $t_mail_reporter_id, 'access_level', $t_report_bug_threshold );
-				}
-			}
-
-			plugin_config_set( 'config_version', 15 );
-		}
-
-		if ( $t_config_version <= 15 )
-		{
-			plugin_require_api( 'core/mail_api.php' );
-			ERP_mailbox_api::clean_references_for_deleted_issues();
-
-			plugin_config_set( 'config_version', 16 );
-		}
-
-		if ( $t_config_version <= 16 )
-		{
-			plugin_config_delete( 'mail_strip_signature_delim' );
-			plugin_config_delete( 'mail_remove_replies_after' );
-			plugin_config_delete( 'mail_strip_gmail_style_replies' );
-
-			plugin_config_set( 'config_version', 17 );
-		}
-
-		if ( $t_config_version <= 17 )
-		{
-			$t_query = 'DELETE FROM ' . plugin_table( 'msgids' ) . ' WHERE msg_id NOT LIKE ' . db_param();
-			db_query( $t_query, array( '<%>' ) );
-			$t_query = 'DELETE FROM ' . plugin_table( 'msgids' ) . ' WHERE msg_id LIKE ' . db_param();
-			db_query( $t_query, array( '<% %>' ) );
-
-			plugin_config_set( 'config_version', 18 );
-		}
-
-		if ( $t_config_version <= 18 )
-		{
-			$t_mailboxes = plugin_config_get( 'mailboxes', array() );
-
-			$t_updated = FALSE;
-			foreach ( $t_mailboxes AS $t_key => $t_array )
-			{
-				if (
-					isset( $t_array[ 'mailbox_type' ], $t_array[ 'auth_method' ] ) &&
-					$t_array[ 'mailbox_type' ] === 'IMAP' &&
-					$t_array[ 'auth_method' ] === 'USER'
-				)
-				{
-					$t_mailboxes[ $t_key ][ 'auth_method' ] = 'PLAIN';
-					$t_updated = TRUE;
-				}
-			}
-
-			if ( $t_updated )
-			{
 				plugin_config_set( 'mailboxes', $t_mailboxes );
-			}
 
-			plugin_config_set( 'config_version', 19 );
-		}
+				plugin_config_set( 'config_version', ++$t_config_version );
 
-		if ( $t_config_version <= 19 )
-		{
-			$t_query = 'DELETE FROM ' . plugin_table( 'msgids' ) . ' WHERE msg_id LIKE ' . db_param();
-			db_query( $t_query, array( '<%>,<%>' ) );
+			case 4:
+				$t_mail_remove_mantis_email = plugin_config_get( 'mail_remove_mantis_email', -1 );
+				$t_mail_identify_reply      = plugin_config_get( 'mail_identify_reply', $t_mail_remove_mantis_email );
 
-			plugin_config_set( 'config_version', 20 );
+				if ( $t_mail_remove_mantis_email !== -1 && $t_mail_identify_reply !== $t_mail_remove_mantis_email )
+				{
+					plugin_config_set( 'mail_remove_mantis_email', $t_mail_identify_reply );
+				}
+
+				plugin_config_delete( 'mail_identify_reply' );
+
+				plugin_config_set( 'config_version', ++$t_config_version );
+
+			case 5:
+				plugin_config_delete( 'mail_parse_mime' );
+
+				plugin_config_set( 'config_version', ++$t_config_version );
+
+			case 6:
+				$t_mailboxes = plugin_config_get( 'mailboxes', array() );
+				$t_indexes = array(
+					'mailbox_enabled' => 'enabled',
+					'mailbox_description' => 'description',
+					'mailbox_type' => 'type',
+					'mailbox_hostname' => 'hostname',
+					'mailbox_encryption' => 'encryption',
+					'mailbox_username' => 'username',
+					'mailbox_password' => 'password',
+					'mailbox_auth_method' => 'auth_method',
+					'mailbox_project_id' => 'project_id',
+					'mailbox_global_category_id' => 'global_category_id',
+					'mailbox_basefolder' => 'basefolder',
+					'mailbox_createfolderstructure' => 'createfolderstructure',
+				);
+
+				foreach ( $t_mailboxes AS $t_key => $t_array )
+				{
+					$t_mailboxes[ $t_key ] = $this->ERP_update_indexes( $t_array, $t_indexes );
+				}
+
+				plugin_config_set( 'mailboxes', $t_mailboxes );
+
+				plugin_config_set( 'config_version', ++$t_config_version );
+
+			case 7:
+				$t_mailboxes = plugin_config_get( 'mailboxes', array() );
+
+				foreach ( $t_mailboxes AS $t_key => $t_array )
+				{
+					if ( isset( $t_array[ 'hostname' ] ) )
+					{
+						$t_hostname = $t_array[ 'hostname' ];
+
+						if ( is_array( $t_hostname ) )
+						{
+							$t_array[ 'hostname' ] = $t_hostname[ 'hostname' ];
+							$t_array[ 'port' ] = $t_hostname[ 'port' ];
+						}
+
+						$t_mailboxes[ $t_key ] = $t_array;
+					}
+				}
+
+				plugin_config_set( 'mailboxes', $t_mailboxes );
+
+				plugin_config_set( 'config_version', ++$t_config_version );
+
+			case 8:
+				plugin_config_delete( 'mail_tmp_directory' );
+
+				plugin_config_set( 'config_version', ++$t_config_version );
+
+			case 9:
+				$t_mailboxes = plugin_config_get( 'mailboxes', array() );
+				$t_indexes = array(
+					'type' => 'mailbox_type',
+					'basefolder' => 'imap_basefolder',
+					'createfolderstructure' => 'imap_createfolderstructure',
+				);
+
+				foreach ( $t_mailboxes AS $t_key => $t_array )
+				{
+					$t_mailboxes[ $t_key ] = $this->ERP_update_indexes( $t_array, $t_indexes );
+				}
+
+				plugin_config_set( 'mailboxes', $t_mailboxes );
+
+				plugin_config_set( 'config_version', ++$t_config_version );
+
+			case 10:
+				plugin_config_delete( 'mail_rule_system' );
+
+				plugin_config_set( 'config_version', ++$t_config_version );
+
+			case 11:
+				$t_mailboxes = plugin_config_get( 'mailboxes', array() );
+				$t_indexes = array(
+					'username' => 'erp_username',
+					'password' => 'erp_password',
+				);
+
+				foreach ( $t_mailboxes AS $t_key => $t_array )
+				{
+					$t_mailboxes[ $t_key ] = $this->ERP_update_indexes( $t_array, $t_indexes );
+				}
+
+				plugin_config_set( 'mailboxes', $t_mailboxes );
+
+				plugin_config_delete( 'rules' );
+				plugin_config_delete( 'mail_encoding' );
+
+				plugin_config_set( 'config_version', ++$t_config_version );
+
+			case 12:
+				plugin_config_set( 'reset_schema', 1 );
+
+				plugin_config_set( 'config_version', ++$t_config_version );
+
+			case 13:
+				plugin_config_delete( 'mail_fetch_max' );
+
+				plugin_config_set( 'config_version', ++$t_config_version );
+
+			case 14:
+				$t_mail_reporter_id = plugin_config_get( 'mail_reporter_id', 'Mail' );
+				$t_report_bug_threshold = config_get( 'report_bug_threshold', NULL, ALL_USERS, ALL_PROJECTS );
+
+				if ( $t_mail_reporter_id !== 'Mail' && user_exists( $t_mail_reporter_id ) )
+				{
+					if ( !access_has_global_level( $t_report_bug_threshold, $t_mail_reporter_id ) )
+					{
+						user_set_field( $t_mail_reporter_id, 'access_level', $t_report_bug_threshold );
+					}
+				}
+
+				plugin_config_set( 'config_version', ++$t_config_version );
+
+			case 15:
+				plugin_require_api( 'core/mail_api.php' );
+				ERP_mailbox_api::clean_references_for_deleted_issues();
+
+				plugin_config_set( 'config_version', ++$t_config_version );
+
+			case 16:
+				plugin_config_delete( 'mail_strip_signature_delim' );
+				plugin_config_delete( 'mail_remove_replies_after' );
+				plugin_config_delete( 'mail_strip_gmail_style_replies' );
+
+				plugin_config_set( 'config_version', ++$t_config_version );
+
+			case 17:
+				$t_query = 'DELETE FROM ' . plugin_table( 'msgids' ) . ' WHERE msg_id NOT LIKE ' . db_param();
+				db_query( $t_query, array( '<%>' ) );
+				$t_query = 'DELETE FROM ' . plugin_table( 'msgids' ) . ' WHERE msg_id LIKE ' . db_param();
+				db_query( $t_query, array( '<% %>' ) );
+
+				plugin_config_set( 'config_version', ++$t_config_version );
+
+			case 18:
+				$t_mailboxes = plugin_config_get( 'mailboxes', array() );
+
+				$t_updated = FALSE;
+				foreach ( $t_mailboxes AS $t_key => $t_array )
+				{
+					if (
+						isset( $t_array[ 'mailbox_type' ], $t_array[ 'auth_method' ] ) &&
+						$t_array[ 'mailbox_type' ] === 'IMAP' &&
+						$t_array[ 'auth_method' ] === 'USER'
+					)
+					{
+						$t_mailboxes[ $t_key ][ 'auth_method' ] = 'PLAIN';
+						$t_updated = TRUE;
+					}
+				}
+
+				if ( $t_updated )
+				{
+					plugin_config_set( 'mailboxes', $t_mailboxes );
+				}
+
+				plugin_config_set( 'config_version', ++$t_config_version );
+
+			case 19:
+				$t_query = 'DELETE FROM ' . plugin_table( 'msgids' ) . ' WHERE msg_id LIKE ' . db_param();
+				db_query( $t_query, array( '<%>,<%>' ) );
+
+				plugin_config_set( 'config_version', ++$t_config_version );
+
+			default:
+			    break;
 		}
 	}
 
