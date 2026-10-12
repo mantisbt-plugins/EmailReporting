@@ -1101,6 +1101,33 @@ function ERP_custom_function_print_global_category_option_list( $p_sel_value )
 }
 
 # --------------------
+# output a option list with all users who have at least global handle bug rights
+function ERP_custom_function_print_handler_option_list( $p_sel_value )
+{
+	$t_user_ids = (array) $p_sel_value;
+
+	if ( !empty( $t_user_ids ) )
+	{
+		foreach ( $t_user_ids AS $t_single_user_id )
+		{
+			$t_user_exists = user_exists( $t_single_user_id );
+
+			if ( $t_user_exists )
+			{
+				$t_user_get_accessible_projects = user_get_accessible_projects( $t_single_user_id );
+			}
+
+			if ( !$t_user_exists || empty( $t_user_get_accessible_projects ) )
+			{
+				echo '<option value="' . $t_single_user_id . '" selected class="red negative">' . plugin_lang_get( 'missing_user', 'EmailReporting' ) . ': ' . $t_single_user_id . '</option>';
+			}
+		}
+	}
+
+	print_user_option_list( $t_user_ids, ALL_PROJECTS, config_get( 'handle_bug_threshold' ) );
+}
+
+# --------------------
 # output a option list with all priorities in the MantisBT system
 function ERP_custom_function_print_priority_option_list( $p_sel_value )
 {
@@ -1167,6 +1194,13 @@ function ERP_custom_function_print_reporter_option_list( $p_sel_value )
 	}
 
 	print_user_option_list( $t_user_ids, ALL_PROJECTS );
+}
+
+# --------------------
+# output a option list with all priorities in the MantisBT system
+function ERP_custom_function_print_reproducibility_option_list( $p_sel_value )
+{
+	print_enum_string_option_list( 'reproducibility', (array) $p_sel_value );
 }
 
 # --------------------
