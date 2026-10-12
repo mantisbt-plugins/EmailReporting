@@ -108,6 +108,7 @@ ERP_output_config_option( 'cond_issue_creation_method', 'dropdown_multiselect', 
 ERP_output_config_option( 'cond_mailbox', 'dropdown_multiselect', $t_rule, 'print_descriptions_option_list', plugin_config_get( 'mailboxes' ) );
 ERP_output_config_option( 'cond_issue_issue_issuenote', 'dropdown_multiselect', $t_rule, 'print_descriptions_option_list', array( 'newnote', 'newissue', 'newattachment' ) );
 ERP_output_config_option( 'cond_issue_reporter', 'dropdown_multiselect', $t_rule, 'print_reporter_option_list' );
+ERP_output_config_option( 'cond_issue_handler', 'dropdown_multiselect', $t_rule, 'print_handler_option_list' );
 ERP_output_config_option( 'cond_email_from', 'string', $t_rule );
 ERP_output_config_option( 'cond_email_to', 'string', $t_rule );
 ERP_output_config_option( 'cond_issue_sendertype', 'dropdown_multiselect', $t_rule, 'print_descriptions_option_list', array( 'known_reporter', 'unknown_sender', 'registered_user', 'non_mantis_user' ) );
@@ -125,6 +126,7 @@ ERP_output_config_option( 'act_issue_severity', 'dropdown_any', $t_rule, 'print_
 ERP_output_config_option( 'act_issue_status', 'dropdown_any', $t_rule, 'print_status_option_list' );
 ERP_output_config_option( 'act_issue_view_state', 'dropdown_any', $t_rule, 'print_view_state_option_list' );
 ERP_output_config_option( 'act_issue_reproducibility', 'dropdown_any', $t_rule, 'print_reproducibility_option_list' );
+ERP_output_config_option( 'act_issue_reporter', 'dropdown_any', $t_rule, 'print_reporter_option_list' );
 ERP_output_config_option( 'act_issue_handler', 'dropdown_any', $t_rule, 'print_handler_option_list' );
 ERP_output_config_option( 'act_issue_duedate', 'custom', $t_rule, 'print_duedate_option' );
 ERP_output_config_option( 'act_issue_priority', 'dropdown_any', $t_rule, 'print_priority_option_list' );
