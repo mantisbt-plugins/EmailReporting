@@ -75,9 +75,9 @@ Plus any dependencies these packages require.
 Optional libraries
 ------------------
 These are located in a second composer repository in /EmailReporting/core/Mail/
-* [directorytree/imapengine](https://packagist.org/packages/guzzlehttp/guzzle)
+* [directorytree/imapengine](https://packagist.org/packages/directorytree/imapengine)
 * [horde/imap_client](https://packagist.org/packages/horde/imap_client)
-* [webklex/php-imap](https://packagist.org/packages/firebase/php-jwt)
+* [webklex/php-imap](https://packagist.org/packages/webklex/php-imap)
 * [zetacomponents/mail](https://packagist.org/packages/zetacomponents/mail)
 
 Plus any dependencies these packages require.
