@@ -297,16 +297,17 @@ class ERP_IMAP_Transport extends ERP_Transport
 		$this->_mailserver = NULL;
 
 		// Let's make sure PLAIN auth works without issues
-		if ( $p_mailbox_auth_method === 'PLAIN' )
+		$t_mailbox_auth_method = $p_mailbox_auth_method;
+		if ( $t_mailbox_auth_method === 'PLAIN' )
 		{
-			$p_mailbox_auth_method = 'LOGIN';
+			$t_mailbox_auth_method = 'LOGIN';
 		}
 
 		try
 		{
 			$this->_mailserver = new \ezcMailImapTransport( $this->_hostname, $this->_port, $this->_options );
 
-			$this->_mailserver->authenticate( $p_mailbox_username, $p_mailbox_password, $p_mailbox_auth_method );
+			$this->_mailserver->authenticate( $p_mailbox_username, $p_mailbox_password, $t_mailbox_auth_method );
 
 			$t_selectresult = $this->selectMailbox( 'INBOX' );
 
