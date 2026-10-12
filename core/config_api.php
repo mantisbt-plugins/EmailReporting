@@ -812,7 +812,7 @@ function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, $p_fun
 
 # --------------------
 # output all custom fields
-function ERP_custom_function_print_custom_fields( $p_name, $p_input_name, $p_sel_value )
+function ERP_custom_function_print_custom_fields_options( $p_name, $p_input_name, $p_sel_value )
 {
 	# Custom Fields
 	$t_custom_fields = custom_field_get_ids();
@@ -965,7 +965,7 @@ function ERP_custom_function_print_descriptions_option_list( $p_sel_value, $p_op
 
 # --------------------
 # Output a duedate adjuster
-function ERP_custom_function_print_duedate( $p_name, $p_input_name, $p_sel_value )
+function ERP_custom_function_print_duedate_option( $p_name, $p_input_name, $p_sel_value )
 {
 	if ( !is_array( $p_sel_value ) )
 	{

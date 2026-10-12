@@ -124,12 +124,12 @@ ERP_output_config_option( 'act_issue_category', 'dropdown_any', $t_rule, 'print_
 ERP_output_config_option( 'act_issue_severity', 'dropdown_any', $t_rule, 'print_severity_option_list' );
 ERP_output_config_option( 'act_issue_status', 'dropdown_any', $t_rule, 'print_status_option_list' );
 ERP_output_config_option( 'act_issue_view_state', 'dropdown_any', $t_rule, 'print_view_state_option_list' );
-ERP_output_config_option( 'act_issue_reproducibility', 'dropdown_any', $t_rule, 'print_reproducibility_list' );
+ERP_output_config_option( 'act_issue_reproducibility', 'dropdown_any', $t_rule, 'print_reproducibility_option_list' );
 ERP_output_config_option( 'act_issue_handler', 'dropdown_any', $t_rule, 'print_handler_option_list' );
-ERP_output_config_option( 'act_issue_duedate', 'custom', $t_rule, 'print_duedate' );
+ERP_output_config_option( 'act_issue_duedate', 'custom', $t_rule, 'print_duedate_option' );
 ERP_output_config_option( 'act_issue_priority', 'dropdown_any', $t_rule, 'print_priority_option_list' );
 ERP_output_config_option( 'act_issue_tag', 'dropdown_multiselect', $t_rule, 'print_tag_option_list' );
-ERP_output_config_option( 'act_issue_custom_field', 'custom', $t_rule, 'print_custom_fields' );
+ERP_output_config_option( 'act_issue_custom_field', 'custom', $t_rule, 'print_custom_fields_options' );
 ERP_output_table_close();
 
 ERP_output_table_open( 'rule_exceptions' );
