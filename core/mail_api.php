@@ -28,7 +28,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 	private $_test_only = FALSE;
 	private $_mailbox_starttime = NULL;
 
-	public $_mailbox = array( 'description' => 'INITIALIZATION PHASE' );
+	private $_mailbox = array( 'description' => 'INITIALIZATION PHASE' );
 
 	private $_mail_api = NULL;
 
@@ -198,6 +198,13 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 	}
 
 	# --------------------
+	# Return the current mailbox being processed
+	public function get_mailbox()
+	{
+		return( $this->_mailbox );
+	}	
+
+	# --------------------
 	# process all mails for an mailbox
 	#  return a boolean for whether the mailbox was successfully processed
 	public function process_mailbox(
@@ -220,7 +227,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 			return( FALSE );
 		}
 
-		if ( $this->_mailbox[ 'enabled' ] == FALSE )
+		if ( $this->_mailbox[ 'enabled' ] == OFF )
 		{
 			$this->custom_error( 'Mailbox disabled' );
 			return( FALSE );
@@ -1135,7 +1142,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 				# Validate the custom fields before adding the bug.
 				$t_related_custom_field_ids = custom_field_get_linked_ids( $t_bug_data->project_id );
 /*
-				foreach( $t_related_custom_field_ids as $t_id ) {
+				foreach( $t_related_custom_field_ids AS $t_id ) {
 					$t_def = custom_field_get_definition( $t_id );
 
 					# Produce an error if the field is required but wasn't posted
@@ -1169,7 +1176,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 				// - Handling of non default values not working
 				// - Error handling not working
 				# Handle custom field submission
-				foreach ( $t_related_custom_field_ids as $t_id )
+				foreach ( $t_related_custom_field_ids AS $t_id )
 				{
 					# Do not set custom field value if user has no write access
 					if ( !custom_field_has_write_access( $t_id, $t_bug_id ) )
@@ -1722,7 +1729,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 			$t_new_references = array_diff( array_unique( $p_ref_ids ), $t_existing_refs );
 
 			// Add the references ids to the table for future reference
-			foreach( $t_new_references as $t_ref )
+			foreach( $t_new_references AS $t_ref )
 			{
 				if ( !is_blank( $t_ref ) )
 				{
@@ -1977,7 +1984,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 		{
 			$t_emails = array_merge( $p_email[ 'To' ], $p_email[ 'Cc' ] );
 
-			foreach( $t_emails as $t_email )
+			foreach( $t_emails AS $t_email )
 			{
 				$t_user_id = $this->get_userid_from_email( $t_email );
 
@@ -2062,7 +2069,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 			}
 
 			$t_data = array();
-			foreach( $t_search_attrs as $t_attr ) {
+			foreach( $t_search_attrs AS $t_attr ) {
 				# Suppress error to avoid Warning in case an invalid attribute was specified
 				$t_value = @ldap_get_values( $t_ds, $t_entry, $t_attr );
 				if( $t_value === FALSE ) {

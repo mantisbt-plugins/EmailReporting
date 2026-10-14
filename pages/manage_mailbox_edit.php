@@ -12,28 +12,28 @@ $t_mailboxes = plugin_config_get( 'mailboxes' );
 if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailbox_action === 'edit' || $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test' ) && $f_select_mailbox >= 0 ) )
 {
 	$t_mailbox = array(
-		'enabled'                => gpc_get_int( 'enabled', ON ),
+		'enabled'                => gpc_get_int( 'enabled', OFF ),
 		'description'            => gpc_get_string( 'description', '' ),
-		'mailbox_type'           => gpc_get_string( 'mailbox_type' ),
+		'mailbox_type'           => gpc_get_string( 'mailbox_type', 'POP3' ),
 		'hostname'               => gpc_get_string( 'hostname', '' ),
 		'port'                   => gpc_get_string( 'port', '' ),
-		'encryption'             => gpc_get_string( 'encryption' ),
+		'encryption'             => gpc_get_string( 'encryption', 'None' ),
 		'ssl_cert_verify'        => gpc_get_int( 'ssl_cert_verify', ON ),
-		'auth_method'            => gpc_get_string( 'auth_method' ),
+		'auth_method'            => gpc_get_string( 'auth_method', 'USER' ),
 	);
 
 	$t_isOAuth = $t_mailbox[ 'auth_method' ] === 'XOAUTH2';
 	if ( !$t_isOAuth )
 	{
 		$t_mailbox += array(
-			'erp_username'           => gpc_get_string( 'erp_username' ),
-			'erp_password'           => base64_encode( gpc_get_string( 'erp_password' ) ),
+			'erp_username'           => gpc_get_string( 'erp_username', '' ),
+			'erp_password'           => base64_encode( gpc_get_string( 'erp_password', '' ) ),
 		);
 	}
 
 	if ( $t_isOAuth )
 	{
-		$t_mailbox[ 'oauth_provider' ] = gpc_get_string( 'oauth_provider' );
+		$t_mailbox[ 'oauth_provider' ] = gpc_get_string( 'oauth_provider', '' );
 		$t_isGoogle = $t_mailbox[ 'oauth_provider' ] === ERP_PROVIDER_GOOGLE;
 		$t_isMicrosoft = $t_mailbox[ 'oauth_provider' ] === ERP_PROVIDER_MICROSOFT;
 		if ( $t_isGoogle )
@@ -46,8 +46,8 @@ if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailb
 			}
 
 			$t_mailbox += array(
-				'g_mailbox'                   => gpc_get_string( 'g_mailbox' ),
-				'g_serviceAccountCredentials' => ERP_prepare_directory_string( gpc_get_string( 'g_serviceAccountCredentials' ) ),
+				'g_mailbox'                   => gpc_get_string( 'g_mailbox', '' ),
+				'g_serviceAccountCredentials' => ERP_prepare_directory_string( gpc_get_string( 'g_serviceAccountCredentials', '' ) ),
 			);
 		}
 		elseif ( $t_isMicrosoft )
@@ -60,9 +60,9 @@ if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailb
 			}
 
 			$t_mailbox += array(
-				'm_mailbox'           => gpc_get_string( 'm_mailbox' ),
-				'm_tenantId'          => gpc_get_string( 'm_tenantId' ),
-				'm_clientId'          => gpc_get_string( 'm_clientId' ),
+				'm_mailbox'           => gpc_get_string( 'm_mailbox', '' ),
+				'm_tenantId'          => gpc_get_string( 'm_tenantId', '' ),
+				'm_clientId'          => gpc_get_string( 'm_clientId', '' ),
 				'm_clientSecret'      => base64_encode( gpc_get_string( 'm_clientSecret', '' ) ),
 				'm_pfxPath'           => ERP_prepare_directory_string( gpc_get_string( 'm_pfxPath', '' ) ),
 				'm_pfxPassword'       => base64_encode( gpc_get_string( 'm_pfxPassword', '' ) ),
@@ -75,13 +75,13 @@ if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailb
 	{
 		$t_mailbox += array(
 			'imap_basefolder'               => ERP_prepare_directory_string( gpc_get_string( 'imap_basefolder', '' ), TRUE ),
-			'imap_createfolderstructure'    => gpc_get_int( 'imap_createfolderstructure' ),
+			'imap_createfolderstructure'    => gpc_get_int( 'imap_createfolderstructure', OFF ),
 		);
 	}
 
 	$t_mailbox += array(
-		'project_id'             => gpc_get_int( 'project_id' ),
-		'global_category_id'     => gpc_get_int( 'global_category_id' ),
+		'project_id'             => gpc_get_int( 'project_id', 0 ),
+		'global_category_id'     => gpc_get_int( 'global_category_id', 0 ),
 //		'link_rules'             => gpc_get_int_array( 'link_rules', array() ),
 	);
 
@@ -126,7 +126,7 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 	$t_message = '';
 	$t_message .= plugin_lang_get( ( ( $t_is_error ) ? 'test_failure' : 'test_success' ) ) . '<br /><br />';
 
-	$t_mailbox = $t_mailbox_api->_mailbox;
+	$t_mailbox = $t_mailbox_api->get_mailbox();
 	foreach ( $t_mailbox AS $t_key => $t_value )
 	{
 		If ( is_array( $t_value ) )
