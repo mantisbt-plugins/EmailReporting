@@ -328,9 +328,11 @@ class EmailReportingPlugin extends MantisPlugin
 			'EVENT_MENU_MANAGE' => 'ERP_manage_emailreporting_menu',
 			'EVENT_CORE_READY'  => 'ERP_core_ready',
 			'EVENT_BUG_DELETED' => 'ERP_issue_deleted',
+			'EVENT_BUGNOTE_ADD' => 'ERP_rule_bugnote',
+			'EVENT_REPORT_BUG'  => 'ERP_rule_bug',
 		);
 
-		return $hooks;
+		return( $hooks );
 	}
 
 	/**
@@ -339,10 +341,10 @@ class EmailReportingPlugin extends MantisPlugin
 	function ERP_manage_emailreporting_menu( )
 	{
 		if( !access_has_project_level( config_get( 'manage_plugin_threshold' ) ) ) {
-			return array();
+			return( array() );
 		}
 
-		return array( '<a href="' . plugin_page( 'manage_mailbox' ) . '">' . plugin_lang_get( 'plugin_title' ) . '</a>', );
+		return( array( '<a href="' . plugin_page( 'manage_mailbox' ) . '">' . plugin_lang_get( 'plugin_title' ) . '</a>', ) );
 	}
 
 	/*
@@ -719,6 +721,26 @@ class EmailReportingPlugin extends MantisPlugin
 	{
 		plugin_require_api( 'core/mail_api.php' );
 		ERP_mailbox_api::delete_references_for_bug_id( $p_bug_id );
+	}
+
+	/*
+	 * Process rule for new bugnote
+	 */
+	function ERP_rule_bugnote( $p_event, $p_bug_id, $p_bugnote_id, $p_files_info = FALSE )
+	{
+		plugin_require_api( 'core/rule_api.php' );
+
+		$t_rule_api = new ERP_rule_api( $p_event, $p_bug_id, $p_bugnote_id );
+	}
+
+	/*
+	 * Process rule for new bug
+	 */
+	function ERP_rule_bug( $p_event, $p_bugdata, $p_bug_id )
+	{
+		plugin_require_api( 'core/rule_api.php' );
+
+		$t_rule_api = new ERP_rule_api( $p_event, $p_bug_id );
 	}
 
 }
