@@ -326,21 +326,22 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 
 	# --------------------
 	# Show an error
-	#  set $this->result to an array with the error and show it when not testing
 	private function custom_error( $p_error_text, $p_is_error = TRUE, $p_location = NULL )
 	{
-		$t_error_text = 'Message: ' . $p_error_text . "\n";
+		$t_error_text = ( ( $p_location !== NULL ) ? 'Location: ' . $p_location . ".\n" : '' ) .
+			'Message: ' . $p_error_text;
 
 		if ( $p_is_error === TRUE )
 		{
-			$this->setError( ( ( $p_location !== NULL ) ? 'Location: ' . $p_location . ".\n" : NULL ) . $t_error_text );
+			$this->setError( $t_error_text );
 		}
 
 		if ( !$this->_test_only )
 		{
-			echo 'Mailbox: ' . $this->_mailbox[ 'description' ] . "\n" .
-				( ( $p_location !== NULL ) ? 'Location: ' . $p_location . "\n" : '' ) .
-				$t_error_text . "\n\n";
+			$t_mailbox_description = 'Mailbox: ' . $this->_mailbox[ 'description' ] . "\n";
+			echo $t_mailbox_description . $t_error_text . "\n\n\n";
+
+			plugin_log_event( $t_mailbox_description . $t_error_text );
 		}
 	}
 

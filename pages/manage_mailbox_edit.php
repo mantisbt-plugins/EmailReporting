@@ -148,7 +148,7 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 
 	while ( $t_mailbox_api->hasError() )
 	{
-		$t_message .= '<br />' . nl2br( $t_mailbox_api->getError() );
+		$t_message .= '<br />' . nl2br( $t_mailbox_api->getError() ) . '<br />';
 	}
 
 	if ( ( $t_is_error ) )
