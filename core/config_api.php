@@ -277,17 +277,13 @@ function ERP_print_menu( $p_page = '' )
 		'plugin_lang_get' => array(
 			'manage_config',
 			'manage_mailbox',
+			'manage_rule',
 		),
 		'lang_get' => array(
 			'documentation_link'    => 'view_readme',
 			'changelog_link'        => 'view_changelog',
 		),
 	);
-
-	if ( plugin_config_get( 'mail_rule_system' ) == TRUE )
-	{
-		$t_pages[ 'plugin_lang_get' ] = array_merge( $t_pages[ 'plugin_lang_get' ], array( 'manage_rule' ) );
-	}
 
 	if( access_has_global_level( config_get( 'manage_plugin_threshold' ) ) )
 	{
