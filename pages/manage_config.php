@@ -121,7 +121,7 @@ ERP_output_table_open( 'feature_options' );
 ERP_output_config_option( 'mail_add_bug_reports', 'boolean' );
 ERP_output_config_option( 'mail_add_bugnotes', 'boolean' );
 ERP_output_config_option( 'mail_reopen_bugs', 'boolean' );
-ERP_output_config_option( 'mail_rule_system', 'disabled' ); //disabled as the rule system is not ready for use
+ERP_output_config_option( 'mail_rule_system', 'boolean' );
 ERP_output_config_option( 'mail_parse_html', 'boolean' );
 ERP_output_config_option( 'mail_email_receive_own', 'boolean' );
 ERP_output_config_option( 'mail_save_from', 'boolean' );

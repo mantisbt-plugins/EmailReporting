@@ -984,7 +984,7 @@ function ERP_custom_function_print_duedate_option( $p_name, $p_input_name, $p_se
 ?>
 	</td>
 	<td colspan="2" class="width-50">
-		<select id="<?php echo $p_input_name ?>_modifier" class="input-sm" <?php echo helper_get_tab_index() ?> name="<?php echo $p_input_name . '[modifier]'; ?>">
+		<select id="<?php echo $p_input_name ?>_modifier" class="input-sm" <?php echo helper_get_tab_index() ?> name="<?php echo $p_input_name . '_modifier'; ?>">
 <?php
 	$t_options = array( '', 'current', 'now' );
 	foreach ( $t_options AS $t_option )
@@ -996,7 +996,7 @@ function ERP_custom_function_print_duedate_option( $p_name, $p_input_name, $p_se
 ?>
 		</select>
 		+
-		<input id="<?php echo $p_input_name ?>_amount" class="input-sm" <?php echo helper_get_tab_index() ?> type="text" size="20" maxlength="10" name="<?php echo $p_input_name ?>[amount]" value="<?php echo string_attribute( $t_sel_value[ 'amount' ] ) ?>"/>
+		<input id="<?php echo $p_input_name ?>_amount" class="input-sm" <?php echo helper_get_tab_index() ?> type="text" size="20" maxlength="10" name="<?php echo $p_input_name ?>_amount" value="<?php echo string_attribute( $t_sel_value[ 'amount' ] ) ?>"/>
 	</td>
 </tr>
 <?php

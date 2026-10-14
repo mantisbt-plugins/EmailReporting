@@ -100,7 +100,6 @@ $s_plugin_EmailReporting_relaxed = 'Locker';
 
 $s_plugin_EmailReporting_newnote = 'Neue Notiz';
 $s_plugin_EmailReporting_newissue = 'Neues Ticket';
-$s_plugin_EmailReporting_newattachment = 'Neuer Anhang';
 
 $s_plugin_EmailReporting_name = 'Name';
 $s_plugin_EmailReporting_full_from = 'Komplette "From" Adresse';
@@ -170,20 +169,21 @@ $s_plugin_EmailReporting_rule_wildcards = 'Platzhalter';
 $s_plugin_EmailReporting_rule_wildcards_help = '- Charaktere für Platzhalter: * ?
 - Falls keine Platzhalter verwendet werden, wird ein exakter Abgleich angestrebt';
 
-$s_plugin_EmailReporting_rule_conditions_help = '- Unselect multiselect items by using the ctrl key';
+$s_plugin_EmailReporting_rule_conditions_help = '- Mehrfachauswahl durch Drücken der Strg-Taste aufheben
+- Wenn keine Elemente ausgewählt oder ein Wert leer gelassen wird, wird die Bedingung ignoriert.';
 
-$s_plugin_EmailReporting_rule_actions_help = '- "[any]" bedeuetet, die Aktion wird ignoriert
+$s_plugin_EmailReporting_rule_actions_help = '- "[any]" oder ein leerer Wert bedeutet, dass die betreffende Aktion ignoriert wird.
 - Benutzerdefinierte Felder, die keinem Projekt zugeordnet sind, dem das gerade erstellte Ticket angehört, werden ignoriert
 - Auswahllisten in benutzerdefinierten Feldern sollten einen leeren Listeneintrag enthalten. Ansonsten wird der Standardwert des Feldes jedes Mal zugewiesen, wenn die spezifizierten Konditionen zutreffen.
-- Unselect multiselect items by using the ctrl key';
+- Mehrfachauswahl durch Drücken der Strg-Taste aufheben';
 
-$s_plugin_EmailReporting_rule_exceptions_help = 'NULL';
+$s_plugin_EmailReporting_rule_exceptions_help = '';
 
 $s_plugin_EmailReporting_add_note_actions = 'Füge eine private Notiz mit den durchgeführten Aktionen hinzu.';
 
-$s_plugin_EmailReporting_cond_issue_creation_method = 'Methode zur Ticketerstellung';
+$s_plugin_EmailReporting_cond_issue_creation_source = 'Quelle der Problemerstellung';
 $s_plugin_EmailReporting_cond_mailbox = 'Zur Mailbox hinzufügen';
-$s_plugin_EmailReporting_cond_issue_issue_issuenote = 'Neues Ticket und/oder Notiz hinzufügen';
+$s_plugin_EmailReporting_cond_issue_bug_bugnote = 'Neues Ticket und/oder Notiz hinzufügen';
 $s_plugin_EmailReporting_cond_issue_reporter = 'Problemreporter';
 $s_plugin_EmailReporting_cond_issue_handler = 'Problembearbeiter';
 $s_plugin_EmailReporting_cond_email_from = 'E-Mail-Adresse von (ERP)';
@@ -193,8 +193,9 @@ $s_plugin_EmailReporting_cond_issue_project = 'Projekt';
 $s_plugin_EmailReporting_cond_issue_category = 'Kategorie';
 $s_plugin_EmailReporting_cond_issue_priority = 'Priorität';
 $s_plugin_EmailReporting_cond_issue_summary = 'Zusammenfassung';
-$s_plugin_EmailReporting_cond_issue_description = 'Beschreibung';
-$s_plugin_EmailReporting_cond_issue_attachments = 'Anhänge zur Ausgabe';
+$s_plugin_EmailReporting_cond_issuenote_description = 'Problem-/Hinweisbeschreibung';
+$s_plugin_EmailReporting_cond_issuenote_attachments = 'Anhänge zu Problemen/Notizen';
+$s_plugin_EmailReporting_cond_issuenote_attachment_filename = 'Dateiname der angehängten Problem-/Notizdatei';
 
 $s_plugin_EmailReporting_act_issue_category = 'Kategorie aktualisieren';
 $s_plugin_EmailReporting_act_issue_severity = 'Aktualisierungsschweregrad';
@@ -206,9 +207,9 @@ $s_plugin_EmailReporting_act_issue_handler = 'Aktualisierungshandler';
 $s_plugin_EmailReporting_act_issue_duedate = 'Fälligkeitsdatum aktualisieren';
 $s_plugin_EmailReporting_act_issue_priority = 'Aktualisierungspriorität';
 $s_plugin_EmailReporting_act_issue_tag = 'Tag hinzufügen';
-$s_plugin_EmailReporting_act_issue_custom_field = 'Benutzerdefiniertes Feld aktualisieren';
+$s_plugin_EmailReporting_act_issue_custom_fields = 'Benutzerdefiniertes Feld aktualisieren';
 
 $s_plugin_EmailReporting_excep_issue_from = 'E-Mail-Adresse von (ERP)';
 $s_plugin_EmailReporting_excep_issue_summary = 'Zusammenfassung';
-$s_plugin_EmailReporting_excep_issue_description = 'Beschreibung';
-$s_plugin_EmailReporting_excep_issue_attachments = 'Anhänge zur Ausgabe';
+$s_plugin_EmailReporting_excep_issuenote_description = 'Problem-/Hinweisbeschreibung';
+$s_plugin_EmailReporting_excep_issuenote_attachment_filename = 'Dateiname der angehängten Problem-/Notizdatei';

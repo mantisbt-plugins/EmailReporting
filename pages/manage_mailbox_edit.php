@@ -82,7 +82,6 @@ if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailb
 	$t_mailbox += array(
 		'project_id'             => gpc_get_int( 'project_id', 0 ),
 		'global_category_id'     => gpc_get_int( 'global_category_id', 0 ),
-//		'link_rules'             => gpc_get_int_array( 'link_rules', array() ),
 	);
 
 	$t_plugin_content = gpc_get_string_array( 'plugin_content', array() );

@@ -20,6 +20,7 @@ $f_select_mailbox = ( ( gpc_isset( 'select_mailbox' ) ) ? gpc_get_int( 'select_m
 
 // the defaults different from the default NULL value
 $t_mailbox = ERP_get_default_mailbox();
+unset( $t_mailbox[ 'enabled' ] );
 
 if ( $f_mailbox_action !== 'add' )
 {
@@ -120,7 +121,6 @@ ERP_output_table_close();
 ERP_output_table_open( 'mailbox_settings_issue' );
 ERP_output_config_option( 'project_id', 'dropdown', $t_mailbox, 'print_projects_option_list' );
 ERP_output_config_option( 'global_category_id', 'dropdown', $t_mailbox, 'print_global_category_option_list' );
-//ERP_output_config_option( 'link_rules', 'dropdown_multiselect', $t_mailbox, 'print_descriptions_option_list', $t_rules ); // Should we use this here or from the rules page?
 ERP_output_table_close();
 
 event_signal( 'EVENT_ERP_OUTPUT_MAILBOX_FIELDS', $f_select_mailbox );

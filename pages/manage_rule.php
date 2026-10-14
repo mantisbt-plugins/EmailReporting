@@ -10,19 +10,19 @@ $t_this_page = 'manage_rule';
 ERP_page_begin( $t_this_page );
 
 ERP_output_note_open();
-echo '<p>' . plugin_lang_get( 'rule_wildcards' ) . '<br />' . nl2br( plugin_lang_get( 'rule_wildcards_help' ) ) . '</p>';
+echo '<p><b>' . plugin_lang_get( 'rule_wildcards' ) . '</b><br />' . nl2br( plugin_lang_get( 'rule_wildcards_help' ) ) . '</p>';
 ERP_output_note_close();
 
 ERP_output_note_open();
-echo '<p>' . plugin_lang_get( 'rule_conditions' ) . '<br />' . nl2br( plugin_lang_get( 'rule_conditions_help' ) ) . '</p>';
+echo '<p><b>' . plugin_lang_get( 'rule_conditions' ) . '</b><br />' . nl2br( plugin_lang_get( 'rule_conditions_help' ) ) . '</p>';
 ERP_output_note_close();
 
 ERP_output_note_open();
-echo '<p>' . plugin_lang_get( 'rule_actions' ) . '<br />' . nl2br( plugin_lang_get( 'rule_actions_help' ) ) . '</p>';
+echo '<p><b>' . plugin_lang_get( 'rule_actions' ) . '</b><br />' . nl2br( plugin_lang_get( 'rule_actions_help' ) ) . '</p>';
 ERP_output_note_close();
 
 ERP_output_note_open();
-echo '<p>' . plugin_lang_get( 'rule_exceptions' ) . '<br />' . nl2br( plugin_lang_get( 'rule_exceptions_help' ) ) . '</p>';
+echo '<p><b>' . plugin_lang_get( 'rule_exceptions' ) . '</b><br />' . nl2br( plugin_lang_get( 'rule_exceptions_help' ) ) . '</p>';
 ERP_output_note_close();
 
 ?>
@@ -74,7 +74,11 @@ $t_rules = plugin_config_get( 'rules' );
 $f_rule_action = gpc_get_string( 'rule_action', 'add' );
 $f_select_rule = ( ( gpc_isset( 'select_rule' ) ) ? gpc_get_int( 'select_rule' ) : array() );
 
-$t_rule = array();
+$t_rule = array(
+	'conditions' => array(),
+	'actions' => array(),
+	'exceptions' => array(),
+);
 
 if ( $f_rule_action !== 'add' )
 {
@@ -104,41 +108,42 @@ ERP_output_config_option( 'add_note_actions', 'boolean', $t_rule );
 ERP_output_table_close();
 
 ERP_output_table_open( 'rule_conditions' );
-ERP_output_config_option( 'cond_issue_creation_method', 'dropdown_multiselect', $t_rule, 'print_descriptions_option_list', array_keys( $g_plugin_cache ) );
-ERP_output_config_option( 'cond_mailbox', 'dropdown_multiselect', $t_rule, 'print_descriptions_option_list', plugin_config_get( 'mailboxes' ) );
-ERP_output_config_option( 'cond_issue_issue_issuenote', 'dropdown_multiselect', $t_rule, 'print_descriptions_option_list', array( 'newnote', 'newissue', 'newattachment' ) );
-ERP_output_config_option( 'cond_issue_reporter', 'dropdown_multiselect', $t_rule, 'print_reporter_option_list' );
-ERP_output_config_option( 'cond_issue_handler', 'dropdown_multiselect', $t_rule, 'print_handler_option_list' );
-ERP_output_config_option( 'cond_email_from', 'string', $t_rule );
-ERP_output_config_option( 'cond_email_to', 'string', $t_rule );
-ERP_output_config_option( 'cond_issue_sendertype', 'dropdown_multiselect', $t_rule, 'print_descriptions_option_list', array( 'known_reporter', 'unknown_sender', 'registered_user', 'non_mantis_user' ) );
-ERP_output_config_option( 'cond_issue_project', 'dropdown_multiselect', $t_rule, 'print_projects_option_list' );
-ERP_output_config_option( 'cond_issue_category', 'dropdown_multiselect', $t_rule, 'print_global_category_option_list' );
-ERP_output_config_option( 'cond_issue_priority', 'dropdown_multiselect', $t_rule, 'print_priority_option_list' );
-ERP_output_config_option( 'cond_issue_summary', 'string', $t_rule );
-ERP_output_config_option( 'cond_issue_description', 'string', $t_rule );
-ERP_output_config_option( 'cond_issue_attachments', 'dropdown', $t_rule, 'print_descriptions_option_list', array( '', 'has_attachments', 'no_attachments' ) );
+ERP_output_config_option( 'cond_issue_creation_source', 'dropdown_multiselect', $t_rule[ 'conditions' ], 'print_descriptions_option_list', array_keys( $GLOBALS[ 'g_plugin_cache' ] ) );
+ERP_output_config_option( 'cond_mailbox', 'dropdown_multiselect', $t_rule[ 'conditions' ], 'print_descriptions_option_list', plugin_config_get( 'mailboxes' ) );
+ERP_output_config_option( 'cond_issue_bug_bugnote', 'dropdown_multiselect', $t_rule[ 'conditions' ], 'print_descriptions_option_list', array( 'newnote', 'newissue' ) );
+ERP_output_config_option( 'cond_issue_reporter', 'dropdown_multiselect', $t_rule[ 'conditions' ], 'print_reporter_option_list' );
+ERP_output_config_option( 'cond_issue_handler', 'dropdown_multiselect', $t_rule[ 'conditions' ], 'print_handler_option_list' );
+ERP_output_config_option( 'cond_email_from', 'string', $t_rule[ 'conditions' ] );
+ERP_output_config_option( 'cond_email_to', 'string', $t_rule[ 'conditions' ] );
+ERP_output_config_option( 'cond_issue_sendertype', 'dropdown_multiselect', $t_rule[ 'conditions' ], 'print_descriptions_option_list', array( 'known_reporter', 'unknown_sender', 'registered_user', 'non_mantis_user' ) );
+ERP_output_config_option( 'cond_issue_project', 'dropdown_multiselect', $t_rule[ 'conditions' ], 'print_projects_option_list' );
+ERP_output_config_option( 'cond_issue_category', 'dropdown_multiselect', $t_rule[ 'conditions' ], 'print_global_category_option_list' );
+ERP_output_config_option( 'cond_issue_priority', 'dropdown_multiselect', $t_rule[ 'conditions' ], 'print_priority_option_list' );
+ERP_output_config_option( 'cond_issue_summary', 'string', $t_rule[ 'conditions' ] );
+ERP_output_config_option( 'cond_issuenote_description', 'string', $t_rule[ 'conditions' ] );
+ERP_output_config_option( 'cond_issuenote_attachments', 'dropdown', $t_rule[ 'conditions' ], 'print_descriptions_option_list', array( '', 'has_attachments', 'no_attachments' ) );
+ERP_output_config_option( 'cond_issuenote_attachment_filename', 'string', $t_rule[ 'conditions' ] );
 ERP_output_table_close();
 
 ERP_output_table_open( 'rule_actions' );
-ERP_output_config_option( 'act_issue_category', 'dropdown_any', $t_rule, 'print_global_category_option_list' );
-ERP_output_config_option( 'act_issue_severity', 'dropdown_any', $t_rule, 'print_severity_option_list' );
-ERP_output_config_option( 'act_issue_status', 'dropdown_any', $t_rule, 'print_status_option_list' );
-ERP_output_config_option( 'act_issue_view_state', 'dropdown_any', $t_rule, 'print_view_state_option_list' );
-ERP_output_config_option( 'act_issue_reproducibility', 'dropdown_any', $t_rule, 'print_reproducibility_option_list' );
-ERP_output_config_option( 'act_issue_reporter', 'dropdown_any', $t_rule, 'print_reporter_option_list' );
-ERP_output_config_option( 'act_issue_handler', 'dropdown_any', $t_rule, 'print_handler_option_list' );
-ERP_output_config_option( 'act_issue_duedate', 'custom', $t_rule, 'print_duedate_option' );
-ERP_output_config_option( 'act_issue_priority', 'dropdown_any', $t_rule, 'print_priority_option_list' );
-ERP_output_config_option( 'act_issue_tag', 'dropdown_multiselect', $t_rule, 'print_tag_option_list' );
-ERP_output_config_option( 'act_issue_custom_field', 'custom', $t_rule, 'print_custom_fields_options' );
+ERP_output_config_option( 'act_issue_category', 'dropdown_any', $t_rule[ 'actions' ], 'print_global_category_option_list' );
+ERP_output_config_option( 'act_issue_severity', 'dropdown_any', $t_rule[ 'actions' ], 'print_severity_option_list' );
+ERP_output_config_option( 'act_issue_status', 'dropdown_any', $t_rule[ 'actions' ], 'print_status_option_list' );
+ERP_output_config_option( 'act_issue_view_state', 'dropdown_any', $t_rule[ 'actions' ], 'print_view_state_option_list' );
+ERP_output_config_option( 'act_issue_reproducibility', 'dropdown_any', $t_rule[ 'actions' ], 'print_reproducibility_option_list' );
+ERP_output_config_option( 'act_issue_reporter', 'dropdown_any', $t_rule[ 'actions' ], 'print_reporter_option_list' );
+ERP_output_config_option( 'act_issue_handler', 'dropdown_any', $t_rule[ 'actions' ], 'print_handler_option_list' );
+ERP_output_config_option( 'act_issue_duedate', 'custom', $t_rule[ 'actions' ], 'print_duedate_option' );
+ERP_output_config_option( 'act_issue_priority', 'dropdown_any', $t_rule[ 'actions' ], 'print_priority_option_list' );
+ERP_output_config_option( 'act_issue_tag', 'dropdown_multiselect', $t_rule[ 'actions' ], 'print_tag_option_list' );
+ERP_output_config_option( 'act_issue_custom_fields', 'custom', $t_rule[ 'actions' ], 'print_custom_fields_options' );
 ERP_output_table_close();
 
 ERP_output_table_open( 'rule_exceptions' );
-ERP_output_config_option( 'excep_issue_from', 'string', $t_rule );
-ERP_output_config_option( 'excep_issue_summary', 'string', $t_rule );
-ERP_output_config_option( 'excep_issue_description', 'string', $t_rule );
-ERP_output_config_option( 'excep_issue_attachments', 'string', $t_rule );
+ERP_output_config_option( 'excep_issue_from', 'string', $t_rule[ 'exceptions' ] );
+ERP_output_config_option( 'excep_issue_summary', 'string', $t_rule[ 'exceptions' ] );
+ERP_output_config_option( 'excep_issuenote_description', 'string', $t_rule[ 'exceptions' ] );
+ERP_output_config_option( 'excep_issuenote_attachment_filename', 'string', $t_rule[ 'exceptions' ] );
 ERP_output_table_close();
 
 ERP_output_table_open();

@@ -13,56 +13,71 @@ $t_rules = plugin_config_get( 'rules' );
 if ( $f_rule_action === 'add' || $f_rule_action === 'copy' || ( ( $f_rule_action === 'edit' ) && $f_select_rule >= 0 ) )
 {
 	$t_rule = array(
-		'enabled'               => gpc_get_int( 'enabled' ),
-		'description'           => gpc_get_string( 'description' ),
+		'enabled'          => gpc_get_int( 'enabled', OFF ),
+		'description'      => gpc_get_string( 'description', '' ),
+		'add_note_actions' => gpc_get_int( 'add_note_actions', OFF ),
 
-// code for retrieving custom fields ids for loop gpc
-/*		$t_custom_fields = custom_field_get_ids();
-		foreach( $t_custom_fields as $t_field_id )
+		'conditions' => array(
+			'cond_issue_creation_source'         => gpc_get_string_array( 'cond_issue_creation_source', array() ),
+			'cond_mailbox'                       => gpc_get_int_array( 'cond_mailbox', array() ),
+			'cond_issue_bug_bugnote'             => gpc_get_string_array( 'cond_issue_bug_bugnote', array() ),
+			'cond_issue_reporter'                => gpc_get_int_array( 'cond_issue_reporter', array() ),
+			'cond_issue_handler'                 => gpc_get_int_array( 'cond_issue_handler', array() ),
+			'cond_email_from'                    => gpc_get_string( 'cond_email_from', '' ),
+			'cond_email_to'                      => gpc_get_string( 'cond_email_to', '' ),
+			'cond_issue_sendertype'              => gpc_get_string_array( 'cond_issue_sendertype', array() ),
+			'cond_issue_project'                 => gpc_get_int_array( 'cond_issue_project', array() ),
+			'cond_issue_category'                => gpc_get_int_array( 'cond_issue_category', array() ),
+			'cond_issue_priority'                => gpc_get_int_array( 'cond_issue_priority', array() ),
+			'cond_issue_summary'                 => gpc_get_string( 'cond_issue_summary', '' ),
+			'cond_issuenote_description'         => gpc_get_string( 'cond_issuenote_description', '' ),
+			'cond_issuenote_attachments'         => gpc_get_string( 'cond_issuenote_attachments', '' ),
+			'cond_issuenote_attachment_filename' => gpc_get_string( 'cond_issuenote_attachment_filename', '' ),
+		),
+
+		'actions' => array(
+			'act_issue_category'         => gpc_get_int( 'act_issue_category', 0 ),
+			'act_issue_severity'         => gpc_get_int( 'act_issue_severity', 0 ),
+			'act_issue_status'           => gpc_get_int( 'act_issue_status', 0 ),
+			'act_issue_view_state'       => gpc_get_int( 'act_issue_view_state', 0 ),
+			'act_issue_reproducibility'  => gpc_get_int( 'act_issue_reproducibility', 0 ),
+			'act_issue_reporter'         => gpc_get_int( 'act_issue_reporter', 0 ),
+			'act_issue_handler'          => gpc_get_int( 'act_issue_handler', 0 ),
+			'act_issue_duedate'          => array(
+				'modifier'               => gpc_get_string( 'act_issue_duedate_modifier', '' ),
+				'amount'                 => gpc_get_int( 'act_issue_duedate_amount', 0 ),
+			),
+			'act_issue_priority'         => gpc_get_int( 'act_issue_priority', 0 ),
+			'act_issue_tag'              => gpc_get_int_array( 'act_issue_tag', array() ),
+			'act_issue_custom_fields'    => array(), // to be filled later
+		),
+
+		'exceptions' => array(
+			'excep_issue_from'                    => gpc_get_string( 'excep_issue_from', '' ),
+			'excep_issue_summary'                 => gpc_get_string( 'excep_issue_summary', '' ),
+			'excep_issuenote_description'         => gpc_get_string( 'excep_issuenote_description', '' ),
+			'excep_issuenote_attachment_filename' => gpc_get_string( 'excep_issuenote_attachment_filename', '' ),
+		),
+	);
+
+	// code for retrieving custom fields ids for loop gpc
+	$t_custom_fields = custom_field_get_ids();
+	foreach ( $t_custom_fields AS $t_field_id )
+	{
+		$t_def = custom_field_get_definition( $t_field_id );
+
+		$t_new_custom_field_value = gpc_get_custom_field( "custom_field_$t_field_id", $t_def['type'], '' );
+
+		if ( !empty( $t_new_custom_field_value ) )
 		{
-
-	$t_related_custom_field_ids = custom_field_get_linked_ids( $t_bug_data->project_id );
-	foreach( $t_related_custom_field_ids as $t_id ) {
-		$t_def = custom_field_get_definition( $t_id );
-
-		# Only update the field if it would have been display for editing
-		if( !( ( !$f_update_mode && $t_def['require_' . $t_custom_status_label] ) ||
-						( !$f_update_mode && $t_def['display_' . $t_custom_status_label] && in_array( $t_custom_status_label, array( "resolved", "closed" ), TRUE ) ) ||
-						( $f_update_mode && $t_def['display_update'] ) ||
-						( $f_update_mode && $t_def['require_update'] ) ) ) {
-			continue;
-		}
-
-		# Do not set custom field value if user has no write access.
-		if( !custom_field_has_write_access( $t_id, $f_bug_id ) ) {
-			continue;
-		}
-
-		# Produce an error if the field is required but wasn't posted
-		if ( !gpc_isset_custom_field( $t_id, $t_def['type'] ) &&
-			( $t_def['require_' . $t_custom_status_label] ) ) {
-			error_parameters( lang_get_defaulted( custom_field_get_field( $t_id, 'name' ) ) );
-			trigger_error( ERROR_EMPTY_FIELD, ERROR );
-		}
-
-		$t_new_custom_field_value = gpc_get_custom_field( "custom_field_$t_id", $t_def['type'], '' );
-		$t_old_custom_field_value = custom_field_get_value( $t_id, $f_bug_id );
-
-		# Don't update the custom field if the new value both matches the old value and is valid
-		# This ensures that changes to custom field validation will force the update of old invalid custom field values
-		if( $t_new_custom_field_value === $t_old_custom_field_value &&
-			custom_field_validate( $t_id, $t_new_custom_field_value ) ) {
-			continue;
-		}
-
-		# Attempt to set the new custom field value
-		if ( !custom_field_set_value( $t_id, $f_bug_id, $t_new_custom_field_value ) ) {
-			error_parameters( lang_get_defaulted( custom_field_get_field( $t_id, 'name' ) ) );
-			trigger_error( ERROR_CUSTOM_FIELD_INVALID_VALUE, ERROR );
+			$t_rule[ 'actions' ][ 'act_issue_custom_fields' ][ $t_field_id ] = $t_new_custom_field_value;
 		}
 	}
-*/
-	);
+
+	$t_rule[ 'conditions' ] = array_filter( $t_rule[ 'conditions' ] );
+	$t_rule[ 'actions' ][ 'act_issue_duedate' ] = array_filter( $t_rule[ 'actions' ][ 'act_issue_duedate' ] );
+	$t_rule[ 'actions' ] = array_filter( $t_rule[ 'actions' ] );
+	$t_rule[ 'exceptions' ] = array_filter( $t_rule[ 'exceptions' ] );
 }
 
 if ( $f_rule_action === 'add' || $f_rule_action === 'copy' )
@@ -78,7 +93,7 @@ elseif ( $f_rule_action === 'delete' && $f_select_rule >= 0 )
 	unset( $t_rules[ $f_select_rule ] );
 }
 
-if( plugin_config_get( 'rules' ) != $t_rules && ( $f_rule_action === 'add' || $f_rule_action === 'copy' || ( ( $f_rule_action === 'edit' || $f_rule_action === 'delete' ) && $f_select_rule >= 0 ) ) )
+if( plugin_config_get( 'rules' ) !== $t_rules && ( $f_rule_action === 'add' || $f_rule_action === 'copy' || ( ( $f_rule_action === 'edit' || $f_rule_action === 'delete' ) && $f_select_rule >= 0 ) ) )
 {
 	plugin_config_set( 'rules', $t_rules );
 }
