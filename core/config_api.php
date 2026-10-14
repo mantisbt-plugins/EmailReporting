@@ -816,7 +816,7 @@ function ERP_custom_function_print_custom_fields_options( $p_name, $p_input_name
 {
 	# Custom Fields
 	$t_custom_fields = custom_field_get_ids();
-	foreach( $t_custom_fields as $t_field_id )
+	foreach( $t_custom_fields AS $t_field_id )
 	{
 		$t_def = custom_field_get_definition( $t_field_id );
 
@@ -1078,7 +1078,7 @@ function ERP_custom_function_print_global_category_option_list( $p_sel_value )
 		}
 
 		$t_cat_arr = category_get_all_rows( $t_project_id, FALSE, FALSE, FALSE );
-		foreach( $t_cat_arr as $t_category_row )
+		foreach( $t_cat_arr AS $t_category_row )
 		{
 			$t_category_id = (int) $t_category_row[ 'id' ];
 			$t_disabled = $t_category_row[ 'status' ] == CATEGORY_STATUS_DISABLED;
@@ -1226,7 +1226,7 @@ function ERP_custom_function_print_tag_option_list( $p_sel_value )
 
 	$t_rows = tag_get_candidates_for_bug( 0 );
 
-	foreach ( $t_rows as $t_row )
+	foreach ( $t_rows AS $t_row )
 	{
 		echo '<option value="', $t_row[ 'id' ], '" title="', string_attribute( $t_row[ 'description' ] ), '"';
 		check_selected( (array) $p_sel_value, (int) $t_row[ 'id' ] );

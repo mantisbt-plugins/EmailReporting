@@ -66,7 +66,7 @@
 
 	$GLOBALS[ $t_mailbox_api_index ] = new ERP_mailbox_api;
 
-	foreach ( $GLOBALS[ 't_mailboxes' ] as $t_mailbox )
+	foreach ( $GLOBALS[ 't_mailboxes' ] AS $t_mailbox )
 	{
 		set_time_limit( 300 );
 		$GLOBALS[ $t_mailbox_api_index ]->process_mailbox( $t_mailbox );
