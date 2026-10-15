@@ -1430,11 +1430,6 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 	# Set the default port number incase it is empty
 	private function prepare_mailbox_port()
 	{
-		if ( !extension_loaded( 'openssl' ) )
-		{
-			$this->custom_error( 'OpenSSL plugin not available even though the mailbox is configured to use it. Please check whether OpenSSL is properly being loaded.' );
-		}
-
 		$this->_mailbox[ 'port' ] = (int) $this->_mailbox[ 'port' ];
 
 		if ( $this->_mailbox[ 'port' ] <= 0 )
@@ -1443,6 +1438,11 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 
 			if ( $this->_mailbox[ 'encryption' ] !== 'None' && $this->_mailbox[ 'encryption' ] !== 'STARTTLS' )
 			{
+				if ( !extension_loaded( 'openssl' ) )
+				{
+					$this->custom_error( 'OpenSSL plugin not available even though the mailbox is configured to use it. Please check whether OpenSSL is properly being loaded.' );
+				}
+
 				$t_def_mailbox_port_index = 'encrypted';
 			}
 
