@@ -43,8 +43,6 @@
 	plugin_require_api( 'core/mail_api.php' );
 	plugin_require_api( 'core/config_api.php' );
 
-	$GLOBALS[ 't_mailboxes' ] = plugin_config_get( 'mailboxes' );
-
 	$t_mail_mantisbt_url_fix = plugin_config_get( 'mail_mantisbt_url_fix', '' );
 	if ( isset( $GLOBALS[ 't_dir_emailreporting_adjust' ] ) && !is_blank( $t_mail_mantisbt_url_fix ) )
 	{
@@ -64,12 +62,14 @@
 
 	$t_mailbox_api_index = ERP_get_mailbox_api_name();
 
-	$GLOBALS[ $t_mailbox_api_index ] = new ERP_mailbox_api;
+	$GLOBALS[ $t_mailbox_api_index ] = new ERP_mailbox_api();
 
-	foreach ( $GLOBALS[ 't_mailboxes' ] AS $t_mailbox )
+	$t_mailbox_ids = array_keys( ERP_get_mailboxes() );
+
+	foreach ( $t_mailbox_ids AS $t_mailbox_id )
 	{
 		set_time_limit( 300 );
-		$GLOBALS[ $t_mailbox_api_index ]->process_mailbox( $t_mailbox );
+		$GLOBALS[ $t_mailbox_api_index ]->process_mailbox( $t_mailbox_id );
 	}
 
 	echo "\n\n" . 'Done checking all mailboxes' . "\n";

@@ -115,7 +115,7 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 
 	echo '<pre>';
 	$t_mailbox_api = new ERP_mailbox_api( ( ( $f_mailbox_action === 'complete_test' ) ? FALSE : TRUE ) );
-	$t_result = $t_mailbox_api->process_mailbox( $t_mailbox );
+	$t_result = $t_mailbox_api->process_mailbox( $f_select_mailbox, $t_mailbox );
 	echo '</pre>';
 
 	$t_is_error = ( $t_mailbox_api->hasError() );
@@ -125,7 +125,6 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 	$t_message = '';
 	$t_message .= plugin_lang_get( ( ( $t_is_error ) ? 'test_failure' : 'test_success' ) ) . '<br /><br />';
 
-	$t_mailbox = $t_mailbox_api->get_mailbox();
 	foreach ( $t_mailbox AS $t_key => $t_value )
 	{
 		If ( is_array( $t_value ) )

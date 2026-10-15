@@ -29,6 +29,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 	private $_mailbox_starttime = NULL;
 
 	private $_mailbox = array( 'description' => 'INITIALIZATION PHASE' );
+	private $_mailbox_id = NULL;
 
 	private $_mail_api = NULL;
 
@@ -199,22 +200,34 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 
 	# --------------------
 	# Return the current mailbox being processed
-	public function get_mailbox()
+	public function get_current_mailbox_id()
 	{
-		return( $this->_mailbox );
+		return( $this->_mailbox_id );
 	}	
 
 	# --------------------
 	# process all mails for an mailbox
 	#  return a boolean for whether the mailbox was successfully processed
 	public function process_mailbox(
+		$p_id,
 		#[\SensitiveParameter]
-		$p_mailbox
+		$p_mailbox = NULL
 	)
 	{
 		$this->_mailbox_starttime = ERP_get_timestamp();
 		
-		$this->_mailbox = $p_mailbox + ERP_get_default_mailbox();
+		$this->_mailbox_id = $p_id;
+		if ( $p_mailbox === NULL )
+		{
+			$t_mailbox = ERP_get_mailboxes( $this->_mailbox_id, FALSE );
+
+			if ( empty( $t_mailbox ) )
+			{
+				$this->custom_error( 'Empty or non-existent mailbox encountered.' );
+				return( FALSE );
+			}
+		}
+		$this->_mailbox = ( $p_mailbox ?? $t_mailbox ) + ERP_get_default_mailbox();
 
 		if ( $this->_functionality_enabled === FALSE )
 		{
@@ -320,6 +333,9 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 
 			$this->show_memory_usage( 'Finished process mailbox' );
 		}
+
+		$this->_mailbox_id = NULL;
+		$this->_mailbox = array();
 
 		return( TRUE );
 	}
@@ -644,7 +660,6 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 			else
 			{
 				$this->custom_error( 'Unknown OAuth provider.' );
-				unset( $this->_mailbox[ 'access_token' ] );
 				return( FALSE );
 			}
 
