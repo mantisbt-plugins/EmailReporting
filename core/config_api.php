@@ -77,7 +77,7 @@ function ERP_get_current_mailbox( $p_mailbox_plugin_content = TRUE )
 # --------------------
 # Returns the complete mailbox array
 # You can also get a specific mailbox if you give a mailbox_id
-# If you wish you can also only get the plugin content. This is the default if you specify and mailbox id.
+# If you wish you can also only get the plugin content. This is the default if you specify a mailbox id.
 # This is meant for plugin usage and is only available on pages where the mailbox has been retrieved already
 function ERP_get_mailboxes( $p_mailbox_id = FALSE, $p_mailbox_plugin_content = TRUE )
 {
@@ -663,7 +663,7 @@ function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, $p_fun
 				case 'string':
 ?>
 <td colspan="2" class="width-50">
-	<input id="<?php echo $t_input_name ?>" class="input-sm" <?php echo helper_get_tab_index() ?> type="text" size="80" maxlength="100" name="<?php echo $t_input_name ?>" value="<?php echo string_attribute( $t_value ) ?>"/>
+	<input id="<?php echo $t_input_name ?>" class="input-sm" <?php echo helper_get_tab_index() ?> type="<?php echo ( ( $p_type === 'integer' ) ? 'number' : 'text' ) ?>" size="80" maxlength="100" name="<?php echo $t_input_name ?>" value="<?php echo string_attribute( $t_value ) ?>"/>
 </td>
 <?php
 
