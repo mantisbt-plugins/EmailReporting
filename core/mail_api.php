@@ -693,7 +693,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 		{
 			if ( !extension_loaded( 'openssl' ) )
 			{
-				$this->custom_error( plugin_lang_get( 'openssl_unavailable', 'EmailReporting' ) );
+				$this->custom_error( plugin_lang_get( 'openssl_unavailable' ) );
 				return( FALSE );
 			}
 
@@ -1033,12 +1033,14 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 
 			if ( $this->_mail_reopen_bugs
 				&& bug_is_resolved( $t_bug_id )
-				&& ( !$this->_mail_respect_permissions || access_can_reopen_bug( $t_bug ) ) )
+				&& ( !$this->_mail_respect_permissions || access_can_reopen_bug( $t_bug ) )
+			)
 			{
 				if ( !is_blank( $t_description ) )
 				{
 					# Reopen issue and add a bug note
-					$t_bugnote_id = bugnote_add( $t_bug_id, $t_description, '0:00', config_get( 'default_bugnote_view_status' ) == VS_PRIVATE, BUGNOTE, '', NULL, FALSE );
+					# We need the bugnote_id for attachments so we cannot rely on bug_reopen
+					$t_bugnote_id = bugnote_add( $t_bug_id, $t_description, p_private: config_get( 'default_bugnote_view_status' ) == VS_PRIVATE, p_send_email: FALSE );
 					bugnote_process_mentions( $t_bug_id, $t_bugnote_id, $t_description );
 					bug_reopen( $t_bug_id );
 
@@ -1052,30 +1054,30 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 				if ( !$this->_mail_respect_permissions || access_has_bug_level( config_get( 'add_bugnote_threshold' ), $t_bug_id ) )
 				{
 					# Add a bug note
-					$t_bugnote_id = bugnote_add( $t_bug_id, $t_description, '0:00', config_get( 'default_bugnote_view_status' ) == VS_PRIVATE );
+					$t_bugnote_id = bugnote_add( $t_bug_id, $t_description, p_private: config_get( 'default_bugnote_view_status' ) == VS_PRIVATE );
 
-					// MantisBT 1.3.x function
-					// reassign_on_feedback only needs to be done here incase of MantisBT 1.3.x
-					if ( function_exists( 'bugnote_process_mentions' ) )
+					# Process the mentions in the added note
+					bugnote_process_mentions( $t_bug_id, $t_bugnote_id, $t_description );
+
+					/* Code based on MantisBT 2.28.4 bug_update.php */
+					# Handle the reassign on feedback feature. Note that this feature generally
+					# won't work very well with custom workflows as it makes a lot of assumptions
+					# that may not be true. It assumes you don't have any statuses in the workflow
+					# between 'bug_submit_status' and 'bug_feedback_status'. It assumes you only
+					# have one feedback, assigned and submitted status.
+					if ( config_get( 'reassign_on_feedback' ) &&
+						$t_bug->status == config_get( 'bug_feedback_status' ) &&
+						$t_bug->handler_id != (int) auth_get_current_user_id() &&
+						$t_bug->reporter_id == (int) auth_get_current_user_id()
+					)
 					{
-						# Process the mentions in the added note
-						bugnote_process_mentions( $t_bug->id, $t_bugnote_id, $t_description );
-
-						/* Code based on MantisBT 2.28.4 bug_update.php */
-						# Handle the reassign on feedback feature. Note that this feature generally
-						# won't work very well with custom workflows as it makes a lot of assumptions
-						# that may not be true. It assumes you don't have any statuses in the workflow
-						# between 'bug_submit_status' and 'bug_feedback_status'. It assumes you only
-						# have one feedback, assigned and submitted status.
-						if( config_get( 'reassign_on_feedback' ) &&
-							 $t_bug->status == config_get( 'bug_feedback_status' ) &&
-							 $t_bug->handler_id != (int) auth_get_current_user_id() &&
-							 $t_bug->reporter_id == (int) auth_get_current_user_id() ) {
-							if( $t_bug->handler_id != NO_USER ) {
-								bug_set_field( $t_bug->id, 'status', config_get( 'bug_assigned_status' ) );
-							} else {
-								bug_set_field( $t_bug->id, 'status', config_get( 'bug_submit_status' ) );
-							}
+						if( $t_bug->handler_id != NO_USER )
+						{
+							bug_set_field( $t_bug->id, 'status', config_get( 'bug_assigned_status' ) );
+						}
+						else
+						{
+							bug_set_field( $t_bug->id, 'status', config_get( 'bug_submit_status' ) );
 						}
 					}
 				}
