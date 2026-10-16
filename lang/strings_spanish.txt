@@ -98,8 +98,8 @@ $s_plugin_EmailReporting_strict = 'Estricta';
 $s_plugin_EmailReporting_balanced = 'Balanceada';
 $s_plugin_EmailReporting_relaxed = 'Flexible';
 
-$s_plugin_EmailReporting_newnote = 'Nueva Nota';
-$s_plugin_EmailReporting_newissue = 'Nueva Solicitud';
+$s_plugin_EmailReporting_EVENT_BUGNOTE_ADD = 'Nueva Nota';
+$s_plugin_EmailReporting_EVENT_REPORT_BUG = 'Nueva Solicitud';
 
 $s_plugin_EmailReporting_name = 'Nombre';
 $s_plugin_EmailReporting_full_from = 'Dirección "From" completa';
@@ -180,7 +180,7 @@ $s_plugin_EmailReporting_add_note_actions = 'Agregar nota privada con las accion
 
 $s_plugin_EmailReporting_cond_issue_creation_source = 'Fuente de creación de incidencias';
 $s_plugin_EmailReporting_cond_mailbox = 'Aplicar a los buzones';
-$s_plugin_EmailReporting_cond_issue_bug_bugnote = 'Agregar nuevas solicitudes y / o notas';
+$s_plugin_EmailReporting_cond_event_type = 'Agregar nuevas solicitudes y / o notas';
 $s_plugin_EmailReporting_cond_issue_reporter = 'Informador de la Solicitud';
 $s_plugin_EmailReporting_cond_issue_handler = 'Gestor de incidencias';
 $s_plugin_EmailReporting_cond_email_from = 'Dirección de correo electrónico del (ERP)';

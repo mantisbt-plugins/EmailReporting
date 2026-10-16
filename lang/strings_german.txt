@@ -98,8 +98,8 @@ $s_plugin_EmailReporting_strict = 'Strikt';
 $s_plugin_EmailReporting_balanced = 'Ausgewogen';
 $s_plugin_EmailReporting_relaxed = 'Locker';
 
-$s_plugin_EmailReporting_newnote = 'Neue Notiz';
-$s_plugin_EmailReporting_newissue = 'Neues Ticket';
+$s_plugin_EmailReporting_EVENT_BUGNOTE_ADD = 'Neue Notiz';
+$s_plugin_EmailReporting_EVENT_REPORT_BUG = 'Neues Ticket';
 
 $s_plugin_EmailReporting_name = 'Name';
 $s_plugin_EmailReporting_full_from = 'Komplette "From" Adresse';
@@ -183,7 +183,7 @@ $s_plugin_EmailReporting_add_note_actions = 'Füge eine private Notiz mit den du
 
 $s_plugin_EmailReporting_cond_issue_creation_source = 'Quelle der Problemerstellung';
 $s_plugin_EmailReporting_cond_mailbox = 'Zur Mailbox hinzufügen';
-$s_plugin_EmailReporting_cond_issue_bug_bugnote = 'Neues Ticket und/oder Notiz hinzufügen';
+$s_plugin_EmailReporting_cond_event_type = 'Neues Ticket und/oder Notiz hinzufügen';
 $s_plugin_EmailReporting_cond_issue_reporter = 'Problemreporter';
 $s_plugin_EmailReporting_cond_issue_handler = 'Problembearbeiter';
 $s_plugin_EmailReporting_cond_email_from = 'E-Mail-Adresse von (ERP)';

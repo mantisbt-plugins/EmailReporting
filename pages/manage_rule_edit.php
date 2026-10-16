@@ -20,7 +20,7 @@ if ( $f_rule_action === 'add' || $f_rule_action === 'copy' || ( ( $f_rule_action
 		'conditions' => array(
 			'cond_issue_creation_source'         => gpc_get_string_array( 'cond_issue_creation_source', array() ),
 			'cond_mailbox'                       => gpc_get_int_array( 'cond_mailbox', array() ),
-			'cond_issue_bug_bugnote'             => gpc_get_string_array( 'cond_issue_bug_bugnote', array() ),
+			'cond_event_type'                    => gpc_get_string_array( 'cond_event_type', array() ),
 			'cond_issue_reporter'                => gpc_get_int_array( 'cond_issue_reporter', array() ),
 			'cond_issue_handler'                 => gpc_get_int_array( 'cond_issue_handler', array() ),
 			'cond_email_from'                    => gpc_get_string( 'cond_email_from', '' ),
@@ -91,6 +91,10 @@ elseif ( $f_rule_action === 'edit' && $f_select_rule >= 0 )
 elseif ( $f_rule_action === 'delete' && $f_select_rule >= 0 )
 {
 	unset( $t_rules[ $f_select_rule ] );
+}
+elseif ( $f_rule_action === 'describe' && $f_select_rule >= 0 )
+{
+	// @TODO
 }
 
 if( plugin_config_get( 'rules' ) !== $t_rules && ( $f_rule_action === 'add' || $f_rule_action === 'copy' || ( ( $f_rule_action === 'edit' || $f_rule_action === 'delete' ) && $f_select_rule >= 0 ) ) )

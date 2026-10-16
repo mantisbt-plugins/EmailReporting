@@ -110,7 +110,7 @@ ERP_output_table_close();
 ERP_output_table_open( 'rule_conditions' );
 ERP_output_config_option( 'cond_issue_creation_source', 'dropdown_multiselect', $t_rule[ 'conditions' ], 'print_descriptions_option_list', array_keys( $GLOBALS[ 'g_plugin_cache' ] ) );
 ERP_output_config_option( 'cond_mailbox', 'dropdown_multiselect', $t_rule[ 'conditions' ], 'print_descriptions_option_list', plugin_config_get( 'mailboxes' ) );
-ERP_output_config_option( 'cond_issue_bug_bugnote', 'dropdown_multiselect', $t_rule[ 'conditions' ], 'print_descriptions_option_list', array( 'newnote', 'newissue' ) );
+ERP_output_config_option( 'cond_event_type', 'dropdown_multiselect', $t_rule[ 'conditions' ], 'print_descriptions_option_list', array( 'EVENT_BUGNOTE_ADD', 'EVENT_REPORT_BUG' ) );
 ERP_output_config_option( 'cond_issue_reporter', 'dropdown_multiselect', $t_rule[ 'conditions' ], 'print_reporter_option_list' );
 ERP_output_config_option( 'cond_issue_handler', 'dropdown_multiselect', $t_rule[ 'conditions' ], 'print_handler_option_list' );
 ERP_output_config_option( 'cond_email_from', 'string', $t_rule[ 'conditions' ] );

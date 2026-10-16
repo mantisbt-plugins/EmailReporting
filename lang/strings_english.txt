@@ -98,8 +98,8 @@ $s_plugin_EmailReporting_strict = 'Strict';
 $s_plugin_EmailReporting_balanced = 'Balanced';
 $s_plugin_EmailReporting_relaxed = 'Relaxed';
 
-$s_plugin_EmailReporting_newnote = 'New note';
-$s_plugin_EmailReporting_newissue = 'New issue';
+$s_plugin_EmailReporting_EVENT_BUGNOTE_ADD = 'New note';
+$s_plugin_EmailReporting_EVENT_REPORT_BUG = 'New issue';
 
 $s_plugin_EmailReporting_name = 'Name';
 $s_plugin_EmailReporting_full_from = 'Full "From" address';
@@ -183,7 +183,7 @@ $s_plugin_EmailReporting_add_note_actions = 'Add private note with actions perfo
 
 $s_plugin_EmailReporting_cond_issue_creation_source = 'Issue creation source';
 $s_plugin_EmailReporting_cond_mailbox = 'Apply to mailboxes';
-$s_plugin_EmailReporting_cond_issue_bug_bugnote = 'Apply to new issues and / or notes';
+$s_plugin_EmailReporting_cond_event_type = 'Apply to new issues and / or notes';
 $s_plugin_EmailReporting_cond_issue_reporter = 'Issue reporter';
 $s_plugin_EmailReporting_cond_issue_handler = 'Issue handler';
 $s_plugin_EmailReporting_cond_email_from = 'Email address from (ERP)';
