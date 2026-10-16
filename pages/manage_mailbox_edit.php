@@ -7,7 +7,7 @@ plugin_require_api( 'core/config_api.php' );
 $f_mailbox_action = gpc_get_string( 'mailbox_action' );
 $f_select_mailbox = gpc_get_int( 'select_mailbox' );
 
-$t_mailboxes = plugin_config_get( 'mailboxes' );
+$t_mailboxes = ERP_get_mailboxes();
 
 if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailbox_action === 'edit' || $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test' ) && $f_select_mailbox >= 0 ) )
 {
@@ -16,7 +16,7 @@ if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailb
 		'description'            => gpc_get_string( 'description', '' ),
 		'mailbox_type'           => gpc_get_string( 'mailbox_type', 'POP3' ),
 		'hostname'               => gpc_get_string( 'hostname', '' ),
-		'port'                   => gpc_get_string( 'port', '' ),
+		'port'                   => gpc_get_string( 'port', '' ), // Leave this as string to allow empty values
 		'encryption'             => gpc_get_string( 'encryption', 'None' ),
 		'ssl_cert_verify'        => gpc_get_int( 'ssl_cert_verify', ON ),
 		'auth_method'            => gpc_get_string( 'auth_method', 'USER' ),
@@ -114,11 +114,13 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 	ERP_page_begin( 'manage_mailbox' );
 
 	echo '<pre>';
-	$t_mailbox_api = new ERP_mailbox_api( ( ( $f_mailbox_action === 'complete_test' ) ? FALSE : TRUE ) );
-	$t_result = $t_mailbox_api->process_mailbox( $f_select_mailbox, $t_mailbox );
+	$t_mailbox_api_index = ERP_get_mailbox_api_name();
+
+	$GLOBALS[ $t_mailbox_api_index ] = new ERP_mailbox_api( ( ( $f_mailbox_action === 'complete_test' ) ? FALSE : TRUE ) );
+	$t_result = $GLOBALS[ $t_mailbox_api_index ]->process_mailbox( $f_select_mailbox, $t_mailbox );
 	echo '</pre>';
 
-	$t_is_error = ( $t_mailbox_api->hasError() );
+	$t_is_error = ( $GLOBALS[ $t_mailbox_api_index ]->hasError() );
 ?>
 <br /><div class="center">
 <?php
@@ -145,9 +147,9 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 		}
 	}
 
-	while ( $t_mailbox_api->hasError() )
+	while ( $GLOBALS[ $t_mailbox_api_index ]->hasError() )
 	{
-		$t_message .= '<br />' . nl2br( $t_mailbox_api->getError() ) . '<br />';
+		$t_message .= '<br />' . nl2br( $GLOBALS[ $t_mailbox_api_index ]->getError() ) . '<br />';
 	}
 
 	if ( ( $t_is_error ) )

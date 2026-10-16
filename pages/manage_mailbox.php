@@ -12,8 +12,7 @@ ERP_page_begin( $t_this_page );
 <form action="<?php echo plugin_page( $t_this_page . '_edit' )?>" method="post">
 <?php
 
-$GLOBALS[ 't_mailboxes' ] = plugin_config_get( 'mailboxes' );
-$t_rules = plugin_config_get( 'rules' );
+$t_mailboxes = ERP_get_mailboxes();
 
 $f_mailbox_action = gpc_get_string( 'mailbox_action', 'add' );
 $f_select_mailbox = ( ( gpc_isset( 'select_mailbox' ) ) ? gpc_get_int( 'select_mailbox' ) : array() );
@@ -24,10 +23,10 @@ unset( $t_mailbox[ 'enabled' ] );
 
 if ( $f_mailbox_action !== 'add' )
 {
-	if ( isset( $GLOBALS[ 't_mailboxes' ][ $f_select_mailbox ] ) )
+	if ( isset( $t_mailboxes[ $f_select_mailbox ] ) )
 	{
 		// merge existing selected mailbox into the default mailbox overwriting existing default values
-		$t_mailbox = $GLOBALS[ 't_mailboxes' ][ $f_select_mailbox ] + $t_mailbox;
+		$t_mailbox = $t_mailboxes[ $f_select_mailbox ] + $t_mailbox;
 
 		// Add "Copy of" text if necessary to mailboxes being copied
 		if ( $f_mailbox_action === 'copy' )
@@ -60,7 +59,7 @@ ERP_output_config_option( 'enabled', 'boolean', $t_mailbox );
 ERP_output_config_option( 'description', 'string', $t_mailbox );
 ERP_output_config_option( 'mailbox_type', 'dropdown', $t_mailbox, 'print_descriptions_option_list', array( 'IMAP', 'POP3' ) + array( 'visibility-controller' => TRUE ) );
 ERP_output_config_option( 'hostname', 'string', $t_mailbox );
-ERP_output_config_option( 'port', 'string', $t_mailbox );
+ERP_output_config_option( 'port', 'integer', $t_mailbox );
 ERP_output_config_option( 'encryption', 'dropdown', $t_mailbox, 'print_encryption_option_list' );
 ERP_output_config_option( 'ssl_cert_verify', 'boolean', $t_mailbox );
 ERP_output_config_option( 'auth_method', 'dropdown', $t_mailbox, 'print_auth_method_option_list', array( 'visibility-controller' => TRUE ) );
@@ -139,8 +138,8 @@ echo '<script src="' . plugin_file( 'emailreporting.js' ) .	'"></script>';
 <?php
 
 ERP_output_table_open( 'mailboxes' );
-ERP_output_config_option( 'mailbox_action', 'radio_buttons', $f_mailbox_action, 'print_mailbox_action_radio_buttons', $GLOBALS[ 't_mailboxes' ] );
-ERP_output_config_option( 'select_mailbox', 'dropdown', $f_select_mailbox, 'print_descriptions_option_list', $GLOBALS[ 't_mailboxes' ] );
+ERP_output_config_option( 'mailbox_action', 'radio_buttons', $f_mailbox_action, 'print_mailbox_action_radio_buttons', $t_mailboxes );
+ERP_output_config_option( 'select_mailbox', 'dropdown', $f_select_mailbox, 'print_descriptions_option_list', $t_mailboxes );
 ERP_output_table_close( 'select_mailbox' );
 
 ?>
