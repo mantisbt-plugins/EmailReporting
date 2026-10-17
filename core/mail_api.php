@@ -30,6 +30,8 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 
 	private $_mailbox = array( 'description' => 'INITIALIZATION PHASE' );
 	private $_mailbox_id = NULL;
+	private $_from_emailaddress = NULL;
+	private $_to_emailaddress = NULL;
 
 	private $_mail_api = NULL;
 
@@ -203,6 +205,21 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 	public function get_current_mailbox_id()
 	{
 		return( $this->_mailbox_id );
+	}	
+
+	# --------------------
+	# Return the current from emailaddress for the email being processed
+	public function get_from_emailaddress( $p_mailbox_id )
+	{
+		return( ( isset( $this->_from_emailaddress[ $p_mailbox_id ] ) ) ? $this->_from_emailaddress[ $p_mailbox_id ] : NULL );
+	}	
+
+	# --------------------
+	# Return the current to emailaddress for the email being processed
+	# Return value: array
+	public function get_to_emailaddress( $p_mailbox_id )
+	{
+		return( ( isset( $this->_to_emailaddress[ $p_mailbox_id ] ) ) ? $this->_to_emailaddress[ $p_mailbox_id ] : NULL );
 	}	
 
 	# --------------------
@@ -792,13 +809,24 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 				}
 				else
 				{
+					// To be used by the rule system
+					$this->_from_emailaddress = array( $this->_mailbox_id => $t_email[ 'From_parsed' ][ 'email' ] );
+					$this->_to_emailaddress = array( $this->_mailbox_id => $t_email[ 'To' ] );
+
 					$this->add_bug( $t_email, $p_overwrite_project_id );
+
+					$this->_from_emailaddress = NULL;
+					$this->_to_emailaddress = NULL;
 				}
 			}
 			else
 			{
 				$this->custom_error( 'From email address rejected by email_is_valid function based on: ' . $t_email[ 'From_parsed' ][ 'From' ] );
 			}
+		}
+		else
+		{
+			$this->custom_error( 'No valid reporter could be selected. Email will be ignored: ' . $t_email[ 'From_parsed' ][ 'From' ] );
 		}
 
 		$this->show_memory_usage( 'Finished process single email' );
@@ -832,15 +860,15 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 
 		$t_mp->parse();
 
-		$t_email[ 'From_parsed' ] = $this->parse_from_field( trim( (string)$t_mp->from() ) );
+		$t_email[ 'From_parsed' ] = $this->parse_from_field( trim( (string) $t_mp->from() ) );
 		$t_email[ 'Reporter_id' ] = $this->get_user( $t_email[ 'From_parsed' ] );
 
-		$t_email[ 'Subject' ] = trim( (string)$t_mp->subject() );
+		$t_email[ 'Subject' ] = trim( (string) $t_mp->subject() );
 
 		$t_email[ 'To' ] = $this->get_emailaddr_from_string( $t_mp->to() );
 		$t_email[ 'Cc' ] = $this->get_emailaddr_from_string( $t_mp->cc() );
 
-		$t_email[ 'X-Mantis-Body' ] = trim( (string)$t_mp->body() );
+		$t_email[ 'X-Mantis-Body' ] = trim( (string) $t_mp->body() );
 
 		$t_email[ 'X-Mantis-Parts' ] = $t_mp->parts();
 
@@ -1475,7 +1503,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 	# Return the emailaddress from the mail's 'From' field
 	private function parse_from_field( $p_from_address )
 	{
-		if ( preg_match( '/^(?:(?P<name>.*?)<|)(?P<email>' . $this->_email_regex_simple . ')(?:>|)/u', trim( (string)$p_from_address ), $match ) )
+		if ( preg_match( '/^(?:(?P<name>.*?)<|)(?P<email>' . $this->_email_regex_simple . ')(?:>|)/u', trim( (string) $p_from_address ), $match ) )
 		{
 			$v_from_address = array(
 				'name'  => trim( (string)$match[ 'name' ], '"\' ' ),
@@ -1502,11 +1530,11 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 	{
 		$v_addresses = array();
 
-		if ( preg_match_all( '/' . $this->_email_regex_simple . '/u', (string)$p_addresses, $matches, PREG_SET_ORDER ) )
+		if ( preg_match_all( '/' . $this->_email_regex_simple . '/u', (string) $p_addresses, $matches, PREG_SET_ORDER ) )
 		{
 			foreach( $matches AS $match )
 			{
-				$v_addresses[] = trim( (string)$match[ 0 ] );
+				$v_addresses[] = trim( (string) $match[ 0 ] );
 			}
 		}
 
