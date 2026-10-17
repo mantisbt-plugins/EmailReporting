@@ -1,5 +1,6 @@
 Changelog:
 ??? - EmailReporting-0.14.0
+	- MantisBT minimum version increased to 2.13.0
 	- Fix XOAUTH2 issue with Horde/Imap_Client (Legacy)
 	- Fallback added for mail_preferred_realname
 	- Fake PLAIN auth method support for ZetaComponents_api
