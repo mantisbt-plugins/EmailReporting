@@ -37,6 +37,13 @@ abstract class ERP_ErrorHandling
 	}
 
 	# --------------------
+	# Clear all errors
+	public function clearError(): void
+	{
+		$this->_error = array();
+	}
+
+	# --------------------
 	# Check whether an operation result contains an PEAR error.
 	#
 	# When an error is detected it is stored internally.
