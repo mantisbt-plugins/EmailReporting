@@ -171,14 +171,16 @@ $s_plugin_EmailReporting_rule_wildcards_help = '- Charaktere für Platzhalter: *
 
 $s_plugin_EmailReporting_rule_conditions_help = '- Mehrfachauswahl durch Drücken der Strg-Taste aufheben
 - Wenn keine Elemente ausgewählt oder ein Wert leer gelassen wird, wird die Bedingung ignoriert.
-- Durch die Auswahl einer mit "(ERP)" gekennzeichneten Bedingung wird die Regel nur dann wirksam, wenn sie ausgelöst wird, während die Erstellungsquelle "EmailReporting" ist.';
+- Durch die Auswahl einer mit "(ERP)" gekennzeichneten Bedingung wird die Regel nur dann wirksam, wenn sie ausgelöst wird, während die Erstellungsquelle "EmailReporting" ist.
+- Der Vergleich unterscheidet bei Texteingabefeldern nicht zwischen Groß- und Kleinschreibung.';
 
 $s_plugin_EmailReporting_rule_actions_help = '- "[any]" oder ein leerer Wert bedeutet, dass die betreffende Aktion ignoriert wird.
 - Benutzerdefinierte Felder, die keinem Projekt zugeordnet sind, dem das gerade erstellte Ticket angehört, werden ignoriert
 - Auswahllisten in benutzerdefinierten Feldern sollten einen leeren Listeneintrag enthalten. Ansonsten wird der Standardwert des Feldes jedes Mal zugewiesen, wenn die spezifizierten Konditionen zutreffen.
 - Mehrfachauswahl durch Drücken der Strg-Taste aufheben';
 
-$s_plugin_EmailReporting_rule_exceptions_help = '';
+$s_plugin_EmailReporting_rule_exceptions_help = '- Wenn eine der Ausnahmen auf die Regel zutrifft, wird sie ignoriert.
+- Der Vergleich unterscheidet bei Texteingabefeldern nicht zwischen Groß- und Kleinschreibung.';
 
 $s_plugin_EmailReporting_add_note_actions = 'Füge eine private Notiz mit den durchgeführten Aktionen hinzu.';
 

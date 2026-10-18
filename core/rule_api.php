@@ -6,6 +6,7 @@ require_api( 'bug_api.php' );
 require_api( 'bugnote_api.php' );
 require_api( 'user_api.php' );
 
+plugin_require_api( 'core/config_api.php' );
 plugin_require_api( 'core/error_api.php' );
 
 class ERP_rule_api extends ERP_ErrorHandling
@@ -15,6 +16,10 @@ class ERP_rule_api extends ERP_ErrorHandling
 	private bool $_mail_debug = FALSE;
 	private array $_actions_performed = array();
 
+	/*
+	 * Start processing rules for the triggered event
+	 *
+	 */
 	public function __construct(
 		private readonly string $p_event,
 		private readonly int $p_bug_id,
@@ -47,10 +52,16 @@ class ERP_rule_api extends ERP_ErrorHandling
 					plugin_log_event( $t_error );
 				}
 			}
+
+			$this->clearError();
 		}
 //exit;
 	}
 
+	/*
+	 * Process a single rule
+	 *
+	 */
 	private function process_rule( array $p_rule ): bool
 	{
 //var_dump($p_rule);
@@ -84,49 +95,260 @@ class ERP_rule_api extends ERP_ErrorHandling
 			}
 		}
 
-		$t_condition_check = $this->check_conditions( $p_rule[ 'conditions' ] );
-//var_dump($t_condition_check);
+		$t_conditions_check = $this->check_conditions( $p_rule[ 'conditions' ], $p_rule[ 'exceptions' ] );
 
-		if ( !$t_condition_check )
+		if ( !$t_conditions_check )
 		{
 			return( FALSE );
 		}
 
-		$t_exception_check = $this->check_exceptions( $p_rule[ 'exceptions' ] );
-//var_dump($t_exception_check);
-
-		if ( !$t_exception_check )
-		{
-			return( FALSE );
-		}
-
-		$this->_perform_actions = (bool) ( $t_condition_check && $t_exception_check ); // @TODO both TRUE check? verify!!!
-//var_dump($this->_perform_actions);
+		$this->_perform_actions = (bool) $t_conditions_check;
 
 		$t_actions_performed = $this->apply_actions( $p_rule[ 'actions' ] );
 //var_dump($t_actions_performed);
+
+		$this->_perform_actions = FALSE;
 
 		$this->write_private_note( $p_rule[ 'add_note_actions' ] );
 
 		return( TRUE );
 	}
 
-	private function check_conditions( array $p_conditions ): bool
+	/*
+	 * Check the conditions & exceptions of a rule
+	 *
+	 * Return value:
+	 * TRUE means the conditions match & the exceptions do not match and rule should be executed
+	 * FALSE means the conditions do not match or the exceptions match and rule should not be executed
+	 */
+	private function check_conditions( array $p_conditions, array $p_exceptions ): bool
 	{
-		if ( isset( $p_conditions[ 'cond_issue_creation_source' ] ) && !in_array( $this->get_event_source(), $p_conditions[ 'cond_issue_creation_source' ], TRUE ) )
+		// cond_issue_creation_source
+		if ( isset( $p_conditions[ 'cond_issue_creation_source' ] ) )
 		{
-			return( FALSE );
+			if ( !in_array( $this->get_event_source(), $p_conditions[ 'cond_issue_creation_source' ], TRUE ) )
+			{
+				return( FALSE );
+			}
+		}
+
+		// cond_mailbox (ERP only)
+		if ( isset( $p_conditions[ 'cond_mailbox' ] ) )
+		{
+			$t_found_cond_mailbox_match = FALSE;
+
+			$t_current_mailbox_id = $this->get_current_mailbox_id();
+
+			if ( $t_current_mailbox_id !== NULL )
+			{
+				if ( in_array( (int) $t_current_mailbox_id, $p_conditions[ 'cond_mailbox' ], TRUE ) )
+				{
+					$t_found_cond_mailbox_match = TRUE;
+				}
+			}
+
+			if ( $t_found_cond_mailbox_match === FALSE )
+			{
+				return( FALSE );
+			}
+		}
+
+		// cond_event_type
+		if ( isset( $p_conditions[ 'cond_event_type' ] ) )
+		{
+			if ( !in_array( $this->p_event, $p_conditions[ 'cond_event_type' ], TRUE ) )
+			{
+				return( FALSE );
+			}
+		}
+
+		// cond_issue_reporter
+		// @TODO Possible future improvement
+		// bugnote_get_field( $this->p_bug_id, 'reporter_id' )
+		if ( isset( $p_conditions[ 'cond_issue_reporter' ] ) )
+		{
+			if ( !in_array( (int) bug_get_field( $this->p_bug_id, 'reporter_id' ), $p_conditions[ 'cond_issue_reporter' ], TRUE ) )
+			{
+				return( FALSE );
+			}
+		}
+
+		// cond_issue_handler
+		if ( isset( $p_conditions[ 'cond_issue_handler' ] ) )
+		{
+			if ( !in_array( (int) bug_get_field( $this->p_bug_id, 'handler_id' ), $p_conditions[ 'cond_issue_handler' ], TRUE ) )
+			{
+				return( FALSE );
+			}
+		}
+
+		// cond_email_from & excep_email_from (ERP only)
+		if ( isset( $p_conditions[ 'cond_email_from' ] ) || isset( $p_exceptions[ 'excep_email_from' ] ) )
+		{
+			$t_found_cond_email_from_match = FALSE;
+
+			$t_from_emailaddress = $this->get_current_from_emailaddress();
+
+			if ( $t_from_emailaddress !== NULL )
+			{
+				if ( isset( $p_conditions[ 'cond_email_from' ] ) )
+				{
+					if ( $this->wildcard_match( $p_conditions[ 'cond_email_from' ], $t_from_emailaddress ) )
+					{
+						$t_found_cond_email_from_match = TRUE;
+					}
+				}
+
+				if ( isset( $p_exceptions[ 'excep_email_from' ] ) )
+				{
+					if ( $this->wildcard_match( $p_exceptions[ 'excep_email_from' ], $t_from_emailaddress ) )
+					{
+						$t_found_cond_email_from_match = FALSE;
+					}
+				}
+			}
+
+			if ( $t_found_cond_email_from_match === FALSE )
+			{
+				return( FALSE );
+			}
+		}
+
+		// cond_email_to (ERP only)
+		if ( isset( $p_conditions[ 'cond_email_to' ] ) )
+		{
+			$t_found_cond_email_to_match = FALSE;
+
+			$t_to_emailaddresses = $this->get_current_to_emailaddress();
+
+			if ( $t_to_emailaddresses !== NULL )
+			{
+				if ( $this->wildcard_match( $p_conditions[ 'cond_email_to' ], $t_to_emailaddresses ) )
+				{
+					$t_found_cond_email_to_match = TRUE;
+				}
+			}
+
+			if ( $t_found_cond_email_to_match === FALSE )
+			{
+				return( FALSE );
+			}
+		}
+
+		// cond_issue_project
+		if ( isset( $p_conditions[ 'cond_issue_project' ] ) )
+		{
+			if ( !in_array( (int) bug_get_field( $this->p_bug_id, 'project_id' ), $p_conditions[ 'cond_issue_project' ], TRUE ) )
+			{
+				return( FALSE );
+			}
+		}
+
+		// cond_issue_category
+		if ( isset( $p_conditions[ 'cond_issue_category' ] ) )
+		{
+			if ( !in_array( (int) bug_get_field( $this->p_bug_id, 'category_id' ), $p_conditions[ 'cond_issue_category' ], TRUE ) )
+			{
+				return( FALSE );
+			}
+		}
+
+		// cond_issue_priority
+		if ( isset( $p_conditions[ 'cond_issue_priority' ] ) )
+		{
+			if ( !in_array( (int) bug_get_field( $this->p_bug_id, 'priority' ), $p_conditions[ 'cond_issue_priority' ], TRUE ) )
+			{
+				return( FALSE );
+			}
+		}
+
+		// cond_issue_summary & excep_issue_summary
+		if ( isset( $p_conditions[ 'cond_issue_summary' ] ) || isset( $p_exceptions[ 'excep_issue_summary' ] ) )
+		{
+			if ( isset( $p_conditions[ 'cond_issue_summary' ] ) )
+			{
+				if ( !$this->wildcard_match( $p_conditions[ 'cond_issue_summary' ], bug_get_field( $this->p_bug_id, 'summary' ) ) )
+				{
+					return( FALSE );
+				}
+			}
+
+			if ( isset( $p_exceptions[ 'excep_issue_summary' ] ) )
+			{
+				if ( $this->wildcard_match( $p_exceptions[ 'excep_issue_summary' ], bug_get_field( $this->p_bug_id, 'summary' ) ) )
+				{
+					return( FALSE );
+				}
+			}
+		}
+
+		// cond_issuenote_description & excep_issuenote_description
+		if ( isset( $p_conditions[ 'cond_issuenote_description' ] ) || isset( $p_exceptions[ 'excep_issuenote_description' ] ) )
+		{
+			$t_description = ( ( $this->p_event === 'EVENT_BUGNOTE_ADD' ) ? bugnote_get_text( $this->p_bugnote_id ) : bug_get_text_field( $this->p_bug_id, 'description' ) );
+
+			if ( isset( $p_conditions[ 'cond_issuenote_description' ] ) )
+			{
+				if ( !$this->wildcard_match( $p_conditions[ 'cond_issuenote_description' ], $t_description ) )
+				{
+					return( FALSE );
+				}
+			}
+
+			if ( isset( $p_exceptions[ 'excep_issuenote_description' ] ) )
+			{
+				if ( $this->wildcard_match( $p_exceptions[ 'excep_issuenote_description' ], $t_description ) )
+				{
+					return( FALSE );
+				}
+			}
+		}
+
+		// cond_issuenote_attachments
+		if ( isset( $p_conditions[ 'cond_issuenote_attachments' ] ) )
+		{
+			$t_has_attachments = $this->has_attachments( $this->p_bug_id, $this->p_bugnote_id );
+
+			if (
+				( !$t_has_attachments && $p_conditions[ 'cond_issuenote_attachments' ] === 'has_attachments' ) ||
+				( $t_has_attachments && $p_conditions[ 'cond_issuenote_attachments' ] === 'no_attachments' )
+			)
+			{
+				return( FALSE );
+			}
+		}
+
+		// cond_issuenote_attachment_filename & excep_issuenote_attachment_filename
+		if ( isset( $p_conditions[ 'cond_issuenote_attachment_filename' ] ) || isset( $p_exceptions[ 'excep_issuenote_attachment_filename' ] ) )
+		{
+			if ( isset( $p_conditions[ 'cond_issuenote_attachment_filename' ] ) )
+			{
+				$t_cond_match = $this->match_attachments_filenames( $p_conditions[ 'cond_issuenote_attachment_filename' ], $this->p_bug_id, $this->p_bugnote_id );
+				if ( !$t_cond_match )
+				{
+					return( FALSE );
+				}
+			}
+
+			if ( isset( $p_exceptions[ 'excep_issuenote_attachment_filename' ] ) )
+			{
+				$t_excep_match = $this->match_attachments_filenames( $p_exceptions[ 'excep_issuenote_attachment_filename' ], $this->p_bug_id, $this->p_bugnote_id );
+				if ( $t_excep_match )
+				{
+					return( FALSE );
+				}
+			}
 		}
 
 		return( TRUE );
 	}
 
-	private function check_exceptions( array $p_exceptions ): bool
-	{
-		
-		return( TRUE );
-	}
-
+	/*
+	 * Apply the actions of the rule as conditions and exceptions have matched
+	 *
+	 * Return value:
+	 * TRUE or FALSE say whether any actions are applied. It should check current value whether action is needed.
+	 */
 	private function apply_actions( array $p_actions ): bool
 	{
 		if ( $this->_perform_actions == OFF )
@@ -147,10 +369,11 @@ class ERP_rule_api extends ERP_ErrorHandling
 	}
 
 	/*
-	 * 
-	 * 
+	 * Write a private note to the issue with a summary of the actions applied
+	 *
 	 * Be careful not to create a infinite loop as bugnote_add triggers the event again.
 	 * @TODO improve created note content
+	 * @TODO ignore rule API for ERP Rule System user
 	 */
 	private function write_private_note( bool|int $p_add_note_actions ): void
 	{
@@ -165,11 +388,15 @@ class ERP_rule_api extends ERP_ErrorHandling
 			return;
 		}
 
-		$t_bugnote_id = bugnote_add( $this->p_bug_id, implode( "\n", $this->_actions_performed ), '0:00', TRUE );
+		$t_bugnote_id = bugnote_add( $this->p_bug_id, implode( "\n", $this->_actions_performed ), p_private: TRUE, p_trigger_event: FALSE );
 
 		$this->_actions_performed = array();
 	}
 
+	/*
+	 * Get the plugin source of the triggered event
+	 *
+	 */
 	private function get_event_source(): string
 	{
 		static $t_previous_plugin = NULL;
@@ -183,6 +410,158 @@ class ERP_rule_api extends ERP_ErrorHandling
 		}
 
 		return( $t_previous_plugin );
+	}
+
+	/*
+	 * Get the current mailbox id being processed by ERP
+	 *
+	 */
+	private function get_current_mailbox_id(): ?int
+	{
+		$t_current_mailbox_id = NULL;
+
+		$t_mailbox_api_index = ERP_get_mailbox_api_name();
+
+		if ( $this->get_event_source() === plugin_get_current() && isset( $GLOBALS[ $t_mailbox_api_index ] ) && is_object( $GLOBALS[ $t_mailbox_api_index ] ) )
+		{
+			$t_current_mailbox_id = $GLOBALS[ $t_mailbox_api_index ]->get_current_mailbox_id();
+		}
+
+		return( $t_current_mailbox_id );
+	}
+
+	/*
+	 * Get the current from field of the email being processed by ERP
+	 *
+	 */
+	private function get_current_from_emailaddress(): ?string
+	{
+		$t_from_emailaddress = NULL;
+
+		$t_current_mailbox_id = $this->get_current_mailbox_id();
+
+		if ( $t_current_mailbox_id !== NULL )
+		{
+			$t_mailbox_api_index = ERP_get_mailbox_api_name();
+
+			$t_from_emailaddress = $GLOBALS[ $t_mailbox_api_index ]->get_from_emailaddress( $t_current_mailbox_id );
+		}
+
+		return( $t_from_emailaddress );
+	}
+
+	/*
+	 * Get the current to field of the email being processed by ERP
+	 *
+	 */
+	private function get_current_to_emailaddress(): ?string
+	{
+		$t_to_emailaddress = NULL;
+
+		$t_current_mailbox_id = $this->get_current_mailbox_id();
+
+		if ( $t_current_mailbox_id !== NULL )
+		{
+			$t_mailbox_api_index = ERP_get_mailbox_api_name();
+
+			$t_to_emailaddress = $GLOBALS[ $t_mailbox_api_index ]->get_to_emailaddress( $t_current_mailbox_id );
+		}
+
+		return( $t_to_emailaddress );
+	}
+
+	/*
+	 * Do a wildcard search using p_needle and p_haystack
+	 *
+	 * The matching is case insensitive
+	 */
+	private function wildcard_match( string $p_needle, string|array $p_haystack ): bool
+	{
+		$p_haystack = (array) $p_haystack;
+
+		$t_regex = preg_quote( $p_needle, '/' );
+		$t_regex = str_replace( array( '\*', '\?' ), array( '.*', '.' ), $t_regex );
+
+		foreach ( $p_haystack AS $t_item )
+		{
+			if ( preg_match( '/\A' . $t_regex . '\z/uis', (string) $t_item ) === 1 )
+			{
+				return( TRUE );
+			}
+		}
+
+		return( FALSE );
+	}
+
+	/*
+	 * Check whether a bug or bugnote has attachments
+	 *
+	 */
+	private function has_attachments( int $p_bug_id, ?int $p_bugnote_id = NULL ): bool
+	{
+		$t_attachment_rows = bug_get_attachments( $p_bug_id );
+
+		$t_bug_attachments_count = count( $t_attachment_rows );
+		if( $t_bug_attachments_count === 0 )
+		{
+			return( FALSE );
+		}
+
+		if ( $p_bugnote_id === NULL )
+		{
+			return( TRUE );
+		}
+		else
+		{
+			$t_bugnote_attachments_count = 0;
+			foreach ( $t_attachment_rows AS $t_row )
+			{
+				$t_bugnote_id = (int) $t_row[ 'bugnote_id' ];
+				if ( $t_bugnote_id === $p_bugnote_id )
+				{
+					return( TRUE );
+				}
+			}
+		}
+
+		return( FALSE );
+	}
+
+	/*
+	 * Check whether a bug or bugnote has a filename match based on p_needle
+	 *
+	 */
+	private function match_attachments_filenames( string $p_needle, int $p_bug_id, ?int $p_bugnote_id = NULL ): bool
+	{
+		$t_attachment_rows = bug_get_attachments( $p_bug_id );
+
+		$t_bug_attachments_count = count( $t_attachment_rows );
+		if( $t_bug_attachments_count === 0 )
+		{
+			return( FALSE );
+		}
+
+		$t_attachment_display_names = array();
+		foreach ( $t_attachment_rows AS $t_row )
+		{
+			if ( $p_bugnote_id === NULL )
+			{
+				$t_attachment_display_names[] = file_get_display_name( $t_row[ 'filename' ] );
+			}
+			else
+			{
+				$t_bugnote_id = (int) $t_row[ 'bugnote_id' ];
+				if ( $t_bugnote_id === $p_bugnote_id )
+				{
+					$t_attachment_display_names[] = file_get_display_name( $t_row[ 'filename' ] );
+				}
+			}
+
+		}
+
+		$t_match = $this->wildcard_match( $p_needle, $t_attachment_display_names );
+
+		return( $t_match );
 	}
 }
 
