@@ -12,6 +12,11 @@ Features
 
 Requirements
 ============
+EmailReporting v0.14.0 and later versions:
+------------------------------------------
+
+* MantisBT 2.13.0 or higher
+
 EmailReporting v0.12.0 and later versions:
 ------------------------------------------
 
