@@ -328,9 +328,15 @@ class EmailReportingPlugin extends MantisPlugin
 			'EVENT_MENU_MANAGE' => 'ERP_manage_emailreporting_menu',
 			'EVENT_CORE_READY'  => 'ERP_core_ready',
 			'EVENT_BUG_DELETED' => 'ERP_issue_deleted',
-			'EVENT_BUGNOTE_ADD' => 'ERP_rule_bugnote',
-			'EVENT_REPORT_BUG'  => 'ERP_rule_bug',
 		);
+
+		$t_mail_rule_system = plugin_config_get( 'mail_rule_system' );
+
+		if ( $t_mail_rule_system == ON )
+		{
+			$hooks[ 'EVENT_BUGNOTE_ADD' ] = 'ERP_rule_bugnote';
+			$hooks[ 'EVENT_REPORT_BUG' ]  = 'ERP_rule_bug';
+		}
 
 		return( $hooks );
 	}
