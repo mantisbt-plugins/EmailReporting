@@ -25,7 +25,6 @@ if ( $f_rule_action === 'add' || $f_rule_action === 'copy' || ( ( $f_rule_action
 			'cond_issue_handler'                 => gpc_get_int_array( 'cond_issue_handler', array() ),
 			'cond_email_from'                    => gpc_get_string( 'cond_email_from', '' ),
 			'cond_email_to'                      => gpc_get_string( 'cond_email_to', '' ),
-			'cond_issue_sendertype'              => gpc_get_string_array( 'cond_issue_sendertype', array() ),
 			'cond_issue_project'                 => gpc_get_int_array( 'cond_issue_project', array() ),
 			'cond_issue_category'                => gpc_get_int_array( 'cond_issue_category', array() ),
 			'cond_issue_priority'                => gpc_get_int_array( 'cond_issue_priority', array() ),
@@ -53,7 +52,7 @@ if ( $f_rule_action === 'add' || $f_rule_action === 'copy' || ( ( $f_rule_action
 		),
 
 		'exceptions' => array(
-			'excep_issue_from'                    => gpc_get_string( 'excep_issue_from', '' ),
+			'excep_email_from'                    => gpc_get_string( 'excep_email_from', '' ),
 			'excep_issue_summary'                 => gpc_get_string( 'excep_issue_summary', '' ),
 			'excep_issuenote_description'         => gpc_get_string( 'excep_issuenote_description', '' ),
 			'excep_issuenote_attachment_filename' => gpc_get_string( 'excep_issuenote_attachment_filename', '' ),

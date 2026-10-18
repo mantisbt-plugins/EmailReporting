@@ -115,7 +115,6 @@ ERP_output_config_option( 'cond_issue_reporter', 'dropdown_multiselect', $t_rule
 ERP_output_config_option( 'cond_issue_handler', 'dropdown_multiselect', $t_rule[ 'conditions' ], 'print_handler_option_list' );
 ERP_output_config_option( 'cond_email_from', 'string', $t_rule[ 'conditions' ] );
 ERP_output_config_option( 'cond_email_to', 'string', $t_rule[ 'conditions' ] );
-ERP_output_config_option( 'cond_issue_sendertype', 'dropdown_multiselect', $t_rule[ 'conditions' ], 'print_descriptions_option_list', array( 'known_reporter', 'unknown_sender', 'registered_user', 'non_mantis_user' ) );
 ERP_output_config_option( 'cond_issue_project', 'dropdown_multiselect', $t_rule[ 'conditions' ], 'print_projects_option_list' );
 ERP_output_config_option( 'cond_issue_category', 'dropdown_multiselect', $t_rule[ 'conditions' ], 'print_global_category_option_list' );
 ERP_output_config_option( 'cond_issue_priority', 'dropdown_multiselect', $t_rule[ 'conditions' ], 'print_priority_option_list' );
@@ -140,7 +139,7 @@ ERP_output_config_option( 'act_issue_custom_fields', 'custom', $t_rule[ 'actions
 ERP_output_table_close();
 
 ERP_output_table_open( 'rule_exceptions' );
-ERP_output_config_option( 'excep_issue_from', 'string', $t_rule[ 'exceptions' ] );
+ERP_output_config_option( 'excep_email_from', 'string', $t_rule[ 'exceptions' ] );
 ERP_output_config_option( 'excep_issue_summary', 'string', $t_rule[ 'exceptions' ] );
 ERP_output_config_option( 'excep_issuenote_description', 'string', $t_rule[ 'exceptions' ] );
 ERP_output_config_option( 'excep_issuenote_attachment_filename', 'string', $t_rule[ 'exceptions' ] );
