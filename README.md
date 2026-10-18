@@ -51,6 +51,12 @@ All versions:
 * Ability to set scheduled / cron jobs on the webserver
 * /api/soap/mc_file_api.php is required for EmailReporting to function properly
 
+Download
+========
+
+The stable releases can be downloaded from the GitHub downloads page: https://github.com/mantisbt-plugins/EmailReporting/releases
+The development versions are not meant for production environments. Use at your own risk
+
 Composer
 ========
 EmailReporting 0.12.0 and later versions make use of Composer.
@@ -95,12 +101,6 @@ These are located in a second composer repository in /EmailReporting/core/Mail/
 * [zetacomponents/mail](https://packagist.org/packages/zetacomponents/mail)
 
 Plus any dependencies these packages require.
-
-Download
-========
-
-The stable releases can be downloaded from the GitHub downloads page: https://github.com/mantisbt-plugins/EmailReporting/releases
-The development versions are not meant for production environments. Use at your own risk
 
 Source code
 -----------
