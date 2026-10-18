@@ -10,6 +10,7 @@ Changelog:
 	- Update ERP_update_check for readability
 	- Redesign interaction with mailbox list for EmailReporting and dependent plugins
 	- Moved EVENT_BUGNOTE_ADD and EVENT_REPORT_BUG to after adding attachments
+	- Fixed deprecation error in add_file
 
 Okt 2026 - EmailReporting-0.13.0
 	- Fix incorrect variable passed to ParseTNEF

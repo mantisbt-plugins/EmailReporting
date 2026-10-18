@@ -776,7 +776,7 @@ class ERP_Mail_Parser
 				$p[ 'name' ] = $p_alternative_name;
 			}
 
-			$p[ 'body' ] = ( ( isset( $part->body ) ) ? $part->body : NULL );
+			$p[ 'body' ] = ( ( isset( $part->body ) ) ? $part->body : '' );
 
 			$this->_parts[] = $p;
 		}
