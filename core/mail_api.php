@@ -1068,7 +1068,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 				{
 					# Reopen issue and add a bug note
 					# We need the bugnote_id for attachments so we cannot rely on bug_reopen
-					$t_bugnote_id = bugnote_add( $t_bug_id, $t_description, p_private: config_get( 'default_bugnote_view_status' ) == VS_PRIVATE, p_send_email: FALSE );
+					$t_bugnote_id = bugnote_add( $t_bug_id, $t_description, p_private: config_get( 'default_bugnote_view_status' ) == VS_PRIVATE, p_send_email: FALSE, p_trigger_event: FALSE );
 					bugnote_process_mentions( $t_bug_id, $t_bugnote_id, $t_description );
 					bug_reopen( $t_bug_id );
 
@@ -1082,7 +1082,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 				if ( !$this->_mail_respect_permissions || access_has_bug_level( config_get( 'add_bugnote_threshold' ), $t_bug_id ) )
 				{
 					# Add a bug note
-					$t_bugnote_id = bugnote_add( $t_bug_id, $t_description, p_private: config_get( 'default_bugnote_view_status' ) == VS_PRIVATE );
+					$t_bugnote_id = bugnote_add( $t_bug_id, $t_description, p_private: config_get( 'default_bugnote_view_status' ) == VS_PRIVATE, p_trigger_event: FALSE );
 
 					# Process the mentions in the added note
 					bugnote_process_mentions( $t_bug_id, $t_bugnote_id, $t_description );
@@ -1134,6 +1134,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 					// This requires us to relink the references to the new issue by first cleaning up the old ones
 					ERP_mailbox_api::delete_references_for_bug_id( $t_master_bug_id );
 				}
+				// We should not use t_bug_id until it is re-used by the bug create() function
 
 				$this->fix_empty_fields( $p_email );
 
@@ -1263,9 +1264,6 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 
 				helper_call_custom_function( 'issue_create_notify', array( $t_bug_id ) );
 
-				# Allow plugins to post-process bug data with the new bug ID
-				event_signal( 'EVENT_REPORT_BUG', array( $t_bug_data, $t_bug_id ) );
-
 				email_bug_added( $t_bug_id );
 			}
 			else
@@ -1297,14 +1295,23 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 				if( !$this->_mail_respect_permissions || file_allow_bug_upload( $t_bug_id ) )
 				{
 					$t_rejected_files = NULL;
+					$t_file_info = array();
 
 					while ( $t_part = array_shift( $p_email[ 'X-Mantis-Parts' ] ) )
 					{
-						$t_file_rejected = $this->add_file( $t_bug_id, $t_part, $t_bugnote_id );
+						$t_file_result = $this->add_file( $t_bug_id, $t_part, $t_bugnote_id );
 
-						if ( $t_file_rejected !== TRUE )
+						if ( is_string( $t_file_result ) )
 						{
-							$t_rejected_files .= $t_file_rejected;
+							$t_rejected_files .= $t_file_result;
+						}
+						else
+						{
+							$t_file_info[] = array(
+								'name' => $t_part[ 'name' ],
+								'size' => strlen( $t_part[ 'body' ] ),
+								'id'   => $t_file_result,
+							);
 						}
 					}
 
@@ -1318,10 +1325,18 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 
 						$t_reject_rejected_files = $this->add_file( $t_bug_id, $t_part, $t_bugnote_id );
 
-						if ( $t_reject_rejected_files !== TRUE )
+						if ( is_string( $t_reject_rejected_files ) )
 						{
 							$t_part[ 'body' ] .= $t_reject_rejected_files;
 							$this->custom_error( 'Failed to add "' . $t_part[ 'name' ] . '" to the issue. See below for all errors.' . "\n" . $t_part[ 'body' ] );
+						}
+						else
+						{
+							$t_file_info[] = array(
+								'name' => $t_part[ 'name' ],
+								'size' => strlen( $t_part[ 'body' ] ),
+								'id'   => $t_reject_rejected_files,
+							);
 						}
 					}
 				}
@@ -1339,6 +1354,17 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 		//Add the message-id to the database
 		$this->add_msg_ids( $t_bug_id, $t_references );
 
+		# Allow plugins to post-process bug/bugnote data with the new bug ID/bugnote ID
+		# Needed to move this after adding attachments so that events can properly see the data.
+		if ( isset( $t_bugnote_id ) )
+		{
+			event_signal( 'EVENT_BUGNOTE_ADD', array( $t_bug_id, $t_bugnote_id, ( ( isset( $t_file_info ) ) ? $t_file_info : array() ) ) );
+		}
+		else
+		{
+			event_signal( 'EVENT_REPORT_BUG', array( $t_bug_data, $t_bug_id ) );
+		}
+
 		ERP_set_temporary_overwrite( 'project_override', NULL );
 
 		$this->show_memory_usage( 'Finished processing attachments' );
@@ -1346,7 +1372,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 
 	# --------------------
 	# Very dirty: Adds a file to a bug.
-	# returns true on success and the filename with reason on error
+	# returns t_attachment_id on success and the filename with reason on error
 	#
 	# Passed by reference to minimise memory usage when
 	# handling large amounts of mailbox data.
@@ -1434,7 +1460,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 			}
 		}
 
-		return( TRUE );
+		return( (int) $t_attachment_id );
 	}
 
 	# --------------------
