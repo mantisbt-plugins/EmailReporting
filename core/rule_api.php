@@ -35,13 +35,44 @@ class ERP_rule_api extends ERP_ErrorHandling
 
 		$this->_mail_debug = (bool) plugin_config_get( 'mail_debug' );
 
+		// We want to perform all actions as the rule system user
+		$t_rule_user_id = plugin_config_get( 'rule_user_id' );
+		if ( !( user_exists( $t_rule_user_id ) && user_is_enabled( $t_rule_user_id ) ) )
+		{
+			$this->setError( 'Rule system user not found or not enabled' );
+		}
+		else
+		{
+			$t_rule_user_username = user_get_field( $t_rule_user_id, 'username' );
+			$t_authattemptresult = auth_attempt_script_login( $t_rule_user_username );
+
+			if ( $t_authattemptresult !== TRUE )
+			{
+				$this->setError( 'Rule system user could not be used' );
+			}
+		}
+
+		if ( $this->hasError() )
+		{
+			while ( $this->hasError() )
+			{
+				$t_error = (
+					'Rule engine: INITIALIZATION' . "\n" .
+					'Message: ' . $this->getError()
+				);
+				plugin_log_event( $t_error );
+			}
+
+			return;
+		}
+
 		$t_rules = plugin_config_get( 'rules' );
 
 		foreach ( $t_rules AS $t_rule )
 		{
 			$t_result = $this->process_rule( $t_rule );
 
-			if ( $t_result === FALSE && $this->_mail_debug == ON )
+			if ( $this->_mail_debug == ON )
 			{
 				while ( $this->hasError() )
 				{
@@ -93,6 +124,13 @@ class ERP_rule_api extends ERP_ErrorHandling
 				$this->setError( 'Bugnote does not exist' );
 				return( FALSE );
 			}
+
+			// Bugnote by the ERP Rule system user should be ignored
+			if ( bugnote_get_field( $this->p_bugnote_id, 'reporter_id' ) === plugin_config_get( 'rule_user_id' ) )
+			{
+				$this->setError( 'Bugnote by the ERP Rule system user ignored' );
+				return( FALSE );
+			}
 		}
 
 		$t_conditions_check = $this->check_conditions( $p_rule[ 'conditions' ], $p_rule[ 'exceptions' ] );
@@ -104,8 +142,8 @@ class ERP_rule_api extends ERP_ErrorHandling
 
 		$this->_perform_actions = (bool) $t_conditions_check;
 
-		$t_actions_performed = $this->apply_actions( $p_rule[ 'actions' ] );
-//var_dump($t_actions_performed);
+		$t_has_actions_performed = $this->apply_actions( $p_rule[ 'actions' ] );
+//var_dump($t_has_actions_performed);
 
 		$this->_perform_actions = FALSE;
 
@@ -164,7 +202,7 @@ class ERP_rule_api extends ERP_ErrorHandling
 
 		// cond_issue_reporter
 		// @TODO Possible future improvement
-		// bugnote_get_field( $this->p_bug_id, 'reporter_id' )
+		// bugnote_get_field( $this->p_bugnote_id, 'reporter_id' )
 		if ( isset( $p_conditions[ 'cond_issue_reporter' ] ) )
 		{
 			if ( !in_array( (int) bug_get_field( $this->p_bug_id, 'reporter_id' ), $p_conditions[ 'cond_issue_reporter' ], TRUE ) )
@@ -344,7 +382,7 @@ class ERP_rule_api extends ERP_ErrorHandling
 	}
 
 	/*
-	 * Apply the actions of the rule as conditions and exceptions have matched
+	 * Apply the actions of the rule
 	 *
 	 * Return value:
 	 * TRUE or FALSE say whether any actions are applied. It should check current value whether action is needed.
@@ -356,16 +394,143 @@ class ERP_rule_api extends ERP_ErrorHandling
 			return( FALSE );
 		}
 
-		$t_changes_made = FALSE;
+		// act_issue_category
+		if ( isset( $p_actions[ 'act_issue_category' ] ) )
+		{
+			if ( bug_get_field( $this->p_bug_id, 'category_id' ) !== $p_actions[ 'act_issue_category' ] )
+			{
+				bug_set_field( $this->p_bug_id, 'category_id', $p_actions[ 'act_issue_category' ] );
+				$this->_actions_performed[] = 'Updated category: ' . $p_actions[ 'act_issue_category' ];
+			}
+		}
 
-		$t_bug_data = bug_get( $this->p_bug_id, FALSE ); // @TODO $p_get_extended = false Should be decided based on need of rule conditions/exceptions
+		// act_issue_severity
+		if ( isset( $p_actions[ 'act_issue_severity' ] ) )
+		{
+			if ( bug_get_field( $this->p_bug_id, 'severity' ) !== $p_actions[ 'act_issue_severity' ] )
+			{
+				bug_set_field( $this->p_bug_id, 'severity', $p_actions[ 'act_issue_severity' ] );
+				$this->_actions_performed[] = 'Updated severity: ' . $p_actions[ 'act_issue_severity' ];
+			}
+		}
 
-		$t_related_custom_field_ids = custom_field_get_linked_ids( $t_bug_data->project_id );
-		$t_act_issue_custom_fields = array_intersect_key( $p_actions[ 'act_issue_custom_fields' ], array_flip( $t_related_custom_field_ids ) );
+		// act_issue_status
+		if ( isset( $p_actions[ 'act_issue_status' ] ) )
+		{
+			if ( bug_get_field( $this->p_bug_id, 'status' ) !== $p_actions[ 'act_issue_status' ] )
+			{
+				bug_set_field( $this->p_bug_id, 'status', $p_actions[ 'act_issue_status' ] );
+				$this->_actions_performed[] = 'Updated status: ' . $p_actions[ 'act_issue_status' ];
+			}
+		}
+
+		// act_issue_view_state
+		if ( isset( $p_actions[ 'act_issue_view_state' ] ) )
+		{
+			if ( bug_get_field( $this->p_bug_id, 'view_state' ) !== $p_actions[ 'act_issue_view_state' ] )
+			{
+				bug_set_field( $this->p_bug_id, 'view_state', $p_actions[ 'act_issue_view_state' ] );
+				$this->_actions_performed[] = 'Updated view_state: ' . $p_actions[ 'act_issue_view_state' ];
+			}
+		}
+
+		// act_issue_reproducibility
+		if ( isset( $p_actions[ 'act_issue_reproducibility' ] ) )
+		{
+			if ( bug_get_field( $this->p_bug_id, 'reproducibility' ) !== $p_actions[ 'act_issue_reproducibility' ] )
+			{
+				bug_set_field( $this->p_bug_id, 'reproducibility', $p_actions[ 'act_issue_reproducibility' ] );
+				$this->_actions_performed[] = 'Updated reproducibility: ' . $p_actions[ 'act_issue_reproducibility' ];
+			}
+		}
+
+		// act_issue_reporter
+		if ( isset( $p_actions[ 'act_issue_reporter' ] ) )
+		{
+			if ( bug_get_field( $this->p_bug_id, 'reporter_id' ) !== $p_actions[ 'act_issue_reporter' ] )
+			{
+				bug_set_field( $this->p_bug_id, 'reporter_id', $p_actions[ 'act_issue_reporter' ] );
+				$this->_actions_performed[] = 'Updated reporter_id: ' . $p_actions[ 'act_issue_reporter' ];
+			}
+		}
+
+		// act_issue_handler
+		if ( isset( $p_actions[ 'act_issue_handler' ] ) )
+		{
+			if ( bug_get_field( $this->p_bug_id, 'handler_id' ) !== $p_actions[ 'act_issue_handler' ] )
+			{
+				bug_set_field( $this->p_bug_id, 'handler_id', $p_actions[ 'act_issue_handler' ] );
+				$this->_actions_performed[] = 'Updated handler_id: ' . $p_actions[ 'act_issue_handler' ];
+			}
+		}
+
+		// act_issue_duedate
+		if ( isset( $p_actions[ 'act_issue_duedate' ] ) )
+		{
+			if ( $p_actions[ 'act_issue_duedate' ][ 'modifier' ] === 'current' )
+			{
+				$t_current_duedate = (int) bug_get_field( $this->p_bug_id, 'due_date' );
+			}
+
+			if ( $p_actions[ 'act_issue_duedate' ][ 'modifier' ] === 'now' || ( isset( $t_current_duedate ) && $t_current_duedate == 1 ) )
+			{
+				$t_current_duedate = time();
+			}
+
+			$t_new_duedate = $t_current_duedate + ( $p_actions[ 'act_issue_duedate' ][ 'amount' ] * 86400 );
+
+			if ( $t_current_duedate !== $t_new_duedate )
+			{
+				bug_set_field( $this->p_bug_id, 'due_date', $p_actions[ 'act_issue_duedate' ] );
+				$this->_actions_performed[] = 'Update duedate: ' . $t_new_duedate;
+			}
+		}
+
+		// act_issue_priority
+		if ( isset( $p_actions[ 'act_issue_priority' ] ) )
+		{
+			if ( bug_get_field( $this->p_bug_id, 'priority' ) !== $p_actions[ 'act_issue_priority' ] )
+			{
+				bug_set_field( $this->p_bug_id, 'priority', $p_actions[ 'act_issue_priority' ] );
+				$this->_actions_performed[] = 'Updated priority: ' . $p_actions[ 'act_issue_priority' ];
+			}
+		}
+
+		// act_issue_tag
+		if ( isset( $p_actions[ 'act_issue_tag' ] ) )
+		{
+			foreach ( $p_actions[ 'act_issue_tag' ] AS $t_tag_id )
+			{
+				if ( tag_exists( $t_tag_id ) )
+				{
+					if ( !tag_bug_is_attached( $t_tag_id, $this->p_bug_id ) )
+					{
+						tag_bug_attach( $t_tag_id, $this->p_bug_id, $p_user_id = null );
+						$this->_actions_performed[] = 'Attached tag: tag id ' . $t_tag_id;
+					}
+				}
+			}
+		}
+
+		// act_issue_custom_fields
+		if ( isset( $p_actions[ 'act_issue_custom_fields' ] ) )
+		{
+			$t_related_custom_field_ids = custom_field_get_linked_ids( bug_get_field( $this->p_bug_id, 'project_id' ) );
+			$t_act_issue_custom_fields = array_intersect_key( $p_actions[ 'act_issue_custom_fields' ], array_flip( $t_related_custom_field_ids ) );
+
+			foreach ( $t_act_issue_custom_fields AS $t_cf_id => $t_cf_value )
+			{
+				if ( custom_field_get_value( $t_cf_id, $this->p_bug_id ) !== $t_cf_value )
+				{
+					custom_field_set_value( $t_cf_id, $this->p_bug_id, $t_cf_value );
+					$this->_actions_performed[] = 'Custom field updated: customfield id ' . $t_cf_id;
+				}
+			}
+		}
 
 		$this->_perform_actions = FALSE;
 
-		return( $t_changes_made );
+		return( !empty( $this->_actions_performed ) );
 	}
 
 	/*
@@ -394,7 +559,7 @@ class ERP_rule_api extends ERP_ErrorHandling
 	}
 
 	/*
-	 * Get the plugin source of the triggered event
+	 * Get the source of the triggered event
 	 *
 	 */
 	private function get_event_source(): string
