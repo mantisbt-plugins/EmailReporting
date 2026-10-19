@@ -86,7 +86,6 @@ class ERP_rule_api extends ERP_ErrorHandling
 
 			$this->clearError();
 		}
-//exit;
 	}
 
 	/*
@@ -95,7 +94,6 @@ class ERP_rule_api extends ERP_ErrorHandling
 	 */
 	private function process_rule( array $p_rule ): bool
 	{
-//var_dump($p_rule);
 		if ( $p_rule[ 'enabled' ] == OFF )
 		{
 			if ( $this->_mail_debug == ON )
@@ -143,7 +141,6 @@ class ERP_rule_api extends ERP_ErrorHandling
 		$this->_perform_actions = (bool) $t_conditions_check;
 
 		$t_has_actions_performed = $this->apply_actions( $p_rule[ 'actions' ] );
-//var_dump($t_has_actions_performed);
 
 		$this->_perform_actions = FALSE;
 
@@ -481,7 +478,7 @@ class ERP_rule_api extends ERP_ErrorHandling
 
 			if ( $t_current_duedate !== $t_new_duedate )
 			{
-				bug_set_field( $this->p_bug_id, 'due_date', $p_actions[ 'act_issue_duedate' ] );
+				bug_set_field( $this->p_bug_id, 'due_date', $t_new_duedate );
 				$this->_actions_performed[] = 'Update duedate: ' . $t_new_duedate;
 			}
 		}
