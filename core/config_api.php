@@ -991,7 +991,7 @@ function ERP_custom_function_print_duedate_option( $p_name, $p_input_name, $p_se
 ?>
 		</select>
 		+
-		<input id="<?php echo $p_input_name ?>_amount" class="input-sm" <?php echo helper_get_tab_index() ?> type="text" size="20" maxlength="10" name="<?php echo $p_input_name ?>_amount" value="<?php echo string_attribute( $t_sel_value[ 'amount' ] ) ?>"/>
+		<input id="<?php echo $p_input_name ?>_amount" class="input-sm" <?php echo helper_get_tab_index() ?> type="number" size="20" maxlength="10" name="<?php echo $p_input_name ?>_amount" value="<?php echo string_attribute( $t_sel_value[ 'amount' ] ) ?>"/> <?php echo lang_get( 'days' ) ?>
 	</td>
 </tr>
 <?php
