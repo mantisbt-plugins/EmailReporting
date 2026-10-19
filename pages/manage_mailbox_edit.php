@@ -133,15 +133,25 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 		{
 			$t_value = implode( ' - ', $t_value );
 		}
-		if ( $t_key === 'enabled' || $t_key === 'ssl_cert_verify' || $t_key === 'imap_createfolderstructure' )
+
+		switch ( $t_key )
 		{
-			$t_value = ( ( $t_value ) ? lang_get( 'yes' ) : lang_get( 'no' ) );
+			// boolean
+			case 'enabled':
+			case 'ssl_cert_verify':
+			case 'imap_createfolderstructure':
+				$t_value = ( ( $t_value ) ? lang_get( 'yes' ) : lang_get( 'no' ) );
+				break;
+
+			// sensitive information
+			case 'erp_password':
+			case 'm_clientSecret':
+			case 'm_pfxPassword':
+				$t_value = '******';
+				break;
 		}
-		if ( $t_key === 'erp_password' || $t_key === 'm_clientSecret' || $t_key === 'm_pfxPassword' )
-		{
-			$t_value = '******';
-		}
-		if ( $t_key !== 'project_id' && $t_key !== 'global_category_id' && $t_key !== 'link_rules' )
+
+		if ( $t_key !== 'project_id' && $t_key !== 'global_category_id' )
 		{
 			$t_message .= plugin_lang_get( $t_key ) . ': ' . $t_value . '<br />';
 		}
