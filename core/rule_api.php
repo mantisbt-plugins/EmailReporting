@@ -454,12 +454,14 @@ class ERP_rule_api extends ERP_ErrorHandling
 		// act_issue_duedate
 		if ( isset( $p_actions[ 'act_issue_duedate' ] ) )
 		{
+			$t_current_duedate = 1;
+
 			if ( $p_actions[ 'act_issue_duedate' ][ 'modifier' ] === 'current' )
 			{
 				$t_current_duedate = (int) bug_get_field( $this->p_bug_id, 'due_date' );
 			}
 
-			if ( $p_actions[ 'act_issue_duedate' ][ 'modifier' ] === 'now' || ( isset( $t_current_duedate ) && $t_current_duedate == 1 ) )
+			if ( $p_actions[ 'act_issue_duedate' ][ 'modifier' ] === 'now' || $t_current_duedate === 1 )
 			{
 				$t_current_duedate = time();
 			}
