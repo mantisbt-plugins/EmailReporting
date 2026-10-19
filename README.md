@@ -1,7 +1,9 @@
 # MantisBT EmailReporting Plugin
 Overview
 ========
-The EmailReporting plugin allows you to report an issue in Mantis by sending an email to a particular mail account.
+The EmailReporting plugin allows you to report an issue and a note in Mantis by sending an email to a particular mail account.
+
+EmailReporting 0.14.0 includes a rule system. It is universal and does not require a mailbox to work. It only depends on MantisBT events so should work for anything that uses these events properly.
 
 Features
 ========
