@@ -14,7 +14,6 @@ class ERP_rule_api extends ERP_ErrorHandling
 	private bool $_functionality_enabled = FALSE;
 	private bool $_perform_actions = FALSE;
 	private bool $_mail_debug = FALSE;
-	private array $_actions_performed = array();
 
 	/*
 	 * Start processing rules for the triggered event
@@ -140,11 +139,9 @@ class ERP_rule_api extends ERP_ErrorHandling
 
 		$this->_perform_actions = (bool) $t_conditions_check;
 
-		$t_has_actions_performed = $this->apply_actions( $p_rule[ 'actions' ] );
+		$this->apply_actions( $p_rule[ 'actions' ] );
 
 		$this->_perform_actions = FALSE;
-
-		$this->write_private_note( $p_rule[ 'add_note_actions' ] );
 
 		return( TRUE );
 	}
@@ -397,7 +394,6 @@ class ERP_rule_api extends ERP_ErrorHandling
 			if ( bug_get_field( $this->p_bug_id, 'category_id' ) !== $p_actions[ 'act_issue_category' ] )
 			{
 				bug_set_field( $this->p_bug_id, 'category_id', $p_actions[ 'act_issue_category' ] );
-				$this->_actions_performed[] = 'Updated category: ' . $p_actions[ 'act_issue_category' ];
 			}
 		}
 
@@ -407,7 +403,6 @@ class ERP_rule_api extends ERP_ErrorHandling
 			if ( bug_get_field( $this->p_bug_id, 'severity' ) !== $p_actions[ 'act_issue_severity' ] )
 			{
 				bug_set_field( $this->p_bug_id, 'severity', $p_actions[ 'act_issue_severity' ] );
-				$this->_actions_performed[] = 'Updated severity: ' . $p_actions[ 'act_issue_severity' ];
 			}
 		}
 
@@ -417,7 +412,6 @@ class ERP_rule_api extends ERP_ErrorHandling
 			if ( bug_get_field( $this->p_bug_id, 'status' ) !== $p_actions[ 'act_issue_status' ] )
 			{
 				bug_set_field( $this->p_bug_id, 'status', $p_actions[ 'act_issue_status' ] );
-				$this->_actions_performed[] = 'Updated status: ' . $p_actions[ 'act_issue_status' ];
 			}
 		}
 
@@ -427,7 +421,6 @@ class ERP_rule_api extends ERP_ErrorHandling
 			if ( bug_get_field( $this->p_bug_id, 'view_state' ) !== $p_actions[ 'act_issue_view_state' ] )
 			{
 				bug_set_field( $this->p_bug_id, 'view_state', $p_actions[ 'act_issue_view_state' ] );
-				$this->_actions_performed[] = 'Updated view_state: ' . $p_actions[ 'act_issue_view_state' ];
 			}
 		}
 
@@ -437,7 +430,6 @@ class ERP_rule_api extends ERP_ErrorHandling
 			if ( bug_get_field( $this->p_bug_id, 'reproducibility' ) !== $p_actions[ 'act_issue_reproducibility' ] )
 			{
 				bug_set_field( $this->p_bug_id, 'reproducibility', $p_actions[ 'act_issue_reproducibility' ] );
-				$this->_actions_performed[] = 'Updated reproducibility: ' . $p_actions[ 'act_issue_reproducibility' ];
 			}
 		}
 
@@ -447,7 +439,6 @@ class ERP_rule_api extends ERP_ErrorHandling
 			if ( bug_get_field( $this->p_bug_id, 'reporter_id' ) !== $p_actions[ 'act_issue_reporter' ] )
 			{
 				bug_set_field( $this->p_bug_id, 'reporter_id', $p_actions[ 'act_issue_reporter' ] );
-				$this->_actions_performed[] = 'Updated reporter_id: ' . $p_actions[ 'act_issue_reporter' ];
 			}
 		}
 
@@ -457,7 +448,6 @@ class ERP_rule_api extends ERP_ErrorHandling
 			if ( bug_get_field( $this->p_bug_id, 'handler_id' ) !== $p_actions[ 'act_issue_handler' ] )
 			{
 				bug_set_field( $this->p_bug_id, 'handler_id', $p_actions[ 'act_issue_handler' ] );
-				$this->_actions_performed[] = 'Updated handler_id: ' . $p_actions[ 'act_issue_handler' ];
 			}
 		}
 
@@ -479,7 +469,6 @@ class ERP_rule_api extends ERP_ErrorHandling
 			if ( $t_current_duedate !== $t_new_duedate )
 			{
 				bug_set_field( $this->p_bug_id, 'due_date', $t_new_duedate );
-				$this->_actions_performed[] = 'Update duedate: ' . $t_new_duedate;
 			}
 		}
 
@@ -489,7 +478,6 @@ class ERP_rule_api extends ERP_ErrorHandling
 			if ( bug_get_field( $this->p_bug_id, 'priority' ) !== $p_actions[ 'act_issue_priority' ] )
 			{
 				bug_set_field( $this->p_bug_id, 'priority', $p_actions[ 'act_issue_priority' ] );
-				$this->_actions_performed[] = 'Updated priority: ' . $p_actions[ 'act_issue_priority' ];
 			}
 		}
 
@@ -503,7 +491,6 @@ class ERP_rule_api extends ERP_ErrorHandling
 					if ( !tag_bug_is_attached( $t_tag_id, $this->p_bug_id ) )
 					{
 						tag_bug_attach( $t_tag_id, $this->p_bug_id, $p_user_id = null );
-						$this->_actions_performed[] = 'Attached tag: tag id ' . $t_tag_id;
 					}
 				}
 			}
@@ -520,39 +507,13 @@ class ERP_rule_api extends ERP_ErrorHandling
 				if ( custom_field_get_value( $t_cf_id, $this->p_bug_id ) !== $t_cf_value )
 				{
 					custom_field_set_value( $t_cf_id, $this->p_bug_id, $t_cf_value );
-					$this->_actions_performed[] = 'Custom field updated: customfield id ' . $t_cf_id;
 				}
 			}
 		}
 
 		$this->_perform_actions = FALSE;
 
-		return( !empty( $this->_actions_performed ) );
-	}
-
-	/*
-	 * Write a private note to the issue with a summary of the actions applied
-	 *
-	 * Be careful not to create a infinite loop as bugnote_add triggers the event again.
-	 * @TODO improve created note content
-	 * @TODO ignore rule API for ERP Rule System user
-	 */
-	private function write_private_note( bool|int $p_add_note_actions ): void
-	{
-		if ( empty( $this->_actions_performed ) )
-		{
-			return;
-		}
-
-		if ( $p_add_note_actions == OFF )
-		{
-			$this->_actions_performed = array();
-			return;
-		}
-
-		$t_bugnote_id = bugnote_add( $this->p_bug_id, implode( "\n", $this->_actions_performed ), p_private: TRUE, p_trigger_event: FALSE );
-
-		$this->_actions_performed = array();
+		return( TRUE );
 	}
 
 	/*

@@ -183,8 +183,6 @@ $s_plugin_EmailReporting_rule_exceptions_help = '- If any of the exceptions matc
 - Selecting an exception tagged with "(ERP)" implies that the creation source can only be "EmailReporting"
 - The comparison is case-insensitive for text input fields';
 
-$s_plugin_EmailReporting_add_note_actions = 'Add private note with actions performed';
-
 $s_plugin_EmailReporting_cond_issue_creation_source = 'Issue creation source';
 $s_plugin_EmailReporting_cond_mailbox = 'Apply to mailboxes (ERP)';
 $s_plugin_EmailReporting_cond_event_type = 'Apply to new issues and / or notes';

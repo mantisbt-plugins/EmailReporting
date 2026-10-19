@@ -180,8 +180,6 @@ $s_plugin_EmailReporting_rule_exceptions_help = '- Si alguna de las excepciones 
 - Seleccionar una excepción etiquetada con "(ERP)" implica que la fuente de creación solo puede ser "EmailReporting".
 - La comparación no distingue entre mayúsculas y minúsculas para los campos de entrada de texto.';
 
-$s_plugin_EmailReporting_add_note_actions = 'Agregar nota privada con las acciones realizadas';
-
 $s_plugin_EmailReporting_cond_issue_creation_source = 'Fuente de creación de incidencias';
 $s_plugin_EmailReporting_cond_mailbox = 'Aplicar a los buzones (ERP)';
 $s_plugin_EmailReporting_cond_event_type = 'Agregar nuevas solicitudes y / o notas';

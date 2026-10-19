@@ -104,7 +104,6 @@ ERP_output_config_option( 'select_rule', 'hidden', $f_select_rule );
 ERP_output_table_open( 'rule_settings' );
 ERP_output_config_option( 'enabled', 'boolean', $t_rule );
 ERP_output_config_option( 'description', 'string', $t_rule );
-ERP_output_config_option( 'add_note_actions', 'boolean', $t_rule );
 ERP_output_table_close();
 
 ERP_output_table_open( 'rule_conditions' );

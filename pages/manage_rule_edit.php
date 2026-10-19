@@ -15,7 +15,6 @@ if ( $f_rule_action === 'add' || $f_rule_action === 'copy' || ( ( $f_rule_action
 	$t_rule = array(
 		'enabled'          => gpc_get_int( 'enabled', OFF ),
 		'description'      => gpc_get_string( 'description', '' ),
-		'add_note_actions' => gpc_get_int( 'add_note_actions', OFF ),
 
 		'conditions' => array(
 			'cond_issue_creation_source'         => gpc_get_string_array( 'cond_issue_creation_source', array() ),
