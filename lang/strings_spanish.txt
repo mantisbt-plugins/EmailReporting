@@ -194,6 +194,8 @@ $s_plugin_EmailReporting_cond_issue_priority = 'Prioridad de la Solicitud';
 $s_plugin_EmailReporting_cond_issue_summary = 'Resumen de la Solicitud';
 $s_plugin_EmailReporting_cond_issuenote_description = 'Descripción del problema/nota';
 $s_plugin_EmailReporting_cond_issuenote_attachments = 'Archivos adjuntos del problema/nota';
+$s_plugin_EmailReporting_has_attachments = 'Tiene archivos adjuntos';
+$s_plugin_EmailReporting_no_attachments = 'Sin archivos adjuntos';
 $s_plugin_EmailReporting_cond_issuenote_attachment_filename = 'Nombre del archivo adjunto del problema/nota';
 
 $s_plugin_EmailReporting_act_issue_category = 'Actualizar Categoria';
@@ -204,6 +206,8 @@ $s_plugin_EmailReporting_act_issue_reproducibility = 'Actualizar la reproducibil
 $s_plugin_EmailReporting_act_issue_reporter = 'Reportero de actualización';
 $s_plugin_EmailReporting_act_issue_handler = 'Actualizar el gestor de incidencias';
 $s_plugin_EmailReporting_act_issue_duedate = 'Actualizar fecha de vencimiento';
+$s_plugin_EmailReporting_current = 'Actual';
+$s_plugin_EmailReporting_now = 'Ahora';
 $s_plugin_EmailReporting_act_issue_priority = 'Actualizar prioridad';
 $s_plugin_EmailReporting_act_issue_tag = 'Agregar etiquetas';
 $s_plugin_EmailReporting_act_issue_custom_fields = 'Actualizar campo personalizado';

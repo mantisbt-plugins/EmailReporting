@@ -125,7 +125,7 @@ elseif ( $f_rule_action === 'describe' && $f_select_rule >= 0 )
 				{
 					if ( $t_key === 'act_issue_duedate' )
 					{
-						$t_value = $t_value[ 'modifier' ] . ' + '. $t_value[ 'amount' ] . ' day(s)';
+						$t_value = $t_value[ 'modifier' ] . ' + '. $t_value[ 'amount' ] . ' ' . lang_get( 'days' );
 					}
 					elseif ( $t_key === 'act_issue_custom_fields' )
 					{

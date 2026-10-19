@@ -197,6 +197,8 @@ $s_plugin_EmailReporting_cond_issue_priority = 'Issue priority';
 $s_plugin_EmailReporting_cond_issue_summary = 'Issue summary';
 $s_plugin_EmailReporting_cond_issuenote_description = 'Issue/note description';
 $s_plugin_EmailReporting_cond_issuenote_attachments = 'Issue/note attachments';
+$s_plugin_EmailReporting_has_attachments = 'Has attachments';
+$s_plugin_EmailReporting_no_attachments = 'No attachments';
 $s_plugin_EmailReporting_cond_issuenote_attachment_filename = 'Issue/note attachment filename';
 
 $s_plugin_EmailReporting_act_issue_category = 'Update category';
@@ -207,6 +209,8 @@ $s_plugin_EmailReporting_act_issue_reproducibility = 'Update reproducibility';
 $s_plugin_EmailReporting_act_issue_reporter = 'Update reporter';
 $s_plugin_EmailReporting_act_issue_handler = 'Update handler';
 $s_plugin_EmailReporting_act_issue_duedate = 'Update duedate';
+$s_plugin_EmailReporting_current = 'Current';
+$s_plugin_EmailReporting_now = 'Now';
 $s_plugin_EmailReporting_act_issue_priority = 'Update priority';
 $s_plugin_EmailReporting_act_issue_tag = 'Add tags';
 $s_plugin_EmailReporting_act_issue_custom_fields = 'Update custom field';

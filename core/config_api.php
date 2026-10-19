@@ -986,7 +986,7 @@ function ERP_custom_function_print_duedate_option( $p_name, $p_input_name, $p_se
 	{
 		echo '<option value="' . string_attribute( $t_option ) . '"';
 		check_selected( $t_sel_value[ 'modifier' ], $t_option );
-		echo '>' . string_attribute( $t_option ) . '</option>';
+		echo '>' . string_attribute( ( ( $t_option !== '' ) ? plugin_lang_get( $t_option ) : $t_option ) ) . '</option>';
 	}
 ?>
 		</select>

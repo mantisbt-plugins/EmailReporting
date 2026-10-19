@@ -197,6 +197,8 @@ $s_plugin_EmailReporting_cond_issue_priority = 'Priorität';
 $s_plugin_EmailReporting_cond_issue_summary = 'Zusammenfassung';
 $s_plugin_EmailReporting_cond_issuenote_description = 'Problem-/Hinweisbeschreibung';
 $s_plugin_EmailReporting_cond_issuenote_attachments = 'Anhänge zu Problemen/Notizen';
+$s_plugin_EmailReporting_has_attachments = 'Hat Anhänge';
+$s_plugin_EmailReporting_no_attachments = 'Keine Anhänge';
 $s_plugin_EmailReporting_cond_issuenote_attachment_filename = 'Dateiname der angehängten Problem-/Notizdatei';
 
 $s_plugin_EmailReporting_act_issue_category = 'Kategorie aktualisieren';
@@ -207,6 +209,8 @@ $s_plugin_EmailReporting_act_issue_reproducibility = 'Reproduzierbarkeit der Akt
 $s_plugin_EmailReporting_act_issue_reporter = 'Update-Reporter';
 $s_plugin_EmailReporting_act_issue_handler = 'Aktualisierungshandler';
 $s_plugin_EmailReporting_act_issue_duedate = 'Fälligkeitsdatum aktualisieren';
+$s_plugin_EmailReporting_current = 'Aktuell';
+$s_plugin_EmailReporting_now = 'Nun';
 $s_plugin_EmailReporting_act_issue_priority = 'Aktualisierungspriorität';
 $s_plugin_EmailReporting_act_issue_tag = 'Tag hinzufügen';
 $s_plugin_EmailReporting_act_issue_custom_fields = 'Benutzerdefiniertes Feld aktualisieren';
