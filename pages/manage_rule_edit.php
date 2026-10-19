@@ -10,7 +10,7 @@ $f_select_rule = gpc_get_int( 'select_rule' );
 
 $t_rules = plugin_config_get( 'rules' );
 
-if ( $f_rule_action === 'add' || $f_rule_action === 'copy' || ( ( $f_rule_action === 'edit' ) && $f_select_rule >= 0 ) )
+if ( $f_rule_action === 'add' || $f_rule_action === 'copy' || ( ( $f_rule_action === 'edit' || $f_rule_action === 'describe' ) && $f_select_rule >= 0 ) )
 {
 	$t_rule = array(
 		'enabled'          => gpc_get_int( 'enabled', OFF ),
@@ -92,7 +92,74 @@ elseif ( $f_rule_action === 'delete' && $f_select_rule >= 0 )
 }
 elseif ( $f_rule_action === 'describe' && $f_select_rule >= 0 )
 {
-	// @TODO
+	$t_no_redirect = TRUE;
+
+	ERP_page_begin( 'manage_rule' );
+?>
+<br /><div class="center">
+<?php
+	$t_message = '';
+
+	foreach ( $t_rule AS $t_key => $t_ruleitem_value )
+	{
+		If ( !is_array( $t_ruleitem_value ) )
+		{
+			if ( $t_key === 'enabled' )
+			{
+				$t_value = ( ( $t_ruleitem_value ) ? lang_get( 'yes' ) : lang_get( 'no' ) );
+			}
+			else
+			{
+				$t_value = $t_ruleitem_value;
+			}
+		
+			$t_message .= plugin_lang_get( $t_key ) . ': ' . $t_value . '<br />';
+		}
+		else
+		{
+			$t_message .= '<br />' . plugin_lang_get( 'rule_' . $t_key ) . '<br />';
+
+			foreach ( $t_ruleitem_value AS $t_key => $t_value )
+			{
+				If ( is_array( $t_value ) )
+				{
+					if ( $t_key === 'act_issue_duedate' )
+					{
+						$t_value = $t_value[ 'modifier' ] . ' + '. $t_value[ 'amount' ] . ' day(s)';
+					}
+					elseif ( $t_key === 'act_issue_custom_fields' )
+					{
+						$t_cfs = '<br />';
+						foreach ( $t_value AS $t_cf_id => $t_cf_value )
+						{
+							$t_cfs .= '<br />CF ID: ' . $t_cf_id . ' - ' . $t_cf_value;
+
+							if ( !custom_field_validate( $t_cf_id, $t_cf_value ) )
+							{
+								$t_cfs .= ' <b style=\'color:red;\'>(INVALID VALUE)</b>';
+							}
+
+							$t_cfs .= '';
+						}
+
+						$t_value = $t_cfs;
+					}
+					else
+					{
+						$t_value = implode( ', ', $t_value );
+					}
+				}
+
+				$t_message .= plugin_lang_get( $t_key ) . ': ' . $t_value . '<br />';
+			}
+		}
+	}
+
+	html_operation_successful( plugin_page( 'manage_rule', TRUE ), $t_message );
+?>
+</div>
+<?php
+	ERP_page_end( __FILE__ );
 }
 
 if( plugin_config_get( 'rules' ) !== $t_rules && ( $f_rule_action === 'add' || $f_rule_action === 'copy' || ( ( $f_rule_action === 'edit' || $f_rule_action === 'delete' ) && $f_select_rule >= 0 ) ) )
