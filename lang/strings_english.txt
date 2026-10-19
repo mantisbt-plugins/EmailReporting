@@ -171,7 +171,7 @@ $s_plugin_EmailReporting_rule_wildcards_help = '- Wildcard characters: * ?
 
 $s_plugin_EmailReporting_rule_conditions_help = '- Unselect multiselect items by using the ctrl key
 - Not selecting any items or leaving a value empty will ignore the condition
-- Selecting a condition tagged with "(ERP)" makes the rule only work when it is triggered while the creation source is "EmailReporting"
+- Selecting a condition tagged with "(ERP)" implies that the creation source can only be "EmailReporting"
 - The comparison is case-insensitive for text input fields';
 
 $s_plugin_EmailReporting_rule_actions_help = '- "[any]" or empty value means the action in question will be ignored
@@ -180,6 +180,7 @@ $s_plugin_EmailReporting_rule_actions_help = '- "[any]" or empty value means the
 - Unselect multiselect items by using the ctrl key';
 
 $s_plugin_EmailReporting_rule_exceptions_help = '- If any of the exceptions match the rule will be ignored
+- Selecting an exception tagged with "(ERP)" implies that the creation source can only be "EmailReporting"
 - The comparison is case-insensitive for text input fields';
 
 $s_plugin_EmailReporting_add_note_actions = 'Add private note with actions performed';

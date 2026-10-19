@@ -171,7 +171,7 @@ $s_plugin_EmailReporting_rule_wildcards_help = '- Charaktere für Platzhalter: *
 
 $s_plugin_EmailReporting_rule_conditions_help = '- Mehrfachauswahl durch Drücken der Strg-Taste aufheben
 - Wenn keine Elemente ausgewählt oder ein Wert leer gelassen wird, wird die Bedingung ignoriert.
-- Durch die Auswahl einer mit "(ERP)" gekennzeichneten Bedingung wird die Regel nur dann wirksam, wenn sie ausgelöst wird, während die Erstellungsquelle "EmailReporting" ist.
+- Die Auswahl einer mit "(ERP)" gekennzeichneten Bedingung bedeutet, dass die Erstellungsquelle nur "EmailReporting" sein kann.
 - Der Vergleich unterscheidet bei Texteingabefeldern nicht zwischen Groß- und Kleinschreibung.';
 
 $s_plugin_EmailReporting_rule_actions_help = '- "[any]" oder ein leerer Wert bedeutet, dass die betreffende Aktion ignoriert wird.
@@ -180,6 +180,7 @@ $s_plugin_EmailReporting_rule_actions_help = '- "[any]" oder ein leerer Wert bed
 - Mehrfachauswahl durch Drücken der Strg-Taste aufheben';
 
 $s_plugin_EmailReporting_rule_exceptions_help = '- Wenn eine der Ausnahmen auf die Regel zutrifft, wird sie ignoriert.
+- Die Auswahl einer mit "(ERP)" gekennzeichneten Ausnahme bedeutet, dass die Erstellungsquelle nur "EmailReporting" sein kann.
 - Der Vergleich unterscheidet bei Texteingabefeldern nicht zwischen Groß- und Kleinschreibung.';
 
 $s_plugin_EmailReporting_add_note_actions = 'Füge eine private Notiz mit den durchgeführten Aktionen hinzu.';

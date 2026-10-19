@@ -168,7 +168,7 @@ $s_plugin_EmailReporting_rule_wildcards_help = '- Carácter Comodín: * ?
 
 $s_plugin_EmailReporting_rule_conditions_help = '- Deseleccione los elementos de selección múltiple usando la tecla Ctrl.
 - Si no se selecciona ningún elemento o se deja un valor vacío, se ignorará la condición.
-- Seleccionar una condición etiquetada con "(ERP)" hace que la regla solo funcione cuando se active mientras la fuente de creación sea "EmailReporting".
+- Seleccionar una condición etiquetada con "(ERP)" implica que la fuente de creación solo puede ser "EmailReporting".
 - La comparación no distingue entre mayúsculas y minúsculas para los campos de entrada de texto.';
 
 $s_plugin_EmailReporting_rule_actions_help = '- "[cualquier]" o un valor vacío significa que la acción en cuestión será ignorada.
@@ -177,6 +177,7 @@ $s_plugin_EmailReporting_rule_actions_help = '- "[cualquier]" o un valor vacío 
 - Deseleccione los elementos de selección múltiple usando la tecla Ctrl.';
 
 $s_plugin_EmailReporting_rule_exceptions_help = '- Si alguna de las excepciones coincide con la regla, se ignorará.
+- Seleccionar una excepción etiquetada con "(ERP)" implica que la fuente de creación solo puede ser "EmailReporting".
 - La comparación no distingue entre mayúsculas y minúsculas para los campos de entrada de texto.';
 
 $s_plugin_EmailReporting_add_note_actions = 'Agregar nota privada con las acciones realizadas';
