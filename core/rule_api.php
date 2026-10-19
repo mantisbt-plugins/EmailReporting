@@ -124,7 +124,7 @@ class ERP_rule_api extends ERP_ErrorHandling
 			}
 
 			// Bugnote by the ERP Rule system user should be ignored
-			if ( bugnote_get_field( $this->p_bugnote_id, 'reporter_id' ) === plugin_config_get( 'rule_user_id' ) )
+			if ( (int) bugnote_get_field( $this->p_bugnote_id, 'reporter_id' ) === plugin_config_get( 'rule_user_id' ) )
 			{
 				$this->setError( 'Bugnote by the ERP Rule system user ignored' );
 				return( FALSE );
