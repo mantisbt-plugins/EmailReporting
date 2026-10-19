@@ -504,9 +504,16 @@ class ERP_rule_api extends ERP_ErrorHandling
 
 			foreach ( $t_act_issue_custom_fields AS $t_cf_id => $t_cf_value )
 			{
-				if ( custom_field_get_value( $t_cf_id, $this->p_bug_id ) !== $t_cf_value )
+				if ( custom_field_validate( $t_cf_id, $t_cf_value ) )
 				{
-					custom_field_set_value( $t_cf_id, $this->p_bug_id, $t_cf_value );
+					if ( custom_field_get_value( $t_cf_id, $this->p_bug_id ) !== $t_cf_value )
+					{
+						custom_field_set_value( $t_cf_id, $this->p_bug_id, $t_cf_value );
+					}
+				}
+				else
+				{
+					$this->setError( 'Customfield has incorrect value: ' . $t_cf_id . ' / ' . $t_cf_value );
 				}
 			}
 		}
