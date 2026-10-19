@@ -34,7 +34,7 @@ ERP_output_note_close();
 # check whether rule user exists
 $t_rule_user_id = plugin_config_get( 'rule_user_id' );
 
-if ( !( is_int( $t_rule_user_id ) && user_exists( $t_rule_user_id ) ) )
+if ( !( is_int( $t_rule_user_id ) && user_exists( $t_rule_user_id ) && user_is_enabled( $t_rule_user_id ) ) )
 {
 	# We need to allow blank emails for a sec
 	ERP_set_temporary_overwrite( 'allow_blank_email', ON );
