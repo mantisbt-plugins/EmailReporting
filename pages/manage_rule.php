@@ -9,6 +9,17 @@ require_api( 'custom_field_api.php' );
 $t_this_page = 'manage_rule';
 ERP_page_begin( $t_this_page );
 
+if ( !plugin_config_get( 'mail_rule_system' ) )
+{
+	ERP_output_note_open();
+?>
+<p><i class="fa fa-warning"></i> 
+<?php echo plugin_lang_get( 'mail_rule_system' ) . ': ' . lang_get( 'disabled' ) ?>
+</p>
+<?php
+	ERP_output_note_close();
+}
+
 ERP_output_note_open();
 echo '<p><b>' . plugin_lang_get( 'rule_wildcards' ) . '</b><br />' . nl2br( plugin_lang_get( 'rule_wildcards_help' ) ) . '</p>';
 ERP_output_note_close();
