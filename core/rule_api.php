@@ -391,7 +391,7 @@ class ERP_rule_api extends ERP_ErrorHandling
 		// act_issue_project
 		if ( isset( $p_actions[ 'act_issue_project' ] ) )
 		{
-			if ( bug_get_field( $this->p_bug_id, 'project_id' ) !== $p_actions[ 'act_issue_project' ] )
+			if ( (int) bug_get_field( $this->p_bug_id, 'project_id' ) !== $p_actions[ 'act_issue_project' ] )
 			{
 				bug_move( $this->p_bug_id, $p_actions[ 'act_issue_project' ] );
 			}
@@ -400,7 +400,7 @@ class ERP_rule_api extends ERP_ErrorHandling
 		// act_issue_category
 		if ( isset( $p_actions[ 'act_issue_category' ] ) )
 		{
-			if ( bug_get_field( $this->p_bug_id, 'category_id' ) !== $p_actions[ 'act_issue_category' ] )
+			if ( (int) bug_get_field( $this->p_bug_id, 'category_id' ) !== $p_actions[ 'act_issue_category' ] )
 			{
 				bug_set_field( $this->p_bug_id, 'category_id', $p_actions[ 'act_issue_category' ] );
 			}
@@ -409,7 +409,7 @@ class ERP_rule_api extends ERP_ErrorHandling
 		// act_issue_severity
 		if ( isset( $p_actions[ 'act_issue_severity' ] ) )
 		{
-			if ( bug_get_field( $this->p_bug_id, 'severity' ) !== $p_actions[ 'act_issue_severity' ] )
+			if ( (int) bug_get_field( $this->p_bug_id, 'severity' ) !== $p_actions[ 'act_issue_severity' ] )
 			{
 				bug_set_field( $this->p_bug_id, 'severity', $p_actions[ 'act_issue_severity' ] );
 			}
@@ -418,11 +418,8 @@ class ERP_rule_api extends ERP_ErrorHandling
 		// act_issue_status
 		if ( isset( $p_actions[ 'act_issue_status' ] ) )
 		{
-			if ( bug_get_field( $this->p_bug_id, 'status' ) !== $p_actions[ 'act_issue_status' ] )
+			if ( (int) bug_get_field( $this->p_bug_id, 'status' ) !== $p_actions[ 'act_issue_status' ] )
 			{
-				//bug_resolve( $p_bug_id, $p_resolution, $p_fixed_in_version = '', $p_bugnote_text = '', $p_duplicate_id = null, $p_handler_id = null, $p_bugnote_private = false, $p_time_tracking = '0:00' );
-				//bug_close( $p_bug_id, $p_bugnote_text = '', $p_bugnote_private = false, $p_time_tracking = '0:00' );
-				//bug_reopen( $p_bug_id, $p_bugnote_text = '', $p_time_tracking = '0:00', $p_bugnote_private = false );
 				bug_set_field( $this->p_bug_id, 'status', $p_actions[ 'act_issue_status' ] );
 			}
 		}
@@ -430,7 +427,7 @@ class ERP_rule_api extends ERP_ErrorHandling
 		// act_issue_view_state
 		if ( isset( $p_actions[ 'act_issue_view_state' ] ) )
 		{
-			if ( bug_get_field( $this->p_bug_id, 'view_state' ) !== $p_actions[ 'act_issue_view_state' ] )
+			if ( (int) bug_get_field( $this->p_bug_id, 'view_state' ) !== $p_actions[ 'act_issue_view_state' ] )
 			{
 				bug_set_field( $this->p_bug_id, 'view_state', $p_actions[ 'act_issue_view_state' ] );
 			}
@@ -439,7 +436,7 @@ class ERP_rule_api extends ERP_ErrorHandling
 		// act_issue_reproducibility
 		if ( isset( $p_actions[ 'act_issue_reproducibility' ] ) )
 		{
-			if ( bug_get_field( $this->p_bug_id, 'reproducibility' ) !== $p_actions[ 'act_issue_reproducibility' ] )
+			if ( (int) bug_get_field( $this->p_bug_id, 'reproducibility' ) !== $p_actions[ 'act_issue_reproducibility' ] )
 			{
 				bug_set_field( $this->p_bug_id, 'reproducibility', $p_actions[ 'act_issue_reproducibility' ] );
 			}
@@ -448,7 +445,7 @@ class ERP_rule_api extends ERP_ErrorHandling
 		// act_issue_reporter
 		if ( isset( $p_actions[ 'act_issue_reporter' ] ) )
 		{
-			if ( bug_get_field( $this->p_bug_id, 'reporter_id' ) !== $p_actions[ 'act_issue_reporter' ] )
+			if ( (int) bug_get_field( $this->p_bug_id, 'reporter_id' ) !== $p_actions[ 'act_issue_reporter' ] )
 			{
 				bug_set_field( $this->p_bug_id, 'reporter_id', $p_actions[ 'act_issue_reporter' ] );
 			}
@@ -457,9 +454,8 @@ class ERP_rule_api extends ERP_ErrorHandling
 		// act_issue_handler
 		if ( isset( $p_actions[ 'act_issue_handler' ] ) )
 		{
-			if ( bug_get_field( $this->p_bug_id, 'handler_id' ) !== $p_actions[ 'act_issue_handler' ] )
+			if ( (int) bug_get_field( $this->p_bug_id, 'handler_id' ) !== $p_actions[ 'act_issue_handler' ] )
 			{
-				// bug_assign( $p_bug_id, $p_user_id, $p_bugnote_text = '', $p_bugnote_private = false );
 				bug_set_field( $this->p_bug_id, 'handler_id', $p_actions[ 'act_issue_handler' ] );
 			}
 		}
@@ -492,7 +488,7 @@ class ERP_rule_api extends ERP_ErrorHandling
 		// act_issue_priority
 		if ( isset( $p_actions[ 'act_issue_priority' ] ) )
 		{
-			if ( bug_get_field( $this->p_bug_id, 'priority' ) !== $p_actions[ 'act_issue_priority' ] )
+			if ( (int) bug_get_field( $this->p_bug_id, 'priority' ) !== $p_actions[ 'act_issue_priority' ] )
 			{
 				bug_set_field( $this->p_bug_id, 'priority', $p_actions[ 'act_issue_priority' ] );
 			}
@@ -507,7 +503,7 @@ class ERP_rule_api extends ERP_ErrorHandling
 				{
 					if ( !tag_bug_is_attached( $t_tag_id, $this->p_bug_id ) )
 					{
-						tag_bug_attach( $t_tag_id, $this->p_bug_id, $p_user_id = null );
+						tag_bug_attach( $t_tag_id, $this->p_bug_id );
 					}
 				}
 			}
