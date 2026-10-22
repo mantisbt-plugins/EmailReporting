@@ -1213,11 +1213,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 
 				# Create the bug
 				$t_bug_id = $t_bug_data->create();
-				// MantisBT 1.3.x function
-				if ( method_exists( $t_bug_data, 'process_mentions' ) )
-				{
-					$t_bug_data->process_mentions();
-				}
+				$t_bug_data->process_mentions();
 
 				// @TODO@ Enabled for processing default values. Needs more work for other features
 				// - Handling of non default values not working
@@ -1400,15 +1396,18 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 		{
 			return( $t_part_name . ' = filetype not allowed' . "\n" );
 		}
-		elseif ( 0 === $t_strlen_body )
+
+		if ( 0 === $t_strlen_body )
 		{
 			return( $t_part_name . ' = attachment size is zero (0 / ' . $this->_max_file_size . ')' . "\n" );
 		}
-		elseif ( $t_strlen_body > $this->_max_file_size )
+
+		if ( $t_strlen_body > $this->_max_file_size )
 		{
 			return( $t_part_name . ' = attachment size exceeds maximum allowed file size (' . $t_strlen_body . ' / ' . $this->_max_file_size . ')' . "\n" );
 		}
-		elseif ( !empty( $t_body_md5 ) && in_array( $t_body_md5, $this->_mail_block_attachments_md5, TRUE ) )
+
+		if ( !empty( $t_body_md5 ) && in_array( $t_body_md5, $this->_mail_block_attachments_md5, TRUE ) )
 		{
 			if ( $this->_mail_block_attachments_logging )
 			{
@@ -1419,45 +1418,44 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 				return( TRUE );
 			}
 		}
-		elseif ( !bug_exists( $p_bug_id ) )
+
+		if ( !bug_exists( $p_bug_id ) )
 		{
 			return( $t_part_name . ' = given bug_id does not exist' . "\n" );
 		}
+
+		$t_file_number = 0;
+		$t_opt_name = '';
+		$t_dot_index = strripos( $t_part_name, '.' );
+		if( $t_dot_index === FALSE )
+		{
+			$t_extension = '';
+			$t_file_name = $t_part_name;
+		}
 		else
 		{
-			$t_file_number = 0;
-			$t_opt_name = '';
-			$t_dot_index = strripos( $t_part_name, '.' );
-			if( $t_dot_index === FALSE )
-			{
-				$t_extension = '';
-				$t_file_name = $t_part_name;
-			}
-			else
-			{
-				$t_extension = substr( $t_part_name, $t_dot_index, strlen( $t_part_name ) - $t_dot_index );
-				$t_file_name = substr( $t_part_name, 0, $t_dot_index );
-			}
+			$t_extension = substr( $t_part_name, $t_dot_index, strlen( $t_part_name ) - $t_dot_index );
+			$t_file_name = substr( $t_part_name, 0, $t_dot_index );
+		}
 
-			// check max length filename. Shorten if necessary. Leave room for file number.
-			$t_max_length = ( ( defined( 'DB_FIELD_SIZE_FILENAME' ) ) ? DB_FIELD_SIZE_FILENAME : 250 ) - 5;
-			if ( strlen( $t_file_name ) > ( $t_max_length - strlen( $t_extension ) ) )
-			{
-				$t_file_name = substr( $t_file_name, 0, ( $t_max_length - strlen( $t_extension ) ) );
-			}
+		// check max length filename. Shorten if necessary. Leave room for file number.
+		$t_max_length = ( ( defined( 'DB_FIELD_SIZE_FILENAME' ) ) ? DB_FIELD_SIZE_FILENAME : 250 ) - 5;
+		if ( strlen( $t_file_name ) > ( $t_max_length - strlen( $t_extension ) ) )
+		{
+			$t_file_name = substr( $t_file_name, 0, ( $t_max_length - strlen( $t_extension ) ) );
+		}
 
-			while ( !file_is_name_unique( $t_file_name . $t_opt_name . $t_extension, $p_bug_id ) )
-			{
-				$t_file_number++;
-				$t_opt_name = '-' . $t_file_number;
-			}
+		while ( !file_is_name_unique( $t_file_name . $t_opt_name . $t_extension, $p_bug_id ) )
+		{
+			$t_file_number++;
+			$t_opt_name = '-' . $t_file_number;
+		}
 
-			$t_attachment_id = mci_file_add( $p_bug_id, $t_file_name . $t_opt_name . $t_extension, $p_part[ 'body' ], $p_part[ 'ctype' ], 'bug' );
+		$t_attachment_id = mci_file_add( $p_bug_id, $t_file_name . $t_opt_name . $t_extension, $p_part[ 'body' ], $p_part[ 'ctype' ], 'bug' );
 
-			if ( function_exists( 'file_link_to_bugnote' ) && is_numeric( $t_attachment_id ) && $t_attachment_id > 0 && $p_bugnote_id !== NULL )
-			{
-				file_link_to_bugnote( $t_attachment_id, $p_bugnote_id );
-			}
+		if ( function_exists( 'file_link_to_bugnote' ) && is_numeric( $t_attachment_id ) && $t_attachment_id > 0 && $p_bugnote_id !== NULL )
+		{
+			file_link_to_bugnote( $t_attachment_id, $p_bugnote_id );
 		}
 
 		return( (int) $t_attachment_id );
