@@ -34,6 +34,7 @@ if ( $f_rule_action === 'add' || $f_rule_action === 'copy' || ( ( $f_rule_action
 		),
 
 		'actions' => array(
+			'act_issue_project'          => gpc_get_int( 'act_issue_project', 0 ),
 			'act_issue_category'         => gpc_get_int( 'act_issue_category', 0 ),
 			'act_issue_severity'         => gpc_get_int( 'act_issue_severity', 0 ),
 			'act_issue_status'           => gpc_get_int( 'act_issue_status', 0 ),

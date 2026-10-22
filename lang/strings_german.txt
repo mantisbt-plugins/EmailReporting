@@ -201,6 +201,7 @@ $s_plugin_EmailReporting_has_attachments = 'Hat Anhänge';
 $s_plugin_EmailReporting_no_attachments = 'Keine Anhänge';
 $s_plugin_EmailReporting_cond_issuenote_attachment_filename = 'Dateiname der angehängten Problem-/Notizdatei';
 
+$s_plugin_EmailReporting_act_issue_project = 'Projekt aktualisieren';
 $s_plugin_EmailReporting_act_issue_category = 'Kategorie aktualisieren';
 $s_plugin_EmailReporting_act_issue_severity = 'Aktualisierungsschweregrad';
 $s_plugin_EmailReporting_act_issue_status = 'Status aktualisieren';

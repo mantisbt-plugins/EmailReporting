@@ -198,6 +198,7 @@ $s_plugin_EmailReporting_has_attachments = 'Tiene archivos adjuntos';
 $s_plugin_EmailReporting_no_attachments = 'Sin archivos adjuntos';
 $s_plugin_EmailReporting_cond_issuenote_attachment_filename = 'Nombre del archivo adjunto del problema/nota';
 
+$s_plugin_EmailReporting_act_issue_project = 'Actualizar Proyecto';
 $s_plugin_EmailReporting_act_issue_category = 'Actualizar Categoria';
 $s_plugin_EmailReporting_act_issue_severity = 'Actualizar severidad';
 $s_plugin_EmailReporting_act_issue_status = 'Actualizar estado';

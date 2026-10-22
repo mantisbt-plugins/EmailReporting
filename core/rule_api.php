@@ -388,6 +388,15 @@ class ERP_rule_api extends ERP_ErrorHandling
 			return( FALSE );
 		}
 
+		// act_issue_project
+		if ( isset( $p_actions[ 'act_issue_project' ] ) )
+		{
+			if ( bug_get_field( $this->p_bug_id, 'project_id' ) !== $p_actions[ 'act_issue_project' ] )
+			{
+				bug_move( $this->p_bug_id, $p_actions[ 'act_issue_project' ] );
+			}
+		}
+
 		// act_issue_category
 		if ( isset( $p_actions[ 'act_issue_category' ] ) )
 		{

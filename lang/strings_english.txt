@@ -201,6 +201,7 @@ $s_plugin_EmailReporting_has_attachments = 'Has attachments';
 $s_plugin_EmailReporting_no_attachments = 'No attachments';
 $s_plugin_EmailReporting_cond_issuenote_attachment_filename = 'Issue/note attachment filename';
 
+$s_plugin_EmailReporting_act_issue_project = 'Update project';
 $s_plugin_EmailReporting_act_issue_category = 'Update category';
 $s_plugin_EmailReporting_act_issue_severity = 'Update severity';
 $s_plugin_EmailReporting_act_issue_status = 'Update status';

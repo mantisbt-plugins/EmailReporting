@@ -135,6 +135,7 @@ ERP_output_config_option( 'cond_issuenote_attachment_filename', 'string', $t_rul
 ERP_output_table_close();
 
 ERP_output_table_open( 'rule_actions' );
+ERP_output_config_option( 'act_issue_project', 'dropdown_any', $t_rule[ 'actions' ], 'print_projects_option_list' );
 ERP_output_config_option( 'act_issue_category', 'dropdown_any', $t_rule[ 'actions' ], 'print_global_category_option_list' );
 ERP_output_config_option( 'act_issue_severity', 'dropdown_any', $t_rule[ 'actions' ], 'print_severity_option_list' );
 ERP_output_config_option( 'act_issue_status', 'dropdown_any', $t_rule[ 'actions' ], 'print_status_option_list' );
