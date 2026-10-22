@@ -420,6 +420,9 @@ class ERP_rule_api extends ERP_ErrorHandling
 		{
 			if ( bug_get_field( $this->p_bug_id, 'status' ) !== $p_actions[ 'act_issue_status' ] )
 			{
+				//bug_resolve( $p_bug_id, $p_resolution, $p_fixed_in_version = '', $p_bugnote_text = '', $p_duplicate_id = null, $p_handler_id = null, $p_bugnote_private = false, $p_time_tracking = '0:00' );
+				//bug_close( $p_bug_id, $p_bugnote_text = '', $p_bugnote_private = false, $p_time_tracking = '0:00' );
+				//bug_reopen( $p_bug_id, $p_bugnote_text = '', $p_time_tracking = '0:00', $p_bugnote_private = false );
 				bug_set_field( $this->p_bug_id, 'status', $p_actions[ 'act_issue_status' ] );
 			}
 		}
@@ -456,6 +459,7 @@ class ERP_rule_api extends ERP_ErrorHandling
 		{
 			if ( bug_get_field( $this->p_bug_id, 'handler_id' ) !== $p_actions[ 'act_issue_handler' ] )
 			{
+				// bug_assign( $p_bug_id, $p_user_id, $p_bugnote_text = '', $p_bugnote_private = false );
 				bug_set_field( $this->p_bug_id, 'handler_id', $p_actions[ 'act_issue_handler' ] );
 			}
 		}
@@ -475,7 +479,9 @@ class ERP_rule_api extends ERP_ErrorHandling
 				$t_current_duedate = time();
 			}
 
-			$t_new_duedate = $t_current_duedate + ( $p_actions[ 'act_issue_duedate' ][ 'amount' ] * 86400 );
+			$t_duedate_amount = ( ( isset( $p_actions[ 'act_issue_duedate' ][ 'amount' ] ) ) ? $p_actions[ 'act_issue_duedate' ][ 'amount' ] : 0 );
+
+			$t_new_duedate = $t_current_duedate + ( $t_duedate_amount * 86400 );
 
 			if ( $t_current_duedate !== $t_new_duedate )
 			{

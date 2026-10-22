@@ -1,6 +1,7 @@
 Changelog:
 ??? - EmailReporting-0.15.0
 	- Add action for update project
+	- Fix duedate if amount of days = 0
 
 Okt 2026 - EmailReporting-0.14.0
 	- MantisBT minimum version increased to 2.13.0
