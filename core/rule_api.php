@@ -654,7 +654,6 @@ class ERP_rule_api extends ERP_ErrorHandling
 		}
 		else
 		{
-			$t_bugnote_attachments_count = 0;
 			foreach ( $t_attachment_rows AS $t_row )
 			{
 				$t_bugnote_id = (int) $t_row[ 'bugnote_id' ];
