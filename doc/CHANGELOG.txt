@@ -3,6 +3,7 @@ Changelog:
 	- Rule system: Add action for update project
 	- Rule system: Fix duedate if amount of days = 0
 	- Rule system: Correct action checks current value vs new value
+	- Rule system: Add sanity checks for actions
 
 Okt 2026 - EmailReporting-0.14.0
 	- MantisBT minimum version increased to 2.13.0

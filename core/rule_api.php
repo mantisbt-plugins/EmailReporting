@@ -389,11 +389,19 @@ class ERP_rule_api extends ERP_ErrorHandling
 		}
 
 		// act_issue_project
+		// This should always be the first action since some things are project specific
 		if ( isset( $p_actions[ 'act_issue_project' ] ) )
 		{
 			if ( (int) bug_get_field( $this->p_bug_id, 'project_id' ) !== $p_actions[ 'act_issue_project' ] )
 			{
-				bug_move( $this->p_bug_id, $p_actions[ 'act_issue_project' ] );
+				if ( project_exists( $p_actions[ 'act_issue_project' ] ) )
+				{
+					bug_move( $this->p_bug_id, $p_actions[ 'act_issue_project' ] );
+				}
+				else
+				{
+					$this->setError( 'Project missing: ' . $p_actions[ 'act_issue_project' ] );
+				}
 			}
 		}
 
@@ -402,7 +410,14 @@ class ERP_rule_api extends ERP_ErrorHandling
 		{
 			if ( (int) bug_get_field( $this->p_bug_id, 'category_id' ) !== $p_actions[ 'act_issue_category' ] )
 			{
-				bug_set_field( $this->p_bug_id, 'category_id', $p_actions[ 'act_issue_category' ] );
+				if ( category_exists( $p_actions[ 'act_issue_category' ] ) )
+				{
+					bug_set_field( $this->p_bug_id, 'category_id', $p_actions[ 'act_issue_category' ] );
+				}
+				else
+				{
+					$this->setError( 'Category missing: ' . $p_actions[ 'act_issue_category' ] );
+				}
 			}
 		}
 
@@ -411,7 +426,15 @@ class ERP_rule_api extends ERP_ErrorHandling
 		{
 			if ( (int) bug_get_field( $this->p_bug_id, 'severity' ) !== $p_actions[ 'act_issue_severity' ] )
 			{
-				bug_set_field( $this->p_bug_id, 'severity', $p_actions[ 'act_issue_severity' ] );
+				$t_enum = config_get( 'severity_enum_string' );
+				if( MantisEnum::hasValue( $t_enum, $p_actions[ 'act_issue_severity' ] ) )
+				{
+					bug_set_field( $this->p_bug_id, 'severity', $p_actions[ 'act_issue_severity' ] );
+				}
+				else
+				{
+					$this->setError( 'Severity missing: ' . $p_actions[ 'act_issue_severity' ] );
+				}
 			}
 		}
 
@@ -420,7 +443,15 @@ class ERP_rule_api extends ERP_ErrorHandling
 		{
 			if ( (int) bug_get_field( $this->p_bug_id, 'status' ) !== $p_actions[ 'act_issue_status' ] )
 			{
-				bug_set_field( $this->p_bug_id, 'status', $p_actions[ 'act_issue_status' ] );
+				$t_enum = config_get( 'status_enum_string' );
+				if( MantisEnum::hasValue( $t_enum, $p_actions[ 'act_issue_status' ] ) )
+				{
+					bug_set_field( $this->p_bug_id, 'status', $p_actions[ 'act_issue_status' ] );
+				}
+				else
+				{
+					$this->setError( 'Status missing: ' . $p_actions[ 'act_issue_status' ] );
+				}
 			}
 		}
 
@@ -429,7 +460,15 @@ class ERP_rule_api extends ERP_ErrorHandling
 		{
 			if ( (int) bug_get_field( $this->p_bug_id, 'view_state' ) !== $p_actions[ 'act_issue_view_state' ] )
 			{
-				bug_set_field( $this->p_bug_id, 'view_state', $p_actions[ 'act_issue_view_state' ] );
+				$t_enum = config_get( 'view_state_enum_string' );
+				if( MantisEnum::hasValue( $t_enum, $p_actions[ 'act_issue_view_state' ] ) )
+				{
+					bug_set_field( $this->p_bug_id, 'view_state', $p_actions[ 'act_issue_view_state' ] );
+				}
+				else
+				{
+					$this->setError( 'View_state missing: ' . $p_actions[ 'act_issue_view_state' ] );
+				}
 			}
 		}
 
@@ -438,7 +477,15 @@ class ERP_rule_api extends ERP_ErrorHandling
 		{
 			if ( (int) bug_get_field( $this->p_bug_id, 'reproducibility' ) !== $p_actions[ 'act_issue_reproducibility' ] )
 			{
-				bug_set_field( $this->p_bug_id, 'reproducibility', $p_actions[ 'act_issue_reproducibility' ] );
+				$t_enum = config_get( 'reproducibility_enum_string' );
+				if( MantisEnum::hasValue( $t_enum, $p_actions[ 'act_issue_reproducibility' ] ) )
+				{
+					bug_set_field( $this->p_bug_id, 'reproducibility', $p_actions[ 'act_issue_reproducibility' ] );
+				}
+				else
+				{
+					$this->setError( 'Reproducibility missing: ' . $p_actions[ 'act_issue_reproducibility' ] );
+				}
 			}
 		}
 
@@ -447,7 +494,14 @@ class ERP_rule_api extends ERP_ErrorHandling
 		{
 			if ( (int) bug_get_field( $this->p_bug_id, 'reporter_id' ) !== $p_actions[ 'act_issue_reporter' ] )
 			{
-				bug_set_field( $this->p_bug_id, 'reporter_id', $p_actions[ 'act_issue_reporter' ] );
+				if ( user_exists( $p_actions[ 'act_issue_reporter' ] ) )
+				{
+					bug_set_field( $this->p_bug_id, 'reporter_id', $p_actions[ 'act_issue_reporter' ] );
+				}
+				else
+				{
+					$this->setError( 'Reporter user missing: ' . $p_actions[ 'act_issue_reporter' ] );
+				}
 			}
 		}
 
@@ -456,15 +510,20 @@ class ERP_rule_api extends ERP_ErrorHandling
 		{
 			if ( (int) bug_get_field( $this->p_bug_id, 'handler_id' ) !== $p_actions[ 'act_issue_handler' ] )
 			{
-				bug_set_field( $this->p_bug_id, 'handler_id', $p_actions[ 'act_issue_handler' ] );
+				if ( user_exists( $p_actions[ 'act_issue_handler' ] ) )
+				{
+					bug_set_field( $this->p_bug_id, 'handler_id', $p_actions[ 'act_issue_handler' ] );
+				}
+				else
+				{
+					$this->setError( 'Handler user missing: ' . $p_actions[ 'act_issue_handler' ] );
+				}
 			}
 		}
 
 		// act_issue_duedate
-		if ( isset( $p_actions[ 'act_issue_duedate' ] ) )
+		if ( isset( $p_actions[ 'act_issue_duedate' ], $p_actions[ 'act_issue_duedate' ][ 'modifier' ] ) )
 		{
-			$t_current_duedate = 1;
-
 			if ( $p_actions[ 'act_issue_duedate' ][ 'modifier' ] === 'current' )
 			{
 				$t_current_duedate = (int) bug_get_field( $this->p_bug_id, 'due_date' );
@@ -475,13 +534,20 @@ class ERP_rule_api extends ERP_ErrorHandling
 				$t_current_duedate = time();
 			}
 
-			$t_duedate_amount = ( ( isset( $p_actions[ 'act_issue_duedate' ][ 'amount' ] ) ) ? $p_actions[ 'act_issue_duedate' ][ 'amount' ] : 0 );
-
-			$t_new_duedate = $t_current_duedate + ( $t_duedate_amount * 86400 );
-
-			if ( $t_current_duedate !== $t_new_duedate )
+			if ( isset( $t_current_duedate ) )
 			{
-				bug_set_field( $this->p_bug_id, 'due_date', $t_new_duedate );
+				$t_duedate_amount = ( ( isset( $p_actions[ 'act_issue_duedate' ][ 'amount' ] ) ) ? $p_actions[ 'act_issue_duedate' ][ 'amount' ] : 0 );
+
+				$t_new_duedate = $t_current_duedate + ( $t_duedate_amount * 86400 );
+
+				if ( $t_current_duedate !== $t_new_duedate )
+				{
+					bug_set_field( $this->p_bug_id, 'due_date', $t_current_duedate );
+				}
+			}
+			else
+			{
+				$this->setError( 'Duedate unknown issue.' );
 			}
 		}
 
@@ -490,7 +556,15 @@ class ERP_rule_api extends ERP_ErrorHandling
 		{
 			if ( (int) bug_get_field( $this->p_bug_id, 'priority' ) !== $p_actions[ 'act_issue_priority' ] )
 			{
-				bug_set_field( $this->p_bug_id, 'priority', $p_actions[ 'act_issue_priority' ] );
+				$t_enum = config_get( 'priority_enum_string' );
+				if( MantisEnum::hasValue( $t_enum, $p_actions[ 'act_issue_priority' ] ) )
+				{
+					bug_set_field( $this->p_bug_id, 'priority', $p_actions[ 'act_issue_priority' ] );
+				}
+				else
+				{
+					$this->setError( 'Priority missing: ' . $p_actions[ 'act_issue_priority' ] );
+				}
 			}
 		}
 
@@ -505,6 +579,10 @@ class ERP_rule_api extends ERP_ErrorHandling
 					{
 						tag_bug_attach( $t_tag_id, $this->p_bug_id );
 					}
+				}
+				else
+				{
+					$this->setError( 'Tag missing: ' . $t_tag_id );
 				}
 			}
 		}
