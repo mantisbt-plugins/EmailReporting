@@ -11,6 +11,7 @@ Features
 * Add notes to an existing issue
 * Add attachments
 * Filter email accounts
+* Rule system
 
 Requirements
 ============
