@@ -56,6 +56,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 	private $_mail_auto_signup;
 	private $_mail_block_attachments_md5;
 	private $_mail_block_attachments_logging;
+	private $_mail_block_duplicate_attachments;
 	private $_mail_bug_priority;
 	private $_mail_debug;
 	private $_mail_debug_directory;
@@ -111,6 +112,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 		$this->_mail_auto_signup                     = plugin_config_get( 'mail_auto_signup' );
 		$this->_mail_block_attachments_md5           = plugin_config_get( 'mail_block_attachments_md5' );
 		$this->_mail_block_attachments_logging       = plugin_config_get( 'mail_block_attachments_logging' );
+		$this->_mail_block_duplicate_attachments     = plugin_config_get( 'mail_block_duplicate_attachments' );
 		$this->_mail_bug_priority                    = plugin_config_get( 'mail_bug_priority' );
 		$this->_mail_debug                           = plugin_config_get( 'mail_debug' );
 		$this->_mail_debug_directory                 = plugin_config_get( 'mail_debug_directory' );
@@ -1301,7 +1303,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 						{
 							$t_rejected_files .= $t_file_result;
 						}
-						else
+						elseif ( is_int( $t_file_result ) )
 						{
 							$t_file_info[] = array(
 								'name' => $t_part[ 'name' ],
@@ -1326,7 +1328,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 							$t_part[ 'body' ] .= $t_reject_rejected_files;
 							$this->custom_error( 'Failed to add "' . $t_part[ 'name' ] . '" to the issue. See below for all errors.' . "\n" . $t_part[ 'body' ] );
 						}
-						else
+						elseif ( is_int( $t_reject_rejected_files ) )
 						{
 							$t_file_info[] = array(
 								'name' => $t_part[ 'name' ],
@@ -1376,7 +1378,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 	{
 		# Handle the file upload
 		$t_part_name = ( ( isset( $p_part[ 'name' ] ) ) ? trim( (string)$p_part[ 'name' ] ) : '' );
-		$t_strlen_body = strlen( $p_part[ 'body' ] );
+		$t_part_name = file_clean_name( $t_part_name );
 
 		if ( is_blank( $t_part_name ) )
 		{
@@ -1390,12 +1392,12 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 			$t_part_name = md5( microtime() ) . '.' . $t_ext;
 		}
 
-		$t_body_md5 = ( ( !empty( $this->_mail_block_attachments_md5 ) ) ? md5( $p_part[ 'body' ] ) : NULL );
-
 		if ( !file_type_check( $t_part_name ) )
 		{
 			return( $t_part_name . ' = filetype not allowed' . "\n" );
 		}
+
+		$t_strlen_body = strlen( $p_part[ 'body' ] );
 
 		if ( 0 === $t_strlen_body )
 		{
@@ -1407,6 +1409,8 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 			return( $t_part_name . ' = attachment size exceeds maximum allowed file size (' . $t_strlen_body . ' / ' . $this->_max_file_size . ')' . "\n" );
 		}
 
+		$t_body_md5 = ( ( !empty( $this->_mail_block_attachments_md5 ) || $this->_mail_block_duplicate_attachments == ON ) ? md5( $p_part[ 'body' ] ) : NULL );
+
 		if ( !empty( $t_body_md5 ) && in_array( $t_body_md5, $this->_mail_block_attachments_md5, TRUE ) )
 		{
 			if ( $this->_mail_block_attachments_logging )
@@ -1416,6 +1420,21 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 			else
 			{
 				return( TRUE );
+			}
+		}
+
+		if ( !empty( $t_body_md5 ) && $this->_mail_block_duplicate_attachments == ON )
+		{
+			if ( $this->attachment_exists( $p_bug_id, $t_body_md5 ) )
+			{
+				if ( $this->_mail_block_attachments_logging )
+				{
+					return( $t_part_name . ' = attachment refused as it matched an md5 of another attachment in this bug (' . $t_body_md5 . ')' . "\n" );
+				}
+				else
+				{
+					return( TRUE );
+				}
 			}
 		}
 
@@ -1453,12 +1472,83 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 
 		$t_attachment_id = mci_file_add( $p_bug_id, $t_file_name . $t_opt_name . $t_extension, $p_part[ 'body' ], $p_part[ 'ctype' ], 'bug' );
 
-		if ( function_exists( 'file_link_to_bugnote' ) && is_numeric( $t_attachment_id ) && $t_attachment_id > 0 && $p_bugnote_id !== NULL )
+		if ( !( is_numeric( $t_attachment_id ) && $t_attachment_id > 0 ) )
+		{
+			return( $t_part_name . ' = Unknown mci_file_add error encountered.' . "\n" );
+		}
+
+		if ( !empty( $t_body_md5 ) && $this->_mail_block_duplicate_attachments == ON )
+		{
+			$this->add_md5hash_file( $t_attachment_id, $p_bug_id, $t_body_md5, $p_bugnote_id );
+		}
+
+		if ( function_exists( 'file_link_to_bugnote' ) && $p_bugnote_id !== NULL )
 		{
 			file_link_to_bugnote( $t_attachment_id, $p_bugnote_id );
 		}
 
 		return( (int) $t_attachment_id );
+	}
+
+	# --------------------
+	# Store a md5 hash for the bug
+	private function add_md5hash_file( int $p_attachment_id, int $p_bug_id, string $p_md5_hash, ?int $p_bugnote_id = NULL )
+	{
+		if( $this->_mail_block_duplicate_attachments == ON && strlen( $p_md5_hash ) === 32 )
+		{
+			if ( !$this->attachment_exists( $p_bug_id, $p_md5_hash ) )
+			{
+				// Add the md5 hash to the table for future reference
+				$t_query = 'INSERT INTO ' . plugin_table( 'file_hashes' ) . '( file_id, issue_id, bugnote_id, file_md5hash ) VALUES'
+						. ' (' . db_param() . ', ' . db_param() . ', ' . db_param() . ', ' . db_param() . ')';
+				db_query( $t_query, array( $p_attachment_id, $p_bug_id, $p_bugnote_id, $p_md5_hash ) );
+			}
+		}
+	}
+
+	# --------------------
+	# Check whether the attachment already exists
+	private function attachment_exists( $p_bug_id, $p_md5_hash )
+	{
+		if ( $this->_mail_block_duplicate_attachments == ON && strlen( $p_md5_hash ) === 32 )
+		{
+			$query = 'SELECT file_id FROM ' . plugin_table( 'file_hashes' ) . ' WHERE issue_id = ' . db_param() . ' AND file_md5hash = ' . db_param();
+			$t_file_id = db_result( db_query( $query, array( (int) $p_bug_id, $p_md5_hash ), 1 ) );
+
+			if ( $t_file_id !== FALSE ) 
+			{
+				$t_bug_id = file_get_field( $t_file_id, 'bug_id' );
+	
+				if ( $t_bug_id !== FALSE && (int) $p_bug_id === (int) $t_bug_id )
+				{
+					return( TRUE );
+				}
+				else
+				{
+					$t_query = 'DELETE FROM ' . plugin_table( 'file_hashes' ) . ' WHERE file_id = ' . db_param();
+					db_query( $t_query, array( (int) $t_file_id ) );
+				}
+			}
+		}
+
+		return( FALSE );
+	}
+
+	# --------------------
+	# Deletes the stored md5 hash for an issue or bugnote
+	# It's static to be called from main plugin event for bug/bugnote deletion
+	public static function delete_md5hash_for_bug_id( $p_bug_id, $p_bugnote_id = NULL )
+	{
+		if ( $p_bugnote_id === NULL )
+		{
+			$t_query = 'DELETE FROM ' . plugin_table( 'file_hashes' ) . ' WHERE issue_id = ' . db_param();
+			db_query( $t_query, array( (int) $p_bug_id ) );
+		}
+		else
+		{
+			$t_query = 'DELETE FROM ' . plugin_table( 'file_hashes' ) . ' WHERE issue_id = ' . db_param() . ' AND bugnote_id = ' . db_param();
+			db_query( $t_query, array( (int) $p_bug_id, (int) $p_bugnote_id ) );
+		}
 	}
 
 	# --------------------
@@ -1785,7 +1875,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 			$t_ref_ids[] = $t_row['msg_id'];
 		}
 
-		return $t_ref_ids;
+		return( $t_ref_ids );
 	}
 
 	# --------------------

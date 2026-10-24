@@ -54,6 +54,7 @@ $s_plugin_EmailReporting_mail_add_users_from_cc_to = 'Füge Benutzer aus den To-
 $s_plugin_EmailReporting_mail_auto_signup = 'Neue Benutzer automatisch registrieren (mögliches Sicherheitsrisiko! Dokumentation konsultieren!';
 $s_plugin_EmailReporting_mail_block_attachments_md5 = 'Anhänge blockieren die folgenden MD5 Hashes entsprechen';
 $s_plugin_EmailReporting_mail_block_attachments_logging = 'Blockierte Anhänge in der "Abgewiesene Dateien" Liste notieren';
+$s_plugin_EmailReporting_mail_block_duplicate_attachments = 'Doppelte Anhänge blockieren (funktioniert nur für EmailReporting)';
 $s_plugin_EmailReporting_mail_bug_priority = 'Ticketprioritäten klassifizieren';
 $s_plugin_EmailReporting_mail_debug = 'Debug Modus';
 $s_plugin_EmailReporting_mail_debug_directory = 'Mailinhalte in diesen Ordner sichern, wenn der Debug Modus aktiv ist';
