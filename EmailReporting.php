@@ -590,7 +590,8 @@ class EmailReportingPlugin extends MantisPlugin
 				plugin_config_set( 'config_version', ++$t_config_version );
 
 			case 10:
-				plugin_config_delete( 'mail_rule_system' );
+				// Rule system was released in 0.14.0 so no longer needed
+				//plugin_config_delete( 'mail_rule_system' );
 
 				plugin_config_set( 'config_version', ++$t_config_version );
 
@@ -608,7 +609,8 @@ class EmailReportingPlugin extends MantisPlugin
 
 				plugin_config_set( 'mailboxes', $t_mailboxes );
 
-				plugin_config_delete( 'rules' );
+				// Rule system was released in 0.14.0 so no longer needed
+				//plugin_config_delete( 'rules' );
 				plugin_config_delete( 'mail_encoding' );
 
 				plugin_config_set( 'config_version', ++$t_config_version );
