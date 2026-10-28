@@ -67,7 +67,7 @@ ERP_output_table_close();
 
 ERP_output_table_open( 'mailbox_settings_logininfo', array( 'auth_method' => [ '!=' => [ 'XOAUTH2' ] ] ) );
 ERP_output_config_option( 'erp_username', 'string', $t_mailbox );
-ERP_output_config_option( 'erp_password', 'string_password', $t_mailbox );
+ERP_output_config_option( 'erp_password_v2', 'string_password', $t_mailbox );
 ERP_output_table_close();
 
 ERP_output_table_open( 'mailbox_settings_oauth', array( 'auth_method' => [ 'XOAUTH2' ] ) );
@@ -107,9 +107,9 @@ ERP_output_table_open( 'mailbox_settings_oauth_microsoft', array( 'auth_method' 
 ERP_output_config_option( 'm_mailbox', 'string', $t_mailbox );
 ERP_output_config_option( 'm_tenantId', 'string', $t_mailbox );
 ERP_output_config_option( 'm_clientId', 'string', $t_mailbox );
-ERP_output_config_option( 'm_clientSecret', 'string_password', $t_mailbox );
+ERP_output_config_option( 'm_clientSecret_v2', 'string_password', $t_mailbox );
 ERP_output_config_option( 'm_pfxPath', 'file_string', $t_mailbox );
-ERP_output_config_option( 'm_pfxPassword', 'string_password', $t_mailbox );
+ERP_output_config_option( 'm_pfxPassword_v2', 'string_password', $t_mailbox );
 ERP_output_table_close();
 
 ERP_output_table_open( 'mailbox_settings_imap', array( 'mailbox_type' => [ 'IMAP' ] ) );

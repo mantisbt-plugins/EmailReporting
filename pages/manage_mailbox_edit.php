@@ -27,7 +27,7 @@ if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailb
 	{
 		$t_mailbox += array(
 			'erp_username'           => gpc_get_string( 'erp_username', '' ),
-			'erp_password'           => base64_encode( gpc_get_string( 'erp_password', '' ) ),
+			'erp_password_v2'        => ERP_encrypt_string( gpc_get_string( 'erp_password_v2', '' ) ),
 		);
 	}
 
@@ -63,9 +63,9 @@ if ( $f_mailbox_action === 'add' || $f_mailbox_action === 'copy' || ( ( $f_mailb
 				'm_mailbox'           => gpc_get_string( 'm_mailbox', '' ),
 				'm_tenantId'          => gpc_get_string( 'm_tenantId', '' ),
 				'm_clientId'          => gpc_get_string( 'm_clientId', '' ),
-				'm_clientSecret'      => base64_encode( gpc_get_string( 'm_clientSecret', '' ) ),
+				'm_clientSecret_v2'   => ERP_encrypt_string( gpc_get_string( 'm_clientSecret_v2', '' ) ),
 				'm_pfxPath'           => ERP_prepare_directory_string( gpc_get_string( 'm_pfxPath', '' ) ),
-				'm_pfxPassword'       => base64_encode( gpc_get_string( 'm_pfxPassword', '' ) ),
+				'm_pfxPassword_v2'    => ERP_encrypt_string( gpc_get_string( 'm_pfxPassword_v2', '' ) ),
 			);
 		}
 	}
@@ -144,9 +144,9 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 				break;
 
 			// sensitive information
-			case 'erp_password':
-			case 'm_clientSecret':
-			case 'm_pfxPassword':
+			case 'erp_password_v2':
+			case 'm_clientSecret_v2':
+			case 'm_pfxPassword_v2':
 				$t_value = '******';
 				break;
 		}

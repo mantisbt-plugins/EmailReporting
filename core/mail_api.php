@@ -692,7 +692,13 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 		else
 		{
 			$t_mailbox_username = $this->_mailbox[ 'erp_username' ];
-			$t_mailbox_password = base64_decode( $this->_mailbox[ 'erp_password' ] );
+			$t_mailbox_password = ERP_decrypt_string( $this->_mailbox[ 'erp_password_v2' ] );
+
+			if ( $t_mailbox_password === FALSE )
+			{
+				$this->custom_error( 'Password decryption failed.' );
+				return( FALSE );
+			}
 		}
 
 		return( array(
@@ -725,14 +731,23 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 			}
 			elseif ( $this->_mailbox[ 'oauth_provider' ] === ERP_PROVIDER_MICROSOFT )
 			{
+				$t_m_clientSecret = ERP_decrypt_string( $this->_mailbox[ 'm_clientSecret_v2' ] );
+				$t_m_pfxPassword = ERP_decrypt_string( $this->_mailbox[ 'm_pfxPassword_v2' ] );
+
+				if ( $t_m_clientSecret === FALSE || $t_m_pfxPassword === FALSE )
+				{
+					$this->custom_error( 'Password decryption failed.' );
+					return( FALSE );
+				}
+
 				$provider = new ERP_Microsoft365OAuthProvider(
 					tenantId: $this->_mailbox[ 'm_tenantId' ],
 					clientId: $this->_mailbox[ 'm_clientId' ],
 
-					clientSecret: base64_decode( $this->_mailbox[ 'm_clientSecret' ] ),
+					clientSecret: $t_m_clientSecret,
 
 					pfxPath: $this->_mailbox[ 'm_pfxPath' ],
-					pfxPassword: base64_decode( $this->_mailbox[ 'm_pfxPassword' ] ),
+					pfxPassword: $t_m_pfxPassword,
 				);
 			}
 			else

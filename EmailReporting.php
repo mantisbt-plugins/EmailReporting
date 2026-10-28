@@ -690,6 +690,35 @@ class EmailReportingPlugin extends MantisPlugin
 
 				plugin_config_set( 'config_version', ++$t_config_version );
 
+			case 20:
+				plugin_require_api( 'core/config_api.php' );
+
+				$t_mailboxes = plugin_config_get( 'mailboxes', array() );
+
+				$t_index_to_process = array(
+					'erp_password',
+					'm_clientSecret',
+					'm_pfxPassword',
+				);
+
+				foreach ( $t_mailboxes AS $t_key => $t_array )
+				{
+					foreach ( $t_index_to_process AS $t_index )
+					{
+						if ( isset( $t_array[ $t_index ] ) )
+						{
+							$t_old_value = base64_decode( $t_array[ $t_index ] );
+							$t_new_value = ERP_encrypt_string( $t_old_value );
+							$t_mailboxes[ $t_key ][ $t_index . '_v2' ] = $t_new_value;
+							unset( $t_mailboxes[ $t_key ][ $t_index ] );
+						}
+					}
+				}
+
+				plugin_config_set( 'mailboxes', $t_mailboxes );
+
+				plugin_config_set( 'config_version', ++$t_config_version );
+
 			default:
 			    break;
 		}
