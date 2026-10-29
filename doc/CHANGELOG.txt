@@ -6,6 +6,7 @@ Changelog:
 	- Rule system: Add sanity checks for actions
 	- Check for duplicate files using md5 hashes within a single issue (only for ERP)
 	- Improved encryption of passwords for mailboxes
+	- Fix issue with duplicate relationship added
 
 Okt 2026 - EmailReporting-0.14.0
 	- MantisBT minimum version increased to 2.13.0
