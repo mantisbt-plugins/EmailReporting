@@ -152,28 +152,35 @@ function ERP_select_mail_engine( $p_mail_engine )
 # Encrypt a string
 function ERP_encrypt_string( $p_string )
 {
-	$t_key = config_get_global( 'crypto_master_salt' );
-
-	if ( strlen( $t_key ) < 16 )
+	if ( extension_loaded( 'openssl' ) )
 	{
-		throw new InvalidArgumentException( 'Encryption key must be at least 16 bytes.' );
+		$t_key = config_get_global( 'crypto_master_salt' );
+
+		if ( strlen( $t_key ) < 16 )
+		{
+			throw new InvalidArgumentException( 'Encryption key must be at least 16 bytes.' );
+		}
+
+		$t_key = hash_hkdf( 'sha256', $t_key, 32, 'EmailReporting password encryption' );
+
+		$t_method = 'aes-256-gcm';
+		$t_iv_length = openssl_cipher_iv_length( $t_method );
+		$t_iv = random_bytes( $t_iv_length );
+		$t_tag = '';
+
+		$t_encrypted = openssl_encrypt( (string) $p_string, $t_method, $t_key, OPENSSL_RAW_DATA, $t_iv, $t_tag, '', 16 );
+
+		if ( $t_encrypted === FALSE )
+		{
+			throw new RuntimeException( 'Encryption failed.' );
+		}
+
+		$t_encrypted_string = base64_encode( $t_iv . $t_tag . $t_encrypted );
 	}
-
-	$t_key = hash_hkdf( 'sha256', $t_key, 32, 'EmailReporting password encryption' );
-
-	$t_method = 'aes-256-gcm';    
-	$t_iv_length = openssl_cipher_iv_length( $t_method );
-	$t_iv = random_bytes( $t_iv_length );
-	$t_tag = '';
-
-	$t_encrypted = openssl_encrypt( (string) $p_string, $t_method, $t_key, OPENSSL_RAW_DATA, $t_iv, $t_tag, '', 16 );    
-
-	if ( $t_encrypted === FALSE )
+	else
 	{
-		throw new RuntimeException( 'Encryption failed.' );
+		$t_decrypted_string = base64_encode( $p_string );
 	}
-
-	$t_encrypted_string = base64_encode( $t_iv . $t_tag . $t_encrypted );    
 
 	return( $t_encrypted_string );
 }
@@ -182,40 +189,47 @@ function ERP_encrypt_string( $p_string )
 # Decrypt a string
 function ERP_decrypt_string( $p_string )
 {
-	$t_key = config_get_global( 'crypto_master_salt' );
-
-	if ( strlen( $t_key ) < 16 )
+	if ( extension_loaded( 'openssl' ) )
 	{
-		throw new InvalidArgumentException( 'Encryption key must be at least 16 bytes.' );
+		$t_key = config_get_global( 'crypto_master_salt' );
+
+		if ( strlen( $t_key ) < 16 )
+		{
+			throw new InvalidArgumentException( 'Encryption key must be at least 16 bytes.' );
+		}
+
+		$t_key = hash_hkdf( 'sha256', $t_key, 32, 'EmailReporting password encryption' );
+
+		$t_data = base64_decode( (string) $p_string, TRUE );
+
+		if ( $t_data === FALSE )
+		{
+			return( FALSE );
+		}
+
+		$t_method = 'aes-256-gcm';
+		$t_iv_length = openssl_cipher_iv_length( $t_method );
+		$t_tag_length = 16;
+
+		if ( strlen( $t_data ) < ( $t_iv_length + $t_tag_length ) )
+		{
+			return( FALSE );
+		}
+
+		$t_iv = substr( $t_data, 0, $t_iv_length );
+		$t_tag = substr( $t_data, $t_iv_length, $t_tag_length );
+		$t_encrypted = substr( $t_data, $t_iv_length + $t_tag_length );
+
+		$t_decrypted_string = openssl_decrypt( $t_encrypted, $t_method, $t_key, OPENSSL_RAW_DATA, $t_iv, $t_tag );
+
+		if ( $t_decrypted_string === FALSE )
+		{
+			return( FALSE );
+		}
 	}
-
-	$t_key = hash_hkdf( 'sha256', $t_key, 32, 'EmailReporting password encryption' );
-
-	$t_data = base64_decode( (string) $p_string, TRUE );
-
-	if ( $t_data === FALSE )
+	else
 	{
-		return( FALSE );
-	}
-
-	$t_method = 'aes-256-gcm';    
-	$t_iv_length = openssl_cipher_iv_length( $t_method );
-	$t_tag_length = 16;
-
-	if ( strlen( $t_data ) < ( $t_iv_length + $t_tag_length ) )
-	{
-		return( FALSE );
-	}
-
-	$t_iv = substr( $t_data, 0, $t_iv_length );
-	$t_tag = substr( $t_data, $t_iv_length, $t_tag_length );
-	$t_encrypted = substr( $t_data, $t_iv_length + $t_tag_length );
-
-	$t_decrypted_string = openssl_decrypt( $t_encrypted, $t_method, $t_key, OPENSSL_RAW_DATA, $t_iv, $t_tag );
-
-	if ( $t_decrypted_string === FALSE )
-	{
-		return( FALSE );
+		$t_decrypted_string = base64_decode( $p_string );
 	}
 
 	return( $t_decrypted_string );
