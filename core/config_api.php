@@ -1073,13 +1073,13 @@ function ERP_custom_function_print_duedate_option( $p_name, $p_input_name, $p_se
 	foreach ( $t_options AS $t_option )
 	{
 		echo '<option value="' . string_attribute( $t_option ) . '"';
-		check_selected( $t_sel_value[ 'modifier' ], $t_option );
+		check_selected( ( $t_sel_value[ 'modifier' ] ?? '' ), $t_option );
 		echo '>' . string_attribute( ( ( $t_option !== '' ) ? plugin_lang_get( $t_option ) : $t_option ) ) . '</option>';
 	}
 ?>
 		</select>
 		+
-		<input id="<?php echo $p_input_name ?>_amount" class="input-sm" <?php echo helper_get_tab_index() ?> type="number" size="20" maxlength="10" name="<?php echo $p_input_name ?>_amount" value="<?php echo string_attribute( $t_sel_value[ 'amount' ] ) ?>"/> <?php echo lang_get( 'days' ) ?>
+		<input id="<?php echo $p_input_name ?>_amount" class="input-sm" <?php echo helper_get_tab_index() ?> type="number" size="20" maxlength="10" name="<?php echo $p_input_name ?>_amount" value="<?php echo string_attribute( $t_sel_value[ 'amount' ] ?? 0 ) ?>"/> <?php echo lang_get( 'days' ) ?>
 	</td>
 </tr>
 <?php
