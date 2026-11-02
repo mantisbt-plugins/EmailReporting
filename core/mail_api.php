@@ -1551,8 +1551,8 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 		}
 		else
 		{
-			$t_query = 'DELETE FROM ' . plugin_table( 'file_hashes' ) . ' WHERE issue_id = ' . db_param() . ' AND bugnote_id = ' . db_param();
-			db_query( $t_query, array( (int) $p_bug_id, (int) $p_bugnote_id ) );
+			$t_query = 'DELETE FROM ' . plugin_table( 'file_hashes' ) . ' WHERE bugnote_id = ' . db_param() . ' AND issue_id = ' . db_param();
+			db_query( $t_query, array( (int) $p_bugnote_id, (int) $p_bug_id ) );
 		}
 	}
 
