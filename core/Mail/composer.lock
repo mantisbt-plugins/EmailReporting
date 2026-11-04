@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "122c6e1130bbec7c21e9f5d0be616542",
+    "content-hash": "6843b7571f57830d22728c3d09d6d910",
     "packages": [
         {
             "name": "carbonphp/carbon-doctrine-types",
@@ -82,20 +82,20 @@
         },
         {
             "name": "directorytree/imapengine",
-            "version": "v1.25.6",
+            "version": "v1.25.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DirectoryTree/ImapEngine.git",
-                "reference": "20655ae7dbe045a64d6c72237ee5ae322af49f67"
+                "reference": "137be54924da919f5e0a18af1ef0928ee6614308"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DirectoryTree/ImapEngine/zipball/20655ae7dbe045a64d6c72237ee5ae322af49f67",
-                "reference": "20655ae7dbe045a64d6c72237ee5ae322af49f67",
+                "url": "https://api.github.com/repos/DirectoryTree/ImapEngine/zipball/137be54924da919f5e0a18af1ef0928ee6614308",
+                "reference": "137be54924da919f5e0a18af1ef0928ee6614308",
                 "shasum": ""
             },
             "require": {
-                "egulias/email-validator": "^4.0",
+                "egulias/email-validator": "^3.0|^4.0",
                 "illuminate/collections": ">=9.0",
                 "nesbot/carbon": ">=2.0",
                 "php": "^8.1",
@@ -132,7 +132,7 @@
             ],
             "support": {
                 "issues": "https://github.com/DirectoryTree/ImapEngine/issues",
-                "source": "https://github.com/DirectoryTree/ImapEngine/tree/v1.25.6"
+                "source": "https://github.com/DirectoryTree/ImapEngine/tree/v1.25.8"
             },
             "funding": [
                 {
@@ -140,27 +140,27 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-08-24T15:21:35+00:00"
+            "time": "2026-11-02T20:59:02+00:00"
         },
         {
             "name": "doctrine/inflector",
-            "version": "2.1.0",
+            "version": "2.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/inflector.git",
-                "reference": "6d6c96277ea252fc1304627204c3d5e6e15faa3b"
+                "reference": "46351b6812b7b6d52b82c3efa5dfb786a198ec88"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/inflector/zipball/6d6c96277ea252fc1304627204c3d5e6e15faa3b",
-                "reference": "6d6c96277ea252fc1304627204c3d5e6e15faa3b",
+                "url": "https://api.github.com/repos/doctrine/inflector/zipball/46351b6812b7b6d52b82c3efa5dfb786a198ec88",
+                "reference": "46351b6812b7b6d52b82c3efa5dfb786a198ec88",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.2 || ^8.0"
             },
             "require-dev": {
-                "doctrine/coding-standard": "^12.0 || ^13.0",
+                "doctrine/coding-standard": "^12.0 || ^14.0",
                 "phpstan/phpstan": "^1.12 || ^2.0",
                 "phpstan/phpstan-phpunit": "^1.4 || ^2.0",
                 "phpstan/phpstan-strict-rules": "^1.6 || ^2.0",
@@ -214,7 +214,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/inflector/issues",
-                "source": "https://github.com/doctrine/inflector/tree/2.1.0"
+                "source": "https://github.com/doctrine/inflector/tree/2.1.1"
             },
             "funding": [
                 {
@@ -230,7 +230,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-08-10T19:31:58+00:00"
+            "time": "2026-10-26T08:14:14+00:00"
         },
         {
             "name": "doctrine/lexer",
@@ -859,16 +859,16 @@
         },
         {
             "name": "horde/imap_client",
-            "version": "v3.1.0",
+            "version": "v3.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/horde/Imap_Client.git",
-                "reference": "1f90f6aff15d7ebdaaa14d592a861496402ca4e8"
+                "reference": "ee0ae88a78c4411d06c5687717028ed5010fcfe0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/horde/Imap_Client/zipball/1f90f6aff15d7ebdaaa14d592a861496402ca4e8",
-                "reference": "1f90f6aff15d7ebdaaa14d592a861496402ca4e8",
+                "url": "https://api.github.com/repos/horde/Imap_Client/zipball/ee0ae88a78c4411d06c5687717028ed5010fcfe0",
+                "reference": "ee0ae88a78c4411d06c5687717028ed5010fcfe0",
                 "shasum": ""
             },
             "require": {
@@ -946,9 +946,9 @@
             ],
             "support": {
                 "issues": "https://github.com/horde/Imap_Client/issues",
-                "source": "https://github.com/horde/Imap_Client/tree/v3.1.0"
+                "source": "https://github.com/horde/Imap_Client/tree/v3.2.1"
             },
-            "time": "2026-08-29T00:00:00+00:00"
+            "time": "2026-11-03T00:00:00+00:00"
         },
         {
             "name": "horde/mail",
@@ -1023,16 +1023,16 @@
         },
         {
             "name": "horde/mime",
-            "version": "v3.0.0",
+            "version": "v3.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/horde/Mime.git",
-                "reference": "7afa488b6dd7169abe938925c52636720675fdb7"
+                "reference": "96dee19d8f8bc28a269c5d3bdb77a8296ca52bfa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/horde/Mime/zipball/7afa488b6dd7169abe938925c52636720675fdb7",
-                "reference": "7afa488b6dd7169abe938925c52636720675fdb7",
+                "url": "https://api.github.com/repos/horde/Mime/zipball/96dee19d8f8bc28a269c5d3bdb77a8296ca52bfa",
+                "reference": "96dee19d8f8bc28a269c5d3bdb77a8296ca52bfa",
                 "shasum": ""
             },
             "require": {
@@ -1040,12 +1040,12 @@
                 "horde/mail": "^3 || dev-FRAMEWORK_6_0",
                 "horde/stream": "^2 || dev-FRAMEWORK_6_0",
                 "horde/stream_filter": "^3 || dev-FRAMEWORK_6_0",
-                "horde/support": "^3 || dev-FRAMEWORK_6_0",
+                "horde/support": "^3.0.1 || dev-FRAMEWORK_6_0",
                 "horde/text_filter": "^3 || dev-FRAMEWORK_6_0",
                 "horde/text_flowed": "^3 || dev-FRAMEWORK_6_0",
                 "horde/translation": "^3 || dev-FRAMEWORK_6_0",
                 "horde/util": "^3 || dev-FRAMEWORK_6_0",
-                "php": "^7.4 || ^8"
+                "php": "^8.1"
             },
             "require-dev": {
                 "ext-intl": "*",
@@ -1097,9 +1097,9 @@
             ],
             "support": {
                 "issues": "https://github.com/horde/Mime/issues",
-                "source": "https://github.com/horde/Mime/tree/v3.0.0"
+                "source": "https://github.com/horde/Mime/tree/v3.0.1"
             },
-            "time": "2026-06-26T00:00:00+00:00"
+            "time": "2026-10-20T00:00:00+00:00"
         },
         {
             "name": "horde/sasl",
@@ -1540,16 +1540,16 @@
         },
         {
             "name": "horde/support",
-            "version": "v3.0.0",
+            "version": "v3.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/horde/Support.git",
-                "reference": "9ed461343c67f83a54f15ba3e26da2e318dced7a"
+                "reference": "0e83ecec403ad08af500e7e2bd22389e47cff766"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/horde/Support/zipball/9ed461343c67f83a54f15ba3e26da2e318dced7a",
-                "reference": "9ed461343c67f83a54f15ba3e26da2e318dced7a",
+                "url": "https://api.github.com/repos/horde/Support/zipball/0e83ecec403ad08af500e7e2bd22389e47cff766",
+                "reference": "0e83ecec403ad08af500e7e2bd22389e47cff766",
                 "shasum": ""
             },
             "require": {
@@ -1601,9 +1601,9 @@
             ],
             "support": {
                 "issues": "https://github.com/horde/Support/issues",
-                "source": "https://github.com/horde/Support/tree/v3.0.0"
+                "source": "https://github.com/horde/Support/tree/v3.0.1"
             },
-            "time": "2026-06-27T00:00:00+00:00"
+            "time": "2026-10-20T00:00:00+00:00"
         },
         {
             "name": "horde/text_filter",
@@ -2909,16 +2909,16 @@
         },
         {
             "name": "symfony/http-foundation",
-            "version": "v6.4.48",
+            "version": "v6.4.49",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-foundation.git",
-                "reference": "b1721caa556f32d150d9a14bb0a3fc4b86dfda33"
+                "reference": "aed9ac2fe4eefa1d1b7fba04604db3a62a5f150b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-foundation/zipball/b1721caa556f32d150d9a14bb0a3fc4b86dfda33",
-                "reference": "b1721caa556f32d150d9a14bb0a3fc4b86dfda33",
+                "url": "https://api.github.com/repos/symfony/http-foundation/zipball/aed9ac2fe4eefa1d1b7fba04604db3a62a5f150b",
+                "reference": "aed9ac2fe4eefa1d1b7fba04604db3a62a5f150b",
                 "shasum": ""
             },
             "require": {
@@ -2966,7 +2966,7 @@
             "description": "Defines an object-oriented layer for the HTTP specification",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/http-foundation/tree/v6.4.48"
+                "source": "https://github.com/symfony/http-foundation/tree/v6.4.49"
             },
             "funding": [
                 {
@@ -2986,20 +2986,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-08T07:59:58+00:00"
+            "time": "2026-10-25T20:39:59+00:00"
         },
         {
             "name": "symfony/mime",
-            "version": "v6.4.46",
+            "version": "v6.4.49",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/mime.git",
-                "reference": "e700a9819829e1395ae95b508c6355053b5644fe"
+                "reference": "371f182b3174ef1b6d33b641f1295e7f88292557"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/mime/zipball/e700a9819829e1395ae95b508c6355053b5644fe",
-                "reference": "e700a9819829e1395ae95b508c6355053b5644fe",
+                "url": "https://api.github.com/repos/symfony/mime/zipball/371f182b3174ef1b6d33b641f1295e7f88292557",
+                "reference": "371f182b3174ef1b6d33b641f1295e7f88292557",
                 "shasum": ""
             },
             "require": {
@@ -3055,7 +3055,7 @@
                 "mime-type"
             ],
             "support": {
-                "source": "https://github.com/symfony/mime/tree/v6.4.46"
+                "source": "https://github.com/symfony/mime/tree/v6.4.49"
             },
             "funding": [
                 {
@@ -3075,7 +3075,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-09-04T10:11:03+00:00"
+            "time": "2026-10-28T17:57:40+00:00"
         },
         {
             "name": "symfony/polyfill-iconv",
@@ -3335,16 +3335,16 @@
         },
         {
             "name": "symfony/polyfill-mbstring",
-            "version": "v1.43.0",
+            "version": "v1.43.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-mbstring.git",
-                "reference": "4d5d331bf731e0aedbc6b2f5e61135b7b7996a72"
+                "reference": "122889ed24dc000165bcbfd77ec412f15cbdfc6a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/4d5d331bf731e0aedbc6b2f5e61135b7b7996a72",
-                "reference": "4d5d331bf731e0aedbc6b2f5e61135b7b7996a72",
+                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/122889ed24dc000165bcbfd77ec412f15cbdfc6a",
+                "reference": "122889ed24dc000165bcbfd77ec412f15cbdfc6a",
                 "shasum": ""
             },
             "require": {
@@ -3396,7 +3396,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.43.0"
+                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.43.3"
             },
             "funding": [
                 {
@@ -3416,7 +3416,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-09-24T15:19:04+00:00"
+            "time": "2026-10-28T09:35:49+00:00"
         },
         {
             "name": "symfony/polyfill-php80",
@@ -3664,16 +3664,16 @@
         },
         {
             "name": "symfony/translation",
-            "version": "v6.4.44",
+            "version": "v6.4.49",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/translation.git",
-                "reference": "fa2235501e2cf6b1d38ab42954b248a5e93c8e89"
+                "reference": "81998c85f03941f8efeb6f44549259066361780b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/translation/zipball/fa2235501e2cf6b1d38ab42954b248a5e93c8e89",
-                "reference": "fa2235501e2cf6b1d38ab42954b248a5e93c8e89",
+                "url": "https://api.github.com/repos/symfony/translation/zipball/81998c85f03941f8efeb6f44549259066361780b",
+                "reference": "81998c85f03941f8efeb6f44549259066361780b",
                 "shasum": ""
             },
             "require": {
@@ -3739,7 +3739,7 @@
             "description": "Provides tools to internationalize your application",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/translation/tree/v6.4.44"
+                "source": "https://github.com/symfony/translation/tree/v6.4.49"
             },
             "funding": [
                 {
@@ -3759,7 +3759,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-08-20T19:22:13+00:00"
+            "time": "2026-10-25T08:57:29+00:00"
         },
         {
             "name": "symfony/translation-contracts",
@@ -4000,16 +4000,16 @@
         },
         {
             "name": "zbateson/mail-mime-parser",
-            "version": "4.0.6",
+            "version": "4.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zbateson/mail-mime-parser.git",
-                "reference": "f7d3c271536a8b3d50dc3a942de8f56282629bb8"
+                "reference": "21a8a6ff886f6ab19c065655f84f5a9ac4f86266"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zbateson/mail-mime-parser/zipball/f7d3c271536a8b3d50dc3a942de8f56282629bb8",
-                "reference": "f7d3c271536a8b3d50dc3a942de8f56282629bb8",
+                "url": "https://api.github.com/repos/zbateson/mail-mime-parser/zipball/21a8a6ff886f6ab19c065655f84f5a9ac4f86266",
+                "reference": "21a8a6ff886f6ab19c065655f84f5a9ac4f86266",
                 "shasum": ""
             },
             "require": {
@@ -4072,7 +4072,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-09-28T20:32:29+00:00"
+            "time": "2026-10-27T16:17:50+00:00"
         },
         {
             "name": "zbateson/mb-wrapper",
