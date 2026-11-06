@@ -82,16 +82,16 @@
         },
         {
             "name": "directorytree/imapengine",
-            "version": "v1.25.8",
+            "version": "v1.25.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DirectoryTree/ImapEngine.git",
-                "reference": "137be54924da919f5e0a18af1ef0928ee6614308"
+                "reference": "19618d414c096e509342aab4f5114e83db0c21a9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DirectoryTree/ImapEngine/zipball/137be54924da919f5e0a18af1ef0928ee6614308",
-                "reference": "137be54924da919f5e0a18af1ef0928ee6614308",
+                "url": "https://api.github.com/repos/DirectoryTree/ImapEngine/zipball/19618d414c096e509342aab4f5114e83db0c21a9",
+                "reference": "19618d414c096e509342aab4f5114e83db0c21a9",
                 "shasum": ""
             },
             "require": {
@@ -132,7 +132,7 @@
             ],
             "support": {
                 "issues": "https://github.com/DirectoryTree/ImapEngine/issues",
-                "source": "https://github.com/DirectoryTree/ImapEngine/tree/v1.25.8"
+                "source": "https://github.com/DirectoryTree/ImapEngine/tree/v1.25.9"
             },
             "funding": [
                 {
@@ -140,7 +140,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-11-02T20:59:02+00:00"
+            "time": "2026-11-04T21:29:36+00:00"
         },
         {
             "name": "doctrine/inflector",
@@ -859,16 +859,16 @@
         },
         {
             "name": "horde/imap_client",
-            "version": "v3.2.1",
+            "version": "v3.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/horde/Imap_Client.git",
-                "reference": "ee0ae88a78c4411d06c5687717028ed5010fcfe0"
+                "reference": "5dbdad9116b6a9f722c197671ee5390df240f5f7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/horde/Imap_Client/zipball/ee0ae88a78c4411d06c5687717028ed5010fcfe0",
-                "reference": "ee0ae88a78c4411d06c5687717028ed5010fcfe0",
+                "url": "https://api.github.com/repos/horde/Imap_Client/zipball/5dbdad9116b6a9f722c197671ee5390df240f5f7",
+                "reference": "5dbdad9116b6a9f722c197671ee5390df240f5f7",
                 "shasum": ""
             },
             "require": {
@@ -878,7 +878,7 @@
                 "horde/exception": "^3 || dev-FRAMEWORK_6_0",
                 "horde/horde-installer-plugin": "dev-FRAMEWORK_6_0 || ^3 || ^2",
                 "horde/mail": "^3 || dev-FRAMEWORK_6_0",
-                "horde/mime": "^3 || dev-FRAMEWORK_6_0",
+                "horde/mime": "^3.1.1 || dev-FRAMEWORK_6_0",
                 "horde/sasl": "^1 || dev-FRAMEWORK_6_0",
                 "horde/secret": "^3 || dev-FRAMEWORK_6_0",
                 "horde/socket_client": "^3.1 || dev-FRAMEWORK_6_0",
@@ -946,9 +946,9 @@
             ],
             "support": {
                 "issues": "https://github.com/horde/Imap_Client/issues",
-                "source": "https://github.com/horde/Imap_Client/tree/v3.2.1"
+                "source": "https://github.com/horde/Imap_Client/tree/v3.3.2"
             },
-            "time": "2026-11-03T00:00:00+00:00"
+            "time": "2026-11-05T00:00:00+00:00"
         },
         {
             "name": "horde/mail",
@@ -1023,16 +1023,16 @@
         },
         {
             "name": "horde/mime",
-            "version": "v3.0.1",
+            "version": "v3.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/horde/Mime.git",
-                "reference": "96dee19d8f8bc28a269c5d3bdb77a8296ca52bfa"
+                "reference": "728ed8aae99576c741fe89515a9ed9f8636177b5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/horde/Mime/zipball/96dee19d8f8bc28a269c5d3bdb77a8296ca52bfa",
-                "reference": "96dee19d8f8bc28a269c5d3bdb77a8296ca52bfa",
+                "url": "https://api.github.com/repos/horde/Mime/zipball/728ed8aae99576c741fe89515a9ed9f8636177b5",
+                "reference": "728ed8aae99576c741fe89515a9ed9f8636177b5",
                 "shasum": ""
             },
             "require": {
@@ -1097,9 +1097,9 @@
             ],
             "support": {
                 "issues": "https://github.com/horde/Mime/issues",
-                "source": "https://github.com/horde/Mime/tree/v3.0.1"
+                "source": "https://github.com/horde/Mime/tree/v3.1.1"
             },
-            "time": "2026-10-20T00:00:00+00:00"
+            "time": "2026-11-05T00:00:00+00:00"
         },
         {
             "name": "horde/sasl",
@@ -2838,16 +2838,16 @@
         },
         {
             "name": "symfony/deprecation-contracts",
-            "version": "v3.7.1",
+            "version": "v3.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/deprecation-contracts.git",
-                "reference": "f3202fa1b5097b0af062dc978b32ecf63404e31d"
+                "reference": "feb1edf4e546af3b85c5caebe8359a20db230ca3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/f3202fa1b5097b0af062dc978b32ecf63404e31d",
-                "reference": "f3202fa1b5097b0af062dc978b32ecf63404e31d",
+                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/feb1edf4e546af3b85c5caebe8359a20db230ca3",
+                "reference": "feb1edf4e546af3b85c5caebe8359a20db230ca3",
                 "shasum": ""
             },
             "require": {
@@ -2860,7 +2860,7 @@
                     "name": "symfony/contracts"
                 },
                 "branch-alias": {
-                    "dev-main": "3.7-dev"
+                    "dev-main": "3.8-dev"
                 }
             },
             "autoload": {
@@ -2885,7 +2885,7 @@
             "description": "A generic function and convention to trigger deprecation notices",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/deprecation-contracts/tree/v3.7.1"
+                "source": "https://github.com/symfony/deprecation-contracts/tree/v3.8.1"
             },
             "funding": [
                 {
@@ -2905,20 +2905,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-06-05T06:23:12+00:00"
+            "time": "2026-09-16T14:15:10+00:00"
         },
         {
             "name": "symfony/http-foundation",
-            "version": "v6.4.49",
+            "version": "v6.4.50",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-foundation.git",
-                "reference": "aed9ac2fe4eefa1d1b7fba04604db3a62a5f150b"
+                "reference": "f0cd207e06ba547c9ad4ee4bdf04729984d39045"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-foundation/zipball/aed9ac2fe4eefa1d1b7fba04604db3a62a5f150b",
-                "reference": "aed9ac2fe4eefa1d1b7fba04604db3a62a5f150b",
+                "url": "https://api.github.com/repos/symfony/http-foundation/zipball/f0cd207e06ba547c9ad4ee4bdf04729984d39045",
+                "reference": "f0cd207e06ba547c9ad4ee4bdf04729984d39045",
                 "shasum": ""
             },
             "require": {
@@ -2966,7 +2966,7 @@
             "description": "Defines an object-oriented layer for the HTTP specification",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/http-foundation/tree/v6.4.49"
+                "source": "https://github.com/symfony/http-foundation/tree/v6.4.50"
             },
             "funding": [
                 {
@@ -2986,7 +2986,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-25T20:39:59+00:00"
+            "time": "2026-11-04T08:16:31+00:00"
         },
         {
             "name": "symfony/mime",
@@ -3664,16 +3664,16 @@
         },
         {
             "name": "symfony/translation",
-            "version": "v6.4.49",
+            "version": "v6.4.50",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/translation.git",
-                "reference": "81998c85f03941f8efeb6f44549259066361780b"
+                "reference": "6a2ba8838bb815b90fe09f4487da9896d7128862"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/translation/zipball/81998c85f03941f8efeb6f44549259066361780b",
-                "reference": "81998c85f03941f8efeb6f44549259066361780b",
+                "url": "https://api.github.com/repos/symfony/translation/zipball/6a2ba8838bb815b90fe09f4487da9896d7128862",
+                "reference": "6a2ba8838bb815b90fe09f4487da9896d7128862",
                 "shasum": ""
             },
             "require": {
@@ -3739,7 +3739,7 @@
             "description": "Provides tools to internationalize your application",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/translation/tree/v6.4.49"
+                "source": "https://github.com/symfony/translation/tree/v6.4.50"
             },
             "funding": [
                 {
@@ -3759,20 +3759,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-25T08:57:29+00:00"
+            "time": "2026-11-01T19:42:58+00:00"
         },
         {
             "name": "symfony/translation-contracts",
-            "version": "v3.7.1",
+            "version": "v3.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/translation-contracts.git",
-                "reference": "ccb206b98faccc511ebae8e5fad50f2dc0b30621"
+                "reference": "0a3ae917402632fcba2aeddae9c98332f3d7dd05"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/translation-contracts/zipball/ccb206b98faccc511ebae8e5fad50f2dc0b30621",
-                "reference": "ccb206b98faccc511ebae8e5fad50f2dc0b30621",
+                "url": "https://api.github.com/repos/symfony/translation-contracts/zipball/0a3ae917402632fcba2aeddae9c98332f3d7dd05",
+                "reference": "0a3ae917402632fcba2aeddae9c98332f3d7dd05",
                 "shasum": ""
             },
             "require": {
@@ -3785,7 +3785,7 @@
                     "name": "symfony/contracts"
                 },
                 "branch-alias": {
-                    "dev-main": "3.7-dev"
+                    "dev-main": "3.8-dev"
                 }
             },
             "autoload": {
@@ -3821,7 +3821,7 @@
                 "standards"
             ],
             "support": {
-                "source": "https://github.com/symfony/translation-contracts/tree/v3.7.1"
+                "source": "https://github.com/symfony/translation-contracts/tree/v3.8.1"
             },
             "funding": [
                 {
@@ -3841,7 +3841,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-06-05T06:23:12+00:00"
+            "time": "2026-10-03T08:17:19+00:00"
         },
         {
             "name": "voku/portable-ascii",
