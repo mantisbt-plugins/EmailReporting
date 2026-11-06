@@ -197,26 +197,20 @@ class ERP_rule_api extends ERP_ErrorHandling
 		// cond_issuenote_reporter_accesslevel
 		if ( isset( $p_conditions[ 'cond_issuenote_reporter_accesslevel' ] ) )
 		{
-			$t_found_accesslevel = FALSE;
-			$t_reporter_id = (int) ( ( $this->p_event === 'EVENT_BUGNOTE_ADD' ) ? bugnote_get_field( $this->p_bugnote_id, 'reporter_id' ) : bug_get_field( $this->p_bug_id, 'reporter_id' ) );
+			$t_reporter_id = (int) $this->get_issuenote_field( 'reporter_id' );
 
+			$t_enum = config_get( 'access_levels_enum_string' );
 			foreach ( $p_conditions[ 'cond_issuenote_reporter_accesslevel' ] AS $t_accesslevel )
 			{
-				$t_enum = config_get( 'access_levels_enum_string' );
-				if ( MantisEnum::hasValue( $t_enum, $t_accesslevel ) )
+				if ( !MantisEnum::hasValue( $t_enum, $t_accesslevel ) )
 				{
-					if ( access_has_bug_level( $t_accesslevel, $this->p_bug_id, $t_reporter_id ) )
-					{
-						$t_found_accesslevel = TRUE;
-					}
-				}
-				else
-				{
-					$this->setError( 'Access level missing: ' . $p_actions[ 'cond_issuenote_reporter_accesslevel' ] );
+					$this->setError( 'Access level missing: ' . $t_accesslevel );
 				}
 			}
 
-			if ( !$t_found_accesslevel )
+			$t_access_level = access_get_project_level( bug_get_field( $this->p_bug_id, 'project_id' ), $t_reporter_id );
+
+			if ( !in_array( $t_access_level, $p_conditions[ 'cond_issuenote_reporter_accesslevel' ], TRUE ) )
 			{
 				return( FALSE );
 			}
@@ -234,7 +228,7 @@ class ERP_rule_api extends ERP_ErrorHandling
 		// cond_issuenote_reporter
 		if ( isset( $p_conditions[ 'cond_issuenote_reporter' ] ) )
 		{
-			$t_reporter_id = (int) ( ( $this->p_event === 'EVENT_BUGNOTE_ADD' ) ? bugnote_get_field( $this->p_bugnote_id, 'reporter_id' ) : bug_get_field( $this->p_bug_id, 'reporter_id' ) );
+			$t_reporter_id = (int) $this->get_issuenote_field( 'reporter_id' );
 
 			if ( !in_array( $t_reporter_id, $p_conditions[ 'cond_issuenote_reporter' ], TRUE ) )
 			{
@@ -498,7 +492,7 @@ class ERP_rule_api extends ERP_ErrorHandling
 			if ( (int) bug_get_field( $this->p_bug_id, 'view_state' ) !== $p_actions[ 'act_issue_view_state' ] )
 			{
 				$t_enum = config_get( 'view_state_enum_string' );
-				if( MantisEnum::hasValue( $t_enum, $p_actions[ 'act_issue_view_state' ] ) )
+				if ( MantisEnum::hasValue( $t_enum, $p_actions[ 'act_issue_view_state' ] ) )
 				{
 					bug_set_field( $this->p_bug_id, 'view_state', $p_actions[ 'act_issue_view_state' ] );
 				}
@@ -512,12 +506,12 @@ class ERP_rule_api extends ERP_ErrorHandling
 		// act_issuenote_view_state
 		if ( isset( $p_actions[ 'act_issuenote_view_state' ] ) )
 		{
-			$t_view_state = (int) ( ( $this->p_event === 'EVENT_BUGNOTE_ADD' ) ? bugnote_get_field( $this->p_bugnote_id, 'view_state' ) : bug_get_field( $this->p_bug_id, 'view_state' ) );
+			$t_view_state = (int) $this->get_issuenote_field( 'view_state' );
 
 			if ( $t_view_state !== $p_actions[ 'act_issuenote_view_state' ] )
 			{
 				$t_enum = config_get( 'view_state_enum_string' );
-				if( MantisEnum::hasValue( $t_enum, $p_actions[ 'act_issuenote_view_state' ] ) )
+				if ( MantisEnum::hasValue( $t_enum, $p_actions[ 'act_issuenote_view_state' ] ) )
 				{
 					if ( $this->p_event === 'EVENT_BUGNOTE_ADD' )
 					{
@@ -541,7 +535,7 @@ class ERP_rule_api extends ERP_ErrorHandling
 			if ( (int) bug_get_field( $this->p_bug_id, 'reproducibility' ) !== $p_actions[ 'act_issue_reproducibility' ] )
 			{
 				$t_enum = config_get( 'reproducibility_enum_string' );
-				if( MantisEnum::hasValue( $t_enum, $p_actions[ 'act_issue_reproducibility' ] ) )
+				if ( MantisEnum::hasValue( $t_enum, $p_actions[ 'act_issue_reproducibility' ] ) )
 				{
 					bug_set_field( $this->p_bug_id, 'reproducibility', $p_actions[ 'act_issue_reproducibility' ] );
 				}
@@ -579,7 +573,6 @@ class ERP_rule_api extends ERP_ErrorHandling
 		// act_issuenote_reporter
 		if ( isset( $p_actions[ 'act_issuenote_reporter' ] ) )
 		{
-			$t_reporter_id = (int) ( ( $this->p_event === 'EVENT_BUGNOTE_ADD' ) ? bugnote_get_field( $this->p_bugnote_id, 'reporter_id' ) : bug_get_field( $this->p_bug_id, 'reporter_id' ) );
 			$t_is_user_reporter = ( ( $this->p_event === 'EVENT_BUGNOTE_ADD' ) ? bugnote_is_user_reporter( $this->p_bugnote_id, $p_actions[ 'act_issuenote_reporter' ] ) : bug_is_user_reporter( $this->p_bug_id, $p_actions[ 'act_issuenote_reporter' ] ) );
 
 			if ( !$t_is_user_reporter )
@@ -643,7 +636,15 @@ class ERP_rule_api extends ERP_ErrorHandling
 			{
 				if ( user_exists( $t_monitor_id ) )
 				{
-					bug_monitor( $this->p_bug_id, $t_monitor_id );
+					$t_monitor_bug_threshold = config_get( 'monitor_bug_threshold', NULL, $t_monitor_id, bug_get_field( $this->p_bug_id, 'project_id' ) );
+					if ( access_has_bug_level( $t_monitor_bug_threshold, $this->p_bug_id, $t_monitor_id ) )
+					{
+						bug_monitor( $this->p_bug_id, $t_monitor_id );
+					}
+					else
+					{
+						$this->setError( 'User does not have monitor permissions: ' . $t_monitor_id );
+					}
 				}
 				else
 				{
@@ -688,7 +689,7 @@ class ERP_rule_api extends ERP_ErrorHandling
 			if ( (int) bug_get_field( $this->p_bug_id, 'priority' ) !== $p_actions[ 'act_issue_priority' ] )
 			{
 				$t_enum = config_get( 'priority_enum_string' );
-				if( MantisEnum::hasValue( $t_enum, $p_actions[ 'act_issue_priority' ] ) )
+				if ( MantisEnum::hasValue( $t_enum, $p_actions[ 'act_issue_priority' ] ) )
 				{
 					bug_set_field( $this->p_bug_id, 'priority', $p_actions[ 'act_issue_priority' ] );
 				}
@@ -854,7 +855,7 @@ class ERP_rule_api extends ERP_ErrorHandling
 		$t_attachment_rows = bug_get_attachments( $p_bug_id );
 
 		$t_bug_attachments_count = count( $t_attachment_rows );
-		if( $t_bug_attachments_count === 0 )
+		if ( $t_bug_attachments_count === 0 )
 		{
 			return( FALSE );
 		}
@@ -887,7 +888,7 @@ class ERP_rule_api extends ERP_ErrorHandling
 		$t_attachment_rows = bug_get_attachments( $p_bug_id );
 
 		$t_bug_attachments_count = count( $t_attachment_rows );
-		if( $t_bug_attachments_count === 0 )
+		if ( $t_bug_attachments_count === 0 )
 		{
 			return( FALSE );
 		}
@@ -913,6 +914,20 @@ class ERP_rule_api extends ERP_ErrorHandling
 		$t_match = $this->wildcard_match( $p_needle, $t_attachment_display_names );
 
 		return( $t_match );
+	}
+
+	/*
+	 * Get either the bug or the bugnote field based on the current event being triggered
+	 *
+	 */
+	private function get_issuenote_field( $p_field )
+	{
+		if ( $this->p_event === 'EVENT_BUGNOTE_ADD' )
+		{
+			return( bugnote_get_field( $this->p_bugnote_id, $p_field ) );
+		}
+
+		return( bug_get_field( $this->p_bug_id, $p_field ) );
 	}
 }
 

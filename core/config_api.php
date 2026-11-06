@@ -948,14 +948,14 @@ function ERP_print_custom_field_input( $p_sel_value, $p_field_def )
 }
 
 # --------------------
-# output a option list with all access_levels in the MantisBT system
+# output an option list with all access_levels in the MantisBT system
 function ERP_custom_function_print_access_levels_option_list( $p_sel_value )
 {
 	print_enum_string_option_list( 'access_levels', (array) $p_sel_value );
 }
 
 # --------------------
-# output a option list for authentication methods for POP3 and IMAP
+# output an option list for authentication methods for POP3 and IMAP
 function ERP_custom_function_print_auth_method_option_list( $p_sel_value )
 {
 	$t_result = ERP_select_mail_engine( plugin_config_get( 'mail_engine' ) );
@@ -1011,7 +1011,7 @@ function ERP_custom_function_print_auth_method_option_list( $p_sel_value )
 }
 
 # --------------------
-# output a option list based on an array with an index called "description"
+# output an option list based on an array with an index called "description"
 function ERP_custom_function_print_descriptions_option_list( $p_sel_value, $p_options_array )
 {
 	$t_sel_value = (array) $p_sel_value;
@@ -1093,7 +1093,7 @@ function ERP_custom_function_print_duedate_option( $p_name, $p_input_name, $p_se
 }
 
 # --------------------
-# output a option list with supported encryptions
+# output an option list with supported encryptions
 function ERP_custom_function_print_encryption_option_list( $p_sel_value )
 {
 	if ( extension_loaded( 'openssl' ) )
@@ -1129,7 +1129,7 @@ function ERP_custom_function_print_encryption_option_list( $p_sel_value )
 }
 
 # --------------------
-# output a option list with global categories available in the mantisbt system
+# output an option list with global categories available in the mantisbt system
 function ERP_custom_function_print_global_category_option_list( $p_sel_value )
 {
 	// Fix for older MantisBT pre 2.27 versions
@@ -1191,7 +1191,7 @@ function ERP_custom_function_print_global_category_option_list( $p_sel_value )
 }
 
 # --------------------
-# output a option list with all users who have at least handle bug rights
+# output an option list with all users who have at least handle bug rights
 function ERP_custom_function_print_handler_option_list( $p_sel_value )
 {
 	$t_user_ids = (array) $p_sel_value;
@@ -1218,7 +1218,7 @@ function ERP_custom_function_print_handler_option_list( $p_sel_value )
 }
 
 # --------------------
-# output a option list with all users who have at least handle bug rights
+# output an option list with all users who have at least monitor bug rights
 function ERP_custom_function_print_monitor_option_list( $p_sel_value )
 {
 	$t_user_ids = (array) $p_sel_value;
@@ -1245,14 +1245,14 @@ function ERP_custom_function_print_monitor_option_list( $p_sel_value )
 }
 
 # --------------------
-# output a option list with all priorities in the MantisBT system
+# output an option list with all priorities in the MantisBT system
 function ERP_custom_function_print_priority_option_list( $p_sel_value )
 {
 	print_enum_string_option_list( 'priority', (array) $p_sel_value );
 }
 
 # --------------------
-# output a option list with all the projects in the MantisBT system
+# output an option list with all the projects in the MantisBT system
 # Based on MantisBT 2.28.4 function: print_project_option_list
 function ERP_custom_function_print_projects_option_list( $p_sel_value )
 {
@@ -1287,7 +1287,8 @@ function ERP_custom_function_print_projects_option_list( $p_sel_value )
 }
 
 # --------------------
-# output a option list with all users who have at least reporter rights
+# output an option list with all users who have sufficient access to report issues or add notes;
+# event-specific permissions are validated when the rule is executed
 function ERP_custom_function_print_reporter_option_list( $p_sel_value )
 {
 	$t_user_ids = (array) $p_sel_value;
@@ -1314,28 +1315,28 @@ function ERP_custom_function_print_reporter_option_list( $p_sel_value )
 }
 
 # --------------------
-# output a option list with all reproducibility in the MantisBT system
+# output an option list with all reproducibility in the MantisBT system
 function ERP_custom_function_print_reproducibility_option_list( $p_sel_value )
 {
 	print_enum_string_option_list( 'reproducibility', (array) $p_sel_value );
 }
 
 # --------------------
-# output a option list with all severity in the MantisBT system
+# output an option list with all severity in the MantisBT system
 function ERP_custom_function_print_severity_option_list( $p_sel_value )
 {
 	print_enum_string_option_list( 'severity', (array) $p_sel_value );
 }
 
 # --------------------
-# output a option list with all status in the MantisBT system
+# output an option list with all status in the MantisBT system
 function ERP_custom_function_print_status_option_list( $p_sel_value )
 {
 	print_enum_string_option_list( 'status', (array) $p_sel_value );
 }
 
 # --------------------
-# output a option list with the tags currently known in the Mantis system
+# output an option list with the tags currently known in the Mantis system
 # Based on MantisBT 2.28.4 function print_tag_option_list
 function ERP_custom_function_print_tag_option_list( $p_sel_value )
 {
@@ -1352,7 +1353,7 @@ function ERP_custom_function_print_tag_option_list( $p_sel_value )
 }
 
 # --------------------
-# output a option list with all view_states in the MantisBT system
+# output an option list with all view_states in the MantisBT system
 function ERP_custom_function_print_view_state_option_list( $p_sel_value )
 {
 	print_enum_string_option_list( 'view_state', (array) $p_sel_value );

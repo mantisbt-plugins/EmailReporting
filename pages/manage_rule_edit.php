@@ -119,7 +119,7 @@ elseif ( $f_rule_action === 'describe' && $f_select_rule >= 0 )
 				$t_value = $t_ruleitem_value;
 			}
 		
-			$t_message .= $t_key . ': ' . $t_value . '<br />';
+			$t_message .= plugin_lang_get( $t_key ) . ': ' . $t_value . '<br />';
 		}
 		else
 		{
@@ -156,7 +156,7 @@ elseif ( $f_rule_action === 'describe' && $f_select_rule >= 0 )
 					}
 				}
 
-				$t_message .= $t_key . ': ' . $t_value . '<br />';
+				$t_message .= plugin_lang_get( $t_key ) . ': ' . $t_value . '<br />';
 			}
 		}
 	}
