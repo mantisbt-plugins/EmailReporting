@@ -194,12 +194,49 @@ class ERP_rule_api extends ERP_ErrorHandling
 			}
 		}
 
+		// cond_issuenote_reporter_accesslevel
+		if ( isset( $p_conditions[ 'cond_issuenote_reporter_accesslevel' ] ) )
+		{
+			$t_found_accesslevel = FALSE;
+			$t_reporter_id = (int) ( ( $this->p_event === 'EVENT_BUGNOTE_ADD' ) ? bugnote_get_field( $this->p_bugnote_id, 'reporter_id' ) : bug_get_field( $this->p_bug_id, 'reporter_id' ) );
+
+			foreach ( $p_conditions[ 'cond_issuenote_reporter_accesslevel' ] AS $t_accesslevel )
+			{
+				$t_enum = config_get( 'access_levels_enum_string' );
+				if ( MantisEnum::hasValue( $t_enum, $t_accesslevel ) )
+				{
+					if ( access_has_bug_level( $t_accesslevel, $this->p_bug_id, $t_reporter_id ) )
+					{
+						$t_found_accesslevel = TRUE;
+					}
+				}
+				else
+				{
+					$this->setError( 'Access level missing: ' . $p_actions[ 'cond_issuenote_reporter_accesslevel' ] );
+				}
+			}
+
+			if ( !$t_found_accesslevel )
+			{
+				return( FALSE );
+			}
+		}
+
 		// cond_issue_reporter
-		// @TODO Possible future improvement
-		// bugnote_get_field( $this->p_bugnote_id, 'reporter_id' )
 		if ( isset( $p_conditions[ 'cond_issue_reporter' ] ) )
 		{
 			if ( !in_array( (int) bug_get_field( $this->p_bug_id, 'reporter_id' ), $p_conditions[ 'cond_issue_reporter' ], TRUE ) )
+			{
+				return( FALSE );
+			}
+		}
+
+		// cond_issuenote_reporter
+		if ( isset( $p_conditions[ 'cond_issuenote_reporter' ] ) )
+		{
+			$t_reporter_id = (int) ( ( $this->p_event === 'EVENT_BUGNOTE_ADD' ) ? bugnote_get_field( $this->p_bugnote_id, 'reporter_id' ) : bug_get_field( $this->p_bug_id, 'reporter_id' ) );
+
+			if ( !in_array( $t_reporter_id, $p_conditions[ 'cond_issuenote_reporter' ], TRUE ) )
 			{
 				return( FALSE );
 			}
@@ -427,7 +464,7 @@ class ERP_rule_api extends ERP_ErrorHandling
 			if ( (int) bug_get_field( $this->p_bug_id, 'severity' ) !== $p_actions[ 'act_issue_severity' ] )
 			{
 				$t_enum = config_get( 'severity_enum_string' );
-				if( MantisEnum::hasValue( $t_enum, $p_actions[ 'act_issue_severity' ] ) )
+				if ( MantisEnum::hasValue( $t_enum, $p_actions[ 'act_issue_severity' ] ) )
 				{
 					bug_set_field( $this->p_bug_id, 'severity', $p_actions[ 'act_issue_severity' ] );
 				}
@@ -444,7 +481,7 @@ class ERP_rule_api extends ERP_ErrorHandling
 			if ( (int) bug_get_field( $this->p_bug_id, 'status' ) !== $p_actions[ 'act_issue_status' ] )
 			{
 				$t_enum = config_get( 'status_enum_string' );
-				if( MantisEnum::hasValue( $t_enum, $p_actions[ 'act_issue_status' ] ) )
+				if ( MantisEnum::hasValue( $t_enum, $p_actions[ 'act_issue_status' ] ) )
 				{
 					bug_set_field( $this->p_bug_id, 'status', $p_actions[ 'act_issue_status' ] );
 				}
@@ -472,6 +509,32 @@ class ERP_rule_api extends ERP_ErrorHandling
 			}
 		}
 
+		// act_issuenote_view_state
+		if ( isset( $p_actions[ 'act_issuenote_view_state' ] ) )
+		{
+			$t_view_state = (int) ( ( $this->p_event === 'EVENT_BUGNOTE_ADD' ) ? bugnote_get_field( $this->p_bugnote_id, 'view_state' ) : bug_get_field( $this->p_bug_id, 'view_state' ) );
+
+			if ( $t_view_state !== $p_actions[ 'act_issuenote_view_state' ] )
+			{
+				$t_enum = config_get( 'view_state_enum_string' );
+				if( MantisEnum::hasValue( $t_enum, $p_actions[ 'act_issuenote_view_state' ] ) )
+				{
+					if ( $this->p_event === 'EVENT_BUGNOTE_ADD' )
+					{
+						bugnote_set_field( $this->p_bugnote_id, 'view_state', $p_actions[ 'act_issuenote_view_state' ] );
+					}
+					else
+					{
+						bug_set_field( $this->p_bug_id, 'view_state', $p_actions[ 'act_issuenote_view_state' ] );
+					}
+				}
+				else
+				{
+					$this->setError( 'View_state missing: ' . $p_actions[ 'act_issuenote_view_state' ] );
+				}
+			}
+		}
+
 		// act_issue_reproducibility
 		if ( isset( $p_actions[ 'act_issue_reproducibility' ] ) )
 		{
@@ -492,11 +555,19 @@ class ERP_rule_api extends ERP_ErrorHandling
 		// act_issue_reporter
 		if ( isset( $p_actions[ 'act_issue_reporter' ] ) )
 		{
-			if ( (int) bug_get_field( $this->p_bug_id, 'reporter_id' ) !== $p_actions[ 'act_issue_reporter' ] )
+			if ( !bug_is_user_reporter( $this->p_bug_id, $p_actions[ 'act_issue_reporter' ] ) )
 			{
 				if ( user_exists( $p_actions[ 'act_issue_reporter' ] ) )
 				{
-					bug_set_field( $this->p_bug_id, 'reporter_id', $p_actions[ 'act_issue_reporter' ] );
+					$t_report_bug_threshold = config_get( 'report_bug_threshold', NULL, $p_actions[ 'act_issue_reporter' ], bug_get_field( $this->p_bug_id, 'project_id' ) );
+					if ( access_has_bug_level( $t_report_bug_threshold, $this->p_bug_id, $p_actions[ 'act_issue_reporter' ] ) )
+					{
+						bug_set_field( $this->p_bug_id, 'reporter_id', $p_actions[ 'act_issue_reporter' ] );
+					}
+					else
+					{
+						$this->setError( 'Reporter does not have report permissions: ' . $p_actions[ 'act_issue_reporter' ] );
+					}
 				}
 				else
 				{
@@ -505,18 +576,78 @@ class ERP_rule_api extends ERP_ErrorHandling
 			}
 		}
 
+		// act_issuenote_reporter
+		if ( isset( $p_actions[ 'act_issuenote_reporter' ] ) )
+		{
+			$t_reporter_id = (int) ( ( $this->p_event === 'EVENT_BUGNOTE_ADD' ) ? bugnote_get_field( $this->p_bugnote_id, 'reporter_id' ) : bug_get_field( $this->p_bug_id, 'reporter_id' ) );
+			$t_is_user_reporter = ( ( $this->p_event === 'EVENT_BUGNOTE_ADD' ) ? bugnote_is_user_reporter( $this->p_bugnote_id, $p_actions[ 'act_issuenote_reporter' ] ) : bug_is_user_reporter( $this->p_bug_id, $p_actions[ 'act_issuenote_reporter' ] ) );
+
+			if ( !$t_is_user_reporter )
+			{
+				if ( user_exists( $p_actions[ 'act_issuenote_reporter' ] ) )
+				{
+					$t_threshold = ( ( $this->p_event === 'EVENT_BUGNOTE_ADD' ) ? 'add_bugnote_threshold' : 'report_bug_threshold' );
+					$t_report_threshold = config_get( $t_threshold, NULL, $p_actions[ 'act_issuenote_reporter' ], bug_get_field( $this->p_bug_id, 'project_id' ) );
+					$t_access_has_level = ( ( $this->p_event === 'EVENT_BUGNOTE_ADD' ) ? access_has_bugnote_level( $t_report_threshold, $this->p_bugnote_id, $p_actions[ 'act_issuenote_reporter' ] ) : access_has_bug_level( $t_report_threshold, $this->p_bug_id, $p_actions[ 'act_issuenote_reporter' ] ) );
+					if ( $t_access_has_level )
+					{
+						if ( $this->p_event === 'EVENT_BUGNOTE_ADD' )
+						{
+							bugnote_set_field( $this->p_bugnote_id, 'reporter_id', $p_actions[ 'act_issuenote_reporter' ] );
+						}
+						else
+						{
+							bug_set_field( $this->p_bug_id, 'reporter_id', $p_actions[ 'act_issuenote_reporter' ] );
+						}
+					}
+					else
+					{
+						$this->setError( 'Reporter does not have report permissions: ' . $p_actions[ 'act_issuenote_reporter' ] );
+					}
+				}
+				else
+				{
+					$this->setError( 'Reporter user missing: ' . $p_actions[ 'act_issuenote_reporter' ] );
+				}
+			}
+		}
+
 		// act_issue_handler
 		if ( isset( $p_actions[ 'act_issue_handler' ] ) )
 		{
-			if ( (int) bug_get_field( $this->p_bug_id, 'handler_id' ) !== $p_actions[ 'act_issue_handler' ] )
+			if ( !bug_is_user_handler( $this->p_bug_id, $p_actions[ 'act_issue_handler' ] ) )
 			{
 				if ( user_exists( $p_actions[ 'act_issue_handler' ] ) )
 				{
-					bug_set_field( $this->p_bug_id, 'handler_id', $p_actions[ 'act_issue_handler' ] );
+					$t_handle_bug_threshold = config_get( 'handle_bug_threshold', NULL, $p_actions[ 'act_issue_handler' ], bug_get_field( $this->p_bug_id, 'project_id' ) );
+					if ( access_has_bug_level( $t_handle_bug_threshold, $this->p_bug_id, $p_actions[ 'act_issue_handler' ] ) )
+					{
+						bug_set_field( $this->p_bug_id, 'handler_id', $p_actions[ 'act_issue_handler' ] );
+					}
+					else
+					{
+						$this->setError( 'Handler does not have handle permissions: ' . $p_actions[ 'act_issue_handler' ] );
+					}
 				}
 				else
 				{
 					$this->setError( 'Handler user missing: ' . $p_actions[ 'act_issue_handler' ] );
+				}
+			}
+		}
+
+		// act_issue_monitor
+		if ( isset( $p_actions[ 'act_issue_monitor' ] ) )
+		{
+			foreach ( $p_actions[ 'act_issue_monitor' ] AS $t_monitor_id )
+			{
+				if ( user_exists( $t_monitor_id ) )
+				{
+					bug_monitor( $this->p_bug_id, $t_monitor_id );
+				}
+				else
+				{
+					$this->setError( 'Monitor user missing: ' . $t_monitor_id );
 				}
 			}
 		}

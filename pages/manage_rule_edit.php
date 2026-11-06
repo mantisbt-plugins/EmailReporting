@@ -20,7 +20,9 @@ if ( $f_rule_action === 'add' || $f_rule_action === 'copy' || ( ( $f_rule_action
 			'cond_issue_creation_source'         => gpc_get_string_array( 'cond_issue_creation_source', array() ),
 			'cond_mailbox'                       => gpc_get_int_array( 'cond_mailbox', array() ),
 			'cond_event_type'                    => gpc_get_string_array( 'cond_event_type', array() ),
+			'cond_issuenote_reporter_accesslevel'=> gpc_get_int_array( 'cond_issuenote_reporter_accesslevel', array() ),
 			'cond_issue_reporter'                => gpc_get_int_array( 'cond_issue_reporter', array() ),
+			'cond_issuenote_reporter'            => gpc_get_int_array( 'cond_issuenote_reporter', array() ),
 			'cond_issue_handler'                 => gpc_get_int_array( 'cond_issue_handler', array() ),
 			'cond_email_from'                    => gpc_get_string( 'cond_email_from', '' ),
 			'cond_email_to'                      => gpc_get_string( 'cond_email_to', '' ),
@@ -39,9 +41,12 @@ if ( $f_rule_action === 'add' || $f_rule_action === 'copy' || ( ( $f_rule_action
 			'act_issue_severity'         => gpc_get_int( 'act_issue_severity', 0 ),
 			'act_issue_status'           => gpc_get_int( 'act_issue_status', 0 ),
 			'act_issue_view_state'       => gpc_get_int( 'act_issue_view_state', 0 ),
+			'act_issuenote_view_state'   => gpc_get_int( 'act_issuenote_view_state', 0 ),
 			'act_issue_reproducibility'  => gpc_get_int( 'act_issue_reproducibility', 0 ),
 			'act_issue_reporter'         => gpc_get_int( 'act_issue_reporter', 0 ),
+			'act_issuenote_reporter'     => gpc_get_int( 'act_issuenote_reporter', 0 ),
 			'act_issue_handler'          => gpc_get_int( 'act_issue_handler', 0 ),
+			'act_issue_monitor'          => gpc_get_int_array( 'act_issue_monitor', array() ),
 			'act_issue_duedate'          => array(
 				'modifier'               => gpc_get_string( 'act_issue_duedate_modifier', '' ),
 				'amount'                 => gpc_get_int( 'act_issue_duedate_amount', 0 ),
@@ -103,7 +108,7 @@ elseif ( $f_rule_action === 'describe' && $f_select_rule >= 0 )
 
 	foreach ( $t_rule AS $t_key => $t_ruleitem_value )
 	{
-		If ( !is_array( $t_ruleitem_value ) )
+		if ( !is_array( $t_ruleitem_value ) )
 		{
 			if ( $t_key === 'enabled' )
 			{
@@ -114,7 +119,7 @@ elseif ( $f_rule_action === 'describe' && $f_select_rule >= 0 )
 				$t_value = $t_ruleitem_value;
 			}
 		
-			$t_message .= plugin_lang_get( $t_key ) . ': ' . $t_value . '<br />';
+			$t_message .= $t_key . ': ' . $t_value . '<br />';
 		}
 		else
 		{
@@ -122,7 +127,7 @@ elseif ( $f_rule_action === 'describe' && $f_select_rule >= 0 )
 
 			foreach ( $t_ruleitem_value AS $t_key => $t_value )
 			{
-				If ( is_array( $t_value ) )
+				if ( is_array( $t_value ) )
 				{
 					if ( $t_key === 'act_issue_duedate' )
 					{
@@ -151,7 +156,7 @@ elseif ( $f_rule_action === 'describe' && $f_select_rule >= 0 )
 					}
 				}
 
-				$t_message .= plugin_lang_get( $t_key ) . ': ' . $t_value . '<br />';
+				$t_message .= $t_key . ': ' . $t_value . '<br />';
 			}
 		}
 	}
