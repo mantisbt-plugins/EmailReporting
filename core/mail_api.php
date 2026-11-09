@@ -1073,57 +1073,36 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 			# Core mantis event already exists within bugnote_add function
 			$t_description = event_signal( 'EVENT_ERP_BUGNOTE_DATA', $t_description, $t_bug_id );
 
-			# Check reopen permissions
-			$t_bug = bug_get( $t_bug_id, TRUE );
-
-			if ( $this->_mail_reopen_bugs
-				&& bug_is_resolved( $t_bug_id )
-				&& ( !$this->_mail_respect_permissions || access_can_reopen_bug( $t_bug ) )
-			)
-			{
-				if ( !is_blank( $t_description ) )
-				{
-					# Reopen issue and add a bug note
-					# We need the bugnote_id for attachments so we cannot rely on bug_reopen
-					$t_bugnote_id = bugnote_add( $t_bug_id, $t_description, p_private: config_get( 'default_bugnote_view_status' ) == VS_PRIVATE, p_send_email: FALSE, p_trigger_event: FALSE );
-					bugnote_process_mentions( $t_bug_id, $t_bugnote_id, $t_description );
-					bug_reopen( $t_bug_id );
-
-					$t_updated_bug = bug_get( $t_bug_id, TRUE );
-					event_signal( 'EVENT_UPDATE_BUG', array( $t_bug, $t_updated_bug ) );
-				}
-			}
-			elseif ( !is_blank( $t_description ) )
+			if ( !is_blank( $t_description ) )
 			{
 				# Check note permissions
 				if ( !$this->_mail_respect_permissions || access_has_bug_level( config_get( 'add_bugnote_threshold' ), $t_bug_id ) )
 				{
+					# Check reopen permissions
+					$t_bug = bug_get( $t_bug_id, TRUE );
+
+					$t_reopen_issue = (bool) ( $this->_mail_reopen_bugs
+						&& bug_is_resolved( $t_bug_id )
+						&& ( !$this->_mail_respect_permissions || access_can_reopen_bug( $t_bug ) )
+					);
+
 					# Add a bug note
-					$t_bugnote_id = bugnote_add( $t_bug_id, $t_description, p_private: config_get( 'default_bugnote_view_status' ) == VS_PRIVATE, p_trigger_event: FALSE );
+					$t_bugnote_id = bugnote_add( $t_bug_id, $t_description, p_private: config_get( 'default_bugnote_view_status' ) == VS_PRIVATE, p_send_email: !$t_reopen_issue, p_trigger_event: FALSE );
 
 					# Process the mentions in the added note
 					bugnote_process_mentions( $t_bug_id, $t_bugnote_id, $t_description );
 
-					/* Code based on MantisBT 2.28.4 bug_update.php */
-					# Handle the reassign on feedback feature. Note that this feature generally
-					# won't work very well with custom workflows as it makes a lot of assumptions
-					# that may not be true. It assumes you don't have any statuses in the workflow
-					# between 'bug_submit_status' and 'bug_feedback_status'. It assumes you only
-					# have one feedback, assigned and submitted status.
-					if ( config_get( 'reassign_on_feedback' ) &&
-						$t_bug->status == config_get( 'bug_feedback_status' ) &&
-						$t_bug->handler_id != (int) auth_get_current_user_id() &&
-						$t_bug->reporter_id == (int) auth_get_current_user_id()
-					)
+					if ( $t_reopen_issue )
 					{
-						if( $t_bug->handler_id != NO_USER )
-						{
-							bug_set_field( $t_bug->id, 'status', config_get( 'bug_assigned_status' ) );
-						}
-						else
-						{
-							bug_set_field( $t_bug->id, 'status', config_get( 'bug_submit_status' ) );
-						}
+						bug_reopen( $t_bug_id );
+					}
+
+					$this->check_reassign_on_feedback( $t_bug_id );
+
+					if ( $t_reopen_issue )
+					{
+						$t_updated_bug = bug_get( $t_bug_id, TRUE );
+						event_signal( 'EVENT_UPDATE_BUG', array( $t_bug, $t_updated_bug ) );
 					}
 				}
 				else
@@ -1371,6 +1350,35 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 		ERP_set_temporary_overwrite( 'project_override', NULL );
 
 		$this->show_memory_usage( 'Finished processing attachments' );
+	}
+
+	# --------------------
+	# Handle the reassign on feedback feature
+	private function check_reassign_on_feedback( $p_bug_id )
+	{
+		$t_bug = bug_get( $p_bug_id );
+
+		/* Code based on MantisBT 2.28.4 bug_update.php */
+		# Handle the reassign on feedback feature. Note that this feature generally
+		# won't work very well with custom workflows as it makes a lot of assumptions
+		# that may not be true. It assumes you don't have any statuses in the workflow
+		# between 'bug_submit_status' and 'bug_feedback_status'. It assumes you only
+		# have one feedback, assigned and submitted status.
+		if ( config_get( 'reassign_on_feedback' ) &&
+			$t_bug->status == config_get( 'bug_feedback_status' ) &&
+			$t_bug->handler_id != (int) auth_get_current_user_id() &&
+			$t_bug->reporter_id == (int) auth_get_current_user_id()
+		)
+		{
+			if( $t_bug->handler_id != NO_USER )
+			{
+				bug_set_field( $t_bug->id, 'status', config_get( 'bug_assigned_status' ) );
+			}
+			else
+			{
+				bug_set_field( $t_bug->id, 'status', config_get( 'bug_submit_status' ) );
+			}
+		}
 	}
 
 	# --------------------
