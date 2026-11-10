@@ -15,17 +15,17 @@ class ERP_Mail_Parser
 	private $_file;
 	private $_content;
 
-	private $_from;
-	private $_to;
-	private $_cc;
-	private $_subject;
+	private $_from = '';
+	private $_to = '';
+	private $_cc = '';
+	private $_subject = '';
 	private $_def_charset = 'auto';
 	private $_fallback_charset = 'ASCII';
 	private $_priority = NULL;
-	private $_messageid;
+	private $_messageid = '';
 	private $_references = array();
-	private $_inreplyto;
-	private $_body;
+	private $_inreplyto = '';
+	private $_body = '';
 	private $_parts = array();
 	private $_ctype = array();
 	private $_is_auto_reply = FALSE;
@@ -295,7 +295,8 @@ class ERP_Mail_Parser
 		return( $structure );
 	}
 
-	private function parse_signed_content( $structure )
+	# Passed by reference required for reassigning $structure
+	private function parse_signed_content( &$structure )
 	{
 		if ( is_object( $structure ) )
 		{
@@ -496,7 +497,7 @@ class ERP_Mail_Parser
 
 	private function setMessageId( $p_messageid )
 	{
-		$this->_messageid = trim( (string)$p_messageid );
+		$this->_messageid = trim( (string) $p_messageid );
 	}
 
 	private function setReferences( $p_references )
@@ -511,7 +512,7 @@ class ERP_Mail_Parser
 
 	private function setInReplyTo( $p_inreplyto )
 	{
-		$this->_inreplyto = trim( (string)$p_inreplyto );
+		$this->_inreplyto = trim( (string) $p_inreplyto );
 	}
 
 	private function setPriority( $priority )
@@ -594,6 +595,11 @@ class ERP_Mail_Parser
 
 	private function setParts( $parts, $attachment = FALSE, $p_attached_email_subject = NULL )
 	{
+		if ( empty( $parts ) )
+		{
+			return;
+		}
+
 		if ( !array_key_exists( 0, $parts ) )
 		{
 			echo "\n" . 'EmailReporting can\'t handle this mime part. Please report this to the EmailReporting project developers' . "\n" . 'Array key: ' . key( $parts ) . "\n";

@@ -14,6 +14,7 @@ Changelog:
 	- Rule system: Add action for issue/note reporter
 	- Rule system: Add action to add monitors
 	- Changed flow for adding notes when issue is reopened and reassign_on_feedback is enabled
+	- Fix issue with multipart/signed mime parts (#37495)
 
 Okt 2026 - EmailReporting-0.14.0
 	- MantisBT minimum version increased to 2.13.0
