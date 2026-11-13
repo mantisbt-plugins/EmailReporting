@@ -152,6 +152,12 @@ class ERP_POP3_Transport extends ERP_Transport
 		$t_connectresult = $this->_mailserver->connect( $t_hostname, $p_port, $this->getStreamContextOptions() );
 
 		$t_additionalstring = ( ( $p_encryption !== FALSE && $p_encryption !== 'None' && $this->_ssl_cert_verify ) ? "\n" . 'This could possibly be because SSL certificate verification failed.' : '' );
+
+		if ( PEAR::isError( $t_connectresult ) && empty( $t_connectresult->getMessage() ) )
+		{
+			$t_additionalstring = 'Connection failed.' . "\n" . $t_additionalstring;
+		}
+
 		if ( $this->isPearError( $t_connectresult, $t_additionalstring ) )
 		{
 			return( FALSE );
@@ -274,6 +280,12 @@ class ERP_IMAP_Transport extends ERP_Transport
 		$t_connectresult = $this->_mailserver->connect( $t_hostname, $p_port, $t_STARTTLS );
 
 		$t_additionalstring = ( ( $p_encryption !== FALSE && $p_encryption !== 'None' && $this->_ssl_cert_verify === TRUE ) ? "\n" . 'This could possibly be because SSL certificate verification failed.' : '' );
+
+		if ( PEAR::isError( $t_connectresult ) && empty( $t_connectresult->getMessage() ) )
+		{
+			$t_additionalstring = 'Connection failed.' . "\n" . $t_additionalstring;
+		}
+
 		if ( $this->isPearError( $t_connectresult, $t_additionalstring ) )
 		{
 			return( FALSE );

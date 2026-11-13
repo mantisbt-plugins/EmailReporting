@@ -53,7 +53,7 @@ abstract class ERP_ErrorHandling
 		if ( PEAR::isError( $p_result ) )
 		{
 			$this->setError(
-				$p_result->getMessage() .
+				( ( !empty( $p_result->getMessage() ) ) ? $p_result->getMessage() : 'Unknown error' ) .
 				( ( !empty( $p_result->getCode() ) ) ? ' (' . $p_result->getCode() . ').' : '' ) .
 				( ( !empty( $p_additionalstring ) ) ? ' ' . $p_additionalstring : '' )
 			);
@@ -72,7 +72,7 @@ abstract class ERP_ErrorHandling
 	protected function handleThrowable( \Throwable $p_exception, string $p_additionalstring = '' ): void
 	{
 		$t_error = 
-			$p_exception->getMessage() .
+			( ( !empty( $p_exception->getMessage() ) ) ? $p_exception->getMessage() : 'Unknown error' ) .
 			( ( !empty( $p_exception->getCode() ) ) ? ' (' . $p_exception->getCode() . ').' : '' ) .
 			( ( !empty( $p_additionalstring ) ) ? ' ' . $p_additionalstring : '' );
 
