@@ -1,4 +1,6 @@
 Changelog:
+??? - EmailReporting-0.16.0
+
 Nov 2026 - EmailReporting-0.15.0
 	- Rule system: Add action for update project
 	- Rule system: Fix duedate if amount of days = 0
