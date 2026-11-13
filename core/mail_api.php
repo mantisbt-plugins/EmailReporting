@@ -1078,13 +1078,19 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 				# Check note permissions
 				if ( !$this->_mail_respect_permissions || access_has_bug_level( config_get( 'add_bugnote_threshold' ), $t_bug_id ) )
 				{
-					# Check reopen permissions
-					$t_bug = bug_get( $t_bug_id, TRUE );
-
 					$t_reopen_issue = (bool) ( $this->_mail_reopen_bugs
 						&& bug_is_resolved( $t_bug_id )
-						&& ( !$this->_mail_respect_permissions || access_can_reopen_bug( $t_bug ) )
 					);
+
+					if ( $t_reopen_issue )
+					{
+						# Check reopen permissions
+						$t_bug = bug_get( $t_bug_id, TRUE );
+
+						$t_reopen_issue = (bool) ( $t_reopen_issue
+							&& ( !$this->_mail_respect_permissions || access_can_reopen_bug( $t_bug ) )
+						);
+					}
 
 					# Add a bug note
 					$t_bugnote_id = bugnote_add( $t_bug_id, $t_description, p_private: config_get( 'default_bugnote_view_status' ) == VS_PRIVATE, p_send_email: !$t_reopen_issue, p_trigger_event: FALSE );
