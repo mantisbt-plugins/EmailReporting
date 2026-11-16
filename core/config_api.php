@@ -179,7 +179,7 @@ function ERP_encrypt_string( $p_string )
 	}
 	else
 	{
-		$t_decrypted_string = base64_encode( $p_string );
+		$t_encrypted_string = base64_encode( $p_string );
 	}
 
 	return( $t_encrypted_string );

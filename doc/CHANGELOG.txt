@@ -1,5 +1,6 @@
 Changelog:
 ??? - EmailReporting-0.16.0
+	- Fix password encryption fallback
 
 Nov 2026 - EmailReporting-0.15.0
 	- Rule system: Add action for update project
