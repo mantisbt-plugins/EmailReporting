@@ -15,6 +15,8 @@ class ERP_rule_api extends ERP_ErrorHandling
 	private bool $_perform_actions = FALSE;
 	private bool $_mail_debug = FALSE;
 
+	private ?string $_event_source = NULL;
+
 	/*
 	 * Start processing rules for the triggered event
 	 *
@@ -672,9 +674,9 @@ class ERP_rule_api extends ERP_ErrorHandling
 
 				$t_new_duedate = $t_current_duedate + ( $t_duedate_amount * 86400 );
 
-				if ( $t_current_duedate !== $t_new_duedate )
+				if ( (int) bug_get_field( $this->p_bug_id, 'due_date' ) !== $t_new_duedate )
 				{
-					bug_set_field( $this->p_bug_id, 'due_date', $t_current_duedate );
+					bug_set_field( $this->p_bug_id, 'due_date', $t_new_duedate );
 				}
 			}
 			else
@@ -752,17 +754,15 @@ class ERP_rule_api extends ERP_ErrorHandling
 	 */
 	private function get_event_source(): string
 	{
-		static $t_previous_plugin = NULL;
-
-		if ( $t_previous_plugin === NULL )
+		if ( $this->_event_source === NULL )
 		{
 			$t_current_plugin = plugin_get_current();
 			plugin_pop_current();
-			$t_previous_plugin = plugin_get_current() ?? 'MantisCore';
+			$this->_event_source = plugin_get_current() ?? 'MantisCore';
 			plugin_push_current( $t_current_plugin );
 		}
 
-		return( $t_previous_plugin );
+		return( $this->_event_source );
 	}
 
 	/*
