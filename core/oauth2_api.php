@@ -127,6 +127,11 @@ class ERP_Microsoft365OAuthProvider extends ERP_OAuthProvider
 	# Request accesstoken from M365
 	protected function requestAccessToken(): array|FALSE
 	{
+		if ( $this->hasError() )
+		{
+			return( FALSE );
+		}
+
 		$tokenEndpoint = $this->getTokenEndpoint();
 
 		$postData = [
@@ -404,6 +409,11 @@ class ERP_GoogleOAuthProvider extends ERP_OAuthProvider
 	# Request access token from Google
 	protected function requestAccessToken(): array|FALSE
 	{
+		if ( $this->hasError() )
+		{
+			return( FALSE );
+		}
+
 		$credentials = new Google\Auth\Credentials\ServiceAccountCredentials(
 			$this->scope,
 			$this->serviceAccountCredentials,
