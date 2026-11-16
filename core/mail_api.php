@@ -33,8 +33,6 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 	private $_from_emailaddress = NULL;
 	private $_to_emailaddress = NULL;
 
-	private $_mail_api = NULL;
-
 	private $_default_ports = array(
 		'POP3' => array( 'normal' => 110, 'encrypted' => 995 ),
 		'IMAP' => array( 'normal' => 143, 'encrypted' => 993 ),
@@ -391,37 +389,37 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 			return( FALSE );
 		}
 
-		$this->_mail_api = new ERP_POP3_Transport( $this->_test_only, $this->_mailbox[ 'ssl_cert_verify' ], 5 );
+		$t_mail_api = new ERP_POP3_Transport( $this->_test_only, $this->_mailbox[ 'ssl_cert_verify' ], 5 );
 
-		if ( $this->_mail_api->hasError() )
+		if ( $t_mail_api->hasError() )
 		{
-			$this->custom_error( $this->_mail_api->getError(), TRUE, 'Initialize transport class' );
+			$this->custom_error( $t_mail_api->getError(), TRUE, 'Initialize transport class' );
 			return( FALSE );
 		}
 
 		try
 		{
-			$t_connectresult = $this->_mail_api->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ], $this->_mailbox[ 'encryption' ] );
+			$t_connectresult = $t_mail_api->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ], $this->_mailbox[ 'encryption' ] );
 
 			if ( $t_connectresult !== TRUE )
 			{
-				$this->custom_error( $this->_mail_api->getError(), TRUE, 'Connect mail server' );
+				$this->custom_error( $t_mail_api->getError(), TRUE, 'Connect mail server' );
 				return( FALSE );
 			}
 
-			$t_loginresult = $this->_mail_api->login( $t_logininfo[ 'username' ], $t_logininfo[ 'password' ], $t_logininfo[ 'auth_method' ] );
+			$t_loginresult = $t_mail_api->login( $t_logininfo[ 'username' ], $t_logininfo[ 'password' ], $t_logininfo[ 'auth_method' ] );
 
 			if ( $t_loginresult === FALSE )
 			{
-				$this->custom_error( $this->_mail_api->getError(), TRUE, 'Attempt login' );
+				$this->custom_error( $t_mail_api->getError(), TRUE, 'Attempt login' );
 				return( FALSE );
 			}
 
-			$t_ListMsgs = $this->_mail_api->getListing();
+			$t_ListMsgs = $t_mail_api->getListing();
 
 			if ( $t_ListMsgs === FALSE )
 			{
-				$this->custom_error( $this->_mail_api->getError(), TRUE, 'Retrieve list of messages' );
+				$this->custom_error( $t_mail_api->getError(), TRUE, 'Retrieve list of messages' );
 				return( FALSE );
 			}
 
@@ -429,15 +427,23 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 			{
 				$t_MsgId = array_shift( $t_ListMsgs );
 
-				$t_emailresult = $this->process_single_email( $t_MsgId );
+				$t_Msg = $t_mail_api->getMsg( $t_MsgId );
+
+				if ( $t_Msg === FALSE )
+				{
+					$this->custom_error( $t_mail_api->getError(), TRUE, 'Retrieve raw message' );
+					return( FALSE );
+				}
+
+				$t_emailresult = $this->process_single_email( $t_Msg );
 
 				if ( $this->_mail_delete && $t_emailresult === TRUE )
 				{
-					$t_deleteresult = $this->_mail_api->deleteMsg( $t_MsgId );
+					$t_deleteresult = $t_mail_api->deleteMsg( $t_MsgId );
 
 					if ( $t_deleteresult === FALSE )
 					{
-						$this->custom_error( $this->_mail_api->getError(), TRUE, 'Attempt delete email' );
+						$this->custom_error( $t_mail_api->getError(), TRUE, 'Attempt delete email' );
 						return( FALSE );
 					}
 				}
@@ -445,11 +451,11 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 		}
 		finally
 		{
-			$t_disconnect = $this->_mail_api->disconnect();
+			$t_disconnect = $t_mail_api->disconnect();
 
 			if ( $t_disconnect === FALSE )
 			{
-				$this->custom_error( $this->_mail_api->getError(), TRUE, 'Disconnect from mail server' );
+				$this->custom_error( $t_mail_api->getError(), TRUE, 'Disconnect from mail server' );
 				return( FALSE );
 			}
 		}
@@ -468,53 +474,53 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 			return( FALSE );
 		}
 
-		$this->_mail_api = new ERP_IMAP_Transport( $this->_test_only, $this->_mailbox[ 'ssl_cert_verify' ], 5 );
+		$t_mail_api = new ERP_IMAP_Transport( $this->_test_only, $this->_mailbox[ 'ssl_cert_verify' ], 5 );
 
-		if ( $this->_mail_api->hasError() )
+		if ( $t_mail_api->hasError() )
 		{
-			$this->custom_error( $this->_mail_api->getError(), TRUE, 'Initialize transport class' );
+			$this->custom_error( $t_mail_api->getError(), TRUE, 'Initialize transport class' );
 			return( FALSE );
 		}
 
 		try
 		{
-			$t_connectresult = $this->_mail_api->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ], $this->_mailbox[ 'encryption' ] );
+			$t_connectresult = $t_mail_api->connect( $this->_mailbox[ 'hostname' ], $this->_mailbox[ 'port' ], $this->_mailbox[ 'encryption' ] );
 
 			if ( $t_connectresult !== TRUE )
 			{
-				$this->custom_error( $this->_mail_api->getError(), TRUE, 'Connect mail server' );
+				$this->custom_error( $t_mail_api->getError(), TRUE, 'Connect mail server' );
 				return( FALSE );
 			}
 
-			$t_loginresult = $this->_mail_api->login( $t_logininfo[ 'username' ], $t_logininfo[ 'password' ], $t_logininfo[ 'auth_method' ] );
+			$t_loginresult = $t_mail_api->login( $t_logininfo[ 'username' ], $t_logininfo[ 'password' ], $t_logininfo[ 'auth_method' ] );
 
 			if ( $t_loginresult === FALSE )
 			{
-				$this->custom_error( $this->_mail_api->getError(), TRUE, 'Attempt login' );
+				$this->custom_error( $t_mail_api->getError(), TRUE, 'Attempt login' );
 				return( FALSE );
 			}
 
 			// If basefolder is empty we try to select the inbox folder
 			if ( is_blank( $this->_mailbox[ 'imap_basefolder' ] ) )
 			{
-				$t_getCurrentMailbox = $this->_mail_api->getCurrentMailbox();
+				$t_getCurrentMailbox = $t_mail_api->getCurrentMailbox();
 
 				if ( $t_getCurrentMailbox === FALSE )
 				{
-					$this->custom_error( $this->_mail_api->getError(), TRUE, 'Get current IMAP folder' );
+					$this->custom_error( $t_mail_api->getError(), TRUE, 'Get current IMAP folder' );
 					return( FALSE );
 				}
 
 				$this->_mailbox[ 'imap_basefolder' ] = $t_getCurrentMailbox;
 			}
 
-			$t_basefolder_exists = $this->_mail_api->mailboxExist( $this->_mailbox[ 'imap_basefolder' ] );
+			$t_basefolder_exists = $t_mail_api->mailboxExist( $this->_mailbox[ 'imap_basefolder' ] );
 
 			if ( $t_basefolder_exists === FALSE )
 			{
-				if ( $this->_mail_api->hasError() )
+				if ( $t_mail_api->hasError() )
 				{
-					$this->custom_error( $this->_mail_api->getError(), TRUE, 'Check exist IMAP basefolder: "' . $this->_mailbox[ 'imap_basefolder' ] . '"' );
+					$this->custom_error( $t_mail_api->getError(), TRUE, 'Check exist IMAP basefolder: "' . $this->_mailbox[ 'imap_basefolder' ] . '"' );
 				}
 				else
 				{
@@ -553,24 +559,24 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 				$t_foldername = $this->_mailbox[ 'imap_basefolder' ] . ( ( $this->_mailbox[ 'imap_createfolderstructure' ] ) ? '/' . $t_project_name : '' );
 
 				// We don't need to check twice whether the mailbox exist incase createfolderstructure is false
-				$t_projectfolder_exists = ( ( $this->_mailbox[ 'imap_createfolderstructure' ] == ON ) ? $this->_mail_api->mailboxExist( $t_foldername ) : TRUE );
+				$t_projectfolder_exists = ( ( $this->_mailbox[ 'imap_createfolderstructure' ] == ON ) ? $t_mail_api->mailboxExist( $t_foldername ) : TRUE );
 
 				if ( $t_projectfolder_exists === FALSE )
 				{
-					if ( $this->_mail_api->hasError() )
+					if ( $t_mail_api->hasError() )
 					{
-						$this->custom_error( $this->_mail_api->getError(), TRUE, 'Check exist IMAP project folder: "' . $t_foldername . '"' );
+						$this->custom_error( $t_mail_api->getError(), TRUE, 'Check exist IMAP project folder: "' . $t_foldername . '"' );
 						return( FALSE );
 					}
 
 					if ( $this->_mailbox[ 'imap_createfolderstructure' ] == ON )
 					{
 						// create this mailbox
-						$t_createresult = $this->_mail_api->createMailbox( $t_foldername );
+						$t_createresult = $t_mail_api->createMailbox( $t_foldername );
 
 						if ( $t_createresult === FALSE )
 						{
-							$this->custom_error( $this->_mail_api->getError(), TRUE, 'Create IMAP folder: "' . $t_foldername . '"' );
+							$this->custom_error( $t_mail_api->getError(), TRUE, 'Create IMAP folder: "' . $t_foldername . '"' );
 							return( FALSE );
 						}
 
@@ -583,19 +589,19 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 					}
 				}
 
-				$t_selectresult = $this->_mail_api->selectMailbox( $t_foldername );
+				$t_selectresult = $t_mail_api->selectMailbox( $t_foldername );
 
 				if ( $t_selectresult === FALSE )
 				{
-					$this->custom_error( $this->_mail_api->getError(), TRUE, 'Select IMAP folder: "' . $t_foldername . '"' );
+					$this->custom_error( $t_mail_api->getError(), TRUE, 'Select IMAP folder: "' . $t_foldername . '"' );
 					return( FALSE );
 				}
 
-				$t_ListMsgs = $this->_mail_api->getListing();
+				$t_ListMsgs = $t_mail_api->getListing();
 
 				if ( $t_ListMsgs === FALSE )
 				{
-					$this->custom_error( $this->_mail_api->getError(), TRUE, 'Retrieve list of messages' );
+					$this->custom_error( $t_mail_api->getError(), TRUE, 'Retrieve list of messages' );
 					return( FALSE );
 				}
 
@@ -603,11 +609,11 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 				{
 					$t_MsgId = array_shift( $t_ListMsgs );
 
-					$t_isDeleted = $this->_mail_api->isDeleted( $t_MsgId );
+					$t_isDeleted = $t_mail_api->isDeleted( $t_MsgId );
 
-					if ( $t_isDeleted === FALSE && $this->_mail_api->hasError() )
+					if ( $t_isDeleted === FALSE && $t_mail_api->hasError() )
 					{
-						$this->custom_error( $this->_mail_api->getError(), TRUE, 'Check email deleted flag' );
+						$this->custom_error( $t_mail_api->getError(), TRUE, 'Check email deleted flag' );
 
 						// Should we stop processing if the flag cannot be verified or process the email?
 						// Let's ignore the email and hope the check works on the next run
@@ -619,15 +625,23 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 						continue;
 					}
 
-					$t_emailresult = $this->process_single_email( $t_MsgId, (int) $t_project[ 'id' ] );
+					$t_Msg = $t_mail_api->getMsg( $t_MsgId );
+
+					if ( $t_Msg === FALSE )
+					{
+						$this->custom_error( $t_mail_api->getError(), TRUE, 'Retrieve raw message' );
+						return( FALSE );
+					}
+
+					$t_emailresult = $this->process_single_email( $t_Msg, (int) $t_project[ 'id' ] );
 
 					if ( $t_emailresult === TRUE )
 					{
-						$t_deleteresult = $this->_mail_api->deleteMsg( $t_MsgId );
+						$t_deleteresult = $t_mail_api->deleteMsg( $t_MsgId );
 
 						if ( $t_deleteresult === FALSE )
 						{
-							$this->custom_error( $this->_mail_api->getError(), TRUE, 'Attempt delete email' );
+							$this->custom_error( $t_mail_api->getError(), TRUE, 'Attempt delete email' );
 							return( FALSE );
 						}
 					}
@@ -636,11 +650,11 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 				// mail_delete decides whether to perform the expunge command
 				if ( $this->_mail_delete == ON )
 				{
-					$t_expunge = $this->_mail_api->expunge();
+					$t_expunge = $t_mail_api->expunge();
 
 					if ( $t_expunge === FALSE )
 					{
-						$this->custom_error( $this->_mail_api->getError(), TRUE, 'Expunge deleted email: "' . $t_foldername . '"' );
+						$this->custom_error( $t_mail_api->getError(), TRUE, 'Expunge deleted email: "' . $t_foldername . '"' );
 						return( FALSE );
 					}
 				}
@@ -648,11 +662,11 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 		}
 		finally
 		{
-			$t_disconnect = $this->_mail_api->disconnect();
+			$t_disconnect = $t_mail_api->disconnect();
 
 			if ( $t_disconnect === FALSE )
 			{
-				$this->custom_error( $this->_mail_api->getError(), TRUE, 'Disconnect from mail server' );
+				$this->custom_error( $t_mail_api->getError(), TRUE, 'Disconnect from mail server' );
 				return( FALSE );
 			}
 		}
@@ -780,21 +794,16 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 	}
 
 	# --------------------
-	# Process a single email from either a pop3 or imap mailbox
-	# Returns true or false based on succesfull email retrieval from the mailbox
-	private function process_single_email( $p_MsgId, $p_overwrite_project_id = FALSE )
+	# Process a single email from a mailbox
+	# Returns true or false based on succesfull email processing
+	#
+	# Passed by reference to minimise memory usage when
+	# handling large amounts of mailbox data.
+	private function process_single_email( &$p_Msg, $p_overwrite_project_id = FALSE )
 	{
 		$this->show_memory_usage( 'Start process single email' );
 
-		$t_msg = $this->_mail_api->getMsg( $p_MsgId );
-
-		if ( $t_msg === FALSE )
-		{
-			$this->custom_error( $this->_mail_api->getError(), TRUE, 'Retrieve raw message' );
-			return( FALSE );
-		}
-
-		if ( empty( $t_msg ) )
+		if ( empty( $p_msg ) )
 		{
 			$this->custom_error( 'Retrieved message was empty. Either an invalid message ID was passed or there is a problem with one of the required packages' );
 
@@ -803,11 +812,11 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 
 		$this->show_memory_usage( 'Single email retrieved from mailbox' );
 
-		$this->save_message_to_file( 'raw_msg', $t_msg );
+		$this->save_message_to_file( 'raw_msg', $p_msg );
 
-		$t_email = $this->parse_content( $t_msg );
+		$t_email = $this->parse_content( $p_msg );
 
-		unset( $t_msg );
+		$p_msg = NULL;
 
 		$this->show_memory_usage( 'Parsed single email' );
 
@@ -830,10 +839,17 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 					$this->_from_emailaddress = array( $this->_mailbox_id => $t_email[ 'From_parsed' ][ 'email' ] );
 					$this->_to_emailaddress = array( $this->_mailbox_id => $t_email[ 'To' ] );
 
-					$this->add_bug( $t_email, $p_overwrite_project_id );
+					try
+					{
+						$this->add_bug( $t_email, $p_overwrite_project_id );
+					}
+					finally
+					{
+						ERP_set_temporary_overwrite( 'project_override', NULL );
 
-					$this->_from_emailaddress = NULL;
-					$this->_to_emailaddress = NULL;
+						$this->_from_emailaddress = NULL;
+						$this->_to_emailaddress = NULL;
+					}
 				}
 			}
 			else
@@ -1342,6 +1358,9 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 		//Add the message-id to the database
 		$this->add_msg_ids( $t_bug_id, $t_references );
 
+		// Needs to be reset here to make sure this does not affect the Rule system
+		ERP_set_temporary_overwrite( 'project_override', NULL );
+
 		# Allow plugins to post-process bug/bugnote data with the new bug ID/bugnote ID
 		# Needed to move this after adding attachments so that events can properly see the data.
 		if ( isset( $t_bugnote_id ) )
@@ -1352,8 +1371,6 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 		{
 			event_signal( 'EVENT_REPORT_BUG', array( $t_bug_data, $t_bug_id ) );
 		}
-
-		ERP_set_temporary_overwrite( 'project_override', NULL );
 
 		$this->show_memory_usage( 'Finished processing attachments' );
 	}
@@ -1915,7 +1932,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 					// ignore references longer then 250 characters as they are most likely malformed
 					if ( strlen( $t_ref ) > 250 )
 					{
-						$this->custom_error( 'Reference id encountered thats longer then 250 characters. It will be ignored' );
+						$this->custom_error( 'Reference id encountered thats longer then 250 characters. It will be ignored', FALSE );
 					}
 					else
 					{
@@ -2242,6 +2259,8 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 			# Get results
 			$t_entry = ldap_first_entry( $t_ds, $t_sr );
 			if( $t_entry === FALSE ) {
+				ldap_log_error( $t_ds );
+				ldap_unbind( $t_ds );
 				log_event( LOG_LDAP, 'No matches found.' );
 				$g_cache_ldap_data[$p_email_address] = FALSE;
 				return FALSE;
@@ -2263,6 +2282,8 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 
 			# Make sure LDAP data is available and the requested field exists
 			if( !$t_data || !isset( $t_data[$t_ldap_uid_field] ) ) {
+				ldap_log_error( $t_ds );
+				ldap_unbind( $t_ds );
 				$g_cache_ldap_data[$p_email_address] = NULL;
 				return NULL;
 			}

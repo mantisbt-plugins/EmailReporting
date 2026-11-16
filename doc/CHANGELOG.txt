@@ -3,6 +3,10 @@ Changelog:
 	- Fix password encryption fallback
 	- Rule system: Fix duedate check current value vs new value
 	- Rule system: Fix event_source caching
+	- Optimize single message mime content handling
+	- Improve resetting project_override
+	- Adjust reference id length notification to not be treated as an error
+	- Improve LDAP handling of error situations
 
 Nov 2026 - EmailReporting-0.15.0
 	- Rule system: Add action for update project
