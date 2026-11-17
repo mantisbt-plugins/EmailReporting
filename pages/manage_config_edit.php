@@ -56,7 +56,7 @@ $f_mail_bug_priority                  = 'array (' . "\n" . gpc_get_string( 'mail
 
 foreach ( $f_gpc AS $t_key => $t_value )
 {
-	if( plugin_config_get( $t_key ) !== $t_value )
+	if ( plugin_config_get( $t_key ) !== $t_value )
 	{
 		plugin_config_set( $t_key, $t_value );
 	}
@@ -64,19 +64,19 @@ foreach ( $f_gpc AS $t_key => $t_value )
 
 try
 {
-	if( !empty( $f_mail_bug_priority ) )
+	if ( !empty( $f_mail_bug_priority ) )
 	{
 		$t_parser = new ConfigParser( $f_mail_bug_priority );
 		$t_mail_bug_priority = $t_parser->parse( ConfigParser::EXTRA_TOKENS_IGNORE );
 	}
 }
-catch (Exception $e)
+catch ( Exception $e )
 {
 	error_parameters( $f_mail_bug_priority, $e->getMessage() );
 	throw new RuntimeException( ERROR_CONFIG_OPT_BAD_SYNTAX );
 }
 
-if( isset( $t_mail_bug_priority ) && is_array( $t_mail_bug_priority ) )
+if ( isset( $t_mail_bug_priority ) && is_array( $t_mail_bug_priority ) )
 {
 	if ( plugin_config_get( 'mail_bug_priority' ) !== $t_mail_bug_priority )
 	{
