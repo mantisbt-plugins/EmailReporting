@@ -803,7 +803,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 	{
 		$this->show_memory_usage( 'Start process single email' );
 
-		if ( empty( $p_msg ) )
+		if ( empty( $p_Msg ) )
 		{
 			$this->custom_error( 'Retrieved message was empty. Either an invalid message ID was passed or there is a problem with one of the required packages' );
 
@@ -812,11 +812,11 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 
 		$this->show_memory_usage( 'Single email retrieved from mailbox' );
 
-		$this->save_message_to_file( 'raw_msg', $p_msg );
+		$this->save_message_to_file( 'raw_msg', $p_Msg );
 
-		$t_email = $this->parse_content( $p_msg );
+		$t_email = $this->parse_content( $p_Msg );
 
-		$p_msg = NULL;
+		$p_Msg = NULL;
 
 		$this->show_memory_usage( 'Parsed single email' );
 
