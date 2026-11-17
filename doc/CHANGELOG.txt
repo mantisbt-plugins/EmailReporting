@@ -7,6 +7,10 @@ Changelog:
 	- Improve resetting project_override
 	- Adjust reference id length notification to not be treated as an error
 	- Improve LDAP handling of error situations
+	- Remove obsolete MantisBT 1.3.x code
+	- Correct access level check
+	- Improve config update step 1
+	- Correct blacklisted index check ERP_output_config_option for username and password
 
 Nov 2026 - EmailReporting-0.15.0
 	- Rule system: Add action for update project

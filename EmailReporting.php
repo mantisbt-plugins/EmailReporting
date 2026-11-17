@@ -30,7 +30,6 @@ class EmailReportingPlugin extends MantisPlugin
 			'reset_schema'                     => 0,
 			'config_version'                   => 0,
 			'schema'                           => -1,
-			'mantisbt_version'                 => (int) trim( MANTIS_VERSION )[ 0 ],
 			'job_users'                        => array(),
 
 			# --- mail reporting settings -----
@@ -361,7 +360,7 @@ class EmailReportingPlugin extends MantisPlugin
 	 */
 	function ERP_manage_emailreporting_menu( )
 	{
-		if( !access_has_project_level( config_get( 'manage_plugin_threshold' ) ) ) {
+		if( !access_has_global_level( config_get( 'manage_plugin_threshold' ) ) ) {
 			return( array() );
 		}
 
@@ -440,7 +439,14 @@ class EmailReportingPlugin extends MantisPlugin
 				if ( strlen( $t_mail_reporter ) > 0 )
 				{
 					$t_mail_reporter_id = user_get_id_by_name( $t_mail_reporter );
-					plugin_config_set( 'mail_reporter_id', $t_mail_reporter_id );
+					if ( $t_mail_reporter_id !== FALSE )
+					{
+						plugin_config_set( 'mail_reporter_id', $t_mail_reporter_id );
+					}
+					else
+					{
+						plugin_config_set( 'mail_reporter_id', 0 );
+					}
 				}
 
 				plugin_config_delete( 'mail_directory' );
