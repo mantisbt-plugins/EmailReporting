@@ -50,7 +50,7 @@
 	}
 
 	// Register the user that is currently running this script
-	$t_job_users = plugin_config_get( 'job_users' );
+	$t_job_users = (array) plugin_config_get( 'job_users' );
 	$t_username = ERP_get_current_os_user();
 	if ( !isset( $t_job_users[ php_sapi_name() ] ) || $t_job_users[ php_sapi_name() ] !== $t_username )
 	{
@@ -79,6 +79,6 @@
 		echo '</pre>';
 	}
 
-	exit( 0 );
+	exit( ( $GLOBALS[ $t_mailbox_api_index ]->hasError() ) ? 1 : 0 );
 ?>
 
