@@ -263,6 +263,10 @@ class ERP_rule_api extends ERP_ErrorHandling
 						$t_found_cond_email_from_match = TRUE;
 					}
 				}
+				else
+				{
+					$t_found_cond_email_from_match = TRUE;
+				}
 
 				if ( isset( $p_exceptions[ 'excep_email_from' ] ) )
 				{

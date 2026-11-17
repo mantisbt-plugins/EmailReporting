@@ -11,6 +11,7 @@ Changelog:
 	- Correct access level check
 	- Improve config update step 1
 	- Correct blacklisted index check ERP_output_config_option for username and password
+	- Rule system: Fix issue when cond_email_from is not set and excep_email_from is set
 
 Nov 2026 - EmailReporting-0.15.0
 	- Rule system: Add action for update project
