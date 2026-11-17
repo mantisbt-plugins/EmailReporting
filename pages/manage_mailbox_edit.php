@@ -129,7 +129,12 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 
 	foreach ( $t_mailbox AS $t_key => $t_value )
 	{
-		If ( is_array( $t_value ) )
+		if ( $t_key === 'plugin_content' )
+		{
+			continue;
+		}
+
+		if ( is_array( $t_value ) )
 		{
 			$t_value = implode( ' - ', $t_value );
 		}
@@ -153,7 +158,7 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 
 		if ( $t_key !== 'project_id' && $t_key !== 'global_category_id' )
 		{
-			$t_message .= plugin_lang_get( $t_key ) . ': ' . $t_value . '<br />';
+			$t_message .= plugin_lang_get( $t_key ) . ': ' . string_html_specialchars( $t_value ) . '<br />';
 		}
 	}
 

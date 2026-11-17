@@ -66,8 +66,8 @@ if ( count( array_diff( (array) $t_job_users, (array) $t_username ) ) > 0 && $t_
 	{
 ?>
 			<tr>
-				<td class="left"><?php echo $t_key ?></td>
-				<td class="left"><?php echo $t_array ?></td>
+				<td class="left"><?php echo string_html_specialchars( $t_key ) ?></td>
+				<td class="left"><?php echo string_html_specialchars( $t_array ) ?></td>
 			</tr>
 <?php
 	}
