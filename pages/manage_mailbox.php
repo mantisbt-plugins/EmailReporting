@@ -143,7 +143,7 @@ ERP_output_config_option( 'select_mailbox', 'dropdown', $f_select_mailbox, 'prin
 ERP_output_table_close( 'select_mailbox' );
 
 ?>
-<form>
+</form>
 
 <?php
 ERP_page_end( __FILE__ );

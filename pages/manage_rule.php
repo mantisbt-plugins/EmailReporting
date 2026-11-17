@@ -181,7 +181,7 @@ ERP_output_table_close( 'select_rule' );
 
 ?>
 
-<form>
+</form>
 
 <?php
 ERP_page_end( __FILE__ );
