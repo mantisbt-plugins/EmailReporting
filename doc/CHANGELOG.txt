@@ -1,5 +1,5 @@
 Changelog:
-??? - EmailReporting-0.16.0
+??? - EmailReporting-0.15.1
 	- Fix password encryption fallback
 	- Rule system: Fix duedate check current value vs new value
 	- Rule system: Fix event_source caching
