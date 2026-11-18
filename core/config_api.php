@@ -1251,7 +1251,7 @@ function ERP_custom_function_print_projects_option_list( $p_sel_value )
 			$t_project_name = '* ' . $t_project_name;
 		}
 		echo '>' . string_attribute( $t_project_name ) . '</option>' . "\n";
-		print_subproject_option_list( $t_project_id );
+		print_subproject_option_list( $t_project_id, $t_sel_values );
 	}
 }
 
