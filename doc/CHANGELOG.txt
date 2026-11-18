@@ -14,6 +14,7 @@ Changelog:
 	- Rule system: Fix issue when cond_email_from is not set and excep_email_from is set
 	- Fix possible issue with job_users variable
 	- Add proper exit code after running bug_report_mail
+	- Correct auto reply detection for auto-submitted header
 
 Nov 2026 - EmailReporting-0.15.0
 	- Rule system: Add action for update project

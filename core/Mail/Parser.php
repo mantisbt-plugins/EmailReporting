@@ -467,7 +467,7 @@ class ERP_Mail_Parser
 			isset( $structure->headers[ 'x-autoreply' ] ) ||
 			isset( $structure->headers[ 'x-autorespond' ] ) ||
 			isset( $structure->headers[ 'x-ag-autoreply' ] ) ||
-			( isset( $structure->headers[ 'auto-submitted' ] ) && $structure->headers[ 'auto-submitted' ] !== 'no' ) ||
+			( isset( $structure->headers[ 'auto-submitted' ] ) && $structure->headers[ 'auto-submitted' ] === 'auto-replied' ) ||
 			( isset( $structure->headers[ 'precedence' ] ) && $structure->headers[ 'precedence' ] === 'auto_reply' )
 		)
 		{
