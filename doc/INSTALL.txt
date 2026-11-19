@@ -26,7 +26,7 @@ Wiki:
 The can be reached by clicking "[?]" next to a specific configuration option. Or here: http://www.mantisbt.org/wiki/doku.php/mantisbt:plugins:emailreporting 
 
 Debug mode:
-For debugging controls there is a switch to add the complete email to the
+For debugging there is a switch to add the complete email to the
 bug as an attachment (see plugin config page in mantis)
 
 If you like to see what bug_report_mail.php is doing, enable debug
