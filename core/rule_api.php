@@ -36,56 +36,67 @@ class ERP_rule_api extends ERP_ErrorHandling
 
 		$this->_mail_debug = (bool) plugin_config_get( 'mail_debug' );
 
-		// We want to perform all actions as the rule system user
-		$t_rule_user_id = plugin_config_get( 'rule_user_id' );
-		if ( !( user_exists( $t_rule_user_id ) && user_is_enabled( $t_rule_user_id ) ) )
-		{
-			$this->setError( 'Rule system user not found or not enabled' );
-		}
-		else
-		{
-			$t_rule_user_username = user_get_field( $t_rule_user_id, 'username' );
-			$t_authattemptresult = auth_attempt_script_login( $t_rule_user_username );
+		$t_original_user_id = auth_get_current_user_id();
 
-			if ( $t_authattemptresult !== TRUE )
+		try
+		{
+			// We want to perform all actions as the rule system user
+			$t_rule_user_id = plugin_config_get( 'rule_user_id' );
+			if ( user_exists( $t_rule_user_id ) && user_is_enabled( $t_rule_user_id ) )
 			{
-				$this->setError( 'Rule system user could not be used' );
+				$t_rule_user_username = user_get_field( $t_rule_user_id, 'username' );
+				$t_authattemptresult = auth_attempt_script_login( $t_rule_user_username );
+
+				if ( $t_authattemptresult !== TRUE )
+				{
+					$this->setError( 'Rule system user could not be used' );
+				}
 			}
-		}
-
-		if ( $this->hasError() )
-		{
-			while ( $this->hasError() )
+			else
 			{
-				$t_error = (
-					'Rule engine: INITIALIZATION' . "\n" .
-					'Message: ' . $this->getError()
-				);
-				plugin_log_event( $t_error );
+				$this->setError( 'Rule system user not found or not enabled' );
 			}
 
-			return;
-		}
-
-		$t_rules = plugin_config_get( 'rules' );
-
-		foreach ( $t_rules AS $t_rule )
-		{
-			$t_result = $this->process_rule( $t_rule );
-
-			if ( $this->_mail_debug == ON )
+			if ( $this->hasError() )
 			{
 				while ( $this->hasError() )
 				{
 					$t_error = (
-						'Rule: ' . $t_rule[ 'description' ] . "\n" .
+						'Rule engine: INITIALIZATION' . "\n" .
 						'Message: ' . $this->getError()
 					);
 					plugin_log_event( $t_error );
 				}
+
+				return;
 			}
 
-			$this->clearError();
+			$t_rules = plugin_config_get( 'rules' );
+
+			foreach ( $t_rules AS $t_rule )
+			{
+				$t_result = $this->process_rule( $t_rule );
+
+				if ( $this->_mail_debug == ON )
+				{
+					while ( $this->hasError() )
+					{
+						$t_error = (
+							'Rule: ' . $t_rule[ 'description' ] . "\n" .
+							'Message: ' . $this->getError()
+						);
+						plugin_log_event( $t_error );
+					}
+				}
+
+				$this->clearError();
+			}
+		}
+		finally
+		{
+			// Restore original user
+			$t_original_user_username = user_get_field( $t_original_user_id, 'username' );
+			$t_authattemptresult = auth_attempt_script_login( $t_original_user_username );
 		}
 	}
 
@@ -662,6 +673,8 @@ class ERP_rule_api extends ERP_ErrorHandling
 		// act_issue_duedate
 		if ( isset( $p_actions[ 'act_issue_duedate' ], $p_actions[ 'act_issue_duedate' ][ 'modifier' ] ) )
 		{
+			$t_current_duedate = NULL;
+
 			if ( $p_actions[ 'act_issue_duedate' ][ 'modifier' ] === 'current' )
 			{
 				$t_current_duedate = (int) bug_get_field( $this->p_bug_id, 'due_date' );
