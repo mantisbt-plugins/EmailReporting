@@ -21,6 +21,11 @@ Changelog:
 	- Fix radio button html id's
 	- Powershell: Fix mailbox permission state incase of multiple mailboxes
 	- Fix output of variables containing html characters (manage_mailbox & manage_rule)
+	- Remove return value for process_mailbox
+	- Move delete_references_for_bug_id when adding a new bug related to readonly bug to the end
+	- Move message-ids of a readonly bug to the new bug
+	- Fix for undefined variable in prepare_username
+	- Fix for limit_body_size when mail_max_email_body is too low
 
 Nov 2026 - EmailReporting-0.15.0
 	- Rule system: Add action for update project

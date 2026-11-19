@@ -223,8 +223,7 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 	}	
 
 	# --------------------
-	# process all mails for an mailbox
-	#  return a boolean for whether the mailbox was successfully processed
+	# process all mails for a mailbox
 	public function process_mailbox(
 		$p_id,
 		#[\SensitiveParameter]
@@ -353,8 +352,6 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 
 		$this->_mailbox_id = NULL;
 		$this->_mailbox = array();
-
-		return( TRUE );
 	}
 
 	# --------------------
@@ -1147,10 +1144,6 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 				if ( $t_bug_id !== FALSE && bug_is_readonly( $t_bug_id ) )
 				{
 					$t_master_bug_id = $t_bug_id;
-
-					// Issues beyond the readonly border will not be reopened and will result in a new issue with a relationship to the old one
-					// This requires us to relink the references to the new issue by first cleaning up the old ones
-					ERP_mailbox_api::delete_references_for_bug_id( $t_master_bug_id );
 				}
 				// We should not use t_bug_id until it is re-used by the bug create() function
 
@@ -1354,6 +1347,16 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 
 		//Add the users in Cc and To list in mail header
 		$this->add_monitors( $t_bug_id, $p_email );
+
+		if ( !empty( $t_master_bug_id ) )
+		{
+			$t_master_bug_references = $this->get_bug_references( $t_master_bug_id );
+			$t_references = array_merge( $t_master_bug_references, $t_references );
+
+			// Issues beyond the readonly border will not be reopened and will result in a new issue with a relationship to the old one
+			// This requires us to relink the references to the new issue by first cleaning up the old ones
+			ERP_mailbox_api::delete_references_for_bug_id( $t_master_bug_id );
+		}
 
 		//Add the message-id to the database
 		$this->add_msg_ids( $t_bug_id, $t_references );
@@ -1695,6 +1698,8 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 	# return a valid username from an email address
 	private function prepare_username( $p_user_info )
 	{
+		$t_username = '';
+
 		# I would have liked to validate the username and remove any non-allowed characters
 		# using the config user_login_valid_regex but that seems not possible and since
 		# it's a config, any mantis installation could have a different one
@@ -2116,7 +2121,9 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 			$t_mail_max_email_body_text = "\n" . $this->_mail_max_email_body_text;
 			
 			// Decide on max length and truncate. Remove one extra character just to be sure
-			$t_description = mb_substr( $t_description, 0, $this->_mail_max_email_body - mb_strlen( $t_mail_max_email_body_text ) - 1 ) . $t_mail_max_email_body_text;
+			$t_max_body_length = $this->_mail_max_email_body - mb_strlen( $t_mail_max_email_body_text ) - 1;
+			$t_max_body_length = max( 0, $t_max_body_length );
+			$t_description = mb_substr( $t_description, 0, $t_max_body_length ) . $t_mail_max_email_body_text;
 
 			if ( $this->_mail_max_email_body_add_attach )
 			{

@@ -117,7 +117,7 @@ elseif ( ( $f_mailbox_action === 'test' || $f_mailbox_action === 'complete_test'
 	$t_mailbox_api_index = ERP_get_mailbox_api_name();
 
 	$GLOBALS[ $t_mailbox_api_index ] = new ERP_mailbox_api( ( ( $f_mailbox_action === 'complete_test' ) ? FALSE : TRUE ) );
-	$t_result = $GLOBALS[ $t_mailbox_api_index ]->process_mailbox( $f_select_mailbox, $t_mailbox );
+	$GLOBALS[ $t_mailbox_api_index ]->process_mailbox( $f_select_mailbox, $t_mailbox );
 	echo '</pre>';
 
 	$t_is_error = ( $GLOBALS[ $t_mailbox_api_index ]->hasError() );
