@@ -119,7 +119,7 @@ elseif ( $f_rule_action === 'describe' && $f_select_rule >= 0 )
 				$t_value = $t_ruleitem_value;
 			}
 		
-			$t_message .= plugin_lang_get( $t_key ) . ': ' . $t_value . '<br />';
+			$t_message .= plugin_lang_get( $t_key ) . ': ' . string_html_specialchars( $t_value ) . '<br />';
 		}
 		else
 		{
@@ -131,14 +131,14 @@ elseif ( $f_rule_action === 'describe' && $f_select_rule >= 0 )
 				{
 					if ( $t_key === 'act_issue_duedate' )
 					{
-						$t_value = ( $t_value[ 'modifier' ] ?? '' ) . ' + '. ( $t_value[ 'amount' ] ?? 0 ) . ' ' . lang_get( 'days' );
+						$t_value = string_html_specialchars( $t_value[ 'modifier' ] ?? '' ) . ' + '. ( $t_value[ 'amount' ] ?? 0 ) . ' ' . lang_get( 'days' );
 					}
 					elseif ( $t_key === 'act_issue_custom_fields' )
 					{
 						$t_cfs = '<br />';
 						foreach ( $t_value AS $t_cf_id => $t_cf_value )
 						{
-							$t_cfs .= '<br />CF ID: ' . $t_cf_id . ' - ' . $t_cf_value;
+							$t_cfs .= '<br />CF ID: ' . $t_cf_id . ' - ' . string_html_specialchars( $t_cf_value );
 
 							if ( !custom_field_validate( $t_cf_id, $t_cf_value ) )
 							{
@@ -152,7 +152,7 @@ elseif ( $f_rule_action === 'describe' && $f_select_rule >= 0 )
 					}
 					else
 					{
-						$t_value = implode( ', ', $t_value );
+						$t_value = string_html_specialchars( implode( ', ', $t_value ) );
 					}
 				}
 

@@ -20,6 +20,7 @@ Changelog:
 	- Remove disabled option type
 	- Fix radio button html id's
 	- Powershell: Fix mailbox permission state incase of multiple mailboxes
+	- Fix output of variables containing html characters (manage_mailbox & manage_rule)
 
 Nov 2026 - EmailReporting-0.15.0
 	- Rule system: Add action for update project
