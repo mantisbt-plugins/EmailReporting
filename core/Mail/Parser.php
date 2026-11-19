@@ -181,7 +181,7 @@ class ERP_Mail_Parser
 			}
 
 			# Should only do this when charset is UTF-8
-			if ( $this->_encoding === $charset || $t_encode !== FALSE )
+			if ( $this->_encoding === $charset || ( isset( $t_encode ) && $t_encode !== FALSE ) )
 			{
 				// Replace non-breakable space with normal space
 				$encode = str_replace( "\xC2\xA0" , ' ', $encode );
