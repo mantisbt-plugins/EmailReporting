@@ -26,6 +26,7 @@ Changelog:
 	- Move message-ids of a readonly bug to the new bug
 	- Fix for undefined variable in prepare_username
 	- Fix for limit_body_size when mail_max_email_body is too low
+	- Fix possible undefined variable in Parser
 
 Nov 2026 - EmailReporting-0.15.0
 	- Rule system: Add action for update project
