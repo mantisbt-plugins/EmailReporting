@@ -58,6 +58,7 @@ Download
 ========
 
 The stable releases can be downloaded from the GitHub downloads page: https://github.com/mantisbt-plugins/EmailReporting/releases
+
 The development versions are not meant for production environments. Use at your own risk
 
 Composer
