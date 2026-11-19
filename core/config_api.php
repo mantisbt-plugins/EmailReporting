@@ -454,12 +454,21 @@ function ERP_get_current_os_user()
 	if ( function_exists( 'posix_getpwuid' ) && function_exists( 'posix_geteuid' ) )
 	{
 		$t_userinfo = posix_getpwuid( posix_geteuid() );
-		return( $t_userinfo[ 'name' ] );
+
+		if ( is_array( $t_userinfo ) && isset( $t_userinfo[ 'name' ] ) )
+		{
+			return( $t_userinfo[ 'name' ] );
+		}
 	}
-	else
+
+	$t_username = getenv( 'USERNAME' ) ?: getenv( 'USER' );
+
+	if ( !empty( $t_username ) )
 	{
-		return( get_current_user() );
+		return( $t_username );
 	}
+
+	return( get_current_user() );
 }
 
 # This prints the little [?] link for user help
@@ -609,7 +618,6 @@ function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, $p_fun
 		case 'boolean':
 		case 'file_string':
 		case 'directory_string':
-		case 'disabled':
 		case 'integer':
 		case 'string':
 		case 'string_multiline':
@@ -634,14 +642,14 @@ function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, $p_fun
 ?>
 <td class="center width-25">
 	<label>
-		<input id="<?php echo $t_input_name ?>" class="ace" <?php echo helper_get_tab_index() ?> type="radio" name="<?php echo $t_input_name ?>" value="<?php echo ON ?>" <?php
+		<input id="<?php echo $t_input_name ?>_ON" class="ace" <?php echo helper_get_tab_index() ?> type="radio" name="<?php echo $t_input_name ?>" value="<?php echo ON ?>" <?php
 					check_checked( (int) $t_value, ON );
 ?>/><span class="lbl"><?php echo lang_get( 'yes' ) ?></span>
 	</label>
 </td>
 <td class="center width-25">
 	<label>
-		<input id="<?php echo $t_input_name ?>" class="ace" <?php echo helper_get_tab_index() ?> type="radio" name="<?php echo $t_input_name ?>" value="<?php echo OFF ?>" <?php
+		<input id="<?php echo $t_input_name ?>_OFF" class="ace" <?php echo helper_get_tab_index() ?> type="radio" name="<?php echo $t_input_name ?>" value="<?php echo OFF ?>" <?php
 					// NULL can also be interpreted as 0. But in this case NULL means no option chosen
 					if ( $t_value !== NULL )
 					{
@@ -699,18 +707,6 @@ function ERP_output_config_option( $p_name, $p_type, $p_def_value = NULL, $p_fun
 <td class="width-25">
 	<span class="<?php echo $t_result_is_dir_color ?>"><?php echo $t_result_is_dir_text ?></span><br />
 	<span class="<?php echo $t_result_is_writable_color ?>"><?php echo $t_result_is_writable_text ?></span>
-</td>
-<?php
-
-					break;
-
-				case 'disabled':
-?>
-<td colspan="2" class="width-50">
-<?php
-					echo plugin_lang_get( 'disabled' );
-					ERP_output_config_option( $t_input_name, 'hidden', $t_value );
-?>
 </td>
 <?php
 
@@ -1364,7 +1360,7 @@ function ERP_print_action_radio_buttons( $p_input_name, $p_sel_value, $p_variabl
 		{
 			foreach ( $t_actions AS $t_action )
 			{
-				echo '<td><label><input id="' . $p_input_name . '" class="ace" ' . helper_get_tab_index() . ' type="radio" name="' . $p_input_name . '" value="' . string_attribute( $t_action ) . '"';
+				echo '<td><label><input id="' . $p_input_name . '_' . string_attribute( $t_action ) . '" class="ace" ' . helper_get_tab_index() . ' type="radio" name="' . $p_input_name . '" value="' . string_attribute( $t_action ) . '"';
 				check_checked( $p_sel_value, $t_action );
 				echo '/><span class="lbl">' . plugin_lang_get( $t_action . '_action' ) . '</span></label></td>';
 			}
