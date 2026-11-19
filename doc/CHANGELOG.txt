@@ -19,6 +19,7 @@ Changelog:
 	- Improve ERP_get_current_os_user
 	- Remove disabled option type
 	- Fix radio button html id's
+	- Powershell: Fix mailbox permission state incase of multiple mailboxes
 
 Nov 2026 - EmailReporting-0.15.0
 	- Rule system: Add action for update project

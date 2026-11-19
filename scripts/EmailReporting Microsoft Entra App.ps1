@@ -617,10 +617,10 @@ $UserCandidates = @(
     Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
     Select-Object -Unique
 
-$MailboxPermissionAdded = $false
-$MailboxPermissionErrors = @()
-
 foreach ($Mailbox in $Mailboxes) {
+    $MailboxPermissionAdded = $false
+    $MailboxPermissionErrors = @()
+
     foreach ($UserCandidate in $UserCandidates) {
         Write-Host "Trying Add-MailboxPermission -User '$UserCandidate'..." -ForegroundColor DarkCyan
 
