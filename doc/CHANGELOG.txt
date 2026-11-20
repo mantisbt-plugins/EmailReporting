@@ -24,7 +24,7 @@ Changelog:
 	- Remove return value for process_mailbox
 	- Move delete_references_for_bug_id when adding a new bug related to readonly bug to the end
 	- Move message-ids of a readonly bug to the new bug
-	- Fix for undefined variable in prepare_username
+	- Fix for undefined variable in prepare_username and prepare_realname
 	- Fix for limit_body_size when mail_max_email_body is too low
 	- Fix possible undefined variable in Parser
 	- Rule system: Restore original logged in user after processing rules

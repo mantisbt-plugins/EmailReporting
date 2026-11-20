@@ -1767,6 +1767,8 @@ class ERP_mailbox_api extends ERP_ErrorHandling
 	# return a valid realname from an email address
 	private function prepare_realname( $p_user_info, $p_username )
 	{
+		$t_realname = '';
+
 		switch( $this->_mail_preferred_realname ){
 			case 'email_address':
 				$t_realname = $p_user_info[ 'email' ];
