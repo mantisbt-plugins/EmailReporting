@@ -29,6 +29,7 @@ Changelog:
 	- Fix possible undefined variable in Parser
 	- Rule system: Restore original logged in user after processing rules
 	- Rule system: Fix possible undefined variable for duedate action
+	- Improve messsage id handling
 
 Nov 2026 - EmailReporting-0.15.0
 	- Rule system: Add action for update project

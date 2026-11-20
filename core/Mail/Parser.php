@@ -497,21 +497,48 @@ class ERP_Mail_Parser
 
 	private function setMessageId( $p_messageid )
 	{
+		$t_messageid = $this->extractMessageIds( $p_messageid );
+
+		$t_count = count( $t_messageid );
+		if ( $t_count === 1 )
+		{
+			$this->_messageid = $t_messageid[ 0 ];
+			return;
+		}
+
+		if ( $t_count > 1 )
+		{
+			$this->setReferences( $p_messageid );
+			return;
+		}
+
 		$this->_messageid = trim( (string) $p_messageid );
 	}
 
 	private function setReferences( $p_references )
 	{
-		// Some email servers mishandle the references header and split one ID over multiple lines causing an extra space
-		$t_references = str_replace( array( ' ', "\r\n", "\r", "\n" ), '', $p_references );
-		preg_match_all( '/<\S*?>/m', $t_references, $t_matches );
-		$references = array_map( 'trim', $t_matches[ 0 ] );
+		$t_references = $this->extractMessageIds( $p_references );
 
-		$this->_references = $references;
+		$this->_references = array_merge( $this->_references, $t_references );
 	}
 
 	private function setInReplyTo( $p_inreplyto )
 	{
+		$t_inreplyto = $this->extractMessageIds( $p_inreplyto );
+
+		$t_count = count( $t_inreplyto );
+		if ( $t_count === 1 )
+		{
+			$this->_inreplyto = $t_inreplyto[ 0 ];
+			return;
+		}
+
+		if ( $t_count > 1 )
+		{
+			$this->setReferences( $p_inreplyto );
+			return;
+		}
+
 		$this->_inreplyto = trim( (string) $p_inreplyto );
 	}
 
@@ -699,7 +726,7 @@ class ERP_Mail_Parser
 
 	private function ParseTNEF( $TNEFpart )
 	{
-		if ( $this->_parse_tnef )
+		if ( $this->_add_attachments && $this->_parse_tnef )
 		{
 			$TNEFattachment = new TNEFDecoder\TNEFAttachment();
 			try
@@ -786,6 +813,16 @@ class ERP_Mail_Parser
 
 			$this->_parts[] = $p;
 		}
+	}
+
+	private function extractMessageIds( $p_message_ids )
+	{
+		// Some email servers mishandle the references header and split one ID over multiple lines causing an extra space
+		$t_value = str_replace( array( ' ', "\r\n", "\r", "\n" ), '', $p_message_ids );
+		preg_match_all( '/<\S*?>/m', $t_value, $t_matches );
+		$t_message_ids = array_map( 'trim', $t_matches[ 0 ] );
+
+		return( $t_message_ids );
 	}
 
 	# --------------------
